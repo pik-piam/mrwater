@@ -1,0 +1,26 @@
+Package: mrMAgPIE
+Type: Package
+Title: MAgPIE Input Data Library
+Version: 1.0.0
+Date: 2019-11-27
+Author: Lavinia Baumstark, Anastasis Giannousakis, Jan Philipp Dietrich, Ulrich
+    Kreidenweis, Benjamin Bodirsky, Isabelle Weindl, Mishko Stevanovic, Xiaoxi Wang, Ewerton Araujo, Florian Humpenoeder, Stephen Wirth, Kristine Karstens, Abhijeet Mishra
+Maintainer: Anastasis Giannousakis <giannou@pik-potsdam.de>
+Description: Provides functions for MAgPIE country and cellular input data generation.
+Depends:
+    R(>= 2.10.0),
+    magclass(>= 3.17),
+    madrat(>= 1.30),
+    mrdrive (>= 0.1),
+    mrfao (>= 0.1)
+Imports:
+    magpiesets
+License: LGPL-3 | file LICENSE
+LazyData: no
+Encoding: UTF-8
+RoxygenNote: 7.0.0
+ValidationKey: 1822700
+Suggests: knitr,
+          rmarkdown,
+	        ggplot2
+VignetteBuilder: knitr
