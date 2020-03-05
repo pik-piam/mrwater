@@ -3,7 +3,7 @@ Type: Package
 Title: madrat based MAgPIE Input Data Library
 Version: 1.1.0
 Date: 2020-03-05
-Authors@R: c(person("Kristine", "Karstens", email = "karstens@pik-potsdam.de", role = c("aut","cre")) 
+Authors@R: c(person("Kristine", "Karstens", email = "karstens@pik-potsdam.de", role = c("aut","cre")), 
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = "aut"))
 Description: Provides functions for MAgPIE country and cellular input data generation.
 Depends:

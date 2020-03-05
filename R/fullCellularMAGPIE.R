@@ -39,6 +39,8 @@ fullCellularMAGPIE <- function(rev=0.1) {
     #34
     calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, file="f34_UrbanLand_0.5.mz")
 
+    #40
+    calcOutput("Transport_Distance", aggregate=FALSE, round=6, file="transport_distance_0.5.mz" )
     #41 water
     calcOutput("AreaEquippedForIrrigation", aggregate=FALSE, cellular=TRUE, years=mag_years_past_short, round=6, file="avl_irrig_luh_t_0.5.mz")
     # WATER!
