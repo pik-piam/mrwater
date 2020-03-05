@@ -17,6 +17,7 @@
 
 fullCellularMAGPIE <- function(rev=0.1) {
 
+    res_out <- "c200"
 
     mag_years_past_short <- c("y1995","y2000","y2005","y2010")
     mag_years_past_long  <- c("y1995","y2000","y2005","y2010","y2015")
@@ -55,5 +56,35 @@ fullCellularMAGPIE <- function(rev=0.1) {
 
     #59 som
     calcOutput("SOMinitialsiationPools", aggregate = FALSE, round=6, file="f59_som_initialisation_pools_0.5.mz")
+
+
+
+
+    ##### AGGREGATION ######
+
+    # create info file
+    writeInfo <- function(file,lpjml_data, rev) {
+      functioncall <- paste(deparse(sys.call(-1)), collapse = "")
+
+      map <- toolMappingFile("regional", getConfig("regionmapping"),
+                             readcsv = TRUE)
+      regionscode <- regionscode(map)
+
+      info <- c('lpj2magpie settings:',
+                paste('* LPJmL data:',lpjml_data),
+                paste('* Revision:', rev),
+                '','aggregation settings:',
+                paste('* Input resolution:',res_high),
+                paste('* Output resolution:',res_out),
+                paste('* Regionscode:',regionscode),
+                paste('* Call:', functioncall))
+      cat(info,file=file,sep='\n')
+    }
+    writeInfo(file='info.txt', lpjml_data="default", res_high="0.5", res_out=res_out, rev=rev)
+
+
+
+
+
 
 }
