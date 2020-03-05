@@ -10,6 +10,7 @@
 #'
 #' @import madrat
 #' @import magclass
+#' @import moinput
 
 calcGrowingPeriod <- function() {
 

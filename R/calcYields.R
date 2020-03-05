@@ -9,6 +9,7 @@
 #'
 #' @import madrat
 #' @import magclass
+#' @import moinput
 #' @importFrom magpiesets findset
 
 calcYields <- function(){
@@ -17,7 +18,7 @@ calcYields <- function(){
 
   # Load LPJmL harvested data as MAgPIe object and change unit gC/m?-> tDM/ha
 
-  lpj_yields    <- readSource("LPJmL5", subtype = "harvest", convert="onlycorrect")
+  lpj_yields    <- readSource("LPJmL5", subtype = "CRU4p02_2019_11_07.harvest", convert="onlycorrect")
 
   # Load LPJmL to MAgPIE mapping to aggregate to MAgPIE crops
   LPJ2MAG      <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
