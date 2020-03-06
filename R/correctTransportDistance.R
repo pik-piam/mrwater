@@ -1,4 +1,4 @@
-#' @title correctTransport_Distance
+#' @title correctTransportDistance
 #' @description Read transport distance file (no source information available)
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #' @param x magpie object provided by the read function
@@ -8,13 +8,13 @@
 #' @examples
 #'
 #' \dontrun{
-#'   readSource("Transport_Distance", convert="onlycorrect")
+#'   readSource("TransportDistance", convert="onlycorrect")
 #' }
 #'
 #' @import madrat
 #' @import magclass
 
-correctTransport_Distance <- function(x){
+correctTransportDistance <- function(x){
 
   x <- toolConditionalReplace(x, conditions = c("is.na()","<0"), replaceby = 0)
   x <- toolCell2isoCell(x)

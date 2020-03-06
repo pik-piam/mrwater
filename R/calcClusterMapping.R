@@ -16,18 +16,10 @@
 #' @examples
 #' \dontrun{ calcOutput("ClusterMapping", type="c200", aggregate = FALSE) }
 #'
-#' @importFrom luscale clusterspam
 
 calcClusterMapping <- function(type="c200", seed=42, weight=NULL){
 
-  # read in data which should be used to determine cluster
-  yld    <- calcOutput("MAgPIEYields",aggregate=FALSE)
-  airrig <- calcOutput("MAgPIEAirrig",aggregate=FALSE)
-  td     <- calcOutput("TransportDistance", aggregate=FALSE)
-
-
-
-  spam <- clusterspam(lr=0.5,hr=type,ifolder=finput,ofolder=foutput,cfiles=c("lpj_yields_0.5", "lpj_airrig", rep("transport_distance",16)),spatial_header=spatial_header, weight=weight, seed=seed)
+  cdata <- calcOutput("ClusterBase", aggregate=FALSE)
 
 
   return(list(

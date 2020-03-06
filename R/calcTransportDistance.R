@@ -1,11 +1,11 @@
-#' @title calcTransport_Distance
+#' @title calcTransportDistance
 #' @description Function extracts travel time to major cities in minutes
 #'
 #' @return magpie object in cellular resolution
 #' @author David Chen
 #'
 #' @examples
-#' \dontrun{ calcOutput("Transport_Distance", aggregate = FALSE) }
+#' \dontrun{ calcOutput("TransportDistance", aggregate = FALSE) }
 #'
 #' @import madrat
 #' @import magclass
@@ -13,9 +13,9 @@
 #' @importFrom magpiesets findset
 #'
 
-calcTransport_Distance <-function(x){
+calcTransportDistance <-function(x){
 
-x <- readSource("Transport_Distance", convert="onlycorrect")
+x <- readSource("TransportDistance", convert="onlycorrect")
 
 return(list(
   x=x,
