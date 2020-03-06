@@ -14,7 +14,8 @@ Depends:
     madrat(>= 1.30),
     moinput (>= 9.316.0)
 Imports:
-    magpiesets
+    magpiesets,
+    luscale
 License: LGPL-3 | file LICENSE
 LazyData: no
 Encoding: UTF-8

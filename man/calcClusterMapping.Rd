@@ -28,7 +28,6 @@ This function calculates the aggregation mapping for a given cluster methodology
 }
 \examples{
 \dontrun{ calcOutput("ClusterMapping", type="c200", aggregate = FALSE) }
-
 }
 \author{
 Jan Philipp Dietrich

@@ -3,6 +3,8 @@
 import(madrat)
 import(magclass)
 import(moinput)
+importFrom(luscale,mag_hierarchical)
+importFrom(luscale,mag_kmeans)
 importFrom(madrat,toolMappingFile)
 importFrom(madrat,vcat)
 importFrom(magclass,wrap)
