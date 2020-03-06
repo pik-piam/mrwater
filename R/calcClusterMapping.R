@@ -15,12 +15,45 @@
 #'
 #' @examples
 #' \dontrun{ calcOutput("ClusterMapping", type="c200", aggregate = FALSE) }
-#'
+#' @importFrom luscale mag_kmeans mag_hierarchical
 
 calcClusterMapping <- function(type="c200", seed=42, weight=NULL){
 
+  mode <- substr(lr,0,1)
+  ncluster <- as.integer(substring(lr,2))
+
   cdata <- calcOutput("ClusterBase", aggregate=FALSE)
 
+  # !!! NEED TO APPLY REGIONS HERE ON SPATIAL NAMING OF CDATA INSTEAD OF COUNTRIES !!! #
+  # !!! NEED TO FIND A PROPER WAY TO DEAL WITH THE REGION MAPPING DEPENDENCY !!! #
+
+  if(mode=="n") {
+    spam <- mag_kmeans(cdata,ncluster,weight,seed=seed)
+  } else if(mode=="h" | mode=="w" | mode=="s") {
+    # NEED TO FIND A WAY TO GET RID OF IFOLDER AND TO STORE CLUSTER TREE VIA MADRAT INSTEAD
+    spam <- mag_hierarchical(cdata,ncluster,ifolder,mode,weight)
+  } else if(mode=="c"){
+    calcCPR <- function(spam, cell2reg) {
+      reg <- unique(cell2reg)
+      cluster2reg <- as.factor(spam%*%as.numeric(cell2reg)/rowSums(spam))
+      levels(cluster2reg) <- levels(cell2reg)
+      cpr <- t(rbind(table(cell2reg),table(cluster2reg)))
+      dimnames(cpr)[[2]] <- c("cells","clusters")
+      return(cpr)
+    }
+    tmpspam <- mag_hierarchical(cdata,ncluster,ifolder,mode="h",weight)
+    cell2reg <- as.factor(sub("\\..*$","",dimnames(cdata)[[1]]))
+    spam <- mag_kmeans(cdata,cpr=calcCPR(tmpspam,cell2reg),seed=seed)
+  } else {
+    stop("Unkown clustering mode ",mode,"!")
+  }
+  wkey <- ifelse(is.null(weight), "", gsub(".","",paste0("_",names(weight),weight,collapse=""),fixed=TRUE))
+
+  # !!! HOW TO FORWARD NAME INFORMATION? !!! #
+  #write.spam(spam,path(ofolder,paste(hr,"-to-",lr,wkey,"_sum.spam",sep="")))
+  #saveRDS(spam2mapping(spam,rownames(cdata)), path(ofolder,paste(hr,"-to-",lr,wkey,"_mapping.rds",sep="")))
+
+  # !!! IN WHICH FORMAT SHOULD THE DATA BE RETURNED? !!! #
 
   return(list(
     x=spam,
