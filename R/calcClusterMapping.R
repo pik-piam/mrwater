@@ -4,6 +4,8 @@
 #' indicating the number of resulting clusters. Available methodologies are hierarchical clustering (h), normalized k-means clustering
 #' (n) and combined hierarchical/normalized k-means clustering (c). In the latter hierarchical clustering is used to determine the
 #' cluster distribution among regions whereas normalized k-means is used for the clustering within a region.
+#' @param regionscode regionscode of the regional mapping to be used. Must agree with the regionscode of the mapping
+#' mentioned in the madrat config! Can be retrieved via \code{regionscode()}.
 #' @param seed Seed for Random Number Generation. If set to NULL it is chosen automatically, if set to an integer it will
 #' always return the same pseudo-random numbers (useful to get identical clusters under identical inputs for n and c
 #' clustering)
@@ -16,16 +18,24 @@
 #' @examples
 #' \dontrun{ calcOutput("ClusterMapping", type="c200", aggregate = FALSE) }
 #' @importFrom luscale mag_kmeans mag_hierarchical
+#' @importFrom madrat toolMappingFile regionscode
+#' @importFrom moinput spatial_header
 
-calcClusterMapping <- function(type="c200", seed=42, weight=NULL){
+calcClusterMapping <- function(type, regionscode=madrat::regionscode(), seed=42, weight=NULL){
 
   mode <- substr(lr,0,1)
   ncluster <- as.integer(substring(lr,2))
 
   cdata <- calcOutput("ClusterBase", aggregate=FALSE)
 
-  # !!! NEED TO APPLY REGIONS HERE ON SPATIAL NAMING OF CDATA INSTEAD OF COUNTRIES !!! #
-  # !!! NEED TO FIND A PROPER WAY TO DEAL WITH THE REGION MAPPING DEPENDENCY !!! #
+  ### APPLY REGIONS HERE ON SPATIAL NAMING OF CDATA INSTEAD OF COUNTRIES ###
+  ### regionscode needs to be checked and provided as argument to ensure
+  ### that caching is not mixing up aggregations with different regional
+  ### mapping.
+  map <- toolMappingFile("regional",getConfig("regionmapping"),readcsv = TRUE)
+  if(regionscode!=regionscode(map)) stop("Provided regionscode does not match regionscode of regional mapping!")
+  getCells(cdata) <- spatial_header(map)
+
 
   if(mode=="n") {
     spam <- mag_kmeans(cdata,ncluster,weight,seed=seed)
