@@ -1,6 +1,6 @@
-#' @title calcClusterMapping
+#' @title calcCluster
 #' @description This function calculates the aggregation mapping for a given cluster methodology
-#' @param type aggregation type, which is a combination of a single letter, indicating the cluster methodology, and a number,
+#' @param ctype aggregation clustering type, which is a combination of a single letter, indicating the cluster methodology, and a number,
 #' indicating the number of resulting clusters. Available methodologies are hierarchical clustering (h), normalized k-means clustering
 #' (n) and combined hierarchical/normalized k-means clustering (c). In the latter hierarchical clustering is used to determine the
 #' cluster distribution among regions whereas normalized k-means is used for the clustering within a region.
@@ -16,48 +16,33 @@
 #' @author Jan Philipp Dietrich
 #'
 #' @examples
-#' \dontrun{ calcOutput("ClusterMapping", type="c200", aggregate = FALSE) }
-#' @importFrom luscale mag_kmeans mag_hierarchical
-#' @importFrom madrat toolMappingFile regionscode
-#' @importFrom moinput spatial_header
+#' \dontrun{ calcOutput("Cluster", type="c200", aggregate = FALSE) }
 
-calcClusterMapping <- function(type, regionscode=madrat::regionscode(), seed=42, weight=NULL){
+calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weight=NULL){
 
-  mode <- substr(lr,0,1)
-  ncluster <- as.integer(substring(lr,2))
-
-  cdata <- calcOutput("ClusterBase", aggregate=FALSE)
-
-  ### APPLY REGIONS HERE ON SPATIAL NAMING OF CDATA INSTEAD OF COUNTRIES ###
-  ### regionscode needs to be checked and provided as argument to ensure
-  ### that caching is not mixing up aggregations with different regional
-  ### mapping.
-  map <- toolMappingFile("regional",getConfig("regionmapping"),readcsv = TRUE)
-  if(regionscode!=regionscode(map)) stop("Provided regionscode does not match regionscode of regional mapping!")
-  getCells(cdata) <- spatial_header(map)
-
+  mode <- substr(ctype,0,1)
+  ncluster <- as.integer(substring(ctype,2))
 
   if(mode=="n") {
-    spam <- mag_kmeans(cdata,ncluster,weight,seed=seed)
+    mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster, weight=weight,
+                          seed=seed, aggregate=FALSE)
   } else if(mode=="h" | mode=="w" | mode=="s") {
-    # NEED TO FIND A WAY TO GET RID OF IFOLDER AND TO STORE CLUSTER TREE VIA MADRAT INSTEAD
-    spam <- mag_hierarchical(cdata,ncluster,ifolder,mode,weight)
+    mapping <- calcOutput("ClusterHierarchical", regionscode=regionscode, ncluster=ncluster,
+                          mode=mode, weight=weight, aggregate=FALSE)
   } else if(mode=="c"){
-    calcCPR <- function(spam, cell2reg) {
-      reg <- unique(cell2reg)
-      cluster2reg <- as.factor(spam%*%as.numeric(cell2reg)/rowSums(spam))
-      levels(cluster2reg) <- levels(cell2reg)
-      cpr <- t(rbind(table(cell2reg),table(cluster2reg)))
-      dimnames(cpr)[[2]] <- c("cells","clusters")
-      return(cpr)
+    calcCPR <- function(x) {
+      clusters <- table(sub("\\..*$","",unique(sub("\\..*\\.",".",x))))
+      cells <- table(sub("\\..*$","",x))
+      return(cbind(cells,clusters))
     }
-    tmpspam <- mag_hierarchical(cdata,ncluster,ifolder,mode="h",weight)
-    cell2reg <- as.factor(sub("\\..*$","",dimnames(cdata)[[1]]))
-    spam <- mag_kmeans(cdata,cpr=calcCPR(tmpspam,cell2reg),seed=seed)
+    tmpmap  <- calcOutput("ClusterHierarchical", regionscode=regionscode, ncluster=ncluster,
+                          mode="h", weight=weight, aggregate=FALSE)
+    mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster,
+                          weight=weight, cpr=calcCPR(getCells(tmpmap)), seed=seed, aggregate=FALSE)
   } else {
     stop("Unkown clustering mode ",mode,"!")
   }
-  wkey <- ifelse(is.null(weight), "", gsub(".","",paste0("_",names(weight),weight,collapse=""),fixed=TRUE))
+  #wkey <- ifelse(is.null(weight), "", gsub(".","",paste0("_",names(weight),weight,collapse=""),fixed=TRUE))
 
   # !!! HOW TO FORWARD NAME INFORMATION? !!! #
   #write.spam(spam,path(ofolder,paste(hr,"-to-",lr,wkey,"_sum.spam",sep="")))
@@ -66,7 +51,7 @@ calcClusterMapping <- function(type, regionscode=madrat::regionscode(), seed=42,
   # !!! IN WHICH FORMAT SHOULD THE DATA BE RETURNED? !!! #
 
   return(list(
-    x=spam,
+    x=mapping,
     weight=NULL,
     unit="1",
     description="Mapping between cells and cluster",

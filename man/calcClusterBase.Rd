@@ -9,12 +9,6 @@ calcClusterBase(years2use = 1995)
 \arguments{
 \item{years2use}{A vector with years with should be taken into account for
 the clustering}
-
-\item{spatial_header}{A vector of the form c("REG.1","REG.2") (region name,
-cell number) with entries for each spatial entity of the MAgPIE input files
-which should be used to replace the names given in the inputs (required for
-flexible region aggregation as here region names might change.). If set to
-NULL the original information is used.}
 }
 \value{
 A matrix containing the data
@@ -24,7 +18,7 @@ Reads a series of MAgPIE files and combines them to a matrix
 which is then used for calculating a clustering.
 }
 \seealso{
-\code{\link{calcClusterMapping}}
+\code{\link{calcCluster}}
 }
 \author{
 Jan Philipp Dietrich
