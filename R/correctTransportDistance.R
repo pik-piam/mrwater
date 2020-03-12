@@ -1,10 +1,10 @@
 #' @title correctTransportDistance
-#' @description Read transport distance file (no source information available)
+#' @description Read transport distance file
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #' @param x magpie object provided by the read function
-#' @author Kristine Karstens
+#' @author David Chen
 #' @seealso
-#'   \code{\link{readDams}}
+#'   \code{\link{readTransportDistance}}
 #' @examples
 #'
 #' \dontrun{

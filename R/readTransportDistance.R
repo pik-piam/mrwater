@@ -1,5 +1,5 @@
 #' @title readTransportDistance
-#' @description Read transport distance (no source information available)
+#' @description Read transport distance
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #' @author David Chen
 #' @examples

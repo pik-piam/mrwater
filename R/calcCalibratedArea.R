@@ -1,0 +1,26 @@
+#' @title calcCalibratedArea
+#' @description Function extracts calibrated area
+#'
+#' @return magpie object in cellular resolution
+#' @author David Chen
+#'
+#' @examples
+#' \dontrun{ calcOutput("CalibratedArea", aggregate = FALSE) }
+#'
+#' @import madrat
+#' @import magclass
+#' @import moinput
+#' @importFrom magpiesets findset
+#'
+
+calcCalibratedArea <-function(x){
+
+  x <- readSource("CalibratedArea", convert="onlycorrect")
+
+  return(list(
+    x=x,
+    weight=NULL,
+    unit="Mha (?)",
+    description="",
+    isocountries=FALSE))
+}
