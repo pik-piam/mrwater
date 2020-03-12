@@ -63,7 +63,7 @@ fullCellularMAGPIE <- function(rev=0.1) {
     ##### AGGREGATION ######
 
     # create info file
-    writeInfo <- function(file,lpjml_data, rev) {
+    writeInfo <- function(file,lpjml_data, res_high, res_out, rev) {
       functioncall <- paste(deparse(sys.call(-1)), collapse = "")
 
       map <- toolMappingFile("regional", getConfig("regionmapping"),

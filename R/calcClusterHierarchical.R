@@ -22,7 +22,7 @@
 #' @author Jan Philipp Dietrich
 #' @importFrom magclass getCells ncells getRegions
 #' @importFrom stats hclust cutree
-#' @seealso \code{\link{toolCluster}}, \code{\link{calcClusterKMeans}}
+#' @seealso \code{\link{calcCluster}}, \code{\link{calcClusterKMeans}}
 #' @export
 calcClusterHierarchical <- function(regionscode, ncluster, mode="h", weight=NULL) {
 

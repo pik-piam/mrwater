@@ -20,8 +20,8 @@
 
 calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weight=NULL){
 
-  mode <- substr(type,0,1)
-  ncluster <- as.integer(substring(type,2))
+  mode <- substr(ctype,0,1)
+  ncluster <- as.integer(substring(ctype,2))
 
   if(mode=="n") {
     mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster, weight=weight,
@@ -30,15 +30,6 @@ calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weigh
     mapping <- calcOutput("ClusterHierarchical", regionscode=regionscode, ncluster=ncluster,
                           mode=mode, weight=weight, aggregate=FALSE)
   } else if(mode=="c"){
-    mapping <- calcOutput("ClusterCombined", ...)
-    calcCPR <- function(spam, cell2reg) {
-      reg <- unique(cell2reg)
-      cluster2reg <- as.factor(spam%*%as.numeric(cell2reg)/rowSums(spam))
-      levels(cluster2reg) <- levels(cell2reg)
-      cpr <- t(rbind(table(cell2reg),table(cluster2reg)))
-      dimnames(cpr)[[2]] <- c("cells","clusters")
-      return(cpr)
-    }
     calcCPR <- function(x) {
       clusters <- table(sub("\\..*$","",unique(sub("\\..*\\.",".",x))))
       cells <- table(sub("\\..*$","",x))
