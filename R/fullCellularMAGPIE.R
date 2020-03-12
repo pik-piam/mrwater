@@ -24,6 +24,11 @@ fullCellularMAGPIE <- function(rev=0.1) {
     mag_years <- findset("time")
     short_years <- findset("t_all")
 
+
+    map <- calcOutput("Cluster", ctype=res_out, weight=NULL, aggregate=FALSE)
+    toolStoreMapping(map,"clustermapping.csv",error.existing = FALSE)
+    setConfig(regionmapping = "clustermapping.csv")
+
     # 09 drivers
     ### gridded pop?
 
