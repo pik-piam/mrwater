@@ -6,6 +6,9 @@
 \usage{
 calcIrrigation(years = seq(1995, 2095, by = 5))
 }
+\arguments{
+\item{years}{years to be returned}
+}
 \value{
 magpie object in cellular resolution
 }
