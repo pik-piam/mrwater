@@ -46,6 +46,8 @@ fullCellularMAGPIE <- function(rev=0.1) {
     calcOutput("AreaEquippedForIrrigation", aggregate=FALSE, cellular=TRUE, years=mag_years_past_short, round=6, file="avl_irrig_luh_t_0.5.mz")
     # WATER!
 
+    ## this one needed?
+    calcOutput("Avl_irrig", aggregate=FALSE, cellular=TRUE, round=6, file="avl_irrig_0.5.mz")
 
     #50 nitrogen
     calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, round=6, file="f50_AtmosphericDepositionRates_0.5.mz")
@@ -57,6 +59,10 @@ fullCellularMAGPIE <- function(rev=0.1) {
     #59 som
     calcOutput("SOMinitialsiationPools", aggregate = FALSE, round=6, file="f59_som_initialisation_pools_0.5.mz")
 
+    ## OTHER ##
+
+    calcOutput("CalibratedArea", aggregate=FALSE, round=6, file="calibrated_area_0.5.mz" )
+    calcOutput("ProtectArea", aggregate=FALSE, round=6, file="protect_area_0.5.mz" )
 
 
 

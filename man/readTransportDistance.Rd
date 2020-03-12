@@ -10,7 +10,7 @@ readTransportDistance()
 List of magpie objects with results on cellular level, weight, unit and description.
 }
 \description{
-Read transport distance (no source information available)
+Read transport distance
 }
 \examples{
 

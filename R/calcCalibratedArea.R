@@ -13,14 +13,14 @@
 #' @importFrom magpiesets findset
 #'
 
-calcCalibratedArea <-function(x){
+calcCalibratedArea <-function(){
 
   x <- readSource("CalibratedArea", convert="onlycorrect")
 
   return(list(
     x=x,
     weight=NULL,
-    unit="Mha (?)",
+    unit="Mha",
     description="",
     isocountries=FALSE))
 }

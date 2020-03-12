@@ -13,7 +13,7 @@ correctTransportDistance(x)
 List of magpie objects with results on cellular level, weight, unit and description.
 }
 \description{
-Read transport distance file (no source information available)
+Read transport distance file
 }
 \examples{
 
@@ -23,8 +23,8 @@ Read transport distance file (no source information available)
 
 }
 \seealso{
-\code{\link{readDams}}
+\code{\link{readTransportDistance}}
 }
 \author{
-Kristine Karstens
+David Chen
 }
