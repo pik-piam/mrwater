@@ -13,7 +13,7 @@
 #' @importFrom magpiesets findset
 #'
 
-calcTransportDistance <-function(x){
+calcTransportDistance <-function(){
 
 x <- readSource("TransportDistance", convert="onlycorrect")
 

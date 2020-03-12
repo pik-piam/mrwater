@@ -4,7 +4,7 @@
 \alias{calcTransportDistance}
 \title{calcTransportDistance}
 \usage{
-calcTransportDistance(x)
+calcTransportDistance()
 }
 \value{
 magpie object in cellular resolution

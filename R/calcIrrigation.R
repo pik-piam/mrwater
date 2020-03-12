@@ -1,6 +1,6 @@
 #' @title calcIrrigation
 #' @description This function extracts irrigation water (airrig: water applied additionally to rainfall) from LPJmL to MAgPIE
-#'
+#' @param years years to be returned
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Abhijeet Mishra
 #'
