@@ -26,7 +26,8 @@ toolApplyRegionNames <- function(cdata,regionscode){
   ### mapping.
   map <- toolMappingFile("regional",getConfig("regionmapping"),readcsv = TRUE)
   if(regionscode!=regionscode(map)) stop("Provided regionscode does not match regionscode of regional mapping!")
-  getCells(cdata) <- spatial_header(map)
+  getCells(cdata) <- paste(sub("\\..*$", "", dimnames(cdata)[[1]]), spatial_header(map), sep=".")
+  getSets(cdata,fulldim=FALSE)[1] <- "country.region.cell"
   return(cdata)
 }
 

@@ -32,7 +32,7 @@ calcClusterHierarchical <- function(regionscode, ncluster, mode="h", weight=NULL
   clusters <- cutree(fullfit,k=ncluster)
   #sort clusters by regions
   cl <- NULL
-  regions <- unique(sub("\\..*$","",fullfit$labels))
+  regions <- unique(sub("^.*\\.(.*)\\..*$","\\1",fullfit$labels))
   for(r in regions) {
     cl <- c(cl,unique(clusters[grep(paste0(r,"."),names(clusters),fixed=TRUE)]))
   }
@@ -41,7 +41,7 @@ calcClusterHierarchical <- function(regionscode, ncluster, mode="h", weight=NULL
   names(tmp) <- names(clusters)
   clusters <- tmp
   out <- new.magpie(paste(names(clusters),clusters,sep="."),fill=1)
-  getSets(out,fulldim = FALSE)[1] <- "region.cell.cluster"
+  getSets(out,fulldim = FALSE)[1] <- "country.region.cell.cluster"
   return(list(
     x = out,
     weight = NULL,

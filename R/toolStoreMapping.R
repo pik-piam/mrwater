@@ -14,7 +14,7 @@
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{calcOutput}}, \code{\link{toolConvertMapping}}
 #' @importFrom tools file_ext
-#' @importFrom utils write.csv
+#' @importFrom utils write.table
 #' @export
 #'
 toolStoreMapping <- function(map, name, type=NULL, error.existing=TRUE) {
@@ -36,7 +36,7 @@ toolStoreMapping <- function(map, name, type=NULL, error.existing=TRUE) {
 
   filetype <- tolower(file_ext(fname))
   if(filetype=="csv") {
-    write.csv(map, fname)
+    write.table(map, fname, sep=";", quote=FALSE)
   } else {
     stop("Unsupported filetype \"", filetype,"\"")
   }

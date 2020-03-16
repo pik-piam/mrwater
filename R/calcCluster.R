@@ -38,7 +38,8 @@ calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weigh
     tmpmap  <- calcOutput("ClusterHierarchical", regionscode=regionscode, ncluster=ncluster,
                           mode="h", weight=weight, aggregate=FALSE)
     mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster,
-                          weight=weight, cpr=calcCPR(getCells(tmpmap)), seed=seed, aggregate=FALSE)
+                          weight=weight, cpr=calcCPR(sub("^[^\\.]*\\.","",getCells(tmpmap))),
+                          seed=seed, aggregate=FALSE)
   } else {
     stop("Unkown clustering mode ",mode,"!")
   }
@@ -47,8 +48,6 @@ calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weigh
   # !!! HOW TO FORWARD NAME INFORMATION? !!! #
   #write.spam(spam,path(ofolder,paste(hr,"-to-",lr,wkey,"_sum.spam",sep="")))
   #saveRDS(spam2mapping(spam,rownames(cdata)), path(ofolder,paste(hr,"-to-",lr,wkey,"_mapping.rds",sep="")))
-
-  # !!! IN WHICH FORMAT SHOULD THE DATA BE RETURNED? !!! #
 
   return(list(
     x=mapping,

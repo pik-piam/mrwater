@@ -26,7 +26,7 @@ fullCellularMAGPIE <- function(rev=0.1) {
 
 
     map <- calcOutput("Cluster", ctype=res_out, weight=NULL, aggregate=FALSE)
-    toolStoreMapping(map,"clustermapping.csv",error.existing = FALSE)
+    toolStoreMapping(map,"clustermapping.csv",type="regional",error.existing = FALSE)
     setConfig(regionmapping = "clustermapping.csv")
 
     # 09 drivers

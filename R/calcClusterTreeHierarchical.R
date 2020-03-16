@@ -33,9 +33,9 @@ calcClusterTreeHierarchical <- function(regionscode, mode="h", weight=NULL) {
   names(fullfit$order) <- fullfit$labels
   nrow <- 0
   nrows <- NULL
-  weight <- calcw(weight,getRegions(cdata))
-  for(r in getRegions(cdata)) {
-    cells <- grep(r,dimnames(cdata)[[1]])
+  weight <- calcw(weight,getItems(cdata,"region"))
+  for(r in getItems(cdata,"region")) {
+    cells <- grep(paste0(".",r,"."),dimnames(cdata)[[1]],fixed = TRUE)
     dist <- dist(cdata[cells,], method = "euclidean")*weight[r]
     if(mode=="h") {
       fit <- hclust(dist, method="complete")

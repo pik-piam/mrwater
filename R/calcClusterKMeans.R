@@ -22,12 +22,12 @@ calcClusterKMeans <- function(regionscode, ncluster, weight=NULL, cpr=NULL, seed
 
   cdata <- toolApplyRegionNames(calcOutput("ClusterBase", aggregate=FALSE),regionscode)
 
-  if(is.null(cpr)) cpr <- toolClusterPerRegion(getCells(cdata),ncluster,weight)
+  if(is.null(cpr)) cpr <- toolClusterPerRegion(sub("^[^\\.]*\\.","",getCells(cdata)),ncluster,weight)
 
   cdata <- as.array(cdata)[,,]
 
   out <- new.magpie(dimnames(cdata)[[1]],fill=1)
-  getSets(out,fulldim = FALSE)[1] <- "region.cell.cluster"
+  getSets(out,fulldim = FALSE)[1] <- "country.region.cell.cluster"
   ccount <- 0
   set.seed(seed)
   for(r in dimnames(cpr)[[1]]) {
