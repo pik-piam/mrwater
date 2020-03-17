@@ -27,11 +27,9 @@ toolStoreMapping <- function(map, name, type=NULL, error.existing=TRUE) {
   fname <- gsub("/+","/",fname)
 
   if(is.magpie(map)) {
-    map <- data.frame(region.cell=sub("\\.[^\\.]*$","",getCells(map)),
-                      region.cluster=sub("\\..*\\.",".",getCells(map)))
-  }
-  if(is.data.frame(map)) {
-
+    pattern <- "^(.*)\\.(.*)\\.(.*)\\.(.*)$"
+    map <- data.frame(country.cell=sub(pattern,"\\1.\\3",getCells(map)),
+                      region.cluster=sub(pattern,"\\2.\\4",getCells(map)))
   } else stop("Cannot handle this mapping format!")
 
   filetype <- tolower(file_ext(fname))
