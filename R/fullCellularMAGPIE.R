@@ -4,9 +4,13 @@
 #' MAgPIE model.
 #'
 #' @param rev data revision which should be used as input (positive numeric).
+#' @param ctype aggregation clustering type, which is a combination of a single letter, indicating the cluster methodology, and a number,
+#' indicating the number of resulting clusters. Available methodologies are hierarchical clustering (h), normalized k-means clustering
+#' (n) and combined hierarchical/normalized k-means clustering (c). In the latter hierarchical clustering is used to determine the
+#' cluster distribution among regions whereas normalized k-means is used for the clustering within a region.
 #' \code{\link{setConfig}} (e.g. for setting the mainfolder if not already set
 #' properly).
-#' @author Kristine Karstens
+#' @author Kristine Karstens, Jan Philipp Dietrich
 #' @seealso
 #' \code{\link{readSource}},\code{\link{getCalculations}},\code{\link{calcOutput}},\code{\link{setConfig}}
 #' @examples
@@ -15,17 +19,14 @@
 #' fullMAgPIE(revision=12, mainfolder="pathtowhereallfilesarestored")
 #' }
 
-fullCellularMAGPIE <- function(rev=0.1) {
-
-    res_out <- "c200"
+fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 
     mag_years_past_short <- c("y1995","y2000","y2005","y2010")
     mag_years_past_long  <- c("y1995","y2000","y2005","y2010","y2015")
     mag_years <- findset("time")
     short_years <- findset("t_all")
 
-
-    map <- calcOutput("Cluster", ctype=res_out, weight=NULL, aggregate=FALSE)
+    map <- calcOutput("Cluster", ctype=ctype, weight=NULL, aggregate=FALSE)
     toolStoreMapping(map,"clustermapping.csv",type="regional",error.existing = FALSE)
     setConfig(regionmapping = "clustermapping.csv")
 
