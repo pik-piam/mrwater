@@ -39,15 +39,20 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     #10 land
     calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_long, round=6, file="avl_land_t_0.5.mz")
     calcOutput("SeaLevelRise", aggregate=FALSE, round=6, file="f10_SeaLevelRise_0.5.mz")
-
+    calcOutput("Avl_Land_Si", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
     #30 crop
     calcOutput("Croparea", aggregate=FALSE, physical=TRUE, cellular=TRUE, irrigation=TRUE, round=6, file="f30_croparea_w_initialisation_0.5.mz")
+
+    #32 forestry
+    calcOutput("Aff_noboreal",aggregate=FALSE,round=6, file="aff_noboreal_0.5.mz")
+    calcOutput("Aff_onlytropical",aggregate=FALSE,round=6, file="aff_onlytropical_0.5.mz")
+    calcOutput("Aff_unrestricted",aggregate=FALSE,round=6, file="aff_unrestricted_0.5.mz")
 
     #34
     calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, file="f34_UrbanLand_0.5.mz")
 
     #40
-    calcOutput("TransportDistance", aggregate=FALSE, round=6, file="transport_distance_0.5.mz" )
+    calcOutput("TransportDistance", aggregate=FALSE, round=6, file="transport_distance_0.5.mz")
     #41 water
     calcOutput("AreaEquippedForIrrigation", aggregate=FALSE, cellular=TRUE, years=mag_years_past_short, round=6, file="avl_irrig_luh_t_0.5.mz")
     # WATER!
