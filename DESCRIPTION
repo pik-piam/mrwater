@@ -11,9 +11,10 @@ Description: Provides functions for MAgPIE country and cellular input data gener
 Depends:
     R(>= 2.10.0),
     magclass(>= 3.17),
-    madrat(>= 1.30),
+    madrat(>= 1.72),
     moinput (>= 9.316.0)
 Imports:
+    digest,
     magpiesets,
     luscale
 License: LGPL-3 | file LICENSE
