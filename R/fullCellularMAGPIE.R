@@ -48,6 +48,8 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("AfforestationMask",subtype="onlytropical",aggregate=FALSE,round=6, file="aff_onlytropical_0.5.mz")
     calcOutput("AfforestationMask",subtype="unrestricted",aggregate=FALSE,round=6, file="aff_unrestricted_0.5.mz")
 
+    calcOutput("NpiNdcAdAolcPol", aggregate=FALSE, round=6, file="npi_ndc_ad_aolc_pol_0.5.mz")
+
     #34
     calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, file="f34_UrbanLand_0.5.mz")
 
@@ -74,6 +76,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 
     calcOutput("CalibratedArea", aggregate=FALSE, round=6, file="calibrated_area_0.5.mz" )
     calcOutput("ProtectArea", aggregate=FALSE, round=6, file="protect_area_0.5.mz" )
+    calcOutput("Luh2SideLayers", aggregate=FALSE, round=6, file="luh2_side_layers_0.5.mz")
 
 
 
