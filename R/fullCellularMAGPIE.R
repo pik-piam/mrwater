@@ -49,6 +49,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("AfforestationMask",subtype="unrestricted",aggregate=FALSE,round=6, file="aff_unrestricted_0.5.mz")
 
     calcOutput("NpiNdcAdAolcPol", aggregate=FALSE, round=6, file="npi_ndc_ad_aolc_pol_0.5.mz")
+    calcOutput("NpiNdcAffPol", aggregate=FALSE, round=6, file="npi_ndc_aff_pol_0.5.mz")
 
     #34
     calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, file="f34_UrbanLand_0.5.mz")
