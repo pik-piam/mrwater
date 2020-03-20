@@ -5,13 +5,13 @@
 #' @examples
 #'
 #' \dontrun{
-#'   readSource("Avl_Land_Si", convert="onlycorrect")
+#'   readSource("AvlLandSi", convert="onlycorrect")
 #' }
 #'
 #' @import madrat
 #' @import magclass
 
-readAvl_Land_Si <- function(){
+readAvlLandSi <- function(){
 
   x <- read.magpie("avl_land_si_0.5.mz")
 

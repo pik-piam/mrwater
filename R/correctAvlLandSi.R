@@ -1,20 +1,20 @@
-#' @title correctAvl_irrig
-#' @description Read available irrigation file
+#' @title correctAvlLandSi
+#' @description Read Available Land Si
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #' @param x magpie object provided by the read function
 #' @author David Chen
 #' @seealso
-#'   \code{\link{readAvl_irrig}}
+#'   \code{\link{readAvlLandSi}}
 #' @examples
 #'
 #' \dontrun{
-#'   readSource("Avl_irrig", convert="onlycorrect")
+#'   readSource("AvlLandSi", convert="onlycorrect")
 #' }
 #'
 #' @import madrat
 #' @import magclass
 
-correctAvl_irrig <- function(x){
+correctAvlLandSi <- function(x){
 
   x <- toolConditionalReplace(x, conditions = c("is.na()","<0"), replaceby = 0)
   x <- toolCell2isoCell(x)

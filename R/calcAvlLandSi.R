@@ -1,10 +1,10 @@
-#' @title calcAvl_Land_Si
+#' @title calcAvlLandSi
 #' @description Extracts si0 and nsi0 areas based on Ramankutty dataset
 #' @return magpie object in cellular resolution
 #' @author David Chen
 #'
 #' @examples
-#' \dontrun{ calcOutput("Avl_Land_Si", aggregate = FALSE) }
+#' \dontrun{ calcOutput("AvlLandSi", aggregate = FALSE) }
 #'
 #' @import madrat
 #' @import magclass
@@ -12,9 +12,9 @@
 #' @importFrom magpiesets findset
 #'
 
-calcAvl_Land_Si <-function(){
+calcAvlLandSi <-function(){
 
-  x <- readSource("Avl_Land_Si", convert="onlycorrect")
+  x <- readSource("AvlLandSi", convert="onlycorrect")
 
   return(list(
     x=x,

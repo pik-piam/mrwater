@@ -5,7 +5,7 @@
 #' @author David Chen
 #'
 #' @examples
-#' \dontrun{ calcOutput("Avl_irrig", aggregate = FALSE) }
+#' \dontrun{ calcOutput("AvlIrrig", aggregate = FALSE) }
 #'
 #' @import madrat
 #' @import magclass
@@ -13,9 +13,9 @@
 #' @importFrom magpiesets findset
 #'
 
-calcAvl_irrig <-function(){
+calcAvlIrrig <-function(){
 
-  x <- readSource("Avl_irrig", convert="onlycorrect")
+  x <- readSource("AvlIrrig", convert="onlycorrect")
 
   return(list(
     x=x,

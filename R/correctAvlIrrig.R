@@ -1,20 +1,20 @@
-#' @title correctAff_unrestricted
-#' @description correct Afforestation no boreal
+#' @title correctAvlIrrig
+#' @description Read available irrigation file
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #' @param x magpie object provided by the read function
 #' @author David Chen
 #' @seealso
-#'   \code{\link{readAff_unrestricted}}
+#'   \code{\link{readAvlIrrig}}
 #' @examples
 #'
 #' \dontrun{
-#'   readSource("Aff_unrestricted", convert="onlycorrect")
+#'   readSource("Avlirrig", convert="onlycorrect")
 #' }
 #'
 #' @import madrat
 #' @import magclass
 
-correctAff_unrestricted <- function(x){
+correctAvlIrrig <- function(x){
 
   x <- toolConditionalReplace(x, conditions = c("is.na()","<0"), replaceby = 0)
   x <- toolCell2isoCell(x)

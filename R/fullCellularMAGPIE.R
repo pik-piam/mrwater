@@ -44,9 +44,9 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("Croparea", aggregate=FALSE, physical=TRUE, cellular=TRUE, irrigation=TRUE, round=6, file="f30_croparea_w_initialisation_0.5.mz")
 
     #32 forestry
-    calcOutput("Aff_noboreal",aggregate=FALSE,round=6, file="aff_noboreal_0.5.mz")
-    calcOutput("Aff_onlytropical",aggregate=FALSE,round=6, file="aff_onlytropical_0.5.mz")
-    calcOutput("Aff_unrestricted",aggregate=FALSE,round=6, file="aff_unrestricted_0.5.mz")
+    calcOutput("AfforestationMask",subtype="noboreal",aggregate=FALSE,round=6, file="aff_noboreal_0.5.mz")
+    calcOutput("AfforestationMask",subtype="onlytropical",aggregate=FALSE,round=6, file="aff_onlytropical_0.5.mz")
+    calcOutput("AfforestationMask",subtype="unrestricted",aggregate=FALSE,round=6, file="aff_unrestricted_0.5.mz")
 
     #34
     calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, file="f34_UrbanLand_0.5.mz")

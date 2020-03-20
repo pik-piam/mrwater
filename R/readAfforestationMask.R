@@ -5,15 +5,24 @@
 #' @examples
 #'
 #' \dontrun{
-#'   readSource("Aff_noboreal", convert="onlycorrect")
+#'   readSource("AfforestationMask", subtype="noboreal", convert="onlycorrect")
 #' }
 #'
 #' @import madrat
 #' @import magclass
 
-readAff_noboreal <- function(){
+readAfforestationMask <- function(subtype){
 
+  if(subtype=="noboreal"){
   x <- read.magpie("aff_noboreal_0.5.mz")
+}
+  if(subtype=="onlytropical"){
+    x <- read.magpie("aff_onlytropical_0.5.mz")
+    }
+
+  if(subtype=="unrestricted"){
+    x <- read.magpie("aff_unrestricted_0.5.mz")
+  }
 
   return(x)
 }
