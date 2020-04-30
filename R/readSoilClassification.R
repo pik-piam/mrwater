@@ -13,7 +13,7 @@
 #'
 #' @import madrat
 #' @import magclass
-#' @import dplyr
+#' @importFrom dplyr left_join
 #' @importFrom lucode path
 
 readSoilClassification <-
@@ -22,56 +22,61 @@ readSoilClassification <-
       subtype     <- strsplit(gsub(":", "/" , subtype), split = "\\.")
       folder      <- unlist(subtype)[1]
       subtype     <- unlist(subtype)[2]
-      
+
     } else {
-      
-      stop("Subtype did not define either: soil clasification source or file. 
-            Please check the defintion of your subtype parameter.")
-      
+      stop(
+        "Subtype did not define either: soil clasification source or file.
+            Please check the defintion of your subtype parameter."
+      )
+
     }
-    
+
     if (exists(path(folder))) {
       files_list <- list.files(path(folder))
-      files <- c(soil = files_list[grep("soil", files_list)],
-                 grid = files_list[grep("grid", files_list)])
+      files <- c(soil = files_list[grep("soil", files_list)])
     } else {
-      stop(paste("Path", path(folder),
-          "does not exist. Check the defition of your 
-          subtype or the folder structure you are trying to access."))
+      stop(
+        paste(
+          "Path",
+          path(folder),
+          "does not exist. Check the defition of your
+          subtype or the folder structure you are trying to access."
+        )
+      )
     }
-    
+
     file_name <- toolSubtypeSelect(subtype, files)
-    
-    
+
+
     if (subtype %in% "soil") {
-      
-      grid = readRDS(path(folder, files["grid"]))
-      cell_mapping <- toolGetMapping(name = "CountrytoCellMApping.csv", type = "cell")
-      
       sk <- file(path(folder, file_name), "rb")
-      y  <- readBin(sk, integer(), n = 67420, size = 1)
+      y <- readBin(sk, integer(), n = 67460, size = 1)
       close(sk)
-      
-      years <- seq(1900,2099,1)
-      
-      x  <-
-        array(NA,
-              dim = c(67420, length(years)),
-              dimnames = list(1:67420, paste0("y", years)))
-      for (i in paste0("y", years)) {
-        x[, i] <- y
+      y = y[which(magclassdata$grid_67420_59199 == 1)]
+      y = y[magclassdata$cellbelongings$LPJ.Index]
+      df.y = data.frame("soil" = y)
+
+      soilpar = read.csv("soilpar.csv")
+      y = left_join(df.y, soilpar, by = "soil")
+
+      years <- seq(1995, 2099, 1)
+
+      y = as.matrix(y)
+      x <-
+        array(
+          NaN,
+          dim = c(59199, length(years), dim(soilpar)[2]),
+          dimnames = list(1:59199, years, colnames(soilpar))
+        )
+      for (i in 1:length(years)) {
+        x[, i,] <- y
       }
-      
-      x <- cbind(grid, x)
-      x <- left_join(cell_mapping, x, by = c("lon", "lat"))
-      x <- as.magpie(x[,-c(1, 3, 4, 5, 6)])
-      x <- collapseNames(as.magpie(x))
+      x <-  collapseNames(as.magpie(x, spatial = 1))
       getNames(x) <- subtype
-      
+
     } else {
       stop(paste0("subtype ", subtype, " is not existing"))
     }
-    
     return(x)
-    
+
   }
