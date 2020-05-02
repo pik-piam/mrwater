@@ -9,7 +9,6 @@
 #'
 #' @import madrat
 #' @import magclass
-#' @import moinput
 #' @importFrom magpiesets findset
 #'
 

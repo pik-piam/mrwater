@@ -9,7 +9,6 @@
 #'
 #' @import madrat
 #' @import magclass
-#' @import moinput
 #' @importFrom magpiesets findset
 
 calcIrrigation <- function(years = seq(1995,2095,by=5)){

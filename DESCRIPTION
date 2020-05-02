@@ -12,17 +12,20 @@ Depends:
     R(>= 2.10.0),
     magclass(>= 3.17),
     madrat(>= 1.72),
-    moinput (>= 9.316.0)
+    mrcommons,
+    mrland
 Imports:
     digest,
     magpiesets,
-    luscale
+    luscale,
+    ncdf4,
+    raster,
+    mstools
 License: LGPL-3 | file LICENSE
 LazyData: no
 Encoding: UTF-8
 RoxygenNote: 7.1.0
 ValidationKey: 2034297
 Suggests: knitr,
-          rmarkdown,
-	        ggplot2
+          rmarkdown
 VignetteBuilder: knitr
