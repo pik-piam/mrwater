@@ -56,7 +56,7 @@ readSoilClassification <-
       y = y[magclassdata$cellbelongings$LPJ.Index]
       df.y = data.frame("soil" = y)
 
-      soilpar = read.csv("soilpar.csv")
+      soilpar = read.csv(path(folder,"soilpar.csv"))
       y = left_join(df.y, soilpar, by = "soil")
 
       years <- seq(1995, 2099, 1)

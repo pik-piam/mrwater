@@ -13,6 +13,7 @@
 #'
 #' @import madrat
 #' @importFrom lucode path
+#' @export
 
 readCO2Atmosphere <-
   function(subtype = "CO2Atmosphere:Elevated.CO2") {
