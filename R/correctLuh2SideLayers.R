@@ -11,8 +11,6 @@
 #'   readSource("Luh2SideLayers", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 correctLuh2SideLayers <- function(x){
 

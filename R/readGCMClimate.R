@@ -11,12 +11,9 @@
 #' readSource("GCMClimate", subtype="HadGEM2:rcp85.temperature", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
-#' @import dplyr
 #' @importFrom lpjclass read.LPJ_input
-#' @importFrom lucode path
-#' @export readGCMClimate
+#' @importFrom madrat toolSubtypeSelect
+#' @export
 
 readGCMClimate <-
   function(subtype = "GCMClimate:rcp85:HadGEM2.temperature") {
@@ -31,8 +28,8 @@ readGCMClimate <-
 
     }
 
-    if (exists(path(folder))) {
-      files_list <- list.files(path(folder))
+    if (exists(folder)) {
+      files_list <- list.files(folder)
       files <-
         c(temperature           = files_list[grep("tas", files_list)],
           precipitation         = files_list[grep("pr", files_list)],
@@ -41,7 +38,7 @@ readGCMClimate <-
           wetdays               = files_list[grep("wet", files_list)])
     } else {
 
-      stop(paste("Path", path(folder), "does not exist. Check the defition of your subtype or the folder structure you are trying to access."))
+      stop(paste("Path", folder, "does not exist. Check the defition of your subtype or the folder structure you are trying to access."))
 
     }
 
@@ -51,25 +48,18 @@ readGCMClimate <-
     years <- seq(years[1],years[2],1)
 
     if (subtype %in% c("temperature", "precipitation", "wetdays")) {
-      x <- read.LPJ_input(
-        file_name = path(folder, file_name),
-        out_years = paste0("y", years),
-        namesum = TRUE,
-        ncells = 59199
-      )
+      x <- read.LPJ_input(file_name = paste0(folder, "/", file_name),
+                          out_years = paste0("y", years),
+                          namesum = TRUE)
 
       x <- collapseNames(as.magpie(x))
       x <- x / 12
       getNames(x) <- subtype
 
     } else if (subtype %in% c("longwave_radiation", "shortwave_radiation")) {
-      x <- read.LPJ_input(
-        file_name = path(folder, file_name),
-        out_years = paste0("y", years),
-        namesum = TRUE,
-        ncells = 59199
-      )
-
+      x <- read.LPJ_input(file_name = paste0(folder, "/", file_name),
+                          out_years = paste0("y", years),
+                          namesum = TRUE)
       x <- collapseNames(as.magpie(x))
       x <- x / 365
       getNames(x) <- subtype

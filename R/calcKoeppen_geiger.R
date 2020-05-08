@@ -8,8 +8,6 @@
 #' @examples
 #' \dontrun{ calcOutput("Koeppen_geiger", aggregate = FALSE) }
 #'
-#' @import madrat
-#' @import magclass
 #' @importFrom magpiesets findset
 #'
 

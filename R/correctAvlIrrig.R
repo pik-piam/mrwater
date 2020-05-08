@@ -10,9 +10,6 @@
 #' \dontrun{
 #'   readSource("Avlirrig", convert="onlycorrect")
 #' }
-#'
-#' @import madrat
-#' @import magclass
 
 correctAvlIrrig <- function(x){
 

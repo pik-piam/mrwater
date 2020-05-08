@@ -6,6 +6,9 @@
 \usage{
 readAfforestationMask(subtype)
 }
+\arguments{
+\item{subtype}{afforestation mask sub type}
+}
 \value{
 List of magpie objects with results on cellular level, weight, unit and description.
 }

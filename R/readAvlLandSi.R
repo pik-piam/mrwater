@@ -8,9 +8,6 @@
 #'   readSource("AvlLandSi", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
-
 readAvlLandSi <- function(){
 
   x <- read.magpie("avl_land_si_0.5.mz")

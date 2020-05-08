@@ -18,7 +18,6 @@ Read calibrated area file
 \dontrun{
   readSource("CalibratedArea", convert="onlycorrect")
 }
-
 }
 \seealso{
 \code{\link{readCalibratedArea}}

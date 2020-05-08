@@ -7,8 +7,6 @@
 #' @examples
 #' \dontrun{ calcOutput("Irrigation", aggregate = FALSE) }
 #'
-#' @import madrat
-#' @import magclass
 #' @importFrom magpiesets findset
 
 calcIrrigation <- function(years = seq(1995,2095,by=5)){

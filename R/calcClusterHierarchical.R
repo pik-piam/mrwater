@@ -20,7 +20,7 @@
 #' weight < 1 less cluster than by default.
 #' @return A mapping between regions and clusters
 #' @author Jan Philipp Dietrich
-#' @importFrom magclass getCells ncells getRegions
+#' @importFrom magclass getCells ncells getRegions new.magpie getSets getSets<-
 #' @importFrom stats hclust cutree
 #' @seealso \code{\link{calcCluster}}, \code{\link{calcClusterKMeans}}
 #' @export

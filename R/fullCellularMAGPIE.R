@@ -18,6 +18,7 @@
 #' \dontrun{
 #' fullMAgPIE(revision=12, mainfolder="pathtowhereallfilesarestored")
 #' }
+#' @importFrom madrat setConfig getConfig
 
 fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 

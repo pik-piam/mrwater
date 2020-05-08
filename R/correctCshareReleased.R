@@ -11,8 +11,6 @@
 #'   readSource("CshareReleased", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 correctCshareReleased <- function(x){
 

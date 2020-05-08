@@ -20,7 +20,6 @@ Read available irrigation file
 \dontrun{
   readSource("Avlirrig", convert="onlycorrect")
 }
-
 }
 \seealso{
 \code{\link{readAvlIrrig}}

@@ -14,7 +14,6 @@ Function extracts dummy NPI/NDC policies
 }
 \examples{
 \dontrun{ calcOutput("NpiNdcAffPol", aggregate = FALSE) }
-
 }
 \author{
 Michael Windisch

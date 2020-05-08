@@ -1,8 +1,8 @@
 Package: mrMAgPIE
 Type: Package
 Title: madrat based MAgPIE Input Data Library
-Version: 1.1.1
-Date: 2020-03-06
+Version: 0.1.0
+Date: 2020-05-08
 Authors@R: c(person("Kristine", "Karstens", email = "karstens@pik-potsdam.de", role = c("aut","cre")), 
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = "aut"), 
              person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = "aut"), 
@@ -16,7 +16,9 @@ Depends:
     mrland
 Imports:
     digest,
+    dplyr,
     magpiesets,
+    lpjclass,
     luscale,
     ncdf4,
     raster,
@@ -25,7 +27,7 @@ License: LGPL-3 | file LICENSE
 LazyData: no
 Encoding: UTF-8
 RoxygenNote: 7.1.0
-ValidationKey: 2034297
+ValidationKey: 183900
 Suggests: knitr,
           rmarkdown
 VignetteBuilder: knitr

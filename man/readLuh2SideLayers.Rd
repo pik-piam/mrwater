@@ -17,7 +17,6 @@ Read LUH2 land cover data of biodiversity loss
 \dontrun{
   readSource("Luh2SideLayers", convert="onlycorrect")
 }
-
 }
 \author{
 Michael Windisch

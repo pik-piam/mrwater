@@ -11,8 +11,6 @@
 #'   readSource("Dams", convert=TRUE)
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 convertDams <- function(x){
 

@@ -20,7 +20,6 @@ Read soil classification
 \dontrun{
 readSource("SoilClassification", subtype="HWSD.soil", convert="onlycorrect")
 }
-
 }
 \seealso{
 \code{\link{readSoilClassification}}

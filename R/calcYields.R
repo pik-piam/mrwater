@@ -7,9 +7,8 @@
 #' @examples
 #' \dontrun{ calcOutput("Yields", aggregate = FALSE) }
 #'
-#' @import madrat
-#' @import magclass
 #' @importFrom magpiesets findset
+#' @importFrom magclass getYears add_columns dimSums time_interpolate
 
 calcYields <- function(){
 

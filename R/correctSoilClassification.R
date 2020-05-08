@@ -12,14 +12,11 @@
 #'   readSource("SoilClassification", subtype="HWSD.soil", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
-#' @importFrom lpjclass read.LPJ_input
 
 correctSoilClassification <- function(x, subtype){
-  
+
   x <- toolConditionalReplace(x, conditions = c("is.na()"), replaceby = 0)
   x <- toolCell2isoCell(x)
-  
+
   return(x)
 }

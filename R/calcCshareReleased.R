@@ -6,8 +6,6 @@
 #' @examples
 #' \dontrun{calcOutput("CshareReleased", aggregate = FALSE) }
 #'
-#' @import madrat
-#' @import magclass
 #' @importFrom magpiesets findset
 #'
 

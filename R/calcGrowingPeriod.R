@@ -7,9 +7,8 @@
 #'
 #' @examples
 #' \dontrun{ calcOutput("GrowingPeriod", aggregate = FALSE) }
-#'
-#' @import madrat
-#' @import magclass
+#' @importFrom madrat toolGetMapping toolAggregate
+#' @importFrom magclass collapseNames getNames new.magpie getYears dimSums
 
 calcGrowingPeriod <- function() {
 

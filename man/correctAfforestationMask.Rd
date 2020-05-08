@@ -8,6 +8,8 @@ correctAfforestationMask(x, subtype)
 }
 \arguments{
 \item{x}{magpie object provided by the read function}
+
+\item{subtype}{afforestation mask sub type}
 }
 \value{
 List of magpie objects with results on cellular level, weight, unit and description.
@@ -20,7 +22,6 @@ correct Afforestation Mask where afforestation is possible
 \dontrun{
   readSource("AfforestationMask",subtype="unrestricted", convert="onlycorrect")
 }
-
 }
 \seealso{
 \code{\link{readAfforestationMask}}

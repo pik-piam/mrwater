@@ -7,9 +7,7 @@
 #' \dontrun{
 #'   readSource("Luh2SideLayers", convert="onlycorrect")
 #' }
-#'
-#' @import madrat
-#' @import magclass
+
 
 readLuh2SideLayers <- function(){
 

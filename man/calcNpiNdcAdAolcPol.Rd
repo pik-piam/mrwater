@@ -14,7 +14,6 @@ Function extracts NPI/NDC forestry (area?)
 }
 \examples{
 \dontrun{ calcOutput("NpiNdcAdAolcPol", aggregate = FALSE) }
-
 }
 \author{
 Michael Windisch

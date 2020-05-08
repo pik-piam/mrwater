@@ -10,9 +10,8 @@
 #' \dontrun{
 #' readSource("CO2Atmosphere", subtype="Elevated.CO2", convert="onlycorrect")
 #' }
-#'
-#' @import madrat
-#' @importFrom lucode path
+#' @importFrom utils read.table
+#' @importFrom magclass getNames<-
 #' @export
 
 readCO2Atmosphere <-
@@ -29,13 +28,13 @@ readCO2Atmosphere <-
 
     }
 
-    if (exists(path(folder))) {
+    if (exists(folder)) {
 
-      files_list <- list.files(path(folder))
+      files_list <- list.files(folder)
       file_name <- files_list[grep("CO2", files_list)]
 
       } else {
-      stop(paste("Path", path(folder),
+      stop(paste("Path", folder,
                  "does not exist. Check the defition of your
           subtype or the folder structure you are trying to access."))
     }
@@ -45,7 +44,7 @@ readCO2Atmosphere <-
     if (grepl(".dat", file_name)) {
 
       x  <- array(NaN, dim = c(59199, length(years),1), dimnames = list(1:59199, years, "co2"))
-      y  <- read.table(path(folder, file_name))
+      y  <- read.table(paste0(folder,"/",file_name))
       id <- match(years, y[, 1])
       y  <- y[id, 2]
 

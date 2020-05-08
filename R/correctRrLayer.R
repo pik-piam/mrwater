@@ -11,9 +11,6 @@
 #'   readSource("RrLayer", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
-
 correctRrLayer <- function(x){
 
   x <- toolConditionalReplace(x, conditions = c("is.na()","<0"), replaceby = 0)

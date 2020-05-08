@@ -20,7 +20,6 @@ Read CO2 global atmospheric concentration
 \dontrun{
 readSource("CO2Atmosphere", subtype="Elevated.CO2", convert="onlycorrect")
 }
-
 }
 \seealso{
 \code{\link{readCO2Atmosphere}}

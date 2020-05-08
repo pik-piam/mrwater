@@ -6,6 +6,7 @@
 #' @author David Chen
 #' @importFrom magpiesets findset
 #' @importFrom mstools toolHoldConstant
+#' @importFrom magclass nregions
 
 calcUrbanLandFuture <-function(timestep = "5year", cellular = TRUE){
 

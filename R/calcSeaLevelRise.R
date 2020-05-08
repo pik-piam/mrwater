@@ -1,14 +1,15 @@
 #' @title calcSeaLevelRise
-#' @description 
+#' @description
 #' Calculates gridded percentage of land lost from 2015, relative to 2015.
 #' Currently linearly interpolated (for lack of better SLR function) from 2100 back, see readGCF_SeaLevelRise
 #' @return gridded magpie object, with percentage of land lost per grid
 #' @author David Chen
 #' @importFrom magpiesets findset
+#' @importFrom magclass setYears time_interpolate
 
 
 calcSeaLevelRise <- function() {
-  
+
 slr <- readSource("GCF_SeaLevelRise", convert=F)
 #make dummy 0 year to interpolate properly
 slr2015 <- setYears(slr, 2015)

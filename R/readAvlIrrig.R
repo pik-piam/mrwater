@@ -8,8 +8,6 @@
 #'   readSource("AvlIrrig", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 readAvlIrrig <- function(){
 

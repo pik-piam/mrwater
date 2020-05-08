@@ -1,13 +1,13 @@
-#' @import madrat
+
 #' @importFrom dplyr left_join
 
 
 calcSoilCharacteristics <- function() {
   x = readSource("CO2Atmosphere", subtype="Elevated.CO2")
-  
+
   soil_char <-
     toolGetMapping(name = "mappingSoil.csv", type = "sectoral")
-  
+
   w = array(
     NA,
     dim = c(dim(x)[1], dim(soil_char[,-1])[2], dim(x)[2]),
@@ -19,9 +19,9 @@ calcSoilCharacteristics <- function() {
     g           <- left_join(g, soil_char, by = "soil", keep = TRUE)
     g           <- data.matrix(g[,-1])
     w[, , i]    <- g
-    
+
   }
-  
+
   w <- as.magpie(w)
   return(w)
 }

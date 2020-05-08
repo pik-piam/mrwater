@@ -8,8 +8,6 @@
 #'   readSource("Dams", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 readDams <- function(){
 

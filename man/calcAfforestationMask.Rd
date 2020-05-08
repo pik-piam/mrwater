@@ -6,6 +6,9 @@
 \usage{
 calcAfforestationMask(subtype)
 }
+\arguments{
+\item{subtype}{afforestation mask sub type}
+}
 \value{
 magpie object in cellular resolution
 }

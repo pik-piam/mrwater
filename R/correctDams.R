@@ -11,8 +11,6 @@
 #'   readSource("Dams", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 correctDams <- function(x){
 

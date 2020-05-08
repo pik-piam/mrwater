@@ -8,8 +8,6 @@
 #'   readSource("ProtectArea", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 readProtectArea <- function(){
 

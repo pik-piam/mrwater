@@ -1,5 +1,6 @@
 #' @title readAff_noboreal
 #' @description Read Afforestation No Boreal dataset
+#' @param subtype afforestation mask sub type
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #' @author David Chen
 #' @examples
@@ -8,8 +9,6 @@
 #'   readSource("AfforestationMask", subtype="noboreal", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 readAfforestationMask <- function(subtype){
 

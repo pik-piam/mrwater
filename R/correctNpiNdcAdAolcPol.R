@@ -10,9 +10,6 @@
 #' \dontrun{
 #'   readSource("NpiNdcAdAolcPol", convert="onlycorrect")
 #' }
-#'
-#' @import madrat
-#' @import magclass
 
 correctNpiNdcAdAolcPol <- function(x){
 

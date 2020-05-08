@@ -10,11 +10,8 @@
 #' \dontrun{
 #' readSource("SoilClassification", subtype="HWSD.soil", convert="onlycorrect")
 #' }
-#'
-#' @import madrat
-#' @import magclass
 #' @importFrom dplyr left_join
-#' @importFrom lucode path
+#' @importFrom utils read.csv
 
 readSoilClassification <-
   function(subtype = "SoilClassification:HWSD.soil") {
@@ -31,14 +28,13 @@ readSoilClassification <-
 
     }
 
-    if (exists(path(folder))) {
-      files_list <- list.files(path(folder))
+    if (exists(folder)) {
+      files_list <- list.files(folder)
       files <- c(soil = files_list[grep("soil", files_list)])
     } else {
       stop(
         paste(
-          "Path",
-          path(folder),
+          "Path", folder,
           "does not exist. Check the defition of your
           subtype or the folder structure you are trying to access."
         )
@@ -49,14 +45,15 @@ readSoilClassification <-
 
 
     if (subtype %in% "soil") {
-      sk <- file(path(folder, file_name), "rb")
+      sk <- file(paste0(folder,"/",file_name), "rb")
       y <- readBin(sk, integer(), n = 67460, size = 1)
       close(sk)
-      y = y[which(magclassdata$grid_67420_59199 == 1)]
-      y = y[magclassdata$cellbelongings$LPJ.Index]
+      lpjcells <- readRDS("lpjcells.rds")
+      y = y[-lpjcells$exclude_cells]
+      y = y[lpjcells$lpj_index]
       df.y = data.frame("soil" = y)
 
-      soilpar = read.csv(path(folder,"soilpar.csv"))
+      soilpar = read.csv(paste0(folder,"/soilpar.csv"))
       y = left_join(df.y, soilpar, by = "soil")
 
       years <- seq(1995, 2099, 1)

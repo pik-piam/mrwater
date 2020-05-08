@@ -20,7 +20,6 @@ Read NPI/NDC forestry file
 \dontrun{
   readSource("NpiNdcAdAolcPol", convert="onlycorrect")
 }
-
 }
 \seealso{
 \code{\link{readNpiNdcAdAolcPol}}

@@ -7,8 +7,6 @@
 #' @examples
 #' \dontrun{ calcOutput("TransportDistance", aggregate = FALSE) }
 #'
-#' @import madrat
-#' @import magclass
 #' @importFrom magpiesets findset
 #'
 

@@ -1,5 +1,6 @@
 #' @title correctAfforestationMask
 #' @description correct Afforestation Mask where afforestation is possible
+#' @param subtype afforestation mask sub type
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #' @param x magpie object provided by the read function
 #' @author David Chen
@@ -10,9 +11,7 @@
 #' \dontrun{
 #'   readSource("AfforestationMask",subtype="unrestricted", convert="onlycorrect")
 #' }
-#'
-#' @import madrat
-#' @import magclass
+#' @importFrom madrat toolConditionalReplace
 
 correctAfforestationMask <- function(x,subtype){
 

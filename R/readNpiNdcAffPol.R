@@ -8,8 +8,6 @@
 #'   readSource("NpiNdcAffPol", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 readNpiNdcAffPol <- function(){
 

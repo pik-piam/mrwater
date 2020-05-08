@@ -7,8 +7,6 @@
 #' @examples
 #' \dontrun{ calcOutput("Luh2SideLayers", aggregate = FALSE) }
 #'
-#' @import madrat
-#' @import magclass
 #' @importFrom magpiesets findset
 #'
 

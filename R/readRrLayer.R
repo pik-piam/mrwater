@@ -8,8 +8,6 @@
 #'   readSource("RrLayer", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 readRrLayer <- function(){
 
