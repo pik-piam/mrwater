@@ -57,6 +57,13 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("AreaEquippedForIrrigation", aggregate=FALSE, cellular=TRUE, years=mag_years_past_short, round=6, file="avl_irrig_luh_t_0.5.mz")
     # WATER!
 
+    #42 water demand
+    #   write.magpie(watdem_nonagr_grper,out_watdem_nonagr_grper_file, comment=comment)
+    #    write.magpie(watdem_nonagr_total,out_watdem_nonagr_total_file, comment=comment)
+
+    #write.magpie(annual_runoff_magpie,out_runoff_file, comment=comment)
+
+
     ## this one needed?
     calcOutput("Avl_irrig", aggregate=FALSE, cellular=TRUE, round=6, file="avl_irrig_0.5.mz")
 

@@ -15,9 +15,11 @@
 calcIrrigation <- function(years = seq(1995,2095,by=5)){
 
   # Read in airrig:
-  lpj_airrig <- readSource("LPJmL5", subtype="CRU_4.irrig",convert="onlycorrect")
-    # Note: airrig: irrigation water applied additionally to rainfall
+  lpj_airrig <- readSource("LPJmL", subtype="LPJmL5:CRU_4.irrig",convert="onlycorrect")
+  ### calc + arguments
+  # Note: airrig: irrigation water applied additionally to rainfall
     # rainfed=0
+  #### READSOURCE DOES NOT WORK YET... CHECK AGAIN!
 
   # Load LPJmL to MAgPIE mapping to aggregate to MAgPIE crops
   LPJ2MAG      <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
