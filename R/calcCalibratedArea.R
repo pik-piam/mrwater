@@ -7,9 +7,8 @@
 #' @examples
 #' \dontrun{ calcOutput("CalibratedArea", aggregate = FALSE) }
 #'
-#' @import madrat
-#' @import magclass
-#' @import moinput
+#' @import mrcommons
+#' @import mrland
 #' @importFrom magpiesets findset
 #'
 

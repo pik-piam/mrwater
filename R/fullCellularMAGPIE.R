@@ -18,6 +18,7 @@
 #' \dontrun{
 #' fullMAgPIE(revision=12, mainfolder="pathtowhereallfilesarestored")
 #' }
+#' @importFrom madrat setConfig getConfig
 
 fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 
@@ -44,9 +45,12 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("Croparea", aggregate=FALSE, physical=TRUE, cellular=TRUE, irrigation=TRUE, round=6, file="f30_croparea_w_initialisation_0.5.mz")
 
     #32 forestry
-    calcOutput("Aff_noboreal",aggregate=FALSE,round=6, file="aff_noboreal_0.5.mz")
-    calcOutput("Aff_onlytropical",aggregate=FALSE,round=6, file="aff_onlytropical_0.5.mz")
-    calcOutput("Aff_unrestricted",aggregate=FALSE,round=6, file="aff_unrestricted_0.5.mz")
+    calcOutput("AfforestationMask",subtype="noboreal",aggregate=FALSE,round=6, file="aff_noboreal_0.5.mz")
+    calcOutput("AfforestationMask",subtype="onlytropical",aggregate=FALSE,round=6, file="aff_onlytropical_0.5.mz")
+    calcOutput("AfforestationMask",subtype="unrestricted",aggregate=FALSE,round=6, file="aff_unrestricted_0.5.mz")
+
+    calcOutput("NpiNdcAdAolcPol", aggregate=FALSE, round=6, file="npi_ndc_ad_aolc_pol_0.5.mz")
+    calcOutput("NpiNdcAffPol", aggregate=FALSE, round=6, file="npi_ndc_aff_pol_0.5.mz")
 
     #34
     calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, file="f34_UrbanLand_0.5.mz")
@@ -81,8 +85,10 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 
     calcOutput("CalibratedArea", aggregate=FALSE, round=6, file="calibrated_area_0.5.mz" )
     calcOutput("ProtectArea", aggregate=FALSE, round=6, file="protect_area_0.5.mz" )
-
-
+    calcOutput("Luh2SideLayers", aggregate=FALSE, round=6, file="luh2_side_layers_0.5.mz")
+    calcOutput("CshareReleased", aggregate=FALSE, round=6, file="cshare_released_0.5.mz")
+    calcOutput("Koeppen_geiger", aggregate=FALSE,round=6,file="koeppen_geiger_0.5.mz")
+    calcOutput("RrLayer", aggregate=FALSE, round=6, file="rr_layer_0.5.mz")
 
     ##### AGGREGATION ######
 
@@ -104,7 +110,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
                 paste('* Call:', functioncall))
       cat(info,file=file,sep='\n')
     }
-    writeInfo(file='info.txt', lpjml_data="default", res_high="0.5", res_out=res_out, rev=rev)
+    writeInfo(file='info.txt', lpjml_data="default", res_high="0.5", res_out="IDK", rev=rev)
 
 
 

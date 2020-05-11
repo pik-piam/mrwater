@@ -17,6 +17,7 @@
 #'
 #' @examples
 #' \dontrun{ calcOutput("Cluster", type="c200", aggregate = FALSE) }
+#' @importFrom madrat calcOutput
 
 calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weight=NULL){
 
