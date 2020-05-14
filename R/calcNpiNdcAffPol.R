@@ -6,10 +6,6 @@
 #'
 #' @examples
 #' \dontrun{ calcOutput("NpiNdcAffPol", aggregate = FALSE) }
-#'
-#' @import madrat
-#' @import magclass
-#' @import moinput
 #' @importFrom magpiesets findset
 #'
 

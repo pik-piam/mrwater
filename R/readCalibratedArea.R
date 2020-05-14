@@ -8,8 +8,6 @@
 #'   readSource("CalibratedArea", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 readCalibratedArea <- function(){
 

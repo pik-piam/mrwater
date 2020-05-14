@@ -12,7 +12,7 @@
 #' weight < 1 less cluster than by default.
 #' @return A spam relation matrix
 #' @author Jan Philipp Dietrich
-#' @importFrom magclass getCells ncells getRegions
+#' @importFrom magclass getCells ncells getRegions getItems
 #' @importFrom stats hclust cutree
 #' @seealso \code{\link{cluster_per_region}}, \code{\link{mag_kmeans}},
 #' \code{\link{clusterspam}}

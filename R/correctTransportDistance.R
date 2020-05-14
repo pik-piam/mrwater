@@ -11,8 +11,6 @@
 #'   readSource("TransportDistance", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 correctTransportDistance <- function(x){
 

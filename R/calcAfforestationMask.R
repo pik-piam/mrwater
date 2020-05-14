@@ -1,16 +1,14 @@
 #' @title calcAfforestationMask
 #' @description Afforestation mask for where afforestation possible
+#' @param subtype afforestation mask sub type
 #' @return magpie object in cellular resolution
 #' @author David Chen
 #'
 #' @examples
 #' \dontrun{ calcOutput("AfforestationMask", subtype="noboreal", aggregate = FALSE) }
 #'
-#' @import madrat
-#' @import magclass
-#' @import moinput
 #' @importFrom magpiesets findset
-#'
+#' @importFrom madrat readSource
 
 calcAfforestationMask <-function(subtype){
 

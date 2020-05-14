@@ -11,8 +11,6 @@
 #'   readSource("Koeppen_geiger", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 correctKoeppen_geiger <- function(x){
 

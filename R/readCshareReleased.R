@@ -8,8 +8,6 @@
 #'   readSource("CshareReleased", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 readCshareReleased <- function(){
 

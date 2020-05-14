@@ -15,6 +15,8 @@
 #' @seealso \code{\link{calcOutput}}, \code{\link{toolConvertMapping}}
 #' @importFrom tools file_ext
 #' @importFrom utils write.table
+#' @importFrom magclass is.magpie
+#' @importFrom madrat getConfig
 #' @export
 #'
 toolStoreMapping <- function(map, name, type=NULL, error.existing=TRUE) {

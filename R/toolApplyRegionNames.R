@@ -17,7 +17,7 @@
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{calcClusterKMeans}}, \code{\link{calcClusterBase}}
 #' @importFrom madrat toolMappingFile regionscode
-#' @importFrom moinput spatial_header
+#' @importFrom mrland spatial_header
 
 toolApplyRegionNames <- function(cdata,regionscode){
   ### APPLY REGIONS HERE ON SPATIAL NAMING OF CDATA INSTEAD OF COUNTRIES ###

@@ -7,10 +7,8 @@
 #'
 #' @examples
 #' \dontrun{ calcOutput("GrowingPeriod", aggregate = FALSE) }
-#'
-#' @import madrat
-#' @import magclass
-#' @import moinput
+#' @importFrom madrat toolGetMapping toolAggregate
+#' @importFrom magclass collapseNames getNames new.magpie getYears dimSums
 
 calcGrowingPeriod <- function() {
 
@@ -37,8 +35,8 @@ calcGrowingPeriod <- function() {
   LPJ2MAG      <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
   # Load Sowing dates from LPJmL (use just rainfed dates since they do not differ for irrigated and rainfed)
-  sowd         <- collapseNames(readSource("LPJmL", subtype="LPJmL5:CRU_4.sdate", convert="onlycorrect")[,,"rainfed"])
-  hard         <- collapseNames(readSource("LPJmL", subtype="LPJmL5:CRU_4.hdate", convert="onlycorrect")[,,"rainfed"])
+  sowd         <- collapseNames(readSource("LPJmL5", subtype="sdate", convert="onlycorrect")[,,"rainfed"])
+  hard         <- collapseNames(readSource("LPJmL5", subtype="hdate", convert="onlycorrect")[,,"rainfed"])
 
   good_crops   <- LPJ2MAG$MAgPIE[which(LPJ2MAG$LPJmL%in%getNames(sowd))]
   bad_crops    <- LPJ2MAG$MAgPIE[which(!LPJ2MAG$LPJmL%in%getNames(sowd))]

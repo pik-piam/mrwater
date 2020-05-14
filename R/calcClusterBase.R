@@ -6,7 +6,7 @@
 #' @return A matrix containing the data
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{calcCluster}}
-#' @importFrom magclass wrap
+#' @importFrom magclass wrap read.magpie
 #' @importFrom madrat toolMappingFile
 calcClusterBase <- function(years2use=1995) {
 

@@ -11,8 +11,6 @@
 #'   readSource("AvlLandSi", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 correctAvlLandSi <- function(x){
 

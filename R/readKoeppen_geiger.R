@@ -8,8 +8,6 @@
 #'   readSource("Koeppen_geiger", convert="onlycorrect")
 #' }
 #'
-#' @import madrat
-#' @import magclass
 
 readKoeppen_geiger <- function(){
 
