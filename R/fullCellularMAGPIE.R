@@ -45,7 +45,10 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 
 
     #30 crop
-    calcOutput("Croparea", aggregate=FALSE, physical=TRUE, cellular=TRUE, irrigation=TRUE, round=6, file="f30_croparea_w_initialisation_0.5.mz")
+    calcOutput("CropAreaInitialization", aggregate=FALSE,  irrigation=FALSE,round=6, file="f30_croparea_initialisation_0.5.mz")
+    calcOutput("CropAreaInitialization", aggregate=FALSE,  irrigation=TRUE,round=6, file="f30_croparea_w_initialisation_0.5.mz")
+    calcOutput("CropAreaInitialization", aggregate="cluster", irrigation=FALSE,round=6, file="f30_croparea_initialisation_c200.mz")
+    calcOutput("CropAreaInitialization", aggregate="cluster", irrigation=TRUE,round=6, file="f30_croparea_w_initialisation_c200.mz")
 
     #32 forestry
     calcOutput("AfforestationMask",subtype="noboreal",aggregate=FALSE,round=6, file="aff_noboreal_0.5.mz")
