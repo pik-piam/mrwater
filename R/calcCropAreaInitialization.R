@@ -13,12 +13,6 @@ calcCropAreaInitialization<-function(aggregate=FALSE,irrigation=TRUE){
 
 
      data<- calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=irrigation, aggregate = aggregate)
- #    if (aggregate=="cluster"){
-#         aggregation<-toolGetMapping("clustermapping.csv", type = "regional", where="mappingfolder")
- #        data<-toolAggregate(x,rel= aggregation,from="cell",to="cluster")
-  #   }
-
-
      x<-data
 
   return(list(

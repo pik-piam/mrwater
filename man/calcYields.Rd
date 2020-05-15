@@ -36,7 +36,7 @@ calcYields(
 magpie object in cellular resolution
 }
 \description{
-This function extracts yields from LPJ to MAgPIE
+This function extracts yields from LPJmL to MAgPIE
 }
 \examples{
 \dontrun{ calcOutput("Yields", aggregate = FALSE) }

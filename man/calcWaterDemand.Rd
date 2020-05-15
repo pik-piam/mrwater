@@ -5,13 +5,13 @@
 \title{calcWaterDemand}
 \usage{
 calcWaterDemand(
-  years = seq(1995, 2095, by = 5),
+  selectyears = seq(1995, 2095, by = 5),
   seasonality = "grper",
   source = "WATERGAP2013"
 )
 }
 \arguments{
-\item{years}{years to be returned}
+\item{selectyears}{years to be returned}
 
 \item{source}{data source to be used}
 }
