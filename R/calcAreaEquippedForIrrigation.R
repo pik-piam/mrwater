@@ -7,17 +7,21 @@
 #' @return List of magpie objects with results on country/cellular level, weight on country level, unit and description.
 #' @author Benjamin Leon Bodirsky, Kristine Karstens
 #'
-#' \dontrun{
-#' calcOutput("AreaEquippedForIrrigation")
-#' }
-#' @importFrom magclass as.magpie getRegionList<- ncells
+#' @examples
 #'
+#' \dontrun{
+#'  calcOutput("AreaEquippedForIrrigation", aggregate=FALSE)
+#' }
+#'
+#' @importFrom magclass as.magpie getRegionList<- ncells
+#' @importFrom madrat toolCountryFill
+
 
 calcAreaEquippedForIrrigation<-function(source="LUH2v2", cellular=FALSE){
 
   if(source=="LUH2v2"){
 
-    LUHcrops <- subset(toolGetMapping("LUH2v2.csv", type = "sectoral"), land=="crop", select="luh2v2", drop=TRUE)
+    LUHcrops <- subset(toolGetMapping("LUH2v2.csv", type = "sectoral"), land="crop", select="luh2v2", drop=TRUE)
 
     #calcLUH2v2 needed here due to corrections, but year selection not working ike this
     x        <- calcOutput("LUH2v2", landuse_types="LUH2v2", irrigation=TRUE, cellular=TRUE, selectyears="past", aggregate = FALSE)
@@ -40,7 +44,7 @@ calcAreaEquippedForIrrigation<-function(source="LUH2v2", cellular=FALSE){
 
   if (!cellular){
     mapping <- toolMappingFile(type="cell", name="CountryToCellMapping.csv",readcsv=TRUE)
-    out     <- toolAggregate(data=out, rel=mapping, from="celliso", to="iso",dim=1)
+    out     <- toolAggregate(out, rel=mapping, from="celliso", to="iso",dim=1)
     out     <- toolCountryFill(out,fill=0)
   }
 

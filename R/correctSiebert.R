@@ -5,17 +5,12 @@
 #' @return magpie object in cellular resolution
 #' @param x magpie object provided by the read function
 #' @author David Chen
-#' @seealso
-#'   \code{\link{readAvlIrrig}}
 #'
 #' @examples
 #'
 #' \dontrun{
 #'   readSource("Siebert", convert="onlycorrect")
 #' }
-#'
-#' @import madrat
-#' @import magclass
 
 correctSiebert <- function(x){
 

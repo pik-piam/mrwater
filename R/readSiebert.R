@@ -9,9 +9,6 @@
 #' \dontrun{
 #'   readSource("Siebert", convert="onlycorrect")
 #' }
-#'
-#' @import madrat
-#' @import magclass
 
 readSiebert <- function(){
 

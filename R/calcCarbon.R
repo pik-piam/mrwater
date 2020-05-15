@@ -15,13 +15,13 @@
 #' @examples
 #' \dontrun{ calcOutput("Carbon", aggregate = FALSE) }
 #'
-#' @import madrat
-#' @import magclass
 #' @importFrom magpiesets findset
+#' @importFrom magclass add_dimension
 
 calcCarbon <- function(version="LPJmL4", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
                        harmonize_baseline=FALSE, ref_year="y2015"){
 
+  lpjml_years  <- findset("time")[as.numeric(substring(findset("time"),2))<2099]
 
   soilc_natveg <-  calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="soilc",
                               time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
