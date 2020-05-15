@@ -65,7 +65,12 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="Siebert", round=6, file="avl_irrig_c200.mz")
     calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="LUH2v2",  years=mag_years_past_short, round=6, file="avl_irrig_luh_t_c200.mz")
 
-    # WATER!
+    #42 water demand
+    #   write.magpie(watdem_nonagr_grper,out_watdem_nonagr_grper_file, comment=comment)
+    #    write.magpie(watdem_nonagr_total,out_watdem_nonagr_total_file, comment=comment)
+
+    #write.magpie(annual_runoff_magpie,out_runoff_file, comment=comment)
+
 
     #50 nitrogen
     calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, round=6, file="f50_AtmosphericDepositionRates_0.5.mz")
