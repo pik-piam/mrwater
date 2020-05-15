@@ -1,4 +1,4 @@
-#' fullCellularMAGPIE
+#' fullCELLULARMAGPIE
 #'
 #' Function that produces the complete cellular data set required for running the
 #' MAgPIE model.
@@ -16,7 +16,7 @@
 #' @examples
 #'
 #' \dontrun{
-#' fullMAgPIE(revision=12, mainfolder="pathtowhereallfilesarestored")
+#' retrieveData("CELLULARMAGPIE", revision=12, mainfolder="pathtowhereallfilesarestored")
 #' }
 #' @importFrom madrat setConfig getConfig
 
@@ -40,7 +40,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     #10 land
     calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_long, round=6, file="avl_land_t_0.5.mz")
     calcOutput("SeaLevelRise", aggregate=FALSE, round=6, file="f10_SeaLevelRise_0.5.mz")
-    calcOutput("Avl_Land_Si", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
+    calcOutput("AvlLandSi", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
 
 
 
@@ -63,12 +63,17 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 
     #40
     calcOutput("TransportDistance", aggregate=FALSE, round=6, file="transport_distance_0.5.mz")
-    #41 water
-    calcOutput("AreaEquippedForIrrigation", aggregate=FALSE, cellular=TRUE, years=mag_years_past_short, round=6, file="avl_irrig_luh_t_0.5.mz")
-    # WATER!
 
-    ## this one needed?
-    calcOutput("Avl_irrig", aggregate=FALSE, cellular=TRUE, round=6, file="avl_irrig_0.5.mz")
+    #41 water
+    calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="Siebert", round=6, file="avl_irrig_c200.mz")
+    calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="LUH2v2",  years=mag_years_past_short, round=6, file="avl_irrig_luh_t_c200.mz")
+
+    #42 water demand
+    #   write.magpie(watdem_nonagr_grper,out_watdem_nonagr_grper_file, comment=comment)
+    #    write.magpie(watdem_nonagr_total,out_watdem_nonagr_total_file, comment=comment)
+
+    #write.magpie(annual_runoff_magpie,out_runoff_file, comment=comment)
+
 
     #50 nitrogen
     calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, round=6, file="f50_AtmosphericDepositionRates_0.5.mz")

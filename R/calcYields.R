@@ -1,7 +1,7 @@
 #' @title calcYields
-#' @description This function extracts yields from LPJ to MAgPIE
+#' @description This function extracts yields from LPJmL to MAgPIE
 #'
-#' @param version Switch between LPJmL4 and LPJmL4
+#' @param version Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time average, spline or raw (default)
 #' @param averaging_range just specify for time=="average": number of time steps to average
@@ -20,7 +20,7 @@
 #' @importFrom magclass getYears add_columns dimSums time_interpolate
 #' @importFrom madrat toolFillYears
 
-calcYields <- function(version="LPJmL4", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
+calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
                        harmonize_baseline=FALSE, ref_year="y2015", calib_proxy=TRUE){
 
   lpjml_years  <- findset("time")[as.numeric(substring(findset("time"),2))<2099]
@@ -34,7 +34,7 @@ calcYields <- function(version="LPJmL4", climatetype="CRU_4", time="raw", averag
   for(crop in lpjml_crops){
 
     subdata <- as.vector(outer(crop, irrig_types, paste, sep="."))
-    tmp     <-  calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="harvest", subdata=subdata, time=time, averaging_range=averaging_range, dof=dof,
+    tmp     <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="harvest", subdata=subdata, time=time, averaging_range=averaging_range, dof=dof,
                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE, aggregate=FALSE, years=lpjml_years)
 
     lpjml_yields  <- mbind(lpjml_yields, tmp)

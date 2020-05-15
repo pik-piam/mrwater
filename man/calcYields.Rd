@@ -5,7 +5,7 @@
 \title{calcYields}
 \usage{
 calcYields(
-  version = "LPJmL4",
+  version = "LPJmL5",
   climatetype = "CRU_4",
   time = "raw",
   averaging_range = NULL,
@@ -16,7 +16,7 @@ calcYields(
 )
 }
 \arguments{
-\item{version}{Switch between LPJmL4 and LPJmL4}
+\item{version}{Switch between LPJmL4 and LPJmL5}
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
