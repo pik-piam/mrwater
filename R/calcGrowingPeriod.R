@@ -1,5 +1,5 @@
 #' @title calcGrowingPeriod
-#' @description This function determine a mean sowing date and a mean growing period for each cell
+#' @description This function determines a mean sowing date and a mean growing period for each cell
 #' in order to determine when irrigation can take place.
 #'
 #' @return magpie object in cellular resolution
