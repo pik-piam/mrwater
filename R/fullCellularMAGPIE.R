@@ -41,6 +41,9 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_long, round=6, file="avl_land_t_0.5.mz")
     calcOutput("SeaLevelRise", aggregate=FALSE, round=6, file="f10_SeaLevelRise_0.5.mz")
     calcOutput("Avl_Land_Si", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
+
+
+
     #30 crop
     calcOutput("Croparea", aggregate=FALSE, physical=TRUE, cellular=TRUE, irrigation=TRUE, round=6, file="f30_croparea_w_initialisation_0.5.mz")
 
