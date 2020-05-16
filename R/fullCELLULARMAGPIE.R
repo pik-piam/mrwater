@@ -38,17 +38,18 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     # calcOutput("Yields")
 
     #10 land
-    calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_long, round=6, file="avl_land_t_0.5.mz")
+    calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_0.5.mz")
+    calcOutput("LanduseInitialisation", aggregate=TRUE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_c200.mz")
     calcOutput("SeaLevelRise", aggregate=FALSE, round=6, file="f10_SeaLevelRise_0.5.mz")
     calcOutput("AvlLandSi", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
 
 
 
     #30 crop
-    calcOutput("CropAreaInitialization", aggregate=FALSE,  irrigation=FALSE,round=6, file="f30_croparea_initialisation_0.5.mz")
-    calcOutput("CropAreaInitialization", aggregate=FALSE,  irrigation=TRUE,round=6, file="f30_croparea_w_initialisation_0.5.mz")
-    calcOutput("CropAreaInitialization", aggregate="cluster", irrigation=FALSE,round=6, file="f30_croparea_initialisation_c200.mz")
-    calcOutput("CropAreaInitialization", aggregate="cluster", irrigation=TRUE,round=6, file="f30_croparea_w_initialisation_c200.mz")
+    calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate = FALSE,file="f30_croparea_initialisation_0.5.mz")
+    calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate = FALSE,file="f30_croparea_w_initialisation_0.5.mz")
+    calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate = "cluster", file="f30_croparea_initialisation_c200.mz")
+    calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate = "cluster",file="f30_croparea_w_initialisation_c200.mz")
 
     #32 forestry
     calcOutput("AfforestationMask",subtype="noboreal",aggregate=FALSE,round=6, file="aff_noboreal_0.5.mz")
