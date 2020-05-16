@@ -13,6 +13,8 @@ calcWaterDemand(
 \arguments{
 \item{selectyears}{years to be returned}
 
+\item{seasonality}{grper (default): EFR in growing period per year; total: EFR throughout the year; monthly: monthly EFRs}
+
 \item{source}{data source to be used}
 }
 \value{

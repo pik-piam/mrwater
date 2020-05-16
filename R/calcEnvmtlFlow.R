@@ -18,6 +18,7 @@
 #'
 #' @import magclass
 #' @import madrat
+#' @importFrom stats quantile
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Abhijeet Mishra
@@ -38,10 +39,13 @@ calcEnvmtlFlow <- function(selectyears=c(1995,2000),
   ############################################################
 
   ### Monthly Discharge
-  monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", years=years, aggregate=FALSE,
+  monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", aggregate=FALSE,
                                          harmonize_baseline=FALSE,
                                          time="raw")
   # Transform to array (faster calculation)
+
+  years <- getYears(monthly_discharge_magpie, as.integer = TRUE)
+
   monthly_discharge_magpie <-  as.array(collapseNames(monthly_discharge_magpie))
 
   ### Calculate LFR_quant
@@ -66,7 +70,7 @@ calcEnvmtlFlow <- function(selectyears=c(1995,2000),
   ## Discharge
   monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", years=years, aggregate=FALSE,
                                          harmonize_baseline=FALSE,
-                                         time=time, dof=dof, average_range=average_range) ################ spline or raw here? (originally: averaging_range)
+                                         time=time, dof=dof, averaging_range=averaging_range) ################ spline or raw here? (originally: averaging_range)
   # Transform to array (faster calculation)
   monthly_discharge_magpie <- as.array(collapseNames(monthly_discharge_magpie))
 
@@ -166,7 +170,9 @@ calcEnvmtlFlow <- function(selectyears=c(1995,2000),
     EFR_day <- EFR/month_day_magpie
 
     # Growing days per month
-    grow_days <- calcOutput("GrowingPeriod", aggregate=FALSE)[,paste("y",years,sep=""),] ############# DOESN'T WORK!!!!!!! WHY???
+    grow_days <- calcOutput("GrowingPeriod", version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
+                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
+
 
     # Available water in growing period
     EFR_grper <- EFR_day*grow_days
