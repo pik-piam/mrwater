@@ -4,7 +4,33 @@
 \alias{calcGrowingPeriod}
 \title{calcGrowingPeriod}
 \usage{
-calcGrowingPeriod()
+calcGrowingPeriod(
+  version = "LPJmL5",
+  climatetype = "CRU_4",
+  time = "raw",
+  averaging_range = NULL,
+  dof = NULL,
+  harmonize_baseline = FALSE,
+  ref_year = "y2015",
+  yield_ratio = 0.1
+)
+}
+\arguments{
+\item{version}{Switch between LPJmL4 and LPJmL5}
+
+\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
+
+\item{time}{average, spline or raw (default)}
+
+\item{averaging_range}{just specify for time=="average": number of time steps to average}
+
+\item{dof}{just specify for time=="spline": degrees of freedom}
+
+\item{harmonize_baseline}{FALSE (default) nothing happens, if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
+
+\item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
+
+\item{yield_ratio}{threshold for cell yield over global average. crops in cells below threshold will be ignored}
 }
 \value{
 magpie object in cellular resolution

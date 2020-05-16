@@ -2,6 +2,7 @@
 #' @description This function extracts non-agricultural water demand
 #' @param selectyears years to be returned
 #' @param source data source to be used
+#' @param seasonality grper (default): EFR in growing period per year; total: EFR throughout the year; monthly: monthly EFRs
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
@@ -14,7 +15,7 @@
 calcWaterDemand <- function(selectyears=seq(1995,2095,by=5),seasonality="grper",source="WATERGAP2013"){
 
   # Read in nonagricultural water demand:
-  watdem_nonagr   <- readSource("WATERGAP",convert="onlycorrect",subtype=source)
+  watdem_nonagr   <- readSource("WATERGAP",convert="onlycorrect", subtype=source)
 
   if (seasonality=="grper") {
     # get growing period

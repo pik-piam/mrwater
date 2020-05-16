@@ -32,19 +32,19 @@ calcAvlWater <- function(selectyears=c(1995,2000),
   # based on discharge-weighted algorithm              #
   ######################################################
 
-  if (harmonize_baseline==FALSE){
+  if(harmonize_baseline==FALSE){
 
-    if (time=="raw"){
+    if(time=="raw"){
 
       ### Monthly Discharge (unit (after calcLPJmL): mio. m^3/month)
-      monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", years=years, aggregate=FALSE,
+      monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", aggregate=FALSE,
                                              harmonize_baseline=FALSE,
                                              time="raw")
       # Transform to array (faster calculation)
       monthly_discharge_magpie <- as.array(collapseNames(monthly_discharge_magpie))
 
       ### Monthly Runoff (unit (after calcLPJmL): mio. m^3/month)
-      monthly_runoff_magpie    <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mrunoff", years=years, aggregate=FALSE,
+      monthly_runoff_magpie    <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mrunoff", aggregate=FALSE,
                                              harmonize_baseline=FALSE,
                                              time="raw")
       # Transform to array (faster calculation)
@@ -78,16 +78,19 @@ calcAvlWater <- function(selectyears=c(1995,2000),
 
     } else {
       # Time smoothing:
-      x     <- calcOutput("AvlWater", version=version, climatetype=climatetype, years=years, seasonality="monthly",
-                          harmonize_baseline=FALSE,
-                          time="raw")
+      x     <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly",
+                          harmonize_baseline=FALSE, time="raw")
+
       if(time=="average"){
-        # Time smoothing through average:
+
+        # smoothing data through average:
         avl_water_month <- toolTimeAverage(x, averaging_range=averaging_range)
+
       } else if(time=="spline"){
-        # Time smoothing with spline method:
+
+        # smoothing data with spline method:
         avl_water_month <- toolTimeSpline(x, dof=dof)
-        # Replace value in 2100 with value from 2099 (2100 lost in spline calculation)
+        # Replace value in 2100 with value from 2099 (LPJmL output ends in 2099)
         if ("y2099" %in% getYears(avl_water_month)) {
           avl_water_month <- toolFillYears(avl_water_month, c(getYears(avl_water_month, as.integer=TRUE)[1]:2100))
         }
@@ -97,20 +100,18 @@ calcAvlWater <- function(selectyears=c(1995,2000),
       }
     }
 
-  } else if (harmonize_baseline==TRUE) {
+  } else {
 
-    if (time=="raw") {
-      stop("Harmonization with raw data not possible. Select time==spline when applying harmonize_baseline=TRUE")
+    if(time=="raw") {
+      stop("Harmonization with raw data not possible. Select time='spline' when applying harmonize_baseline=TRUE")
     } else {
-      # Time smoothing:
-      baseline <- calcOutput("AvlWater", version=version, climatetype=baseline, years=years, seasonality="monthly",
-                             harmonize_baseline=FALSE,
-                             time=time,dof=dof,averaging_range=averaging_range)
-      x        <- calcOutput("AvlWater", version=version, climatetype=climatetype, years=years, seasonality="monthly",
-                             harmonize_baseline=FALSE,
-                             time=time,dof=dof,averaging_range=averaging_range)
-      # Harmonization
-      avl_water_month <- toolHarmonize2Baseline(x=x, base=baseline, ref_year=ref_year, limited=FALSE, hard_cut=FALSE)
+      # load smoothed data
+      baseline <- calcOutput("AvlWater", version=version, climatetype=harmonize_baseline, seasonality="monthly",
+                             harmonize_baseline=FALSE, time=time, dof=dof, averaging_range=averaging_range)
+      x        <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly",
+                             harmonize_baseline=FALSE, time=time, dof=dof, averaging_range=averaging_range)
+      # harmonize to baseline
+      avl_water_month <- toolHarmonize2Baseline(x=x, base=baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE)
     }
   }
 
@@ -119,7 +120,7 @@ calcAvlWater <- function(selectyears=c(1995,2000),
   ###########################################
 
   ### Available water per cell per month
-  if (seasonality=="monthly") {
+  if(seasonality=="monthly") {
     # Check for NAs
     if(any(is.na(avl_water_month))){
       stop("produced NA water availability")
@@ -129,7 +130,7 @@ calcAvlWater <- function(selectyears=c(1995,2000),
   }
 
   ### Total water available per cell per year
-  if (seasonality=="total") {
+  if(seasonality=="total") {
     # Sum up over all month:
     avl_water_total <- dimSums(avl_water_month, dim=3)
     # Check for NAs
@@ -141,7 +142,7 @@ calcAvlWater <- function(selectyears=c(1995,2000),
   }
 
   ### Water available in growing period per cell per year
-  if (seasonality=="grper") {
+  if(seasonality=="grper") {
     # magpie object with days per month with same dimension as avl_water_month
     tmp <- c(31,28,31,30,31,30,31,31,30,31,30,31)
     month_days <- new.magpie(names=dimnames(avl_water_month)[[3]])
@@ -154,7 +155,9 @@ calcAvlWater <- function(selectyears=c(1995,2000),
     avl_water_day <- avl_water_month/month_day_magpie
 
     # Growing days per month
-    grow_days <- calcOutput("GrowingPeriod", aggregate=FALSE)[,paste("y",years,sep=""),] ############# DOESN'T WORK!!!!!!! WHY???
+    grow_days <- calcOutput("GrowingPeriod", version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
+                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
+
 
     # Available water in growing period
     avl_water_grper <- avl_water_day*grow_days
