@@ -18,7 +18,7 @@
 #'
 #' @import magclass
 #' @import madrat
-#' @importFrom stats quantile
+# @importFrom stats quantile
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Abhijeet Mishra
