@@ -245,7 +245,7 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
     } else {
       # Time smoothing:
       x <- calcOutput("GrowingPeriod", version=version, climatetype=climatetype, harmonize_baseline=FALSE,
-                      time="raw", yield_ratio=yield_ratio)
+                      time="raw", yield_ratio=yield_ratio, aggregate = FALSE)
 
       if(time=="average"){
 
@@ -273,10 +273,10 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
       # load smoothed data
       baseline <- calcOutput("GrowingPeriod", version=version, climatetype=harmonize_baseline,
                              harmonize_baseline=FALSE, time=time, dof=dof, averaging_range=averaging_range,
-                             yield_ratio=yield_ratio)
+                             yield_ratio=yield_ratio, aggregate = FALSE)
       x        <- calcOutput("GrowingPeriod", version=version, climatetype=climatetype,
                              harmonize_baseline=FALSE, time=time,dof=dof,averaging_range=averaging_range,
-                             yield_ratio=yield_ratio)
+                             yield_ratio=yield_ratio, aggregate = FALSE)
       # Harmonize to baseline
       out <- toolHarmonize2Baseline(x=x, base=baseline, ref_year=ref_year, hard_cut=TRUE)
     }
