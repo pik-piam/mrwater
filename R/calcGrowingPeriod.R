@@ -10,6 +10,7 @@
 #' @param harmonize_baseline FALSE (default) nothing happens, if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year just specify for harmonize_baseline != FALSE : Reference year
 #' @param yield_ratio threshold for cell yield over global average. crops in cells below threshold will be ignored
+#' @param selectyears defaults to all years available
 #'
 #' @return magpie object in cellular resolution
 #' @author Kristine Karstens
@@ -22,7 +23,7 @@
 #' @export
 
 calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
-                              harmonize_baseline=FALSE, ref_year="y2015", yield_ratio=0.1) {
+                              harmonize_baseline=FALSE, ref_year="y2015", yield_ratio=0.1, selectyears="all") {
 
   if(harmonize_baseline==FALSE){
 
@@ -98,7 +99,7 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
 
       area   <- dimSums(calcOutput("LUH2v2", cellular=TRUE, aggregate=FALSE, years="y1995"), dim = 3)
       yields <- collapseNames(calcOutput("Yields", version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
-                                         harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate = FALSE)[,,good_crops][,,"irrigated"])
+                                         harmonize_baseline=harmonize_baseline, ref_year=ref_year, calib_proxy=FALSE, aggregate = FALSE)[,,good_crops][,,"irrigated"])
 
       cell2GLO     <- array(c(getCells(yields), rep("GLO",59199)), dim=c(59199,2))
       glo_yields   <- toolAggregate(yields, cell2GLO, weight = setYears(area, NULL))
@@ -145,10 +146,12 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
       #Step 6 Calculate mean sowing date
       ####################################################################################
 
-      n_crops          <- dimSums(rm_wintercrops * rm_lowyield * rm_sowd1, dim=3, na.rm=T)
+      n_crops   <- dimSums(rm_wintercrops * rm_lowyield * rm_sowd1, dim=3, na.rm=T)
       mean_sowd <- dimSums(grow_period * rm_wintercrops * rm_lowyield * rm_sowd1, dim=3, na.rm=T)/n_crops
       mean_sowd[is.infinite(mean_sowd)] <- NA
 
+      rm(rm_wintercrops, rm_lowyield, rm_sowd1)
+      rm(sowd, hard, grow_period)
       ####################################################################################
 
       ####################################################################################
@@ -197,9 +200,12 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
 
       mean_hard<-as.array(mean_hard)
       mean_sowd<-as.array(mean_sowd)
+      grow_days_per_month <- as.array(grow_days_per_month)
 
       #Loop over the months to set the number of days that the growing period lasts in each month
       for(t in getYears(mean_sowd)){
+
+        print(t)
 
         #goodcells are cells in which harvest date is after sowing date,
         #i.e. the cropping period does not cross the beginning of the year
@@ -207,6 +213,8 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
         badcells   <- ifelse(mean_hard[,t,] >= mean_sowd[,t,], 0, 1)
 
         for(month in 1:12){
+
+          print(month)
 
           last_monthday  <- which(days_months==month)[length(which(days_months==month))]
           first_monthday <- which(days_months==month)[1]
@@ -274,6 +282,10 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
     }
   }
 
+  if(selectyears!="all"){
+    years       <- sort(findset(selectyears,noset = "original"))
+    out         <- out[,years,]
+  }
 
   return(list(
     x=out,

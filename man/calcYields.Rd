@@ -12,7 +12,9 @@ calcYields(
   dof = NULL,
   harmonize_baseline = FALSE,
   ref_year = "y2015",
-  calib_proxy = TRUE
+  calib_proxy = TRUE,
+  split_cropcalc = FALSE,
+  selectyears = "all"
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ calcYields(
 \item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
 
 \item{calib_proxy}{calibrated proxy to FAO values if set to TRUE}
+
+\item{split_cropcalc}{split calculation for different crop types (e.g. for parallelization)}
+
+\item{selectyears}{defaults to all years available}
 }
 \value{
 magpie object in cellular resolution

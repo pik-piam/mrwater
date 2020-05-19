@@ -9,6 +9,8 @@
 #' @param harmonize_baseline FALSE (default) nothing happens, if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year just specify for harmonize_baseline != FALSE : Reference year
 #' @param calib_proxy calibrated proxy to FAO values if set to TRUE
+#' @param split_cropcalc split calculation for different crop types (e.g. for parallelization)
+#' @param selectyears defaults to all years available
 #'
 #' @return magpie object in cellular resolution
 #' @author Kristine Karstens
@@ -21,23 +23,29 @@
 #' @importFrom madrat toolFillYears
 
 calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
-                       harmonize_baseline=FALSE, ref_year="y2015", calib_proxy=TRUE){
-
-  lpjml_years  <- findset("time")[as.numeric(substring(findset("time"),2))<2099]
+                       harmonize_baseline=FALSE, ref_year="y2015", calib_proxy=TRUE, split_cropcalc=FALSE, selectyears="all"){
 
   LPJ2MAG      <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
-  lpjml_crops  <- unique(LPJ2MAG$LPJmL)
-  irrig_types  <- c("irrigated","rainfed")
 
-  lpjml_yields <- NULL
+  if(split_cropcalc){
 
-  for(crop in lpjml_crops){
+    lpjml_crops  <- unique(LPJ2MAG$LPJmL)
+    irrig_types  <- c("irrigated","rainfed")
+    lpjml_yields <- NULL
 
-    subdata <- as.vector(outer(crop, irrig_types, paste, sep="."))
-    tmp     <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="harvest", subdata=subdata, time=time, averaging_range=averaging_range, dof=dof,
-                           harmonize_baseline=harmonize_baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE, aggregate=FALSE, years=lpjml_years)
+    for(crop in lpjml_crops){
 
-    lpjml_yields  <- mbind(lpjml_yields, tmp)
+      subdata <- as.vector(outer(crop, irrig_types, paste, sep="."))
+      tmp     <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="harvest", subdata=subdata, time=time, averaging_range=averaging_range, dof=dof,
+                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE, selectyears=selectyears, aggregate=FALSE)
+
+      lpjml_yields  <- mbind(lpjml_yields, tmp)
+    }
+
+  } else {
+
+    lpjml_yields    <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="harvest", time=time, averaging_range=averaging_range, dof=dof,
+                          harmonize_baseline=harmonize_baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE, selectyears=selectyears, aggregate=FALSE)
   }
 
   # Aggregate to MAgPIE crops

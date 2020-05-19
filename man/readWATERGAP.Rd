@@ -4,7 +4,7 @@
 \alias{readWATERGAP}
 \title{readWATERGAP}
 \usage{
-readWATERGAP(subtype = "WATERGAP2013")
+readWATERGAP(subtype = "WATCH_IMAGE_WATERGAP")
 }
 \arguments{
 \item{subtype}{Data source to be read from}
@@ -13,7 +13,7 @@ readWATERGAP(subtype = "WATERGAP2013")
 MAgPIE object of non-agricultural water demand at 0.5 cellular level in mio. m^3
 }
 \description{
-Read in non-agricultural water demand data from WATERGAP model with A2: WATERGAP WATCH project; B1: WATERGAP WATCH project; SSP2: WATERGAP ISIMIP project
+Read in non-agricultural water demand data from WATERGAP model
 }
 \examples{
 \dontrun{ readSource("WATERGAP", convert="onlycorrect") }

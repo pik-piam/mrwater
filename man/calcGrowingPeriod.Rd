@@ -12,7 +12,8 @@ calcGrowingPeriod(
   dof = NULL,
   harmonize_baseline = FALSE,
   ref_year = "y2015",
-  yield_ratio = 0.1
+  yield_ratio = 0.1,
+  selectyears = "all"
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ calcGrowingPeriod(
 \item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
 
 \item{yield_ratio}{threshold for cell yield over global average. crops in cells below threshold will be ignored}
+
+\item{selectyears}{defaults to all years available}
 }
 \value{
 magpie object in cellular resolution
