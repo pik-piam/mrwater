@@ -5,7 +5,7 @@
 \title{calcAvlWater}
 \usage{
 calcAvlWater(
-  selectyears = c(1995, 2000),
+  selectyears = "all",
   version = "LPJmL4",
   climatetype = "CRU_4",
   time = "raw",

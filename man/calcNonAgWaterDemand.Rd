@@ -5,7 +5,7 @@
 \title{calcNonAgWaterDemand}
 \usage{
 calcNonAgWaterDemand(
-  selectyears = seq(1995, 2095, by = 5),
+  selectyears = "all",
   seasonality = "grper",
   source = "WATCH_ISIMIP_WATERGAP"
 )

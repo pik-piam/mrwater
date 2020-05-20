@@ -18,7 +18,7 @@
 #'
 #' @import magclass
 #' @import madrat
-# @importFrom stats quantile
+#' @importFrom stats quantile
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Abhijeet Mishra
@@ -27,108 +27,137 @@
 #' \dontrun{ calcOutput("EnvmtlFlow", aggregate = FALSE) }
 #'
 
-calcEnvmtlFlow <- function(selectyears=c(1995,2000),
+calcEnvmtlFlow <- function(selectyears="all",
                            version="LPJmL4", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
                            harmonize_baseline=FALSE, ref_year="y2015",
-                           LFR_val=0.1,HFR_LFR_less10=0.2,HFR_LFR_10_20=0.15,HFR_LFR_20_30=0.07,HFR_LFR_more30=0.00,
+                           LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                            seasonality="grper"){
 
-  ############################################################
-  # Step 1 Determine monthly discharge low flow requirements #
-  #        (LFR_monthly_discharge)                           #
-  ############################################################
+  if(harmonize_baseline==FALSE){
 
-  ### Monthly Discharge
-  monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", aggregate=FALSE,
-                                         harmonize_baseline=FALSE,
-                                         time="raw")
-  # Transform to array (faster calculation)
+    ############################################################
+    # Step 1 Determine monthly discharge low flow requirements #
+    #        (LFR_monthly_discharge)                           #
+    ############################################################
 
-  years <- getYears(monthly_discharge_magpie, as.integer = TRUE)
+    ### Monthly Discharge
+    monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", aggregate=FALSE,
+                                           harmonize_baseline=FALSE,
+                                           time="raw")
+    # Extract years for quantile calculation
+    years <- getYears(monthly_discharge_magpie, as.integer = TRUE)
+    # Transform to array (faster calculation)
+    monthly_discharge_magpie <-  as.array(collapseNames(monthly_discharge_magpie))
 
-  monthly_discharge_magpie <-  as.array(collapseNames(monthly_discharge_magpie))
+    ### Calculate LFR_quant
+    ## Note: "LFRs correspond to the 90percent quantile of annual flow (Q90),
+    ## i.e. to the discharge that is exceeded in nine out of ten months" (Bonsch et al. 2015)
 
-  ### Calculate LFR_quant
-  ## Note: "LFRs correspond to the 90percent quantile of annual flow (Q90),
-  ## i.e. to the discharge that is exceeded in nine out of ten months" (Bonsch et al. 2015)
-  ## ->
-  # Empty array with magpie object names
-  LFR_quant <- array(NA,dim=c(dim(monthly_discharge_magpie)[1],length(years)),dimnames=list(dimnames(monthly_discharge_magpie)[[1]],paste("y",years,sep="")))
-  # Quantile calculation: Yearly LFR quantile value
-  for(year in years){
-    # get the LFR_val quantile for each year for all cells
-    LFR_quant[,paste("y",year,sep="")] <- apply(monthly_discharge_magpie[,paste("y",year,sep=""),],MARGIN=c(1),quantile,probs=LFR_val)
+    # Empty array with magpie object names
+    LFR_quant <- array(NA,dim=c(dim(monthly_discharge_magpie)[1],length(years)),dimnames=list(dimnames(monthly_discharge_magpie)[[1]],paste("y",years,sep="")))
+
+    # Quantile calculation: Yearly LFR quantile value
+    for(year in years){
+      # get the LFR_val quantile for each year for all cells
+      LFR_quant[,paste("y",year,sep="")] <- apply(monthly_discharge_magpie[,paste("y",year,sep=""),],MARGIN=c(1),quantile,probs=LFR_val)
+    }
+
+    # Time-smooth LFR_quant
+    LFR_quant <- as.magpie(LFR_quant)
+    if(time=="average"){
+      # Smoothing data through average:
+      LFR_quant <- toolTimeAverage(LFR_quant, averaging_range=averaging_range)
+    } else if(time=="spline"){
+      # Smoothing data with spline method:
+      LFR_quant <- toolTimeSpline(LFR_quant, dof=dof)
+      # Replace value in 2100 with value from 2099 (LPJmL output ends in 2099)
+      if ("y2099" %in% getYears(LFR_quant)) {
+        LFR_quant <- toolFillYears(LFR_quant, c(getYears(LFR_quant, as.integer=TRUE)[1]:2100))
+      }
+    } else if(time!="raw"){
+      stop("Time argument not supported!")
+    }
+
+    # Raw monthly discharge no longer needed at this point
+    rm(monthly_discharge_magpie)
+
+    ### Read in smoothed monthly discharge
+    monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", aggregate=FALSE,
+                                           harmonize_baseline=FALSE,
+                                           time=time, dof=dof, averaging_range=averaging_range)
+    # Transform to array (faster calculation)
+    monthly_discharge_magpie <- as.array(collapseNames(monthly_discharge_magpie))
+
+    ### Calculate LFR discharge values for each month
+    # If LFR_quant < magpie_discharge: take LFR_quant
+    # Else: take magpie_discharge
+    LFR_monthly_discharge <- monthly_discharge_magpie
+    for (month in 1:12) {
+      tmp1 <- as.vector(LFR_quant)
+      tmp2 <- as.vector(monthly_discharge_magpie[,,month])
+      LFR_monthly_discharge[,,month] <- pmin(tmp1,tmp2)
+    }
+    # Remove no longer needed objects
+    rm(LFR_quant)
+
+
+    ################################################
+    # Step 2 Determine low flow requirements (LFR) #
+    #        from available water per month        #
+    ################################################
+    ### Available water per month (smoothed)                        ##### right??? (b/c LFR_monthly_discharge is calculated based on smoothed data and monthly discharge is smoothed too)
+    avl_water_month <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly",
+                                  harmonize_baseline=FALSE,
+                                  time=time, dof=dof, averaging_range=averaging_range)
+    avl_water_month    <- as.array(collapseNames(avl_water_month))
+
+    # Empty array
+    LFR     <- avl_water_month
+    LFR[,,] <- NA
+
+    ### Calculate LFRs
+    LFR <- avl_water_month * (LFR_monthly_discharge/monthly_discharge_magpie)
+
+    ###################################################################
+    # Step 3 Determie monthly high flow requirements (HFR)            #
+    #        based on the ratio between LFR_month and avl_water_month #
+    ###################################################################
+    ## Note: "For rivers with low Q90 values, high-flow events are important
+    ## for river channel maintenance, wetland flooding, and riparian vegetation.
+    ## HFRs of 20% of available water are therefore assigned to rivers with a
+    ## low fraction of Q90 in total discharge. Rivers with a more stable flow
+    ## regime receive a lower HFR." (Bonsch et al. 2015)
+    HFR     <- LFR
+    HFR[,,] <- NA
+
+    HFR[LFR<0.1*avl_water_month]  <- HFR_LFR_less10 * avl_water_month[LFR<0.1*avl_water_month]
+    HFR[LFR>=0.1*avl_water_month] <- HFR_LFR_10_20  * avl_water_month[LFR>=0.1*avl_water_month]
+    HFR[LFR>=0.2*avl_water_month] <- HFR_LFR_20_30  * avl_water_month[LFR>=0.2*avl_water_month]
+    HFR[LFR>=0.3*avl_water_month] <- HFR_LFR_more30 * avl_water_month[LFR>=0.3*avl_water_month]
+    HFR[avl_water_month<=0]       <- 0
+
+    EFR <- LFR+HFR
+
+  } else {
+    # Load baseline and climate EFR:
+    baseline <- calcOutput("EnvmtlFlow", version=version, climatetype=harmonize_baseline, seasonality="monthly",
+                           harmonize_baseline=FALSE, time=time, dof=dof, averaging_range=averaging_range)
+    x        <- calcOutput("EnvmtlFlow", version=version, climatetype=climatetype, seasonality="monthly",
+                           harmonize_baseline=FALSE, time=time, dof=dof, averaging_range=averaging_range)
+    # Harmonize to baseline
+    EFR <- toolHarmonize2Baseline(x=x, base=baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE)
   }
-  # Time-smooth LFR_quant
-  LFR_quant <- toolTimeSpline(LFR_quant, dof=dof)
 
-
-  # Remove no longer needed objects
-  rm(monthly_discharge_magpie)
-
-  ### Discharge (smoothed)
-  ## Discharge
-  monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", years=years, aggregate=FALSE,
-                                         harmonize_baseline=FALSE,
-                                         time=time, dof=dof, averaging_range=averaging_range) ################ spline or raw here? (originally: averaging_range)
-  # Transform to array (faster calculation)
-  monthly_discharge_magpie <- as.array(collapseNames(monthly_discharge_magpie))
-
-  ### Calculate LFR discharge values for each month
-  # If LFR_quant < magpie_discharge: take LFR_quant
-  # Else: take magpie_discharge
-  LFR_monthly_discharge <- monthly_discharge_magpie
-  for (month in 1:12) {                                     #### What about year-dimension?
-    tmp1 <- as.vector(LFR_quant)
-    tmp2 <- as.vector(monthly_discharge_magpie[,,month])
-    LFR_monthly_discharge[,,month] <- pmin(tmp1,tmp2)
+  if(selectyears!="all"){
+    years   <- sort(findset(selectyears, noset="original"))
+    EFR     <- EFR[,years,]
   }
-  # Remove no longer needed objects
-  rm(LFR_quant)
-
-
-  ################################################
-  # Step 2 Determine low flow requirements (LFR) #
-  #        from available water per month        #
-  ################################################
-  ### Available water per month
-  avl_water_month <- calcOutput("AvlWater", version=version, climatetype=climatetype, years=years, seasonality="monthly",
-                                harmonize_baseline=FALSE,
-                                time="raw")
-  avl_water_month    <- as.array(collapseNames(avl_water_month))
-
-  # Empty array
-  LFR <- avl_water_month
-  LFR[,,] <- NA
-
-  ### Calculate LFRs
-  LFR <- avl_water_month * (LFR_monthly_discharge/monthly_discharge_magpie)
-
-  ###################################################################
-  # Step 3 Determie monthly high flow requirements (HFR)            #
-  #        based on the ratio between LFR_month and avl_water_month #
-  ###################################################################
-  ## Note: "For rivers with low Q90 values, high-flow events are important
-  ## for river channel maintenance, wetland flooding, and riparian vegetation.
-  ## HFRs of 20% of available water are therefore assigned to rivers with a
-  ## low fraction of Q90 in total discharge. Rivers with a more stable flow
-  ## regime receive a lower HFR." (Bonsch et al. 2015)
-  HFR <- LFR
-  HFR[,,] <- NA
-
-  HFR[LFR<0.1*avl_water_month]  <- HFR_LFR_less10 * avl_water_month[LFR<0.1*avl_water_month]
-  HFR[LFR>=0.1*avl_water_month] <- HFR_LFR_10_20  * avl_water_month[LFR>=0.1*avl_water_month]
-  HFR[LFR>=0.2*avl_water_month] <- HFR_LFR_20_30  * avl_water_month[LFR>=0.2*avl_water_month]
-  HFR[LFR>=0.3*avl_water_month] <- HFR_LFR_more30 * avl_water_month[LFR>=0.3*avl_water_month]
-  HFR[avl_water_month<=0]       <- 0
-
-  EFR <- LFR+HFR
 
   ###########################################
   ############ RETURN STATEMENTS ############
   ###########################################
 
-  ### EFR per cell per month                     ########## needed? maybe delete... (only for consistency)
+  ### EFR per cell per month
   if (seasonality=="monthly") {
 
     # Check for NAs
@@ -144,7 +173,11 @@ calcEnvmtlFlow <- function(selectyears=c(1995,2000),
 
     # Sum up over all month:
     EFR_total <- dimSums(EFR, dim=3)
+
     # Reduce EFR to 50% of available water where it exceeds this threshold (according to Smakhtin 2004)
+    avl_water_total <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="total",
+                                  harmonize_baseline=harmonize_baseline,                                  ####### CORRECT?
+                                  time=time, dof=dof, averaging_range=averaging_range)                    ###### CORRECT?
     EFR_total[which(EFR_total/avl_water_total>0.5)] <- 0.5*avl_water_total[which(EFR_total/avl_water_total>0.5)]
 
     # Check for NAs
@@ -179,6 +212,9 @@ calcEnvmtlFlow <- function(selectyears=c(1995,2000),
     # Available water in growing period per year
     EFR_grper <- dimSums(EFR_grper, dim=3)
     # Reduce EFR to 50% of available water where it exceeds this threshold (according to smakhtin 2004)
+    avl_water_grper <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="grper",
+                                  harmonize_baseline=harmonize_baseline, ####### CORRECT?
+                                  time=time, dof=dof, averaging_range=averaging_range) ###### CORRECT?
     EFR_grper[which(EFR_grper/avl_water_grper>0.5)] <- 0.5*avl_water_grper[which(EFR_grper/avl_water_grper>0.5)]
 
     # Check for NAs
