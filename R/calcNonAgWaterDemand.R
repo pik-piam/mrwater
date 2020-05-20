@@ -12,22 +12,38 @@
 #' @import madrat
 #' @import magclass
 
-calcNonAgWaterDemand <- function(selectyears=seq(1995,2095,by=5),seasonality="grper",source="WATCH_ISIMIP_WATERGAP"){
+calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="WATCH_ISIMIP_WATERGAP"){
 
   # Read in nonagricultural water demand:
   watdem_nonagr   <- readSource("WATERGAP",convert="onlycorrect", subtype=source)
 
+  if(selectyears!="all"){
+    years   <- sort(findset(selectyears, noset="original"))
+    watdem_nonagr     <- watdem_nonagr[,years,]
+  }
+
   if (seasonality=="grper") {
-    # get growing period
-    grow_days     <- calcOutput("GrowingPeriod", aggregate=FALSE)[,paste("y",years,sep=""),] ####### grow_days doesn't work yet!!!!!!!!
-    # calculate non-agricultural water demand in growing period
-    out <- watdem_nonagr[,paste("y",years,sep=""),]*(rowSums(grow_days,dim=2)/365) ######### ADJUST TO MAGPIE OBJECT FORMAT!!! grow_days is magpie object no longer array!!
-    description <- "Non-agricultural water demand (industry, electiricty) in growing period"
+    # Get growing days per month
+    grow_days     <- calcOutput("GrowingPeriod", aggregate=FALSE) ####### grow_days doesn't work yet!!!!!!!!
+
+    # Adjust years
+    years_watdem <- getYears(watdem_nonagr)
+    years_grper <- getYears(grow_days)
+    if(length(years_watdem)>=length(years_grper)){
+      years <- years_grper
+    } else {
+      years <- years_watdem
+    }
+    rm(years_grper, years_watdem)
+
+    # Calculate non-agricultural water demand in growing period
+    out         <- watdem_nonagr[,years,]*(dimSums(grow_days[,years,],dim=3)/365)
+    description <- "Non-agricultural water demand (industry, electiricty, domestic) in growing period"
   }
 
   if (seasonality=="total") {
-    out <- watdem_nonagr[,paste("y",years,sep=""),]
-    description <- "Total non-agricultural water demand (industry, electiricty)"
+    out         <- watdem_nonagr[,,]
+    description <- "Total non-agricultural water demand (industry, electiricty, domestic)"
   }
 
   # Check for NAs

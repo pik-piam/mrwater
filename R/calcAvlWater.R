@@ -21,7 +21,7 @@
 #' \dontrun{ calcOutput("AvlWater", aggregate = FALSE) }
 #'
 
-calcAvlWater <- function(selectyears=c(1995,2000),
+calcAvlWater <- function(selectyears="all",
                          version="LPJmL4", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
                          harmonize_baseline=FALSE, ref_year="y2015",
                          seasonality="grper"){
@@ -83,12 +83,12 @@ calcAvlWater <- function(selectyears=c(1995,2000),
 
       if(time=="average"){
 
-        # smoothing data through average:
+        # Smoothing data through average:
         avl_water_month <- toolTimeAverage(x, averaging_range=averaging_range)
 
       } else if(time=="spline"){
 
-        # smoothing data with spline method:
+        # Smoothing data with spline method:
         avl_water_month <- toolTimeSpline(x, dof=dof)
         # Replace value in 2100 with value from 2099 (LPJmL output ends in 2099)
         if ("y2099" %in% getYears(avl_water_month)) {
@@ -105,14 +105,19 @@ calcAvlWater <- function(selectyears=c(1995,2000),
     if(time=="raw") {
       stop("Harmonization with raw data not possible. Select time='spline' when applying harmonize_baseline=TRUE")
     } else {
-      # load smoothed data
+      # Load smoothed data
       baseline <- calcOutput("AvlWater", version=version, climatetype=harmonize_baseline, seasonality="monthly",
                              harmonize_baseline=FALSE, time=time, dof=dof, averaging_range=averaging_range)
       x        <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly",
                              harmonize_baseline=FALSE, time=time, dof=dof, averaging_range=averaging_range)
-      # harmonize to baseline
+      # Harmonize to baseline
       avl_water_month <- toolHarmonize2Baseline(x=x, base=baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE)
     }
+  }
+
+  if(selectyears!="all"){
+    years       <- sort(findset(selectyears,noset = "original"))
+    avl_water_month <- avl_water_month[,years,]
   }
 
   ###########################################

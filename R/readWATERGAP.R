@@ -30,7 +30,7 @@ readWATERGAP <- function(subtype="WATCH_IMAGE_WATERGAP"){
     input[["ssp3"]][["ww"]] <- gsub("ssp1_rcp4p5","ssp3_rcp6p0",input[["ssp1"]][["ww"]])
 
     # Reading in files and combining to one magpie object:
-    x <- read.magpie(paste0(path,input[[1]][["wc"]][1]))
+    x <- read.magpie(paste0(subtype,"/",input[[1]][["wc"]][1]))
     getNames(x) <- paste0("sspX.",getNames(x))
     # Different SSPs:
     for (i in (1:length(input))) {
