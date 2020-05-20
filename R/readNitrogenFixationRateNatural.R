@@ -1,5 +1,5 @@
 #' @title NitrogenFixationRateNatural
-#' @description Read nitrogen fixation rate
+#' @description Read Nitrogen fixation rate of natural vegetation
 #' @return Magpie objects with results on cellular level.
 #' @author Marcos Alves
 #' @examples
