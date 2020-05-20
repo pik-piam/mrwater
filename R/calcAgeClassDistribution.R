@@ -10,23 +10,49 @@
 
 calcAgeClassDistribution <- function(){
 
-  poulter_dataset <- readSource("GFAD", convert="onlycorrect")
+  poulter_dataset <- readSource("GFAD", convert="onlycorrect")  ## Poulter data is fraction of each cell
 
-  soilc_layer_natveg <-  calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="soilc_layer",
-                              time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-                              aggregate=FALSE, years=lpjml_years)
-  topsoilc           <- soilc_layer_natveg[,,1] + 1/3 * soilc_layer_natveg[,,2]
-  getNames(topsoilc) <- "topsoilc"
+  #Area of cells
+  mapping   <- toolGetMapping(type="cell",name="CountryToCellMapping.csv")
+  lon <- mapping$lon
+  lat <- mapping$lat
 
-  # Check for NAs
-  if(any(is.na(topsoilc))){
-    stop("produced NA Carbon")
-  }
+  cb <- as.data.frame(magpie_coord)
+  cb$xlon    <- (cb$lon-1)/2 - 180
+  cb$ylat    <- (cb$lat-1)/2 - 90
+  cell_area  <- (111e3*0.5)*(111e3*0.5)*cos(cb$ylat/180*pi)
+
+  cell_area <- as.data.frame(cell_area)
+  cell_area$cell <- mapping$cell
+  cell_area_magpie <- as.magpie(cell_area[,c(2,1)])
+  getNames(cell_area_magpie) <- NULL
+
+  ######################
+
+  getCells(poulter_dataset) <- mapping$cell
+
+  forest_area <- poulter_dataset*cell_area_magpie
+
+  forest_area <- dimSums(forest_area,dim=3.1)
+
+  getNames(forest_area) <- paste0("ac",1:15*10)
+
+  secdf_ac <- getNames(forest_area)[c(-1,-15)] ## Last age-class in primary forest. First age class is very young
+
+  ac_distribution <- forest_area[,,secdf_ac]/dimSums(forest_area[,,secdf_ac],dim=3)
+  ac_distribution <- add_columns(x = ac_distribution,addnm = "acx",dim = 3.1) ## Add back 15th age class which is primf. Keep at 0
+  ac_distribution[,,"acx"] <- 0
+  ac_distribution <- add_columns(x = ac_distribution,addnm = "ac10",dim = 3.1) ## Add back 1st age class which is young. Keep at 0
+  ac_distribution[,,"ac10"] <- 0
+  ac_distribution <- ac_distribution[,,c(paste0("ac",seq(10,140,10)),"acx")]
+  ac_distribution[is.nan(ac_distribution)] <- 1/(length(getNames(ac_distribution))-2) ## Where no forest we don't want to create a mask with 0 so we allow uniform distribtuion
+
+  out <- ac_distribution
 
   return(list(
-    x=topsoilc,
+    x=out,
     weight=NULL,
-    unit="t per ha",
-    description="Topsoil carbon in tons per hectar for natural vegetation.",
+    unit="",
+    description="Fraction of each age class in secondary forest from each spatially explicit cell",
     isocountries=FALSE))
 }
