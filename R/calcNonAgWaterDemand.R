@@ -14,21 +14,44 @@
 
 calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="WATCH_ISIMIP_WATERGAP"){
 
-  # Read in nonagricultural water demand:
-  watdem_nonagr   <- readSource("WATERGAP",convert="onlycorrect", subtype=source)
+  ########################################
+  ############ Calculations  #############
+  #######################################
 
-  if(selectyears!="all"){
-    years   <- sort(findset(selectyears, noset="original"))
-    watdem_nonagr     <- watdem_nonagr[,years,]
+  # Old Non-Agricultural Waterdemand data (current default, will be deleted soon):
+  if(source=="WATCH_ISIMIP_WATERGAP"){
+    # Read in nonagricultural water demand:
+    watdem_nonagr      <- readSource("WATERGAP", convert="onlycorrect", subtype=source)
   }
 
-  if (seasonality=="grper") {
+  # New Non-Agricultural Waterdemand data (will be new default)
+  if(source=="WATERGAP2020"){
+    # Read in nonagricultural water demand:
+    watdem_nonagr      <- readSource("WATERGAP", convert="onlycorrect", subtype=source)
+    watdem_nonagr_hist <- readSource("ISIMIP", convert="onlycorrect", subtype="water_abstraction")
+
+    #mbind(watdem_nonagr_hist, watdem_nonagr)
+  }
+
+
+
+  ###########################################
+  ############ Function Output  #############
+  ###########################################
+  if(selectyears!="all"){
+    years         <- sort(findset(selectyears, noset="original"))
+    watdem_nonagr <- watdem_nonagr[,years,]
+  }
+
+  ### Non-agricultural water demands in Growing Period
+  if(seasonality=="grper"){
     # Get growing days per month
-    grow_days     <- calcOutput("GrowingPeriod", aggregate=FALSE) ####### grow_days doesn't work yet!!!!!!!!
+    grow_days <- calcOutput("GrowingPeriod", version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
+                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
 
     # Adjust years
     years_watdem <- getYears(watdem_nonagr)
-    years_grper <- getYears(grow_days)
+    years_grper  <- getYears(grow_days)
     if(length(years_watdem)>=length(years_grper)){
       years <- years_grper
     } else {
@@ -41,13 +64,14 @@ calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="W
     description <- "Non-agricultural water demand (industry, electiricty, domestic) in growing period"
   }
 
-  if (seasonality=="total") {
+  ### Total non-agricultural water demands per year
+  if(seasonality=="total"){
     out         <- watdem_nonagr[,,]
     description <- "Total non-agricultural water demand (industry, electiricty, domestic)"
   }
 
   # Check for NAs
-  if (any(is.na(watdem_nonagr))) {
+  if(any(is.na(watdem_nonagr))){
     stop("produced NA watdem_nonagr")
   }
 

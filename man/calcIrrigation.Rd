@@ -4,10 +4,33 @@
 \alias{calcIrrigation}
 \title{calcIrrigation}
 \usage{
-calcIrrigation(years = seq(1995, 2095, by = 5))
+calcIrrigation(
+  selectyears = "all",
+  version = "LPJmL5",
+  climatetype = "CRU_4",
+  time = "raw",
+  averaging_range = NULL,
+  dof = NULL,
+  harmonize_baseline = FALSE,
+  ref_year = NULL
+)
 }
 \arguments{
-\item{years}{years to be returned}
+\item{selectyears}{years to be returned}
+
+\item{version}{Switch between LPJmL4 and LPJmL5}
+
+\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
+
+\item{time}{Time smoothing: average, spline or raw (default)}
+
+\item{averaging_range}{only specify if time=="average": number of time steps to average}
+
+\item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
+
+\item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
+
+\item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 }
 \value{
 magpie object in cellular resolution

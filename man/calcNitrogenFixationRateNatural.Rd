@@ -10,7 +10,7 @@ calcNitrogenFixationRateNatural()
 magpie object in cellular resolution
 }
 \description{
-Function that extracts nitrogen fixation rates
+Function that extracts Nitrogen fixation rate of natural vegetation
 }
 \examples{
 \dontrun{ calcOutput("NitrogenFixationRateNatural", aggregate = FALSE) }

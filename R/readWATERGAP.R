@@ -18,7 +18,7 @@ readWATERGAP <- function(subtype="WATCH_IMAGE_WATERGAP"){
     x <- read.magpie(paste0(subtype,"/watdem_nonagr_0.5.mz"))
 
   } else if(subtype=="WATERGAP2020"){
-    # List of input files
+    ### List of input files
     input <- list()
     input[["ssp1"]] <- list()
     input[["ssp1"]][["wc"]] <- list()
@@ -29,7 +29,7 @@ readWATERGAP <- function(subtype="WATCH_IMAGE_WATERGAP"){
     input[["ssp3"]][["wc"]] <- gsub("ssp1_rcp4p5","ssp3_rcp6p0",input[["ssp1"]][["wc"]])
     input[["ssp3"]][["ww"]] <- gsub("ssp1_rcp4p5","ssp3_rcp6p0",input[["ssp1"]][["ww"]])
 
-    # Reading in files and combining to one magpie object:
+    ### Reading in files and combining to one magpie object:
     x <- read.magpie(paste0(subtype,"/",input[[1]][["wc"]][1]))
     getNames(x) <- paste0("sspX.",getNames(x))
     # Different SSPs:
@@ -38,7 +38,7 @@ readWATERGAP <- function(subtype="WATCH_IMAGE_WATERGAP"){
       for (j in (1:length(input[["ssp1"]]))) {
         # Different industries (manufacturing, electricity, domestic)
         for (k in (1:length(input[["ssp1"]][["wc"]]))) {
-          tmp <- read.magpie(paste0(path,input[[i]][[j]][k]))
+          tmp <- read.magpie(paste0(subtype,"/",input[[i]][[j]][k]))
           getNames(tmp) <- paste0("ssp",i,".",getNames(tmp))
           x <- mbind(x,tmp)
         }
@@ -47,7 +47,7 @@ readWATERGAP <- function(subtype="WATCH_IMAGE_WATERGAP"){
     # Remove redundant scenario (was for temporary use in loop only)
     x <- x[,,"sspX",invert=T]
 
-    # Correct years dimension:
+    ### Correct years dimension:
     years <- as.integer(gsub("y","",getYears(x)))
     # Provided WATERGAP data starts with 2005:
     start_year <- 2005 ## could be implemented as argument (!?!)
@@ -57,6 +57,15 @@ readWATERGAP <- function(subtype="WATCH_IMAGE_WATERGAP"){
 
     # Unit transformation (from m3/yr to mio. m3/yr):
     x <- x/1000000
+
+    ### Sum up over all non-agricultural water uses (domestic, industry)
+    # water withdrawal:
+    ww <- dimSums(mbind(x[,,"elecww"],x[,,"domww"],x[,,"manww"]),dim=3.2)
+    getNames(ww) <- paste0(getNames(ww),".withdrawal")
+    # water consumption:
+    wc <- dimSums(mbind(x[,,"elecuse"],x[,,"domuse"],x[,,"manuse"]),dim=3.2)
+    getNames(wc) <- paste0(getNames(wc),".consumption")
+    x <- mbind(ww,wc)
   }
 
   return(x)

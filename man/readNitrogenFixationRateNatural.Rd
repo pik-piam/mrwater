@@ -10,7 +10,7 @@ readNitrogenFixationRateNatural()
 Magpie objects with results on cellular level.
 }
 \description{
-Read nitrogen fixation rate
+Read Nitrogen fixation rate of natural vegetation
 }
 \examples{
 

@@ -13,7 +13,7 @@ correctNitrogenFixationRateNatural(x)
 Magpie object with results on cellular level
 }
 \description{
-Read Nitrogen Fixation Rate Natural
+Correct Nitrogen fixation rate of natural vegetation
 }
 \examples{
 

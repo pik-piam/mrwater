@@ -52,7 +52,7 @@ calcAvlWater <- function(selectyears="all",
 
       ### Calculate available water per month (avl_water_month)
       # Empty array
-      avl_water_month <- monthly_runoff_magpie
+      avl_water_month     <- monthly_runoff_magpie
       avl_water_month[,,] <- NA
 
       ### River basin water allocation algorithm:
@@ -78,7 +78,7 @@ calcAvlWater <- function(selectyears="all",
 
     } else {
       # Time smoothing:
-      x     <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly",
+      x     <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly", aggregate=FALSE,
                           harmonize_baseline=FALSE, time="raw")
 
       if(time=="average"){
@@ -102,13 +102,13 @@ calcAvlWater <- function(selectyears="all",
 
   } else {
 
-    if(time=="raw") {
+    if(time=="raw"){
       stop("Harmonization with raw data not possible. Select time='spline' when applying harmonize_baseline=TRUE")
     } else {
       # Load smoothed data
-      baseline <- calcOutput("AvlWater", version=version, climatetype=harmonize_baseline, seasonality="monthly",
+      baseline <- calcOutput("AvlWater", version=version, climatetype=harmonize_baseline, seasonality="monthly", aggregate=FALSE,
                              harmonize_baseline=FALSE, time=time, dof=dof, averaging_range=averaging_range)
-      x        <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly",
+      x        <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly", aggregate=FALSE,
                              harmonize_baseline=FALSE, time=time, dof=dof, averaging_range=averaging_range)
       # Harmonize to baseline
       avl_water_month <- toolHarmonize2Baseline(x=x, base=baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE)
@@ -125,7 +125,7 @@ calcAvlWater <- function(selectyears="all",
   ###########################################
 
   ### Available water per cell per month
-  if(seasonality=="monthly") {
+  if(seasonality=="monthly"){
     # Check for NAs
     if(any(is.na(avl_water_month))){
       stop("produced NA water availability")
@@ -135,7 +135,7 @@ calcAvlWater <- function(selectyears="all",
   }
 
   ### Total water available per cell per year
-  if(seasonality=="total") {
+  if(seasonality=="total"){
     # Sum up over all month:
     avl_water_total <- dimSums(avl_water_month, dim=3)
     # Check for NAs
@@ -147,7 +147,7 @@ calcAvlWater <- function(selectyears="all",
   }
 
   ### Water available in growing period per cell per year
-  if(seasonality=="grper") {
+  if(seasonality=="grper"){
     # magpie object with days per month with same dimension as avl_water_month
     tmp <- c(31,28,31,30,31,30,31,31,30,31,30,31)
     month_days <- new.magpie(names=dimnames(avl_water_month)[[3]])
@@ -162,7 +162,6 @@ calcAvlWater <- function(selectyears="all",
     # Growing days per month
     grow_days <- calcOutput("GrowingPeriod", version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
-
 
     # Available water in growing period
     avl_water_grper <- avl_water_day*grow_days
