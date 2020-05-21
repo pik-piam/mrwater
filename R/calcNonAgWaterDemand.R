@@ -30,6 +30,8 @@ calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="W
     watdem_nonagr      <- readSource("WATERGAP", convert="onlycorrect", subtype=source)
     watdem_nonagr_hist <- readSource("ISIMIP", convert="onlycorrect", subtype="water_abstraction")
 
+    watdem_nonagr[59000,"y2005",]
+    watdem_nonagr_hist[59000,"y2005",]
     #mbind(watdem_nonagr_hist, watdem_nonagr)
   }
 

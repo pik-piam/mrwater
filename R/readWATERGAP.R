@@ -30,14 +30,14 @@ readWATERGAP <- function(subtype="WATCH_IMAGE_WATERGAP"){
     input[["ssp3"]][["ww"]] <- gsub("ssp1_rcp4p5","ssp3_rcp6p0",input[["ssp1"]][["ww"]])
 
     ### Reading in files and combining to one magpie object:
-    x <- read.magpie(paste0(subtype,"/",input[[1]][["wc"]][1]))
+    x           <- read.magpie(paste0(subtype,"/",input[[1]][["wc"]][1]))
     getNames(x) <- paste0("sspX.",getNames(x))
     # Different SSPs:
-    for (i in (1:length(input))) {
+    for (i in (1:length(input))){
       # Different water use types (withdrawal, consumption)
-      for (j in (1:length(input[["ssp1"]]))) {
+      for (j in (1:length(input[["ssp1"]]))){
         # Different industries (manufacturing, electricity, domestic)
-        for (k in (1:length(input[["ssp1"]][["wc"]]))) {
+        for (k in (1:length(input[["ssp1"]][["wc"]]))){
           tmp <- read.magpie(paste0(subtype,"/",input[[i]][[j]][k]))
           getNames(tmp) <- paste0("ssp",i,".",getNames(tmp))
           x <- mbind(x,tmp)
@@ -48,11 +48,11 @@ readWATERGAP <- function(subtype="WATCH_IMAGE_WATERGAP"){
     x <- x[,,"sspX",invert=T]
 
     ### Correct years dimension:
-    years <- as.integer(gsub("y","",getYears(x)))
+    years       <- as.integer(gsub("y","",getYears(x)))
     # Provided WATERGAP data starts with 2005:
-    start_year <- 2005 ## could be implemented as argument (!?!)
-    years <- years + start_year
-    years <- paste0("y",years)
+    start_year  <- 2005
+    years       <- years + start_year
+    years       <- paste0("y",years)
     getYears(x) <- years
 
     # Unit transformation (from m3/yr to mio. m3/yr):
@@ -60,12 +60,12 @@ readWATERGAP <- function(subtype="WATCH_IMAGE_WATERGAP"){
 
     ### Sum up over all non-agricultural water uses (domestic, industry)
     # water withdrawal:
-    ww <- dimSums(mbind(x[,,"elecww"],x[,,"domww"],x[,,"manww"]),dim=3.2)
+    ww           <- dimSums(mbind(x[,,"elecww"],x[,,"domww"],x[,,"manww"]),dim=3.2)
     getNames(ww) <- paste0(getNames(ww),".withdrawal")
     # water consumption:
-    wc <- dimSums(mbind(x[,,"elecuse"],x[,,"domuse"],x[,,"manuse"]),dim=3.2)
+    wc           <- dimSums(mbind(x[,,"elecuse"],x[,,"domuse"],x[,,"manuse"]),dim=3.2)
     getNames(wc) <- paste0(getNames(wc),".consumption")
-    x <- mbind(ww,wc)
+    x            <- mbind(ww,wc)
   }
 
   return(x)
