@@ -13,6 +13,7 @@
 #'
 #' @import magclass
 #' @import madrat
+#' @importFrom lucode path
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Kristine Karstens, Abhijeet Mishra

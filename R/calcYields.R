@@ -23,7 +23,7 @@
 #' @importFrom madrat toolFillYears
 
 calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
-                       harmonize_baseline=FALSE, ref_year="y2015", calib_proxy=TRUE, split_cropcalc=FALSE, selectyears="all"){
+                       harmonize_baseline=FALSE, ref_year="y2015", calib_proxy=TRUE, split_cropcalc=TRUE, selectyears="all"){
 
   LPJ2MAG      <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
