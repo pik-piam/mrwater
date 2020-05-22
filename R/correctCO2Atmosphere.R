@@ -1,20 +1,19 @@
-#' @title correctSoilClassification
-#' @description Correct soil content
+#' @title correctCO2Atmosphere
+#' @description Correct atmosphere co2 concentration
 #' @param x magpie object provided by the read function
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #' @author Marcos Alves, Kristine Karstens
 #' @seealso
-#' \code{\link{readSoilClassification}},
+#' \code{\link{readCO2Atmosphere}}
 #' @examples
 #'
 #' \dontrun{
-#'   readSource("SoilClassification", subtype="HWSD.soil", convert="onlycorrect")
+#' readSource("CO2Atmosphere", subtype="rcp8p5", convert="onlycorrect")
 #' }
-#'
 #' @import madrat
 #' @import magclass
 
-correctSoilClassification <- function(x){
+correctCO2Atmosphere <- function(x){
 
   x <- toolConditionalReplace(x, conditions = c("is.na()"), replaceby = 0)
   x <- toolCell2isoCell(x)
