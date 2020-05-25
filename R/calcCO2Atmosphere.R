@@ -29,6 +29,6 @@ calcCO2Atmosphere <-function(rcp, level="cellular"){
     x=x,
     weight=NULL,
     unit="ppm",
-    description="Atmospherec CO2 concentration",
+    description="Atmosphere CO2 concentration",
     isocountries=FALSE))
 }
