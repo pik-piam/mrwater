@@ -1,5 +1,5 @@
 #' @title readSoilClassification
-#' @description Read classification data from lpjml
+#' @description Read soil classification data used as input for lpjml
 #' @param subtype Switch between different inputs
 #' @return Magpie object with results on cellular level for soil types
 #' @author Marcos Alves, Kristine Karstens

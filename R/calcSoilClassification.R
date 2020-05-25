@@ -1,6 +1,18 @@
+#' @title calcSoilCharacteristics
+#' @description Calculate Soil Characteristics based on a HWDS soil classification map
+#' @param x magpie object provided by the read function
+#' @return Magpie objects with results on cellular level.
+#' @author Marcos Alves
+#' @seealso
+#' \code{\link{readSoilClassification}},
+#' @examples
+#'
+#' \dontrun{
+#'   readSource("SoilClassification", subtype="HWSD.soil", convert="onlycorrect")
+#' }
+#'
 #' @import madrat
 #' @importFrom dplyr left_join
-
 
 calcSoilCharacteristics <- function() {
   x = readSource("SoilClassification", subtype = "HWSD.soil", convert="onlycorrect")
@@ -23,9 +35,10 @@ calcSoilCharacteristics <- function() {
   }
 
   w <- as.magpie(w, spatial = 1)
+  x <- toolCell2isoCell(w)
 
   return(list(
-    x=w,
+    x=x,
     weight=NULL,
     unit=
 "Ks: mm/h, Sf: mm ,
@@ -51,6 +64,5 @@ calcSoilCharacteristics <- function() {
  cond_100: thermal conductivity (W/m^2/K) at saturation (all water) following Lawrence and Slater (2008) ,
  cond_100_ice: thermal conductivity (W/m^2/K) at saturation (all ice) Lawrence and Slater (2008)",
     isocountries=FALSE))
-
 }
 
