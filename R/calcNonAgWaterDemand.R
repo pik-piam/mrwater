@@ -27,12 +27,26 @@ calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="W
   # New Non-Agricultural Waterdemand data (will be new default)
   if(source=="WATERGAP2020"){
     # Read in nonagricultural water demand:
-    watdem_nonagr      <- readSource("WATERGAP", convert="onlycorrect", subtype=source)
-    watdem_nonagr_hist <- readSource("ISIMIP", convert="onlycorrect", subtype="water_abstraction")
+    watdem_nonagr_WATERGAP      <- readSource("WATERGAP", convert="onlycorrect", subtype="WATERGAP2020")
+    watdem_nonagr_ISIMIP_hist   <- readSource("ISIMIP", convert="onlycorrect", subtype="water_abstraction.past")
+    watdem_nonagr_ISIMIP_future <- readSource("ISIMIP", convert="onlycorrect", subtype="water_abstraction.future")
 
-    watdem_nonagr[59000,"y2005",]
-    watdem_nonagr_hist[59000,"y2005",]
-    #mbind(watdem_nonagr_hist, watdem_nonagr)
+    ### Combine datasets from different sources:
+    # historical and future ISIMIP data:
+    watdem_ISIMIP <- mbind(watdem_nonagr_ISIMIP_hist, watdem_nonagr_ISIMIP_future)
+
+    # empty magpie object
+    cells <- getCells(watdem_nonagr_WATERGAP)
+    years <- getYears(watdem_ISIMIP)
+    names <- c(getNames(watdem_nonagr_WATERGAP),paste0("ISIMIP.",getNames(watdem_ISIMIP)))
+    watdem_nonagr <- new.magpie(cells,years,names)
+
+    # historical and future ISIMIP data
+    watdem_nonagr[,getYears(watdem_ISIMIP),getNames(watdem_ISIMIP)] <- watdem_ISIMIP[,getYears(watdem_ISIMIP),getNames(watdem_ISIMIP)]
+    # future WATERGAP scenarios
+    watdem_nonagr[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)] <- watdem_nonagr_WATERGAP[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)]
+    # historical data provided by ISIMIP (same for all scenarios)
+    watdem_nonagr[,getYears(watdem_nonagr_ISIMIP_hist),] <- watdem_nonagr_hist[,getYears(watdem_nonagr_ISIMIP_hist),]
   }
 
 
@@ -62,7 +76,7 @@ calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="W
     rm(years_grper, years_watdem)
 
     # Calculate non-agricultural water demand in growing period
-    out         <- watdem_nonagr[,years,]*(dimSums(grow_days[,years,],dim=3)/365)
+    out         <- ((watdem_nonagr[,years,])/365)*dimSums(grow_days[,years,],dim=3)
     description <- "Non-agricultural water demand (industry, electiricty, domestic) in growing period"
   }
 

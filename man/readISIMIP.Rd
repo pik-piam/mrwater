@@ -4,19 +4,19 @@
 \alias{readISIMIP}
 \title{readISIMIP}
 \usage{
-readISIMIP(subtype = "water_abstraction")
+readISIMIP(subtype = "water_abstraction.past")
 }
 \arguments{
-\item{subtype}{Data source to be read from}
+\item{subtype}{Data source to be read from and time frame (past, future) to be read in, separated by "."}
 }
 \value{
 MAgPIE object of non-agricultural water demand at 0.5 cellular level in mio. m^3
 }
 \description{
-Read in non-agricultural water demand data from ISIMIP2b input data
+Read in non-agricultural water demand data from ISIMIP3b input data
 }
 \examples{
-\dontrun{ readSource("ISIMIP", convert="onlycorrect") }
+\dontrun{ readSource("ISIMIP", subtype="water_abstraction.past", convert="onlycorrect") }
 
 }
 \author{

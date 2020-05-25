@@ -4,16 +4,16 @@
 \alias{readSoilClassification}
 \title{readSoilClassification}
 \usage{
-readSoilClassification(subtype = "SoilClassification:HWSD.soil")
+readSoilClassification(subtype = "HWSD.soil")
 }
 \arguments{
 \item{subtype}{Switch between different inputs}
 }
 \value{
-Magpie object with results on cellular level for soil characteristics.
+Magpie object with results on cellular level for soil types
 }
 \description{
-Read Soil parameter data for LPJmL
+Read soil classification data used as input for lpjml
 }
 \examples{
 
@@ -21,12 +21,6 @@ Read Soil parameter data for LPJmL
 readSource("SoilClassification", subtype="HWSD.soil", convert="onlycorrect")
 }
 
-<<<<<<< HEAD
-=======
-}
-\seealso{
-\code{\link{readSoilClassification}}
->>>>>>> 6971f48ef1772a1c023b7e2013df42d80df3edbe
 }
 \author{
 Marcos Alves, Kristine Karstens

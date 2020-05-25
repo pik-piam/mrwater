@@ -7,13 +7,13 @@
 correctSoilClassification(x)
 }
 \arguments{
-\item{x}{magpie object provided by the read function}
+\item{x}{Magpie object provided by the read function}
 }
 \value{
 List of magpie objects with results on cellular level, weight, unit and description.
 }
 \description{
-Correct soil content
+Correct soil classification
 }
 \examples{
 

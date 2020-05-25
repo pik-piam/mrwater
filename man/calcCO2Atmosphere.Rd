@@ -2,12 +2,12 @@
 % Please edit documentation in R/calcCO2Atmosphere.R
 \name{calcCO2Atmosphere}
 \alias{calcCO2Atmosphere}
-\title{calcRrLayer}
+\title{calcCO2Atmosphere}
 \usage{
-calcCO2Atmosphere(rcp = "rcp8p5", level = "cellular")
+calcCO2Atmosphere(rcp, level = "cellular")
 }
 \arguments{
-\item{rcp}{specify the RCP}
+\item{rcp}{specify the RCP (rcp8p5, rcp6p0, rcp4p5 or rcp2p6)}
 
 \item{level}{specify the spatial output level}
 }
@@ -15,12 +15,12 @@ calcCO2Atmosphere(rcp = "rcp8p5", level = "cellular")
 magpie object in cellular resolution
 }
 \description{
-Function extracts range-rarity as used for biodiversity loss
+Disaggregate CO2 global atmospheric concentration to cellular level
 }
 \examples{
-\dontrun{ calcOutput("RrLayer", aggregate = FALSE) }
+\dontrun{ calcOutput("CO2Atmosphere", aggregate = FALSE) }
 
 }
 \author{
-Michael Windisch
+Marcos Alves, Kristine Karstens
 }
