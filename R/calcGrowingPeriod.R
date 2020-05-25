@@ -243,6 +243,7 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
 
 
     } else {
+
       # Time smoothing:
       x <- calcOutput("GrowingPeriod", version=version, climatetype=climatetype, harmonize_baseline=FALSE,
                       time="raw", yield_ratio=yield_ratio, aggregate = FALSE)
@@ -259,6 +260,12 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
         # Replace value in 2100 with value from 2099 (LPJmL output ends in 2099)
         if ("y2099" %in% getYears(out)) out <- toolFillYears(out, c(getYears(out, as.integer=TRUE)[1]:2100))
 
+        # replace values above days of a month with days of the month & negative values with 0
+        month        <- c("jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec")
+        month_length <- c(   31,   28,   31,   30,   31,   30,   31,   31,   30,   31,   30,   31)
+        names(month_length) <- month
+        out[out > as.magpie(month_length)] <- magpie_expand(as.magpie(month_length),out)[out > as.magpie(month_length)]
+        out[out < 0] <- 0
 
       } else if(time!="raw"){
         stop("Time argument not supported!")
@@ -278,7 +285,14 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
                              harmonize_baseline=FALSE, time=time,dof=dof,averaging_range=averaging_range,
                              yield_ratio=yield_ratio, aggregate = FALSE)
       # Harmonize to baseline
-      out <- toolHarmonize2Baseline(x=x, base=baseline, ref_year=ref_year, hard_cut=TRUE)
+      out <- toolHarmonize2Baseline(x=x, base=baseline, ref_year=ref_year, hard_cut=FALSE)
+
+      # replace values above days of a month with days of the month & negative values with 0
+      month        <- c("jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec")
+      month_length <- c(   31,   28,   31,   30,   31,   30,   31,   31,   30,   31,   30,   31)
+      names(month_length) <- month
+      out[out > as.magpie(month_length)] <- magpie_expand(as.magpie(month_length),out)[out > as.magpie(month_length)]
+      out[out < 0] <- 0
     }
   }
 

@@ -13,7 +13,7 @@ calcYields(
   harmonize_baseline = FALSE,
   ref_year = "y2015",
   calib_proxy = TRUE,
-  split_cropcalc = FALSE,
+  split_cropcalc = TRUE,
   selectyears = "all"
 )
 }

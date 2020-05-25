@@ -21,6 +21,12 @@ Read Soil parameter data for LPJmL
 readSource("SoilClassification", subtype="HWSD.soil", convert="onlycorrect")
 }
 
+<<<<<<< HEAD
+=======
+}
+\seealso{
+\code{\link{readSoilClassification}}
+>>>>>>> 6971f48ef1772a1c023b7e2013df42d80df3edbe
 }
 \author{
 Marcos Alves, Kristine Karstens
