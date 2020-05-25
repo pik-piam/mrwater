@@ -17,7 +17,11 @@
 readCO2Atmosphere <-
   function(subtype = "rcp8p5") {
 
-    files <- c(rcp8p5 = "rcp85_CO2_1765-2200.dat", rcp8p5 = "rcp85_CO2_1765-2200.dat")
+    files <- c(rcp8p5 = "rcp85_CO2_1765-2200.dat",
+               rcp6p0 = "rcp60_CO2_1765-2200.dat",
+               rcp4p5 = "rcp45_CO2_1765-2200.dat",
+               rcp2p6 = "rcp26_CO2_1765-2200.dat")
+
     file  <- toolSubtypeSelect(subtype,files)
 
     years <-seq(1995,2100, 1)

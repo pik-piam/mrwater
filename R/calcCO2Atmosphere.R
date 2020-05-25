@@ -1,22 +1,21 @@
-#' @title calcRrLayer
-#' @description Function extracts range-rarity as used for biodiversity loss
-#' @param rcp specify the RCP
+#' @title calcCO2Atmosphere
+#' @description Disaggregate CO2 global atmospheric concentration to cellular level
+#' @param rcp specify the RCP (rcp8p5, rcp6p0, rcp4p5 or rcp2p6)
 #' @param level specify the spatial output level
-#'
 #' @return magpie object in cellular resolution
-#' @author Michael Windisch
+#' @author Marcos Alves, Kristine Karstens
 #'
 #' @examples
-#' \dontrun{ calcOutput("RrLayer", aggregate = FALSE) }
+#' \dontrun{ calcOutput("CO2Atmosphere", aggregate = FALSE) }
 #'
 #' @import madrat
 #' @import magclass
 #' @importFrom magpiesets findset
 #'
 
-calcCO2Atmosphere <-function(rcp="rcp8p5", level="cellular"){
+calcCO2Atmosphere <-function(rcp, level="cellular"){
 
-  x <- readSource("CO2Atmosphere", subtype=rcp, convert=FALSE)
+  x <- readSource("CO2Atmosphere", subtype=rcp, convert="onlycorrect")
 
   if(level=="cellular"){
 
@@ -29,9 +28,7 @@ calcCO2Atmosphere <-function(rcp="rcp8p5", level="cellular"){
   return(list(
     x=x,
     weight=NULL,
-    unit="Range-Rarity (?)",
-    description="range-rarity layer provided by David Leclere from IIASA, Bending the curve on biodiversity loss",
+    unit="ppm",
+    description="Atmospherec CO2 concentration",
     isocountries=FALSE))
-
-  "C:/magpie_inputdata/sources"
 }
