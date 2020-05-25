@@ -4,13 +4,13 @@
 \alias{readCO2Atmosphere}
 \title{readCO2Atmosphere}
 \usage{
-readCO2Atmosphere(subtype = "CO2Atmosphere:Elevated.CO2")
+readCO2Atmosphere(subtype = "rcp8p5")
 }
 \arguments{
 \item{subtype}{Switch between different inputs}
 }
 \value{
-List of magpie objects with results on cellular level, weight, unit and description.
+Magpie objects with results on global level
 }
 \description{
 Read CO2 global atmospheric concentration
@@ -18,8 +18,9 @@ Read CO2 global atmospheric concentration
 \examples{
 
 \dontrun{
-readSource("CO2Atmosphere", subtype="Elevated.CO2", convert="onlycorrect")
+readSource("CO2Atmosphere", subtype="rcp8p5", convert=FALSE)
 }
+
 }
 \seealso{
 \code{\link{readCO2Atmosphere}}

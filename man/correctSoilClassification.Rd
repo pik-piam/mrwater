@@ -4,12 +4,10 @@
 \alias{correctSoilClassification}
 \title{correctSoilClassification}
 \usage{
-correctSoilClassification(x, subtype)
+correctSoilClassification(x)
 }
 \arguments{
 \item{x}{magpie object provided by the read function}
-
-\item{subtype}{Switch between different inputs}
 }
 \value{
 List of magpie objects with results on cellular level, weight, unit and description.
@@ -28,5 +26,5 @@ Correct soil content
 \code{\link{readSoilClassification}},
 }
 \author{
-Marcos alves, Kristine Karstens
+Marcos Alves, Kristine Karstens
 }

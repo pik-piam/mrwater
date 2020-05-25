@@ -10,19 +10,17 @@ readSoilClassification(subtype = "SoilClassification:HWSD.soil")
 \item{subtype}{Switch between different inputs}
 }
 \value{
-List of magpie objects with results on cellular level, weight, unit and description.
+Magpie object with results on cellular level for soil characteristics.
 }
 \description{
-Read soil classification
+Read Soil parameter data for LPJmL
 }
 \examples{
 
 \dontrun{
 readSource("SoilClassification", subtype="HWSD.soil", convert="onlycorrect")
 }
-}
-\seealso{
-\code{\link{readSoilClassification}}
+
 }
 \author{
 Marcos Alves, Kristine Karstens

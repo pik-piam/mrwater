@@ -1,10 +1,8 @@
 #' @title readSoilClassification
-#' @description Read soil classification
+#' @description Read classification data from lpjml
 #' @param subtype Switch between different inputs
-#' @return List of magpie objects with results on cellular level, weight, unit and description.
+#' @return Magpie object with results on cellular level for soil types
 #' @author Marcos Alves, Kristine Karstens
-#' @seealso
-#' \code{\link{readSoilClassification}}
 #' @examples
 #'
 #' \dontrun{
@@ -17,9 +15,9 @@
 #' @importFrom lucode path
 
 readSoilClassification <-
-  function(subtype = "SoilClassification:HWSD.soil") {
-    if (grepl("\\.", subtype) & grepl("\\:", subtype)) {
-      subtype     <- strsplit(gsub(":", "/" , subtype), split = "\\.")
+  function(subtype = "HWSD.soil") {
+    if (grepl("\\.", subtype) & !grepl("\\:", subtype)) {
+      subtype     <- strsplit(subtype, split = "\\.")
       folder      <- unlist(subtype)[1]
       subtype     <- unlist(subtype)[2]
 
@@ -31,7 +29,7 @@ readSoilClassification <-
 
     }
 
-    if (exists(path(folder))) {
+    if (dir.exists(path(folder))) {
       files_list <- list.files(path(folder))
       files <- c(soil = files_list[grep("soil", files_list)])
     } else {
@@ -47,36 +45,15 @@ readSoilClassification <-
 
     file_name <- toolSubtypeSelect(subtype, files)
 
+    sk <- file(path(folder, file_name), "rb")
+    y <- readBin(sk, integer(), n = 67460, size = 1)
+    close(sk)
+    y = y[which(magclassdata$grid_67420_59199 == 1)]
+    y = y[magclassdata$cellbelongings$LPJ.Index]
 
-    if (subtype %in% "soil") {
-      sk <- file(path(folder, file_name), "rb")
-      y <- readBin(sk, integer(), n = 67460, size = 1)
-      close(sk)
-      y = y[which(magclassdata$grid_67420_59199 == 1)]
-      y = y[magclassdata$cellbelongings$LPJ.Index]
-      df.y = data.frame("soil" = y)
+    x <-  collapseNames(as.magpie(y, spatial = 1))
+    getNames(x) <- subtype
 
-      soilpar = read.csv(path(folder,"soilpar.csv"))
-      y = left_join(df.y, soilpar, by = "soil")
-
-      years <- seq(1995, 2099, 1)
-
-      y = as.matrix(y)
-      x <-
-        array(
-          NaN,
-          dim = c(59199, length(years), dim(soilpar)[2]),
-          dimnames = list(1:59199, years, colnames(soilpar))
-        )
-      for (i in 1:length(years)) {
-        x[, i,] <- y
-      }
-      x <-  collapseNames(as.magpie(x, spatial = 1))
-      getNames(x) <- subtype
-
-    } else {
-      stop(paste0("subtype ", subtype, " is not existing"))
-    }
     return(x)
 
   }
