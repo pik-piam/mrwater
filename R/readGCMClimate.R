@@ -1,7 +1,7 @@
 #' @title readGCMClimate
 #' @description Read Climate data used as LPJmL inputs into MAgPIE objects
 #' @param subtype Switch between different inputs
-#' @return List of magpie objects with results on cellular level, weight, unit and description.
+#' @return MAgPIE objects with results on cellular level.
 #' @author Marcos Alves, Kristine Karstens
 #' @seealso
 #' \code{\link{readGCMClimate}}
@@ -28,7 +28,7 @@ readGCMClimate <-
 
     }
 
-    if (exists(folder)) {
+    if (dir.exists(folder)) {
       files_list <- list.files(folder)
       files <-
         c(temperature           = files_list[grep("tas", files_list)],
@@ -71,3 +71,4 @@ readGCMClimate <-
     return(x)
 
   }
+
