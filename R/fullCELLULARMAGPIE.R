@@ -36,6 +36,14 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 
     # 14 yields
     # calcOutput("Yields")
+    # These outputs need to be aggregated using weighted area mean
+    calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.temperature_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "temperature", rcp = "rcp85")
+    calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.precipitation_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "precipitation", rcp = "rcp85")
+    calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.longwave_radiation_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "longwave_radiation", rcp = "rcp85")
+    calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.shortwave_radiation_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "shortwave_radiation", rcp = "rcp85")
+    calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.wetdays_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "wetdays", rcp = "rcp85")
+    calcOutput("CO2Atmosphere", aggregate="cluster", file="calcCO2Atmosphere_c200.mz", rcp="rcp85", level="cellular")
+    calcOutput("SoilCharacteristics", aggregate="cluster", file="SoilCharacteristics_c200.mz")
 
     #10 land
     calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_0.5.mz")
