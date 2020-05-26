@@ -1,6 +1,6 @@
 #' @title calcCO2Atmosphere
 #' @description Disaggregate CO2 global atmospheric concentration to cellular level
-#' @param rcp specify the RCP (rcp8p5, rcp6p0, rcp4p5 or rcp2p6)
+#' @param rcp specify the RCP (rcp85, rcp60, rcp45 or rcp26)
 #' @param level specify the spatial output level
 #' @return magpie object in cellular resolution
 #' @author Marcos Alves, Kristine Karstens
@@ -13,7 +13,7 @@
 #' @importFrom magpiesets findset
 #'
 
-calcCO2Atmosphere <-function(rcp, level="cellular"){
+calcCO2Atmosphere <-function(rcp = "rcp85", level="cellular"){
 
   x <- readSource("CO2Atmosphere", subtype=rcp, convert="onlycorrect")
 

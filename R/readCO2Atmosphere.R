@@ -8,19 +8,19 @@
 #' @examples
 #'
 #' \dontrun{
-#' readSource("CO2Atmosphere", subtype="rcp8p5", convert=FALSE)
+#' readSource("CO2Atmosphere", subtype="rcp85", convert=FALSE)
 #' }
 #'
 #' @import madrat
 #' @importFrom lucode path
 
 readCO2Atmosphere <-
-  function(subtype = "rcp8p5") {
+  function(subtype = "rcp85") {
 
-    files <- c(rcp8p5 = "rcp85_CO2_1765-2200.dat",
-               rcp6p0 = "rcp60_CO2_1765-2200.dat",
-               rcp4p5 = "rcp45_CO2_1765-2200.dat",
-               rcp2p6 = "rcp26_CO2_1765-2200.dat")
+    files <- c(rcp85 = "rcp85_CO2_1765-2200.dat",
+               rcp60 = "rcp60_CO2_1765-2200.dat",
+               rcp45 = "rcp45_CO2_1765-2200.dat",
+               rcp26 = "rcp26_CO2_1765-2200.dat")
 
     file  <- toolSubtypeSelect(subtype,files)
 
