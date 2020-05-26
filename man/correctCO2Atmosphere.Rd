@@ -18,7 +18,7 @@ Correct atmosphere co2 concentration
 \examples{
 
 \dontrun{
-readSource("CO2Atmosphere", subtype="rcp8p5", convert="onlycorrect")
+readSource("CO2Atmosphere", subtype="rcp85", convert="onlycorrect")
 }
 }
 \seealso{

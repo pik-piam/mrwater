@@ -31,7 +31,7 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="raw", averag
 
     lpjml_crops  <- unique(LPJ2MAG$LPJmL)
     irrig_types  <- c("irrigated","rainfed")
-    lpjml_yields <- NULL
+    yields       <- NULL
 
     for(crop in lpjml_crops){
 
@@ -39,20 +39,19 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="raw", averag
       tmp     <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="harvest", subdata=subdata, time=time, averaging_range=averaging_range, dof=dof,
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE, selectyears=selectyears, aggregate=FALSE)
 
-      lpjml_yields  <- mbind(lpjml_yields, tmp)
+      yields  <- mbind(yields, tmp)
     }
 
   } else {
 
-    lpjml_yields    <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="harvest", time=time, averaging_range=averaging_range, dof=dof,
+    yields    <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="harvest", time=time, averaging_range=averaging_range, dof=dof,
                           harmonize_baseline=harmonize_baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE, selectyears=selectyears, aggregate=FALSE)
   }
-
   # Aggregate to MAgPIE crops
-  mag_yields   <- toolAggregate(lpjml_yields, LPJ2MAG, from = "LPJmL", to = "MAgPIE", dim=3.1, partrel=TRUE)
+  yields    <- toolAggregate(yields, LPJ2MAG, from = "LPJmL", to = "MAgPIE", dim=3.1, partrel=TRUE)
 
   # Check for NAs
-  if(any(is.na(mag_yields))){
+  if(any(is.na(yields))){
     stop("produced NA yields")
   }
 
@@ -70,7 +69,7 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="raw", averag
 
     FAOYields         <- dimSums(FAOproduction,dim=1)/dimSums(MAGarea, dim=1)
 
-    Calib <- new.magpie("GLO", getYears(mag_yields),c(getNames(FAOYields), "pasture"), fill=1)
+    Calib <- new.magpie("GLO", getYears(yields),c(getNames(FAOYields), "pasture"), fill=1)
     Calib[,getYears(FAOYields),"oilpalm"]   <- FAOYields[,,"oilpalm"]/FAOYields[,,"groundnut"]      # LPJmL proxy for oil palm is groundnut
     Calib[,getYears(FAOYields),"cottn_pro"] <- FAOYields[,,"cottn_pro"]/FAOYields[,,"groundnut"]    # LPJmL proxy for cotton is groundnut
     Calib[,getYears(FAOYields),"foddr"]     <- FAOYields[,,"foddr"]/FAOYields[,,"maiz"]             # LPJmL proxy for fodder is maize
@@ -78,14 +77,14 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="raw", averag
     Calib[,getYears(FAOYields),"potato"]    <- FAOYields[,,"potato"]/FAOYields[,,"sugr_beet"]       # LPJmL proxy for potato is sugar beet
 
     # interpolate between FAO years
-    Calib <- toolFillYears(Calib, getYears(mag_yields))
+    Calib <- toolFillYears(Calib, getYears(yields))
 
     # recalibrate yields for proxys
-    mag_yields           <- Calib[,,getNames(mag_yields, dim=1)] * mag_yields
+    yields           <- Calib[,,getNames(yields, dim=1)] * yields
   }
 
   return(list(
-    x=mag_yields,
+    x=yields,
     weight=NULL,
     unit="t per ha",
     description="Yields in tons per hectar for different crop types.",

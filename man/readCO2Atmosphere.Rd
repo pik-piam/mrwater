@@ -4,7 +4,7 @@
 \alias{readCO2Atmosphere}
 \title{readCO2Atmosphere}
 \usage{
-readCO2Atmosphere(subtype = "rcp8p5")
+readCO2Atmosphere(subtype = "rcp85")
 }
 \arguments{
 \item{subtype}{Switch between different inputs}
@@ -18,7 +18,7 @@ Read CO2 global atmospheric concentration
 \examples{
 
 \dontrun{
-readSource("CO2Atmosphere", subtype="rcp8p5", convert=FALSE)
+readSource("CO2Atmosphere", subtype="rcp85", convert=FALSE)
 }
 
 }

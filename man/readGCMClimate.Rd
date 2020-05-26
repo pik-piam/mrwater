@@ -10,7 +10,7 @@ readGCMClimate(subtype = "GCMClimate:rcp85:HadGEM2.temperature")
 \item{subtype}{Switch between different inputs}
 }
 \value{
-List of magpie objects with results on cellular level, weight, unit and description.
+MAgPIE objects with results on cellular level.
 }
 \description{
 Read Climate data used as LPJmL inputs into MAgPIE objects

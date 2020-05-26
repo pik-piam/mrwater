@@ -48,6 +48,10 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
 
       LPJ2MAG      <- toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
+      # Read yields first
+      yields       <- collapseNames(calcOutput("Yields", version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
+                                         harmonize_baseline=FALSE, calib_proxy=FALSE, split_cropcalc=FALSE, aggregate = FALSE)[,,"irrigated"])
+
       # Load Sowing dates from LPJmL (use just rainfed dates since they do not differ for irrigated and rainfed)
       sowd         <- collapseNames(calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="sdate", time="raw",
                                                harmonize_baseline=FALSE, aggregate=FALSE)[,,"rainfed"])
@@ -79,7 +83,26 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
       ####################################################################################
 
       ####################################################################################
-      #Step 2 remove wintercrops from both calculations for the northern hemisphere: sowd>180, hard>365
+      #Step 2 remove crops that have an irrigated yield below 10% of global average (total cell area as aggregation weight)
+      ####################################################################################
+
+      area   <- dimSums(calcOutput("LUH2v2", cellular=TRUE, aggregate=FALSE, years="y1995"), dim = 3)
+      yields <- collapseNames(yields[,,good_crops])
+
+      cell2GLO     <- array(c(getCells(yields), rep("GLO",59199)), dim=c(59199,2))
+      glo_yields   <- toolAggregate(yields, cell2GLO, weight = setYears(area, NULL))
+      ratio_yields <- yields/glo_yields
+
+      rm_lowyield   <- yields
+      rm_lowyield[] <- 1
+      rm_lowyield[ratio_yields < 0.1] <- NA
+
+      rm(ratio_yields,yields,area,glo_yields)
+
+      ####################################################################################
+
+      ####################################################################################
+      #Step 3 remove wintercrops from both calculations for the northern hemisphere: sowd>180, hard>365
       ####################################################################################
 
       cells_northern_hemisphere <- which(magpie_coord[,2] > 0)
@@ -91,25 +114,6 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
                  hard[cells_northern_hemisphere,,]<sowd[cells_northern_hemisphere,,],          ### WHY???
                NA,1)
 
-      ####################################################################################
-
-      ####################################################################################
-      #Step 3 remove crops that have an irrigated yield below 10% of global average (total cell area as aggregation weight)
-      ####################################################################################
-
-      area   <- dimSums(calcOutput("LUH2v2", cellular=TRUE, aggregate=FALSE, years="y1995"), dim = 3)
-      yields <- collapseNames(calcOutput("Yields", version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
-                                         harmonize_baseline=harmonize_baseline, ref_year=ref_year, calib_proxy=FALSE, aggregate = FALSE)[,,good_crops][,,"irrigated"])
-
-      cell2GLO     <- array(c(getCells(yields), rep("GLO",59199)), dim=c(59199,2))
-      glo_yields   <- toolAggregate(yields, cell2GLO, weight = setYears(area, NULL))
-      ratio_yields <- yields/glo_yields
-
-      rm_lowyield   <- yields
-      rm_lowyield[] <- 1
-      rm_lowyield[ratio_yields < 0.1] <- NA
-
-      rm(ratio_yields,yields,area,glo_yields)
       ####################################################################################
 
       ####################################################################################
