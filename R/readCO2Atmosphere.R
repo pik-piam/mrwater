@@ -13,6 +13,7 @@
 #'
 #' @import madrat
 #' @importFrom lucode path
+#' @importFrom utils read.table
 
 readCO2Atmosphere <-
   function(subtype = "rcp85") {

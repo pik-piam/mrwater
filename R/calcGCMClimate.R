@@ -1,7 +1,8 @@
 #' @title calcGCMClimate
 #' @description Disaggregate CO2 global atmospheric concentration to cellular level
 #' @param rcp specify the RCP (rcp85, rcp60, rcp45 or rcp26)
-#' @param level specify the spatial output level
+#' @param GCMModel !!!! add description
+#' @param ClimateVariable !!!! add description
 #' @return magpie object in cellular resolution
 #' @author Marcos Alves, Kristine Karstens
 #'
@@ -20,10 +21,10 @@ calcGCMClimate <-function(GCMModel = "HadGEM2", ClimateVariable = "temperature",
   x <- readSource("GCMClimate", subtype=.subtype, convert="onlycorrect")
 
   .unit = switch (ClimateVariable,
-                  "temperature"          = "°C",
-                  "precipitation"        = "mm3/year",
-                  "longwave_radiation"   = "watt/m2",
-                  "shortwave_radiation"  = "watt/m2",
+                  "temperature"          = "Degree Celcius",
+                  "precipitation"        = "mm3 per year",
+                  "longwave_radiation"   = "watt per m2",
+                  "shortwave_radiation"  = "watt per m2",
                   "wetdays"              = "day")
 
   .description = switch (ClimateVariable,

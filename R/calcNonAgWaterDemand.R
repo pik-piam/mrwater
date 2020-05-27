@@ -3,6 +3,9 @@
 #' @param selectyears years to be returned
 #' @param source data source to be used
 #' @param seasonality grper (default): non-agricultural water demand in growing period per year; total: non-agricultural water demand throughout the year
+#' @param climatetype Switch between different climate scenarios (default: "CRU_4")
+#' @param harmonize_baseline FALSE (default) nothing happens, if a baseline is specified here data is harmonized to that baseline (from ref_year on)
+#' @param ref_year just specify for harmonize_baseline != FALSE : Reference year
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
@@ -12,7 +15,8 @@
 #' @import madrat
 #' @import magclass
 
-calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="WATCH_ISIMIP_WATERGAP"){
+calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="WATCH_ISIMIP_WATERGAP",
+                                 climatetype="CRU_4", harmonize_baseline=FALSE, ref_year="y2015"){
 
   ########################################
   ############ Calculations  #############
@@ -46,6 +50,9 @@ calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="W
     # future WATERGAP scenarios
     watdem_nonagr[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)] <- watdem_nonagr_WATERGAP[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)]
     # historical data provided by ISIMIP (same for all scenarios)
+
+    #This throws an error during lucode2::buildLibrary(), so this line was added here
+    watdem_nonagr_hist <- NULL
     watdem_nonagr[,getYears(watdem_nonagr_ISIMIP_hist),] <- watdem_nonagr_hist[,getYears(watdem_nonagr_ISIMIP_hist),]
   }
 
@@ -62,7 +69,7 @@ calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="W
   ### Non-agricultural water demands in Growing Period
   if(seasonality=="grper"){
     # Get growing days per month
-    grow_days <- calcOutput("GrowingPeriod", version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
+    grow_days <- calcOutput("GrowingPeriod", version="LPJmL5", climatetype=climatetype, time="spline", dof=4,
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
 
     # Adjust years

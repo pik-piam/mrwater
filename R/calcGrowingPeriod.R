@@ -209,17 +209,12 @@ calcGrowingPeriod <- function(version="LPJmL5", climatetype="CRU_4", time="raw",
       #Loop over the months to set the number of days that the growing period lasts in each month
       for(t in getYears(mean_sowd)){
 
-        print(t)
-
         #goodcells are cells in which harvest date is after sowing date,
         #i.e. the cropping period does not cross the beginning of the year
         goodcells  <- ifelse(mean_hard[,t,] >= mean_sowd[,t,], 1, 0)
         badcells   <- ifelse(mean_hard[,t,] >= mean_sowd[,t,], 0, 1)
 
         for(month in 1:12){
-
-          print(month)
-
           last_monthday  <- which(days_months==month)[length(which(days_months==month))]
           first_monthday <- which(days_months==month)[1]
           test_harvest_goodcells <- as.array(mean_hard[,t,]-first_monthday+1)

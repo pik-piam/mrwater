@@ -11,9 +11,11 @@ calcGCMClimate(
 )
 }
 \arguments{
-\item{rcp}{specify the RCP (rcp85, rcp60, rcp45 or rcp26)}
+\item{GCMModel}{!!!! add description}
 
-\item{level}{specify the spatial output level}
+\item{ClimateVariable}{!!!! add description}
+
+\item{rcp}{specify the RCP (rcp85, rcp60, rcp45 or rcp26)}
 }
 \value{
 magpie object in cellular resolution
