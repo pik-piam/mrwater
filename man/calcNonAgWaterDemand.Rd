@@ -6,25 +6,19 @@
 \usage{
 calcNonAgWaterDemand(
   selectyears = "all",
-  seasonality = "grper",
   source = "WATCH_ISIMIP_WATERGAP",
-  climatetype = "CRU_4",
-  harmonize_baseline = FALSE,
-  ref_year = "y2015"
+  seasonality = "grper",
+  waterusetype = "withdrawal"
 )
 }
 \arguments{
 \item{selectyears}{years to be returned}
 
-\item{seasonality}{grper (default): non-agricultural water demand in growing period per year; total: non-agricultural water demand throughout the year}
-
 \item{source}{data source to be used}
 
-\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
+\item{seasonality}{grper (default): non-agricultural water demand in growing period per year; total: non-agricultural water demand throughout the year}
 
-\item{harmonize_baseline}{FALSE (default) nothing happens, if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
-
-\item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
+\item{waterusetype}{withdrawal (default) or consumption}
 }
 \value{
 magpie object in cellular resolution

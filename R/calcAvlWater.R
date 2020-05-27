@@ -56,7 +56,7 @@ calcAvlWater <- function(selectyears="all",
       avl_water_month     <- monthly_runoff_magpie
       avl_water_month[,,] <- NA
 
-      ### River basin water allocation algorithm:
+      ## River basin water allocation algorithm:
       # River basin information
       basin_code <- toolGetMapping("rivermapping.csv",type="cell")
       basin_code <- basin_code$basincode
@@ -117,7 +117,7 @@ calcAvlWater <- function(selectyears="all",
   }
 
   if(selectyears!="all"){
-    years       <- sort(findset(selectyears,noset = "original"))
+    years           <- sort(findset(selectyears,noset = "original"))
     avl_water_month <- avl_water_month[,years,]
   }
 
@@ -151,11 +151,11 @@ calcAvlWater <- function(selectyears="all",
   if(seasonality=="grper"){
     # magpie object with days per month with same dimension as avl_water_month
     tmp <- c(31,28,31,30,31,30,31,31,30,31,30,31)
-    month_days <- new.magpie(names=dimnames(avl_water_month)[[3]])
+    month_days     <- new.magpie(names=dimnames(avl_water_month)[[3]])
     month_days[,,] <- tmp
-    month_day_magpie <- as.magpie(avl_water_month)
+    month_day_magpie     <- as.magpie(avl_water_month)
     month_day_magpie[,,] <- 1
-    month_day_magpie <- month_day_magpie * month_days
+    month_day_magpie     <- month_day_magpie * month_days
 
     # Daily water availability
     avl_water_day <- avl_water_month/month_day_magpie
@@ -164,8 +164,18 @@ calcAvlWater <- function(selectyears="all",
     grow_days <- calcOutput("GrowingPeriod", version="LPJmL5", climatetype=climatetype, time="spline", dof=4,
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
 
-    # Available water in growing period
-    avl_water_grper <- avl_water_day*grow_days
+    # Adjust years
+    years_wat <- getYears(avl_water_day)
+    years_grper  <- getYears(grow_days)
+    if(length(years_wat)>=length(years_grper)){
+      years <- years_grper
+    } else {
+      years <- years_watdem
+    }
+    rm(years_grper, years_wat)
+
+    # Available water in growing period per month
+    avl_water_grper <- avl_water_day[,years,]*grow_days[,years,]
     # Available water in growing period per year
     avl_water_grper <- dimSums(avl_water_grper, dim=3)
 
