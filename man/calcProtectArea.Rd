@@ -7,7 +7,7 @@
 calcProtectArea()
 }
 \value{
-magpie object in cellular resolution
+magpie object in cellular resolution with different protection scenarios
 }
 \description{
 Function extracts conservation protected area
@@ -17,5 +17,5 @@ Function extracts conservation protected area
 
 }
 \author{
-David Chen
+David Chen, Felicitas Beier
 }

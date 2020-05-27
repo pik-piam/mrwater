@@ -203,7 +203,7 @@ calcEnvmtlFlow <- function(selectyears="all",
     EFR_day   <- EFR/month_day_magpie
 
     # Growing days per month
-    grow_days <- calcOutput("GrowingPeriod", version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
+    grow_days <- calcOutput("GrowingPeriod", version="LPJmL5", climatetype=climatetype, time="spline", dof=4,
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
 
     # Available water in growing period

@@ -1,7 +1,7 @@
 #' @title readProtectArea
-#' @description Read Protected Area
-#' @return List of magpie objects with results on cellular level, weight, unit and description.
-#' @author David Chen
+#' @description Read conservation priority areas (in Mha)
+#' @return List of magpie objects with results on cellular level
+#' @author David Chen, Felicitas Beier
 #' @examples
 #'
 #' \dontrun{

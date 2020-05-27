@@ -7,10 +7,10 @@
 readProtectArea()
 }
 \value{
-List of magpie objects with results on cellular level, weight, unit and description.
+List of magpie objects with results on cellular level
 }
 \description{
-Read Protected Area
+Read conservation priority areas (in Mha)
 }
 \examples{
 
@@ -20,5 +20,5 @@ Read Protected Area
 
 }
 \author{
-David Chen
+David Chen, Felicitas Beier
 }

@@ -50,10 +50,7 @@ calcNonAgWaterDemand <- function(selectyears="all",seasonality="grper",source="W
     # future WATERGAP scenarios
     watdem_nonagr[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)] <- watdem_nonagr_WATERGAP[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)]
     # historical data provided by ISIMIP (same for all scenarios)
-
-    #This throws an error during lucode2::buildLibrary(), so this line was added here
-    watdem_nonagr_hist <- NULL
-    watdem_nonagr[,getYears(watdem_nonagr_ISIMIP_hist),] <- watdem_nonagr_hist[,getYears(watdem_nonagr_ISIMIP_hist),]
+    watdem_nonagr[,getYears(watdem_nonagr_ISIMIP_hist),] <- watdem_nonagr_ISIMIP_hist[,getYears(watdem_nonagr_ISIMIP_hist),]
   }
 
 
