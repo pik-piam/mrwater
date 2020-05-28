@@ -9,7 +9,6 @@
 #'
 #' @import madrat
 #' @import magclass
-#' @import raster
 
 readHalfEarth <- function(subtype="GLOBIO4"){
 
