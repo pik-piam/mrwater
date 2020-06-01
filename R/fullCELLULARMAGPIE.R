@@ -83,9 +83,9 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     #42 water demand
     calcOutput("Irrigation", aggregate=FALSE, round=6, file="lpj_airrig_0.5.mz")
     calcOutput("EnvmtlFlow", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", time="spline", dof=4, aggregate=FALSE, round=6, seasonality="grper", file="lpj_envflow_grper_0.5.mz")
-    calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", seasonality="grper", file="watdem_nonagr_grper_0.5.mz")
-    calcOUtput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="withdrawal", file="watdem_nonagr_ww_grper_0.5.mz")
-    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="consumption", file="watdem_nonagr_wc_grper_0.5.mz")
+    calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", seasonality="grper", aggregate=FALSE, file="watdem_nonagr_grper_0.5.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="withdrawal", aggregate=FALSE, file="watdem_nonagr_ww_grper_0.5.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="consumption", aggregate=FALSE, file="watdem_nonagr_wc_grper_0.5.mz")
 
     #43 water availability
     calcOutput("AvlWater", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", ref_year="y2015", time="spline", dof=4, seasonality="grper", aggregate=FALSE, round=6, file="lpj_watavail_grper_0.5.mz")
