@@ -16,7 +16,7 @@ x <- readSource("NpiNdcAffPol", convert="onlycorrect")
 return(list(
   x=x,
   weight=NULL,
-  unit="dumy (none)",
+  unit="dummy (none)",
   description="Dummy file for NPI/INDC policies",
   isocountries=FALSE))
 }

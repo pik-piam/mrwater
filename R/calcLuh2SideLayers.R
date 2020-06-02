@@ -12,7 +12,7 @@
 
 calcLuh2SideLayers <-function(){
 
-x <- readSource("Luh2SideLayers", convert="onlycorrect")
+  x <- readSource("BendingTheCurve", subtype = "luh2_side_layers", convert="onlycorrect")
 
 return(list(
   x=x,

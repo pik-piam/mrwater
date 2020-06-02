@@ -1,23 +1,23 @@
-#' @title calcRrLayer
+#' @title calcRRLayer
 #' @description Function extracts range-rarity as used for biodiversity loss
 #'
 #' @return magpie object in cellular resolution
-#' @author Michael Windisch
+#' @author Michael Windisch, Patrick von Jeetze
 #'
 #' @examples
-#' \dontrun{ calcOutput("RrLayer", aggregate = FALSE) }
+#' \dontrun{ calcOutput("RRLayer", aggregate = FALSE) }
 #'
 #' @importFrom magpiesets findset
 #'
 
-calcRrLayer <-function(){
+calcRRLayer <-function(){
 
-x <- readSource("RrLayer", convert="onlycorrect")
+x <- readSource("BendingTheCurve", subtype = "rr_layer", convert="onlycorrect")
 
 return(list(
   x=x,
   weight=NULL,
-  unit="Range-Rarity (?)",
+  unit="Range-Rarity (-)",
   description="range-rarity layer provided by David Leclere from IIASA, Bending the curve on biodiversity loss",
   isocountries=FALSE))
 }

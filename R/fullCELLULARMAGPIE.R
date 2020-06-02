@@ -92,7 +92,12 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("AvlWater", harmonize_baseline=,"CRU_4", time="spline", seasonality="grper", aggregate=FALSE, round=6, file="lpj_watavail_grper_0.5.mz")
     # Which arguments need to be included?
       # version="LPJmL4", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL, harmonize_baseline=FALSE, ref_year="y2015",
-
+    
+    #44 biodiversity
+    calcOutput("Luh2SideLayers", aggregate=FALSE, round=6, file="luh2_side_layers_0.5.mz")
+    calcOutput("RRLayer", aggregate=FALSE, round=6, file="rr_layer_0.5.mz")
+    
+    
     #50 nitrogen
     calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, round=6, file="f50_AtmosphericDepositionRates_0.5.mz")
     calcOutput("NitrogenFixationRateNatural", aggregate=FALSE, round=6, file="f50_NitrogenFixationRateNatural_0.5.mz")
@@ -107,10 +112,9 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 
     calcOutput("CalibratedArea", aggregate=FALSE, round=6, file="calibrated_area_0.5.mz" )
     calcOutput("ProtectArea", aggregate=FALSE, round=6, file="protect_area_0.5.mz" )
-    calcOutput("Luh2SideLayers", aggregate=FALSE, round=6, file="luh2_side_layers_0.5.mz")
     calcOutput("CshareReleased", aggregate=FALSE, round=6, file="cshare_released_0.5.mz")
     calcOutput("Koeppen_geiger", aggregate=FALSE,round=6,file="koeppen_geiger_0.5.mz")
-    calcOutput("RrLayer", aggregate=FALSE, round=6, file="rr_layer_0.5.mz")
+    
 
     ##### AGGREGATION ######
 
