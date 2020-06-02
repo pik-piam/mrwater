@@ -1,8 +1,8 @@
 #' @title calcNpiNdcAffPol
-#' @description Function extracts dummy NPI/NDC policies
+#' @description Function creates dummy NPI/NDC policies
 #'
 #' @return magpie object in cellular resolution
-#' @author Michael Windisch
+#' @author Patrick v. Jeetze, Michael Windisch
 #'
 #' @examples
 #' \dontrun{ calcOutput("NpiNdcAffPol", aggregate = FALSE) }
@@ -11,7 +11,9 @@
 
 calcNpiNdcAffPol <-function(){
 
-x <- readSource("NpiNdcAffPol", convert="onlycorrect")
+# create a dummy data set, which is later used to define NDC and NPI policies
+x <- new.magpie(cells_and_regions=toolGetMapping("CountryToCellMapping.csv", type="cell")$celliso, years=seq(1995,2150,5),
+                names = c("none", "npi", "ndc"), fill = 0, sets = c("region.cell","year","data1"))
 
 return(list(
   x=x,

@@ -1,8 +1,8 @@
 #' @title calcNpiNdcAdAolcPol
-#' @description Function extracts NPI/NDC forestry (area?)
+#' @description Function creates dummy NPI/NDC policies
 #'
 #' @return magpie object in cellular resolution
-#' @author Michael Windisch
+#' @author Patrick v. Jeetze, Michael Windisch
 #'
 #' @examples
 #' \dontrun{ calcOutput("NpiNdcAdAolcPol", aggregate = FALSE) }
@@ -11,12 +11,15 @@
 
 calcNpiNdcAdAolcPol <-function(){
 
-x <- readSource("NpiNdcAdAolcPol", convert="onlycorrect")
+# create a dummy data set, which is later used to define NDC and NPI policies
+x <- new.magpie(cells_and_regions=toolGetMapping("CountryToCellMapping.csv", type="cell")$celliso, years=seq(1995,2150,5),
+                  names = c("none.forest", "npi.forest", "ndc.forest", "none.other", "npi.other", "ndc.other"),
+                  fill = 0, sets = c("region.cell","year","data1.new"))
 
 return(list(
   x=x,
   weight=NULL,
-  unit="Area (Mha)",
-  description="Forestry prescribed exogoneously by NDC/NPI policy as opposed to CDR GHG prices",
+  unit="dummy (none)",
+  description="Dummy file for implementing forestry prescribed exogoneously by NDC/NPI policy as opposed to CDR GHG prices",
   isocountries=FALSE))
 }

@@ -10,11 +10,11 @@ calcNpiNdcAffPol()
 magpie object in cellular resolution
 }
 \description{
-Function extracts dummy NPI/NDC policies
+Function creates dummy NPI/NDC policies
 }
 \examples{
 \dontrun{ calcOutput("NpiNdcAffPol", aggregate = FALSE) }
 }
 \author{
-Michael Windisch
+Patrick v. Jeetze, Michael Windisch
 }

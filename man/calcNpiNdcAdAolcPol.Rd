@@ -10,11 +10,11 @@ calcNpiNdcAdAolcPol()
 magpie object in cellular resolution
 }
 \description{
-Function extracts NPI/NDC forestry (area?)
+Function creates dummy NPI/NDC policies
 }
 \examples{
 \dontrun{ calcOutput("NpiNdcAdAolcPol", aggregate = FALSE) }
 }
 \author{
-Michael Windisch
+Patrick v. Jeetze, Michael Windisch
 }
