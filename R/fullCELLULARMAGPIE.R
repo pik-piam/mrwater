@@ -82,22 +82,21 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
 
     #42 water demand
     calcOutput("Irrigation", aggregate=FALSE, round=6, file="lpj_airrig_0.5.mz")
-    calcOutput("EnvmtlFlow", version="LPJmL4", time="spline", aggregate=FALSE, round=6, seasonality="grper", file="lpj_envflow_grper_0.5.mz")
-                 #climatetype=????, harmonize_baseline=????, dof=???, averaging_range=???)
-    calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", seasonality="grper", file="watdem_nonagr_grper_0.5.mz")
-    calcOUtput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="withdrawal", file="watdem_nonagr_ww_grper_0.5.mz")
-    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="consumption", file="watdem_nonagr_wc_grper_0.5.mz")
+    calcOutput("EnvmtlFlow", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", time="spline", dof=4, aggregate=FALSE, round=6, seasonality="grper", file="lpj_envflow_grper_0.5.mz")
+    calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", seasonality="grper", aggregate=FALSE, file="watdem_nonagr_grper_0.5.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="withdrawal", aggregate=FALSE, file="watdem_nonagr_ww_grper_0.5.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="consumption", aggregate=FALSE, file="watdem_nonagr_wc_grper_0.5.mz")
 
     #43 water availability
-    calcOutput("AvlWater", harmonize_baseline=,"CRU_4", time="spline", seasonality="grper", aggregate=FALSE, round=6, file="lpj_watavail_grper_0.5.mz")
-    # Which arguments need to be included?
-      # version="LPJmL4", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL, harmonize_baseline=FALSE, ref_year="y2015",
-    
+    calcOutput("AvlWater", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", ref_year="y2015", time="spline", dof=4, seasonality="grper", aggregate=FALSE, round=6, file="lpj_watavail_grper_0.5.mz")
+
     #44 biodiversity
     calcOutput("Luh2SideLayers", aggregate=FALSE, round=6, file="luh2_side_layers_0.5.mz")
     calcOutput("RRLayer", aggregate=FALSE, round=6, file="rr_layer_0.5.mz")
-    
-    
+
+
+
+
     #50 nitrogen
     calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, round=6, file="f50_AtmosphericDepositionRates_0.5.mz")
     calcOutput("NitrogenFixationRateNatural", aggregate=FALSE, round=6, file="f50_NitrogenFixationRateNatural_0.5.mz")
@@ -114,7 +113,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("ProtectArea", aggregate=FALSE, round=6, file="protect_area_0.5.mz" )
     calcOutput("CshareReleased", aggregate=FALSE, round=6, file="cshare_released_0.5.mz")
     calcOutput("Koeppen_geiger", aggregate=FALSE,round=6,file="koeppen_geiger_0.5.mz")
-    
+
 
     ##### AGGREGATION ######
 

@@ -42,16 +42,15 @@ calcEnvmtlFlow <- function(selectyears="all",
 
     ### Monthly Discharge
     monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", aggregate=FALSE,
-                                           harmonize_baseline=FALSE,
-                                           time="raw")
+                                           harmonize_baseline=FALSE, time="raw")
     # Extract years for quantile calculation
     years <- getYears(monthly_discharge_magpie, as.integer = TRUE)
     # Transform to array (faster calculation)
     monthly_discharge_magpie <-  as.array(collapseNames(monthly_discharge_magpie))
 
     ### Calculate LFR_quant
-    ## Note: "LFRs correspond to the 90percent quantile of annual flow (Q90),
-    ## i.e. to the discharge that is exceeded in nine out of ten months" (Bonsch et al. 2015)
+    ## Note: LFRs correspond to the Q90-value (i.e. to the discharge that is exceeded in nine out of ten months)
+    ## (Bonsch et al. 2015). This is calculated via the 10%-quantile of monthly discharge.
 
     # Empty array with magpie object names
     LFR_quant <- array(NA,dim=c(dim(monthly_discharge_magpie)[1],length(years)),dimnames=list(dimnames(monthly_discharge_magpie)[[1]],paste("y",years,sep="")))
@@ -77,6 +76,8 @@ calcEnvmtlFlow <- function(selectyears="all",
     } else if(time!="raw"){
       stop("Time argument not supported!")
     }
+    # Transform to array (faster calculation)
+    LFR_quant <- as.array(collapseNames(LFR_quant))
 
     # Raw monthly discharge no longer needed at this point
     rm(monthly_discharge_magpie)
@@ -117,6 +118,8 @@ calcEnvmtlFlow <- function(selectyears="all",
 
     ### Calculate LFRs
     LFR <- avl_water_month * (LFR_monthly_discharge/monthly_discharge_magpie)
+    # There are na's where monthly_discharge_magpie was 0, replace with 0:
+    LFR[is.nan(LFR)] <- 0
 
     ###################################################################
     # Step 3 Determie monthly high flow requirements (HFR)            #

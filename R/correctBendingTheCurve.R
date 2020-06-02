@@ -1,6 +1,6 @@
 #' @title readBendingTheCurve
 #' @description Read bending the curve data
-#' @param subtype Data used in the Bending the Curve initiative. Type "rr_layer" for the range-size rarity layer and "luh2_side_layers" for the LUH2 Side Layers.
+#' @param x magpie object provided by the read function
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
 #' @author Patrick v. Jeetze, Michael Windisch
 #' @examples

@@ -2,8 +2,15 @@
 #' @description This function extracts non-agricultural water demand
 #' @param selectyears years to be returned
 #' @param source data source to be used
+#' @param time Time smoothing: average, spline or raw (default)
+#' @param averaging_range only specify if time=="average": number of time steps to average
+#' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param seasonality grper (default): non-agricultural water demand in growing period per year; total: non-agricultural water demand throughout the year
 #' @param waterusetype withdrawal (default) or consumption
+#' @param climatetype Switch between different climate scenarios (default: "CRU_4")
+#' @param harmonize_baseline FALSE (default), if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
+#' @param ref_year just specify for harmonize_baseline != FALSE : Reference year
+#'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
@@ -14,7 +21,9 @@
 #' @import magclass
 
 calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGAP",
-                                 seasonality="grper", waterusetype="withdrawal"){
+                                 time="raw", averaging_range=NULL, dof=NULL,
+                                 seasonality="grper", waterusetype="withdrawal",
+                                 climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", ref_year="y2015"){
 
   ########################################
   ############ Calculations  #############
@@ -28,30 +37,55 @@ calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGA
 
   # New Non-Agricultural Waterdemand data (will be new default)
   if(source=="WATERGAP2020"){
-    # Read in nonagricultural water demand:
-    watdem_nonagr_WATERGAP      <- readSource("WATERGAP", convert="onlycorrect", subtype="WATERGAP2020")
-    watdem_nonagr_ISIMIP_hist   <- readSource("ISIMIP",   convert="onlycorrect", subtype="water_abstraction.past")
-    watdem_nonagr_ISIMIP_future <- readSource("ISIMIP",   convert="onlycorrect", subtype="water_abstraction.future")
 
-    ### Combine datasets from different sources:
-    # historical and future ISIMIP data:
-    watdem_ISIMIP <- mbind(watdem_nonagr_ISIMIP_hist, watdem_nonagr_ISIMIP_future)
+    if(time=="raw"){
+      # Read in nonagricultural water demand:
+      watdem_nonagr_WATERGAP      <- readSource("WATERGAP", convert="onlycorrect", subtype="WATERGAP2020")
+      watdem_nonagr_ISIMIP_hist   <- readSource("ISIMIP",   convert="onlycorrect", subtype="water_abstraction.past")
+      watdem_nonagr_ISIMIP_future <- readSource("ISIMIP",   convert="onlycorrect", subtype="water_abstraction.future")
 
-    # empty magpie object
-    cells <- getCells(watdem_nonagr_WATERGAP)
-    years <- getYears(watdem_ISIMIP)
-    names <- c(getNames(watdem_nonagr_WATERGAP),paste0("ISIMIP.",getNames(watdem_ISIMIP)))
-    watdem_nonagr <- new.magpie(cells,years,names)
+      ### Combine datasets from different sources:
+      # historical and future ISIMIP data:
+      watdem_ISIMIP <- mbind(watdem_nonagr_ISIMIP_hist, watdem_nonagr_ISIMIP_future)
 
-    # historical and future ISIMIP data
-    watdem_nonagr[,getYears(watdem_ISIMIP),paste0("ISIMIP.",getNames(watdem_ISIMIP))] <- watdem_ISIMIP[,getYears(watdem_ISIMIP),getNames(watdem_ISIMIP)]
-    # future WATERGAP scenarios
-    watdem_nonagr[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)] <- watdem_nonagr_WATERGAP[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)]
-    # historical data provided by ISIMIP (same for all scenarios)
-    watdem_nonagr[,getYears(watdem_nonagr_ISIMIP_hist),] <- watdem_nonagr_ISIMIP_hist[,getYears(watdem_nonagr_ISIMIP_hist),]
+      # empty magpie object
+      cells <- getCells(watdem_nonagr_WATERGAP)
+      years <- getYears(watdem_ISIMIP)
+      names <- c(getNames(watdem_nonagr_WATERGAP),paste0("ISIMIP.",getNames(watdem_ISIMIP)))
+      watdem_nonagr <- new.magpie(cells,years,names)
 
-    # Water consumption or water withdrawal:
+      # historical and future ISIMIP data
+      watdem_nonagr[,getYears(watdem_ISIMIP),paste0("ISIMIP.",getNames(watdem_ISIMIP))] <- watdem_ISIMIP[,getYears(watdem_ISIMIP),getNames(watdem_ISIMIP)]
+      # future WATERGAP scenarios
+      watdem_nonagr[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)] <- watdem_nonagr_WATERGAP[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)]
+      # historical data provided by ISIMIP (same for all scenarios)
+      watdem_nonagr[,getYears(watdem_nonagr_ISIMIP_hist),] <- watdem_nonagr_ISIMIP_hist[,getYears(watdem_nonagr_ISIMIP_hist),]
+
+      # Water consumption or water withdrawal:
       watdem_nonagr <- watdem_nonagr[,,waterusetype]
+
+    } else {
+      # Time smoothing:
+      x     <- calcOutput("NonAgWaterDemand", selectyears=selectyears, source=source, seasonality=seasonality,
+                          waterusetype=waterusetype, climatetype=climatetype, harmonize_baseline=harmonize_baseline,
+                          ref_year=ref_year, time="raw", averaging_range=NULL, dof=NULL, aggregate=FALSE)
+
+      if(time=="average"){
+        # Smoothing data through average:
+        watdem_nonagr   <- toolTimeAverage(x, averaging_range=averaging_range)
+
+      } else if(time=="spline"){
+        # Smoothing data with spline method:
+        watdem_nonagr   <- toolTimeSpline(x, dof=dof)
+        # Replace value in 2100 with value from 2099 (LPJmL output ends in 2099)
+        if ("y2099" %in% getYears(watdem_nonagr)) {
+          watdem_nonagr <- toolFillYears(watdem_nonagr, c(getYears(watdem_nonagr, as.integer=TRUE)[1]:2100))
+        }
+
+      } else if(time!="raw"){
+          stop("Time argument not supported!")
+      }
+    }
   }
 
   ###########################################
