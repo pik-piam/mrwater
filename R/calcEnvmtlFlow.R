@@ -85,12 +85,6 @@ calcEnvmtlFlow <- function(selectyears="all",
                                            harmonize_baseline=FALSE,
                                            time=time, dof=dof, averaging_range=averaging_range)
 
-    #### NOTE: This shouldn't be necessary!!!!
-    # Bring magpie objects to same dimension
-    #common_yrs               <- intersect(getYears(LFR_quant),getYears(monthly_discharge_magpie))
-    #LFR_quant                <- LFR_quant[,common_yrs,]
-    #monthly_discharge_magpie <- monthly_discharge_magpie[,common_yrs,]
-
     # Transform to array (faster calculation)
     LFR_quant <- as.array(collapseNames(LFR_quant))
     monthly_discharge_magpie <- as.array(collapseNames(monthly_discharge_magpie))
@@ -116,10 +110,6 @@ calcEnvmtlFlow <- function(selectyears="all",
     avl_water_month <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly", aggregate=FALSE,
                                   harmonize_baseline=FALSE,
                                   time=time, dof=dof, averaging_range=averaging_range)
-
-    #### This should not be necessary!!!
-    # Bring magpie objects to same dimension
-    #avl_water_month          <- avl_water_month[,common_yrs,]
 
     # Transform to array for faster calculation
     avl_water_month <- as.array(collapseNames(avl_water_month))
@@ -195,12 +185,6 @@ calcEnvmtlFlow <- function(selectyears="all",
                                   harmonize_baseline=harmonize_baseline,
                                   time=time, dof=dof, averaging_range=averaging_range)
 
-    #### NOTE: This shouldn't be necessary!!!!
-    # Bring magpie objects to same dimension
-    #common_yrs      <- intersect(getYears(EFR_total),getYears(avl_water_total))
-    #EFR_total       <- EFR_total[,common_yrs,]
-    #avl_water_total <- avl_water_total[,common_yrs,]
-
     # Reduce EFR to 50% of available water where it exceeds this threshold (according to Smakhtin 2004)
     EFR_total[which(EFR_total/avl_water_total>0.5)] <- 0.5*avl_water_total[which(EFR_total/avl_water_total>0.5)]
 
@@ -230,11 +214,6 @@ calcEnvmtlFlow <- function(selectyears="all",
     grow_days <- calcOutput("GrowingPeriod", version="LPJmL5", climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range,
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
 
-    # Bring magpie objects to same dimension
-    common_yrs <- intersect(getYears(EFR_day),getYears(grow_days))
-    EFR_day    <- EFR_day[,common_yrs,]
-    grow_days  <- grow_days[,common_yrs,]
-
     # Available water in growing period
     EFR_grper <- EFR_day*grow_days
     # Available water in growing period per year
@@ -243,12 +222,6 @@ calcEnvmtlFlow <- function(selectyears="all",
     avl_water_grper <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="grper", aggregate=FALSE,
                                   harmonize_baseline=harmonize_baseline,
                                   time=time, dof=dof, averaging_range=averaging_range)
-
-    #### NOTE: This shouldn't be necessary!!!!
-    # Bring magpie objects to same dimension
-    #common_yrs      <- intersect(getYears(EFR_grper),getYears(avl_water_grper))
-    #EFR_grper       <- EFR_grper[,common_yrs,]
-    #avl_water_grper <- avl_water_grper[,common_yrs,]
 
     # Reduce EFR to 50% of available water where it exceeds this threshold (according to smakhtin 2004)
     EFR_grper[which(EFR_grper/avl_water_grper>0.5)] <- 0.5*avl_water_grper[which(EFR_grper/avl_water_grper>0.5)]

@@ -14,7 +14,8 @@ calcNonAgWaterDemand(
   waterusetype = "withdrawal",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   harmonize_baseline = "CRU_4",
-  ref_year = "y2015"
+  ref_year = "y2015",
+  calibration_approach = "absolute"
 )
 }
 \arguments{
@@ -32,11 +33,13 @@ calcNonAgWaterDemand(
 
 \item{waterusetype}{withdrawal (default) or consumption}
 
-\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
+\item{climatetype}{Switch between different climate scenarios (default: "CRU_4") for calcGrowingPeriod}
 
-\item{harmonize_baseline}{FALSE (default), if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)}
+\item{harmonize_baseline}{FALSE (default), if a baseline is specified here data is harmonized to that baseline (from ref_year onwards) for calcGrowingPeriod}
 
-\item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
+\item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year for calcGrowingPeriod}
+
+\item{calibration_approach}{calibration approach for water use historical to future harmonization: absolute, harmonizefunction (default)}
 }
 \value{
 magpie object in cellular resolution

@@ -82,21 +82,18 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="LUH2v2",  years=mag_years_past_short, round=6, file="avl_irrig_luh_t_c200.mz")
 
     #42 water demand
-    calcOutput("Irrigation", aggregate=FALSE, round=6, file="lpj_airrig_0.5.mz")
-    calcOutput("EnvmtlFlow", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", time="spline", dof=4, aggregate=FALSE, round=6, seasonality="grper", file="lpj_envflow_grper_0.5.mz")
+    calcOutput("Irrigation", version="LPJmL5", climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, file="lpj_airrig_c200.mz")
+    calcOutput("EnvmtlFlow", version="LPJmL4", climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, seasonality="grper", file="lpj_envflow_grper_c200.mz")
     calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", seasonality="grper", aggregate=FALSE, file="watdem_nonagr_grper_0.5.mz")
-    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="withdrawal", aggregate=FALSE, file="watdem_nonagr_ww_grper_0.5.mz")
-    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="consumption", aggregate=FALSE, file="watdem_nonagr_wc_grper_0.5.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="withdrawal", aggregate="cluster", file="watdem_nonagr_ww_grper_c200.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="consumption", aggregate="cluster", file="watdem_nonagr_wc_grper_c200.mz")
 
     #43 water availability
-    calcOutput("AvlWater", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", ref_year="y2015", time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file="lpj_watavail_grper_c200.mz")
+    calcOutput("AvlWater", version="LPJmL4", climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file="lpj_watavail_grper_c200.mz")
 
     #44 biodiversity
     calcOutput("Luh2SideLayers", aggregate=FALSE, round=6, file="luh2_side_layers_0.5.mz")
     calcOutput("RRLayer", aggregate=FALSE, round=6, file="rr_layer_0.5.mz")
-
-
-
 
     #50 nitrogen
     calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, round=6, file="f50_AtmosphericDepositionRates_0.5.mz")
@@ -109,7 +106,6 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("SOMinitialsiationPools", aggregate = FALSE, round=6, file="f59_som_initialisation_pools_0.5.mz")
 
     ## OTHER ##
-
     calcOutput("CalibratedArea", aggregate=FALSE, round=6, file="calibrated_area_0.5.mz" )
     calcOutput("CshareReleased", aggregate=FALSE, round=6, file="cshare_released_0.5.mz")
     calcOutput("Koeppen_geiger", aggregate=FALSE,round=6,file="koeppen_geiger_0.5.mz")
@@ -136,10 +132,6 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
       cat(info,file=file,sep='\n')
     }
     writeInfo(file='info.txt', lpjml_data="default", res_high="0.5", res_out="IDK", rev=rev)
-
-
-
-
 
 
 }
