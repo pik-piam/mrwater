@@ -117,8 +117,9 @@ calcEnvmtlFlow <- function(selectyears="all",
                                   harmonize_baseline=FALSE,
                                   time=time, dof=dof, averaging_range=averaging_range)
 
+    #### This should not be necessary!!!
     # Bring magpie objects to same dimension
-    avl_water_month          <- avl_water_month[,common_yrs,]
+    #avl_water_month          <- avl_water_month[,common_yrs,]
 
     # Transform to array for faster calculation
     avl_water_month <- as.array(collapseNames(avl_water_month))
