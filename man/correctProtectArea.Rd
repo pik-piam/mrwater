@@ -10,8 +10,8 @@ correctProtectArea(x)
 \item{x}{magpie object provided by the read function}
 }
 \description{
-Read calibrated area file
-#' @return List of magpie objects with results on cellular level, weight, unit and description.
+Read calibrated protection area file
+#' @return magpie object on cellular level
 }
 \examples{
 
@@ -24,5 +24,5 @@ Read calibrated area file
 \code{\link{readProtectArea}}
 }
 \author{
-David Chen
+David Chen, Felicitas Beier
 }

@@ -17,5 +17,5 @@ Function extracts conservation protected area
 
 }
 \author{
-David Chen, Felicitas Beier
+Felicitas Beier, David Chen
 }

@@ -10,7 +10,7 @@ readHalfEarth(subtype = "GLOBIO4")
 \item{subtype}{Data source to be read from}
 }
 \value{
-MAgPIE object containing biodiveristy protection area
+MAgPIE object containing biodiveristy protection area at cellular level
 }
 \description{
 Read in Half Earth data set containing conservation area for biodiversity protection based on the Half-Earth approach

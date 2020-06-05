@@ -56,10 +56,41 @@ calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGA
 
       # historical and future ISIMIP data
       watdem_nonagr[,getYears(watdem_ISIMIP),paste0("ISIMIP.",getNames(watdem_ISIMIP))] <- watdem_ISIMIP[,getYears(watdem_ISIMIP),getNames(watdem_ISIMIP)]
-      # future WATERGAP scenarios
-      watdem_nonagr[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)] <- watdem_nonagr_WATERGAP[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)]
+
       # historical data provided by ISIMIP (same for all scenarios)
       watdem_nonagr[,getYears(watdem_nonagr_ISIMIP_hist),] <- watdem_nonagr_ISIMIP_hist[,getYears(watdem_nonagr_ISIMIP_hist),]
+
+
+
+      # future WATERGAP scenarios (adjusted to transition year of historical data)
+      watdem_nonagr_WATERGAP_adjusted <- watdem_nonagr_WATERGAP
+      watdem_nonagr_WATERGAP_adjusted[,,] <- NA
+
+      # Manual Harmonization:
+        #transitionyear <- tail(getYears(watdem_nonagr_ISIMIP_hist),n=1) #### DECIDE: could be last of historical (2014), or first of future (2005), alternatively: average over transition period (2005-2014)
+        #transitionyear <- "y2005"
+        #scenyears      <- getYears(watdem_nonagr_WATERGAP)
+
+
+
+        # Absolute calibration:
+        #for(t in scenyears){
+        #  tmp_diff <- watdem_nonagr_ISIMIP_hist[,transitionyear,] - watdem_nonagr_WATERGAP[,transitionyear,]
+        #  getYears(tmp_diff) <- getYears(watdem_nonagr_WATERGAP[,t,])
+        #  watdem_nonagr_WATERGAP_adjusted[,t,] <- watdem_nonagr_WATERGAP[,t,] + tmp_diff
+        #}
+
+        # Set negative values to 0
+        #watdem_nonagr_WATERGAP_adjusted <- toolConditionalReplace(watdem_nonagr_WATERGAP_adjusted, conditions = c("is.na()","<0"), replaceby = 0)
+
+
+      watdem_nonagr_WATERGAP_adjusted <- toolHarmonize2Baseline(x=watdem_nonagr_WATERGAP, base=watdem_nonagr_ISIMIP_hist, ref_year="y2005", limited=TRUE, hard_cut=FALSE)
+
+
+      # WATERGAP adjusted future scenario data
+      watdem_nonagr[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)] <- watdem_nonagr_WATERGAP[,getYears(watdem_nonagr_WATERGAP),getNames(watdem_nonagr_WATERGAP)]
+
+
 
       # Water consumption or water withdrawal:
       watdem_nonagr <- watdem_nonagr[,,waterusetype]

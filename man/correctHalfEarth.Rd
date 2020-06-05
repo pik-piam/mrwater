@@ -10,7 +10,7 @@ correctHalfEarth(x)
 \item{x}{magpie object provided by the read function}
 }
 \value{
-List of magpie objects with results on cellular level, weight, unit and description.
+magpie object on cellular level
 }
 \description{
 correct HalfEarth data

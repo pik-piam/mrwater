@@ -8,9 +8,9 @@ calcEnvmtlFlow(
   selectyears = "all",
   version = "LPJmL4",
   climatetype = "CRU_4",
-  time = "raw",
+  time = "spline",
   averaging_range = NULL,
-  dof = NULL,
+  dof = 4,
   harmonize_baseline = FALSE,
   ref_year = "y2015",
   LFR_val = 0.1,
@@ -28,7 +28,7 @@ calcEnvmtlFlow(
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
-\item{time}{Time smoothing: average, spline or raw (default)}
+\item{time}{Time smoothing: average or spline (default)}
 
 \item{averaging_range}{only specify if time=="average": number of time steps to average}
 

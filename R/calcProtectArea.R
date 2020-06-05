@@ -2,7 +2,7 @@
 #' @description Function extracts conservation protected area
 #'
 #' @return magpie object in cellular resolution with different protection scenarios
-#' @author David Chen, Felicitas Beier
+#' @author Felicitas Beier, David Chen
 #'
 #' @examples
 #' \dontrun{ calcOutput("ProtectArea", aggregate = FALSE) }
@@ -10,7 +10,7 @@
 #' @importFrom magpiesets findset
 #'
 
-calcProtectArea <-function(){
+calcProtectArea <- function(){
 
   # Protection Area mz file (conservation priority area in Mha)
   x <- readSource("ProtectArea", convert="onlycorrect")

@@ -68,7 +68,8 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("NpiNdcAffPol", aggregate=FALSE, round=6, file="npi_ndc_aff_pol_0.5.mz")
 
     #35 natveg
-    calcOutput("AgeClassDistribution",aggregate=FALSE,round=6, file="secdf_age_class_dist_0.5.mz")
+    calcOutput("AgeClassDistribution", aggregate="cluster", round=6, file="secdf_age_class_dist_c200.mz")
+    calcOutput("ProtectArea", aggregate="cluster", round=6, file="protect_area_c200.mz" )
 
     #34
     calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, file="f34_UrbanLand_0.5.mz")
@@ -88,7 +89,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="consumption", aggregate=FALSE, file="watdem_nonagr_wc_grper_0.5.mz")
 
     #43 water availability
-    calcOutput("AvlWater", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", ref_year="y2015", time="spline", dof=4, seasonality="grper", aggregate=FALSE, round=6, file="lpj_watavail_grper_0.5.mz")
+    calcOutput("AvlWater", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", ref_year="y2015", time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file="lpj_watavail_grper_c200.mz")
 
     #44 biodiversity
     calcOutput("Luh2SideLayers", aggregate=FALSE, round=6, file="luh2_side_layers_0.5.mz")
@@ -110,7 +111,6 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     ## OTHER ##
 
     calcOutput("CalibratedArea", aggregate=FALSE, round=6, file="calibrated_area_0.5.mz" )
-    calcOutput("ProtectArea", aggregate=FALSE, round=6, file="protect_area_0.5.mz" )
     calcOutput("CshareReleased", aggregate=FALSE, round=6, file="cshare_released_0.5.mz")
     calcOutput("Koeppen_geiger", aggregate=FALSE,round=6,file="koeppen_geiger_0.5.mz")
 

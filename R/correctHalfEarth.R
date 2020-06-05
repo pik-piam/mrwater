@@ -1,6 +1,6 @@
 #' @title correctHalfEarth
 #' @description correct HalfEarth data
-#' @return List of magpie objects with results on cellular level, weight, unit and description.
+#' @return magpie object on cellular level
 #' @param x magpie object provided by the read function
 #' @author Felicitas Beier
 #' @seealso

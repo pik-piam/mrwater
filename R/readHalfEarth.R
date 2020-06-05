@@ -1,7 +1,7 @@
 #' @title readHalfEarth
 #' @description Read in Half Earth data set containing conservation area for biodiversity protection based on the Half-Earth approach
 #' @param subtype Data source to be read from
-#' @return MAgPIE object containing biodiveristy protection area
+#' @return MAgPIE object containing biodiveristy protection area at cellular level
 #' @author Felicitas Beier
 #'
 #' @examples

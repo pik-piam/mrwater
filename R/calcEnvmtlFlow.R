@@ -3,7 +3,7 @@
 #'
 #' @param version Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
-#' @param time Time smoothing: average, spline or raw (default)
+#' @param time Time smoothing: average or spline (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
 #' @param dof only specify if time=="spline": degrees of freedom needed for spline
 #' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
@@ -28,7 +28,7 @@
 #'
 
 calcEnvmtlFlow <- function(selectyears="all",
-                           version="LPJmL4", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
+                           version="LPJmL4", climatetype="CRU_4", time="spline", averaging_range=NULL, dof=4,
                            harmonize_baseline=FALSE, ref_year="y2015",
                            LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                            seasonality="grper"){
@@ -73,11 +73,9 @@ calcEnvmtlFlow <- function(selectyears="all",
       if ("y2099" %in% getYears(LFR_quant)) {
         LFR_quant <- toolFillYears(LFR_quant, c(getYears(LFR_quant, as.integer=TRUE)[1]:2100))
       }
-    } else if(time!="raw"){
+    } else {
       stop("Time argument not supported!")
     }
-    # Transform to array (faster calculation)
-    LFR_quant <- as.array(collapseNames(LFR_quant))
 
     # Raw monthly discharge no longer needed at this point
     rm(monthly_discharge_magpie)
@@ -86,7 +84,15 @@ calcEnvmtlFlow <- function(selectyears="all",
     monthly_discharge_magpie <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="mdischarge", aggregate=FALSE,
                                            harmonize_baseline=FALSE,
                                            time=time, dof=dof, averaging_range=averaging_range)
+
+    #### NOTE: This shouldn't be necessary!!!!
+    # Bring magpie objects to same dimension
+    #common_yrs               <- intersect(getYears(LFR_quant),getYears(monthly_discharge_magpie))
+    #LFR_quant                <- LFR_quant[,common_yrs,]
+    #monthly_discharge_magpie <- monthly_discharge_magpie[,common_yrs,]
+
     # Transform to array (faster calculation)
+    LFR_quant <- as.array(collapseNames(LFR_quant))
     monthly_discharge_magpie <- as.array(collapseNames(monthly_discharge_magpie))
 
     ### Calculate LFR discharge values for each month
@@ -110,6 +116,11 @@ calcEnvmtlFlow <- function(selectyears="all",
     avl_water_month <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="monthly", aggregate=FALSE,
                                   harmonize_baseline=FALSE,
                                   time=time, dof=dof, averaging_range=averaging_range)
+
+    # Bring magpie objects to same dimension
+    avl_water_month          <- avl_water_month[,common_yrs,]
+
+    # Transform to array for faster calculation
     avl_water_month <- as.array(collapseNames(avl_water_month))
 
     # Empty array
@@ -140,6 +151,7 @@ calcEnvmtlFlow <- function(selectyears="all",
     HFR[avl_water_month<=0]       <- 0
 
     EFR <- LFR+HFR
+    EFR <- as.magpie(EFR)
 
   } else {
     # Load baseline and climate EFR:
@@ -177,10 +189,18 @@ calcEnvmtlFlow <- function(selectyears="all",
     # Sum up over all month:
     EFR_total <- dimSums(EFR, dim=3)
 
-    # Reduce EFR to 50% of available water where it exceeds this threshold (according to Smakhtin 2004)
+    # Read in available water (for Smakthin calculation)
     avl_water_total <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="total", aggregate=FALSE,
                                   harmonize_baseline=harmonize_baseline,
                                   time=time, dof=dof, averaging_range=averaging_range)
+
+    #### NOTE: This shouldn't be necessary!!!!
+    # Bring magpie objects to same dimension
+    #common_yrs      <- intersect(getYears(EFR_total),getYears(avl_water_total))
+    #EFR_total       <- EFR_total[,common_yrs,]
+    #avl_water_total <- avl_water_total[,common_yrs,]
+
+    # Reduce EFR to 50% of available water where it exceeds this threshold (according to Smakhtin 2004)
     EFR_total[which(EFR_total/avl_water_total>0.5)] <- 0.5*avl_water_total[which(EFR_total/avl_water_total>0.5)]
 
     # Check for NAs
@@ -206,17 +226,30 @@ calcEnvmtlFlow <- function(selectyears="all",
     EFR_day   <- EFR/month_day_magpie
 
     # Growing days per month
-    grow_days <- calcOutput("GrowingPeriod", version="LPJmL5", climatetype=climatetype, time="spline", dof=4,
+    grow_days <- calcOutput("GrowingPeriod", version="LPJmL5", climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range,
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
+
+    # Bring magpie objects to same dimension
+    common_yrs <- intersect(getYears(EFR_day),getYears(grow_days))
+    EFR_day    <- EFR_day[,common_yrs,]
+    grow_days  <- grow_days[,common_yrs,]
 
     # Available water in growing period
     EFR_grper <- EFR_day*grow_days
     # Available water in growing period per year
     EFR_grper <- dimSums(EFR_grper, dim=3)
-    # Reduce EFR to 50% of available water where it exceeds this threshold (according to smakhtin 2004)
+    # Read in available water (for Smakthin calculation)
     avl_water_grper <- calcOutput("AvlWater", version=version, climatetype=climatetype, seasonality="grper", aggregate=FALSE,
                                   harmonize_baseline=harmonize_baseline,
                                   time=time, dof=dof, averaging_range=averaging_range)
+
+    #### NOTE: This shouldn't be necessary!!!!
+    # Bring magpie objects to same dimension
+    #common_yrs      <- intersect(getYears(EFR_grper),getYears(avl_water_grper))
+    #EFR_grper       <- EFR_grper[,common_yrs,]
+    #avl_water_grper <- avl_water_grper[,common_yrs,]
+
+    # Reduce EFR to 50% of available water where it exceeds this threshold (according to smakhtin 2004)
     EFR_grper[which(EFR_grper/avl_water_grper>0.5)] <- 0.5*avl_water_grper[which(EFR_grper/avl_water_grper>0.5)]
 
     # Check for NAs

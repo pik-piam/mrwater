@@ -13,7 +13,6 @@
 #'
 #' @import magclass
 #' @import madrat
-#' @importFrom lucode path
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Kristine Karstens, Abhijeet Mishra
@@ -161,7 +160,7 @@ calcAvlWater <- function(selectyears="all",
     avl_water_day <- avl_water_month/month_day_magpie
 
     # Growing days per month
-    grow_days <- calcOutput("GrowingPeriod", version="LPJmL5", climatetype=climatetype, time="spline", dof=4,
+    grow_days <- calcOutput("GrowingPeriod", version="LPJmL5", climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range,
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1, aggregate=FALSE)
 
     # Adjust years
