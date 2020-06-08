@@ -22,7 +22,6 @@ Imports:
     dplyr,
     magpiesets,
     lpjclass,
-    lucode,
     luscale,
     ncdf4,
     raster,
