@@ -100,10 +100,13 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("NitrogenFixationRateNatural", aggregate=FALSE, round=6, file="f50_NitrogenFixationRateNatural_0.5.mz")
 
     #52 carbon
-    #CARBON!
+    calcOutput("Carbon", aggregate = FALSE, round=6, file="lpj_carbon_stocks_0.5.mz")
+    calcOutput("TopsoilCarbon", aggregate = FALSE, round=6, file="lpj_carbon_topsoil_0.5.mz")
+
 
     #59 som
     calcOutput("SOMinitialsiationPools", aggregate = FALSE, round=6, file="f59_som_initialisation_pools_0.5.mz")
+
 
     ## OTHER ##
     calcOutput("CalibratedArea", aggregate=FALSE, round=6, file="calibrated_area_0.5.mz" )
