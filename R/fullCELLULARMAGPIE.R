@@ -27,6 +27,11 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     mag_years <- findset("time")
     short_years <- findset("t_all")
 
+    ### test settings (will be loaded from config in fina version)
+    climatetype="HadGEM2_ES:rcp2p6:co2"
+    harmonize_baseline="CRU_4"
+    ref_year="y2015"
+
     map <- calcOutput("Cluster", ctype=ctype, weight=NULL, aggregate=FALSE)
     toolStoreMapping(map,"clustermapping.csv",type="regional",error.existing = FALSE)
     setConfig(regionmapping = "clustermapping.csv")
