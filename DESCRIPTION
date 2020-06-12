@@ -15,13 +15,13 @@ Depends:
     R(>= 2.10.0),
     magclass(>= 3.17),
     madrat(>= 1.72),
+    lpjclass(>= 1.15),
     mrcommons,
     mrland
 Imports:
     digest,
     dplyr,
     magpiesets,
-    lpjclass,
     luscale,
     ncdf4,
     raster,
