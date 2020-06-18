@@ -19,7 +19,7 @@
 #' @importFrom magpiesets findset
 
 calcIrrigation <- function(selectyears="all",
-                           version="LPJmL5", climatetype="CRU_4", time="raw", averaging_range=NULL, dof=NULL,
+                           version="LPJmL5", climatetype="CRU_4", time="spline", averaging_range=NULL, dof=4,
                            harmonize_baseline=FALSE, ref_year=NULL){
 
   if(harmonize_baseline==FALSE){
