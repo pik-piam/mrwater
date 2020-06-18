@@ -33,8 +33,9 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     ref_year="y2015"
 
     map <- calcOutput("Cluster", ctype=ctype, weight=NULL, aggregate=FALSE)
-    toolStoreMapping(map,"clustermapping.csv",type="regional",error.existing = FALSE)
-    setConfig(regionmapping = "clustermapping.csv")
+    clustermapname <- paste0(ctype,".csv")
+    toolStoreMapping(map,clustermapname,type="regional",error.existing = FALSE)
+    setConfig(regionmapping = clustermapname)
 
     # 09 drivers
     ### gridded pop?
