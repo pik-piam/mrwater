@@ -8,6 +8,12 @@
 #' indicating the number of resulting clusters. Available methodologies are hierarchical clustering (h), normalized k-means clustering
 #' (n) and combined hierarchical/normalized k-means clustering (c). In the latter hierarchical clustering is used to determine the
 #' cluster distribution among regions whereas normalized k-means is used for the clustering within a region.
+#' @param climatetype climate change scenario to be used
+#' @param clusterweight Should specific regions be resolved with more or less detail? Values > 1 mean higher share, < 1 lower share
+#' e.g. cfg$clusterweight <- c(LAM=2) means that a higher level of detail for region LAM if set to NULL all weights will be assumed to be 1.
+#' examples:
+#' c(LAM=1.5,SSA=1.5,OAS=1.5)
+#' c(LAM=2,SSA=2,OAS=2)
 #' \code{\link{setConfig}} (e.g. for setting the mainfolder if not already set
 #' properly).
 #' @author Kristine Karstens, Jan Philipp Dietrich
