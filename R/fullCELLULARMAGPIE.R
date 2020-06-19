@@ -32,6 +32,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
     mag_years_past_long  <- c("y1995","y2000","y2005","y2010","y2015")
     mag_years <- findset("time")
     short_years <- findset("t_all")
+    lpj_years <- seq(1995, 2100,by=5)
 
     ### test settings (will be loaded from config in fina version)
     climatetype="HadGEM2_ES:rcp2p6:co2"
@@ -57,6 +58,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
     calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.wetdays_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "wetdays", rcp = "rcp85")
     calcOutput("CO2Atmosphere", aggregate="cluster", file="calcCO2Atmosphere_c200.mz", rcp="rcp85", level="cellular")
     calcOutput("SoilCharacteristics", aggregate="cluster", file="SoilCharacteristics_c200.mz")
+    calcOutput("ClimateClass", aggregate="cluster", file="koeppen_geiger_c200.mz")
 
     #10 land
     calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_0.5.mz")
@@ -127,8 +129,6 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
     ## OTHER ##
     calcOutput("CalibratedArea", aggregate=FALSE, round=6, file="calibrated_area_0.5.mz" )
     calcOutput("CshareReleased", aggregate=FALSE, round=6, file="cshare_released_0.5.mz")
-    calcOutput("Koeppen_geiger", aggregate=FALSE,round=6,file="koeppen_geiger_0.5.mz")
-
 
     ##### AGGREGATION ######
 
