@@ -58,7 +58,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
     calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.wetdays_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "wetdays", rcp = "rcp85")
     calcOutput("CO2Atmosphere", aggregate="cluster", file="calcCO2Atmosphere_c200.mz", rcp="rcp85", level="cellular")
     calcOutput("SoilCharacteristics", aggregate="cluster", file="SoilCharacteristics_c200.mz")
-    calcOutput("ClimateClass", aggregate="cluster", file="koeppen_geiger_c200.mz")
+    calcOutput("ClimateClass", aggregate="cluster", years="y2015", file="koeppen_geiger_c200.mz")
 
     #10 land
     calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_0.5.mz")
