@@ -45,7 +45,7 @@ calcEnvmtlFlow <- function(selectyears="all",
                                            harmonize_baseline=FALSE, time="raw")
     # Extract years for quantile calculation
     years <- getYears(monthly_discharge_magpie, as.integer = TRUE)
-    years <- seq(years[1]+4,years[length(years)]-3,by=1)
+    years <- seq(years[1]+7,years[length(years)],by=1)
     # Transform to array (faster calculation)
     monthly_discharge_magpie <-  as.array(collapseNames(monthly_discharge_magpie))
     # Empty array with magpie object names
@@ -58,7 +58,7 @@ calcEnvmtlFlow <- function(selectyears="all",
     # Quantile calculation: Yearly LFR quantile value
     for(year in years){
       # get the LFR_val quantile in range of 8 years for each year for all cells
-      needed_years <- seq(year-4,year+3,by=1)
+      needed_years <- seq(year-7,year,by=1)
       LFR_quant[,paste("y",year,sep="")] <- apply(monthly_discharge_magpie[,paste("y",needed_years,sep=""),],MARGIN=c(1),quantile,probs=LFR_val)
     }
     # Time-smooth LFR_quant
