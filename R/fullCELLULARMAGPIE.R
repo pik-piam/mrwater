@@ -20,7 +20,7 @@
 #' }
 #' @importFrom madrat setConfig getConfig
 
-fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
+fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
 
     mag_years_past_short <- c("y1995","y2000","y2005","y2010")
     mag_years_past_long  <- c("y1995","y2000","y2005","y2010","y2015")
@@ -32,10 +32,11 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     harmonize_baseline="CRU_4"
     ref_year="y2015"
 
-    map <- calcOutput("Cluster", ctype=ctype, weight=NULL, aggregate=FALSE)
-    clustermapname <- paste0(ctype,".csv")
+    map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, aggregate=FALSE)
+    weightID <- ifelse(is.null(clusterweight),"",paste0("_",names(clusterweight),clusterweight,collapse=""))
+    clustermapname <- paste0(ctype,weightID,"_",getConfig("regionmapping"))
     toolStoreMapping(map,clustermapname,type="regional",error.existing = FALSE)
-    setConfig(regionmapping = clustermapname)
+    setConfig(extramappings = clustermapname)
 
     # 09 drivers
     ### gridded pop?
