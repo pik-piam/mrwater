@@ -53,7 +53,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     #10 land
     calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_0.5.mz")
     calcOutput("LanduseInitialisation", aggregate=TRUE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_c200.mz")
-    calcOutput("SeaLevelRise", aggregate=FALSE, round=6, file="f10_SeaLevelRise_0.5.mz")
+    calcOutput("SeaLevelRise", aggregate=FALSE, cellular=TRUE, round=6, file="f10_SeaLevelRise_0.5.mz")
     calcOutput("AvlLandSi", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
 
 
