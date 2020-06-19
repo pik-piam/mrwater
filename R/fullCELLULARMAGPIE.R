@@ -33,8 +33,9 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     ref_year="y2015"
 
     map <- calcOutput("Cluster", ctype=ctype, weight=NULL, aggregate=FALSE)
-    toolStoreMapping(map,"clustermapping.csv",type="regional",error.existing = FALSE)
-    setConfig(regionmapping = "clustermapping.csv")
+    clustermapname <- paste0(ctype,".csv")
+    toolStoreMapping(map,clustermapname,type="regional",error.existing = FALSE)
+    setConfig(regionmapping = clustermapname)
 
     # 09 drivers
     ### gridded pop?
@@ -105,9 +106,12 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200") {
     calcOutput("NitrogenFixationRateNatural", aggregate=FALSE, round=6, file="f50_NitrogenFixationRateNatural_0.5.mz")
 
     #52 carbon
-    calcOutput("Carbon", aggregate = FALSE, round=6, file="lpj_carbon_stocks_0.5.mz")
-    calcOutput("TopsoilCarbon", aggregate = FALSE, round=6, file="lpj_carbon_topsoil_0.5.mz")
-
+    calcOutput("Carbon", aggregate = FALSE, climatetype=climatetype,
+              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+              time="spline", dof=4, round=6, file="lpj_carbon_stocks_0.5.mz")
+    calcOutput("TopsoilCarbon", aggregate = FALSE, climatetype=climatetype,
+              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+              time="spline", dof=4, round=6, file="lpj_carbon_topsoil_0.5.mz")
 
     #59 som
     calcOutput("SOMinitialsiationPools", aggregate = FALSE, round=6, file="f59_som_initialisation_pools_0.5.mz")

@@ -45,24 +45,26 @@ calcEnvmtlFlow <- function(selectyears="all",
                                            harmonize_baseline=FALSE, time="raw")
     # Extract years for quantile calculation
     years <- getYears(monthly_discharge_magpie, as.integer = TRUE)
+    years <- seq(years[1]+4,years[length(years)]-3,by=1)
     # Transform to array (faster calculation)
     monthly_discharge_magpie <-  as.array(collapseNames(monthly_discharge_magpie))
+    # Empty array with magpie object names
+    LFR_quant <- array(NA,dim=c(dim(monthly_discharge_magpie)[1],length(years)),dimnames=list(dimnames(monthly_discharge_magpie)[[1]],paste("y",years,sep="")))
 
     ### Calculate LFR_quant
     ## Note: LFRs correspond to the Q90-value (i.e. to the discharge that is exceeded in nine out of ten months)
     ## (Bonsch et al. 2015). This is calculated via the 10%-quantile of monthly discharge.
 
-    # Empty array with magpie object names
-    LFR_quant <- array(NA,dim=c(dim(monthly_discharge_magpie)[1],length(years)),dimnames=list(dimnames(monthly_discharge_magpie)[[1]],paste("y",years,sep="")))
-
     # Quantile calculation: Yearly LFR quantile value
     for(year in years){
-      # get the LFR_val quantile for each year for all cells
-      LFR_quant[,paste("y",year,sep="")] <- apply(monthly_discharge_magpie[,paste("y",year,sep=""),],MARGIN=c(1),quantile,probs=LFR_val)
+      # get the LFR_val quantile in range of 8 years for each year for all cells
+      needed_years <- seq(year-4,year+3,by=1)
+      LFR_quant[,paste("y",year,sep="")] <- apply(monthly_discharge_magpie[,paste("y",needed_years,sep=""),],MARGIN=c(1),quantile,probs=LFR_val)
     }
-
     # Time-smooth LFR_quant
     LFR_quant <- as.magpie(LFR_quant)
+    LFR_quant <- toolFillYears(LFR_quant, getYears(monthly_discharge_magpie, as.integer = TRUE))
+
     if(time=="average"){
       # Smoothing data through average:
       LFR_quant <- toolTimeAverage(LFR_quant, averaging_range=averaging_range)
