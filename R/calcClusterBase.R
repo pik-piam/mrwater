@@ -10,9 +10,9 @@ calcClusterBase <- function() {
 
   d <- list()
   # read in data which should be used to determine cluster
-  d$yld    <- calcOutput("Yields", selectyears=1995, aggregate=FALSE)
-  d$airrig <- calcOutput("Irrigation", selectyears=1995, aggregate=FALSE)
-  d$td     <- calcOutput("TransportDistance", aggregate=FALSE)[,,rep(1,16)]
+  d$yld    <- calcOutput("Yields",     years=1995, aggregate=FALSE)
+  d$airrig <- calcOutput("Irrigation", years=1995, aggregate=FALSE)
+  d$td     <- calcOutput("TransportDistance",      aggregate=FALSE)[,,rep(1,16)]
 
   cdata <- do.call(cbind,lapply(d,wrap,list(1,c(2,3))))
   cdata <- scale(cdata)
