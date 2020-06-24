@@ -49,7 +49,11 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
     ### gridded pop?
 
     # 14 yields
-    # calcOutput("Yields")
+    calcOutput("Yields", version="LPJmL5", climatetype=climatetype, time="spline", dof=4,
+               harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate = FALSE,
+               years=lpj_years)
+
+
     # These outputs need to be aggregated using weighted area mean
     calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.temperature_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "temperature", rcp = "rcp85")
     calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.precipitation_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "precipitation", rcp = "rcp85")
@@ -62,7 +66,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
 
     #10 land
     calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_0.5.mz")
-    calcOutput("LanduseInitialisation", aggregate=TRUE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_c200.mz")
+    calcOutput("LanduseInitialisation", aggregate="cluster", cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_c200.mz")
     calcOutput("SeaLevelRise", aggregate=FALSE, cellular=TRUE, round=6, file="f10_SeaLevelRise_0.5.mz")
     calcOutput("AvlLandSi", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
 
