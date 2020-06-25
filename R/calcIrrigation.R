@@ -87,9 +87,11 @@ calcIrrigation <- function(selectyears="all",
     stop("produced NA airrig")
   }
 
+  crop_area_weight <- calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate = FALSE, years="y1995", round=6)
+
   return(list(
     x=mag_airrig,
-    weight=NULL,
+    weight=crop_area_weight,
     unit="m^3 per ha per yr",
     description="Irrigation water (water applied in addition to rainfall) for different crop types following LPJmL irrigation system assumptions",
     isocountries=FALSE))

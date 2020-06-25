@@ -101,14 +101,14 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
     calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="LUH2v2",  years=mag_years_past_short, round=6, file="avl_irrig_luh_t_c200.mz")
 
     #42 water demand
-    calcOutput("Irrigation", version="LPJmL5", climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, file="lpj_airrig_c200.mz")
-    calcOutput("EnvmtlFlow", version="LPJmL4", climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, seasonality="grper", file="lpj_envflow_grper_c200.mz")
-    calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", seasonality="grper", aggregate=FALSE, file="watdem_nonagr_grper_0.5.mz")
-    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="withdrawal", aggregate="cluster", file="watdem_nonagr_ww_grper_c200.mz")
-    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="consumption", aggregate="cluster", file="watdem_nonagr_wc_grper_c200.mz")
+    calcOutput("Irrigation", version="LPJmL5", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, file="lpj_airrig_c200.mz")
+    calcOutput("EnvmtlFlow", version="LPJmL4", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, seasonality="grper", file="lpj_envflow_grper_c200.mz")
+    calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", years=lpj_years, seasonality="grper", aggregate=FALSE, file="watdem_nonagr_grper_0.5.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="withdrawal", aggregate="cluster", file="watdem_nonagr_ww_grper_c200.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="consumption", aggregate="cluster", file="watdem_nonagr_wc_grper_c200.mz")
 
     #43 water availability
-    calcOutput("AvlWater", version="LPJmL4", climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file="lpj_watavail_grper_c200.mz")
+    calcOutput("AvlWater", version="LPJmL4", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file="lpj_watavail_grper_c200.mz")
 
     #44 biodiversity
     calcOutput("Luh2SideLayers", aggregate=FALSE, round=6, file="luh2_side_layers_0.5.mz")
