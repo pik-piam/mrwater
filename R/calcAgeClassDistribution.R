@@ -47,6 +47,10 @@ calcAgeClassDistribution <- function(){
 
   out <- ac_distribution
 
+  getCells(out) <- mapping$celliso
+
+  names(dimnames(out))[1] <- "ISO.cell"
+
   return(list(
     x=out,
     weight=NULL,
