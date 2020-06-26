@@ -51,9 +51,11 @@ calcAgeClassDistribution <- function(){
 
   names(dimnames(out))[1] <- "ISO.cell"
 
+  weight <- calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years="y1995", round=6)
+
   return(list(
     x=out,
-    weight=NULL,
+    weight=weight,
     unit="1",
     description="Fraction of each age class in secondary forest from each spatially explicit cell",
     isocountries=FALSE))
