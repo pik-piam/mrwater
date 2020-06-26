@@ -51,7 +51,7 @@ calcAgeClassDistribution <- function(){
 
   names(dimnames(out))[1] <- "ISO.cell"
 
-  weight <- calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years="y1995", round=6)
+  weight <- cell_area_magpie
 
   return(list(
     x=out,
