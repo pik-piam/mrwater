@@ -51,11 +51,9 @@ calcAgeClassDistribution <- function(){
 
   names(dimnames(out))[1] <- "ISO.cell"
 
-  weight <- cell_area_magpie
-
   return(list(
     x=out,
-    weight=weight,
+    weight=NULL,
     unit="1",
     description="Fraction of each age class in secondary forest from each spatially explicit cell",
     isocountries=FALSE))
