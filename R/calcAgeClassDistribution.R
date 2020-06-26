@@ -55,7 +55,7 @@ calcAgeClassDistribution <- function(){
 
   return(list(
     x=out,
-    weight=NULL,
+    weight=weight,
     unit="1",
     description="Fraction of each age class in secondary forest from each spatially explicit cell",
     isocountries=FALSE))
