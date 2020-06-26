@@ -18,7 +18,7 @@ calcAgeClassDistribution <- function(){
   lat <- mapping$lat
 
   cb <- as.data.frame(magpie_coord)
-  cell_area  <- (111e3*0.5)*(111e3*0.5)*cos(cb$ylat/180*pi)
+  cell_area  <- (111e3*0.5)*(111e3*0.5)*cos(cb$lat/180*pi)
 
   cell_area <- as.data.frame(cell_area)
   cell_area$cell <- mapping$cell
