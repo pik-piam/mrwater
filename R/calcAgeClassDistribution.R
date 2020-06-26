@@ -51,6 +51,8 @@ calcAgeClassDistribution <- function(){
 
   names(dimnames(out))[1] <- "ISO.cell"
 
+  weight <- setCells(cell_area_magpie,mapping$celliso)
+
   return(list(
     x=out,
     weight=NULL,
