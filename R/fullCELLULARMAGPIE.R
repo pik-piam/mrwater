@@ -8,6 +8,8 @@
 #' indicating the number of resulting clusters. Available methodologies are hierarchical clustering (h), normalized k-means clustering
 #' (n) and combined hierarchical/normalized k-means clustering (c). In the latter hierarchical clustering is used to determine the
 #' cluster distribution among regions whereas normalized k-means is used for the clustering within a region.
+#' @param dev development suffix to distinguish development versions for the same data revision. This can be useful to distinguish
+#' parallel lines of development.
 #' @param climatetype climate change scenario to be used
 #' @param clusterweight Should specific regions be resolved with more or less detail? Values > 1 mean higher share, < 1 lower share
 #' e.g. cfg$clusterweight <- c(LAM=2) means that a higher level of detail for region LAM if set to NULL all weights will be assumed to be 1.
@@ -26,7 +28,7 @@
 #' }
 #' @importFrom madrat setConfig getConfig
 
-fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
+fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
 
     mag_years_past_short <- c("y1995","y2000","y2005","y2010")
     mag_years_past_long  <- c("y1995","y2000","y2005","y2010","y2015")
@@ -41,7 +43,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
 
     map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, aggregate=FALSE)
     weightID <- ifelse(is.null(clusterweight),"",paste0("_",names(clusterweight),clusterweight,collapse=""))
-    clustermapname <- paste0(ctype,weightID,"_",getConfig("regionmapping"))
+    clustermapname <- paste0("rev",rev,dev,"_",ctype,weightID,"_",getConfig("regionmapping"))
     toolStoreMapping(map,clustermapname,type="regional",error.existing = FALSE)
     setConfig(extramappings = clustermapname)
 
