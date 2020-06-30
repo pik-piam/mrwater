@@ -6,6 +6,7 @@
 \usage{
 fullCELLULARMAGPIE(
   rev = 0.1,
+  dev = "",
   ctype = "c200",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   clusterweight = NULL
@@ -13,6 +14,9 @@ fullCELLULARMAGPIE(
 }
 \arguments{
 \item{rev}{data revision which should be used as input (positive numeric).}
+
+\item{dev}{development suffix to distinguish development versions for the same data revision. This can be useful to distinguish
+parallel lines of development.}
 
 \item{ctype}{aggregation clustering type, which is a combination of a single letter, indicating the cluster methodology, and a number,
 indicating the number of resulting clusters. Available methodologies are hierarchical clustering (h), normalized k-means clustering
