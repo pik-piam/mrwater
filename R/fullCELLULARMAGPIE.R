@@ -43,7 +43,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
 
     map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, aggregate=FALSE)
     weightID <- ifelse(is.null(clusterweight),"",paste0("_",names(clusterweight),clusterweight,collapse=""))
-    clustermapname <- paste0(ctype,weightID,"_",getConfig("regionmapping"),"_rev",rev,dev)
+    clustermapname <- paste0("rev",rev,dev,"_",ctype,weightID,"_",getConfig("regionmapping"))
     toolStoreMapping(map,clustermapname,type="regional",error.existing = FALSE)
     setConfig(extramappings = clustermapname)
 
