@@ -13,9 +13,11 @@ calcClimateClass <-function(){
 
   x <- readSource("Koeppen", subtype="cellular",convert = FALSE)
 
+  weight <- calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years="y1995", round=6)
+
   return(list(
     x=x,
-    weight=NULL,
+    weight=weight,
     unit="share",
     description="share of koeppen geiger area",
     isocountries=FALSE))

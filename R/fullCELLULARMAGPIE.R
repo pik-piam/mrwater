@@ -8,6 +8,8 @@
 #' indicating the number of resulting clusters. Available methodologies are hierarchical clustering (h), normalized k-means clustering
 #' (n) and combined hierarchical/normalized k-means clustering (c). In the latter hierarchical clustering is used to determine the
 #' cluster distribution among regions whereas normalized k-means is used for the clustering within a region.
+#' @param dev development suffix to distinguish development versions for the same data revision. This can be useful to distinguish
+#' parallel lines of development.
 #' @param climatetype climate change scenario to be used
 #' @param clusterweight Should specific regions be resolved with more or less detail? Values > 1 mean higher share, < 1 lower share
 #' e.g. cfg$clusterweight <- c(LAM=2) means that a higher level of detail for region LAM if set to NULL all weights will be assumed to be 1.
@@ -26,7 +28,7 @@
 #' }
 #' @importFrom madrat setConfig getConfig
 
-fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
+fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
 
     mag_years_past_short <- c("y1995","y2000","y2005","y2010")
     mag_years_past_long  <- c("y1995","y2000","y2005","y2010","y2015")
@@ -41,7 +43,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
 
     map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, aggregate=FALSE)
     weightID <- ifelse(is.null(clusterweight),"",paste0("_",names(clusterweight),clusterweight,collapse=""))
-    clustermapname <- paste0(ctype,weightID,"_",getConfig("regionmapping"))
+    clustermapname <- paste0("rev",rev,dev,"_",ctype,weightID,"_",getConfig("regionmapping"))
     toolStoreMapping(map,clustermapname,type="regional",error.existing = FALSE)
     setConfig(extramappings = clustermapname)
 
@@ -49,7 +51,11 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
     ### gridded pop?
 
     # 14 yields
-    # calcOutput("Yields")
+    calcOutput("Yields", version="LPJmL5", climatetype=climatetype, time="spline", dof=4,
+               harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate = FALSE,
+               years=lpj_years)
+
+
     # These outputs need to be aggregated using weighted area mean
     calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.temperature_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "temperature", rcp = "rcp85")
     calcOutput("GCMClimate", aggregate="cluster", file = "rcp85.HadGEM2.precipitation_c200.mz", GCMModel = "HadGEM2", ClimateVariable = "precipitation", rcp = "rcp85")
@@ -62,8 +68,8 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
 
     #10 land
     calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_0.5.mz")
-    calcOutput("LanduseInitialisation", aggregate=TRUE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_c200.mz")
-    calcOutput("SeaLevelRise", aggregate=FALSE, cellular=TRUE, round=6, file="f10_SeaLevelRise_0.5.mz")
+    calcOutput("LanduseInitialisation", aggregate="cluster", cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_c200.mz")
+    calcOutput("SeaLevelRise", aggregate=FALSE, cellular=TRUE, years=mag_years, round=6, file="f10_SeaLevelRise_0.5.mz")
     calcOutput("AvlLandSi", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
 
 
@@ -87,7 +93,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
     calcOutput("ProtectArea", aggregate="cluster", round=6, file="protect_area_c200.mz" )
 
     #34
-    calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, file="f34_UrbanLand_0.5.mz")
+    calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, years=short_years, file="f34_UrbanLand_0.5.mz")
 
     #40
     calcOutput("TransportDistance", aggregate=FALSE, round=6, file="transport_distance_0.5.mz")
@@ -97,14 +103,14 @@ fullCELLULARMAGPIE <- function(rev=0.1, ctype="c200", climatetype="HadGEM2_ES:rc
     calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="LUH2v2",  years=mag_years_past_short, round=6, file="avl_irrig_luh_t_c200.mz")
 
     #42 water demand
-    calcOutput("Irrigation", version="LPJmL5", climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, file="lpj_airrig_c200.mz")
-    calcOutput("EnvmtlFlow", version="LPJmL4", climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, seasonality="grper", file="lpj_envflow_grper_c200.mz")
-    calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", seasonality="grper", aggregate=FALSE, file="watdem_nonagr_grper_0.5.mz")
-    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="withdrawal", aggregate="cluster", file="watdem_nonagr_ww_grper_c200.mz")
-    calcOutput("NonAgWaterDemand", source="WATERGAP2020", seasonality="grper", waterusetype="consumption", aggregate="cluster", file="watdem_nonagr_wc_grper_c200.mz")
+    calcOutput("Irrigation", version="LPJmL5", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, file="lpj_airrig_c200.mz")
+    calcOutput("EnvmtlFlow", version="LPJmL4", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, seasonality="grper", file="lpj_envflow_grper_c200.mz")
+    calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", years=lpj_years, seasonality="grper", aggregate=FALSE, file="watdem_nonagr_grper_0.5.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="withdrawal", aggregate="cluster", file="watdem_nonagr_ww_grper_c200.mz")
+    calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="consumption", aggregate="cluster", file="watdem_nonagr_wc_grper_c200.mz")
 
     #43 water availability
-    calcOutput("AvlWater", version="LPJmL4", climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file="lpj_watavail_grper_c200.mz")
+    calcOutput("AvlWater", version="LPJmL4", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file="lpj_watavail_grper_c200.mz")
 
     #44 biodiversity
     calcOutput("Luh2SideLayers", aggregate=FALSE, round=6, file="luh2_side_layers_0.5.mz")

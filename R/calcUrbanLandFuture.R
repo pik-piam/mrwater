@@ -13,15 +13,25 @@ calcUrbanLandFuture <-function(timestep = "5year", subtype="LUH2v2", cellular = 
 
   if (subtype=="LUH2v2"){
 
+past <- calcOutput("LanduseInitialisation", cellular=TRUE, land="fao", selectyears="past", input_magpie=FALSE, aggregate=F)
+past <- past[,c("y1995","y2000","y2005","y2010"),"urban"]
+past <- add_columns(past, addnm=c("SSP2","SSP3","SSP4", "SSP5"), dim=3.1)
+past[,,2:5] <- past[,,1]
+getNames(past)[1] <- "SSP1"
+
 out <- readSource("LUH2UrbanFuture",convert=FALSE)
 
 if(timestep == "5year"){
   out <- out[,seq(2015,2100,5),]
   out <- toolHoldConstant(out, seq(2105,2150, 5))
+  out<- mbind(past, out)
     }
 
 else if(timestep=="yearly"){
   out <- toolHoldConstant(out, c(2101:2150))
+  past <- time_interpolate(past,interpolated_year=1995:2010)
+  out <- mbind(past,out)
+  names(dimnames(out)) <- c("iso.cell", "t", "data")
     }
 
 }
