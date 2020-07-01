@@ -2,7 +2,7 @@
 
 R package **mrmagpie**, version **0.8.5.9001**
 
-
+  
 
 ## Purpose and Functionality
 
@@ -20,13 +20,13 @@ The additional repository can be made available permanently by adding the line a
 
 After that the most recent version of the package can be installed using `install.packages`:
 
-```r
+```r 
 install.packages("mrmagpie")
 ```
 
 Package updates can be installed using `update.packages` (make sure that the additional repository has been added before running that command):
 
-```r
+```r 
 update.packages()
 ```
 
@@ -51,3 +51,4 @@ A BibTeX entry for LaTeX users is
   note = {R package version 0.8.5.9001},
 }
 ```
+

@@ -1,21 +1,22 @@
 #' @title calcClusterBase
 #' @description Reads a series of MAgPIE files and combines them to a matrix
 #' which is then used for calculating a clustering.
+#' @param years2use A vector with years with should be taken into account for
+#' the clustering
 #' @return A matrix containing the data
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{calcCluster}}
 #' @importFrom magclass wrap read.magpie
 #' @importFrom madrat toolMappingFile
-calcClusterBase <- function() {
+calcClusterBase <- function(years2use=1995) {
 
   d <- list()
   # read in data which should be used to determine cluster
-  d$yld    <- calcOutput("Yields",     years=1995, aggregate=FALSE)
-  d$airrig <- calcOutput("Irrigation", years=1995, aggregate=FALSE)
-  d$td     <- calcOutput("TransportDistance",      aggregate=FALSE)[,,rep(1,floor(ndata(d$yld)/2))]
+  d$yld    <- calcOutput("Yields", selectyears=years2use, aggregate=FALSE)
+  d$airrig <- calcOutput("Irrigation", selectyears=years2use, aggregate=FALSE)
+  d$td     <- calcOutput("TransportDistance", aggregate=FALSE)[,,rep(1,16)]
 
   cdata <- do.call(cbind,lapply(d,wrap,list(1,c(2,3))))
-  cdata <- cdata[,dimSums(cdata,dim=1)!=0]
   cdata <- scale(cdata)
   colnames(cdata) <- paste0("i",1:ncol(cdata))
 
