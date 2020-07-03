@@ -120,8 +120,8 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
     calcOutput("RRLayer",        aggregate="cluster", round=6, file=paste0("rr_layer_", ctype, ".mz"))
 
     #50 nitrogen
-    calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, years =1995, round=6, file="f50_AtmosphericDepositionRates_0.5.mz")
-    calcOutput("NitrogenFixationRateNatural",               aggregate=FALSE, years =1995, round=6, file="f50_NitrogenFixationRateNatural_0.5.mz")
+    calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, years ="y1995", round=6, file="f50_AtmosphericDepositionRates_0.5.mz")
+    calcOutput("NitrogenFixationRateNatural",               aggregate=FALSE, years ="y1995", round=6, file="f50_NitrogenFixationRateNatural_0.5.mz")
 
     calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate="cluster", round=6, file=paste0("f50_AtmosphericDepositionRates_", ctype, ".mz"))
     calcOutput("NitrogenFixationRateNatural",               aggregate="cluster", round=6, file=paste0("f50_NitrogenFixationRateNatural_", ctype, ".mz"))
@@ -131,22 +131,22 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
     #52 carbon
     calcOutput("Carbon", aggregate = FALSE, climatetype=climatetype,
               harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-              time="spline", dof=4, round=6, years=1995, file="lpj_carbon_stocks_0.5.mz")
+              time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_stocks_0.5.mz")
     calcOutput("TopsoilCarbon", aggregate = FALSE, climatetype=climatetype,
               harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-              time="spline", dof=4, round=6, years=1995, file="lpj_carbon_topsoil_0.5.mz")
+              time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_topsoil_0.5.mz")
 
     calcOutput("Carbon", aggregate = "cluster", climatetype=climatetype,
                harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-               time="spline", dof=4, round=6, file=paste0("lpj_carbon_stocks_", ctype, ".mz"))
+               time="spline", dof=4, round=6, years=lpj_years, file=paste0("lpj_carbon_stocks_", ctype, ".mz"))
     calcOutput("TopsoilCarbon", aggregate = "cluster", climatetype=climatetype,
                harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-               time="spline", dof=4, round=6, file=paste0("lpj_carbon_topsoil_", ctype, ".mz"))
+               time="spline", dof=4, round=6, years=lpj_years, file=paste0("lpj_carbon_topsoil_", ctype, ".mz"))
 
 
     #59 som
     calcOutput("SOMinitialsiationPools", aggregate="cluster", round=6, file=paste0("f59_som_initialisation_pools_", ctype, ".mz"))
-    calcOutput("SOCLossShare",           aggregate="cluster", round=6, file=paste0("cshare_released_", ctype, ".mz"))
+    calcOutput("SOCLossShare",           aggregate="cluster", round=6, years="y1995", file=paste0("cshare_released_", ctype, ".mz"))
 
     ##### AGGREGATION ######
 
