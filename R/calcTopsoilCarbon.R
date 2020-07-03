@@ -33,9 +33,11 @@ calcTopsoilCarbon <- function(version="LPJmL4", climatetype="CRU_4", time="raw",
     stop("produced NA Carbon")
   }
 
+  weight <- calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years="y1995", round=6)
+
   return(list(
     x=topsoilc,
-    weight=NULL,
+    weight=weight,
     unit="t per ha",
     description="Topsoil carbon in tons per hectar for natural vegetation.",
     isocountries=FALSE))

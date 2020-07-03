@@ -19,6 +19,7 @@
 #'
 #' @import madrat
 #' @import magclass
+#' @importFrom mrcommons toolHarmonize2Baseline
 
 calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGAP",
                                  time="raw", averaging_range=NULL, dof=NULL,

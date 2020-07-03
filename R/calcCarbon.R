@@ -101,9 +101,11 @@ calcCarbon <- function(version="LPJmL4", climatetype="CRU_4", time="raw", averag
     stop("produced NA Carbon")
   }
 
+  weight <- calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years="y1995", round=6)
+
   return(list(
     x=carbon_stocks,
-    weight=NULL,
+    weight=weight,
     unit="t per ha",
     description="Carbon in tons per hectar for different land use types.",
     isocountries=FALSE))

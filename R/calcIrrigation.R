@@ -17,6 +17,7 @@
 #' \dontrun{ calcOutput("Irrigation", aggregate = FALSE) }
 #'
 #' @importFrom magpiesets findset
+#' @importFrom mrcommons toolHarmonize2Baseline
 
 calcIrrigation <- function(selectyears="all",
                            version="LPJmL5", climatetype="CRU_4", time="spline", averaging_range=NULL, dof=4,
