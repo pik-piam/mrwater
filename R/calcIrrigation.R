@@ -23,6 +23,10 @@ calcIrrigation <- function(selectyears="all",
                            version="LPJmL5", climatetype="CRU_4", time="spline", averaging_range=NULL, dof=4,
                            harmonize_baseline=FALSE, ref_year=NULL){
 
+  sizelimit <- getOption("magclass_sizeLimit")
+  options(magclass_sizeLimit=1e+10)
+  on.exit(options(magclass_sizeLimit=sizelimit))
+
   if(harmonize_baseline==FALSE){
 
     if(time=="raw"){
