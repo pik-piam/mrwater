@@ -30,6 +30,10 @@
 
 fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
 
+  sizelimit <- getOption("magclass_sizeLimit")
+  options(magclass_sizeLimit=1e+10)
+  on.exit(options(magclass_sizeLimit=sizelimit))
+
     mag_years_past_short <- c("y1995","y2000","y2005","y2010")
     mag_years_past_long  <- c("y1995","y2000","y2005","y2010","y2015")
     mag_years <- findset("time")
