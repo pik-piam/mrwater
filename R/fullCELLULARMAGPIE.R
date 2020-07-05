@@ -135,17 +135,17 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
 
 
   #52 carbon
-  calcOutput("Carbon", aggregate = FALSE, climatetype=climatetype,
+  calcOutput("Carbon", aggregate = FALSE, version="LPJmL4+5", climatetype=climatetype,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
              time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_stocks_0.5.mz")
-  calcOutput("TopsoilCarbon", aggregate = FALSE, climatetype=climatetype,
+  calcOutput("TopsoilCarbon", aggregate = FALSE, version="LPJmL4", climatetype=climatetype,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
              time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_topsoil_0.5.mz")
 
-  calcOutput("Carbon", aggregate = "cluster", climatetype=climatetype,
+  calcOutput("Carbon", aggregate = "cluster", version="LPJmL4+5", climatetype=climatetype,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
              time="spline", dof=4, round=6, years=lpj_years, file=paste0("lpj_carbon_stocks_", ctype, ".mz"))
-  calcOutput("TopsoilCarbon", aggregate = "cluster", climatetype=climatetype,
+  calcOutput("TopsoilCarbon", aggregate = "cluster", version="LPJmL4", climatetype=climatetype,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
              time="spline", dof=4, round=6, years=lpj_years, file=paste0("lpj_carbon_topsoil_", ctype, ".mz"))
 
