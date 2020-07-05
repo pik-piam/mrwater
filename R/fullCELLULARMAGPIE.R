@@ -114,7 +114,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   #42 water demand
   calcOutput("Irrigation", version="LPJmL5", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, file=paste0("lpj_airrig_", ctype, ".mz"))
   calcOutput("EnvmtlFlow", version="LPJmL4", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, seasonality="grper", file=paste0("lpj_envflow_grper_", ctype, ".mz"))
-  calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", years=lpj_years, seasonality="grper", aggregate=FALSE, file="watdem_nonagr_grper_0.5.mz")
+  #calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", years=lpj_years, seasonality="grper", aggregate=FALSE, file="watdem_nonagr_grper_0.5.mz")
   calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="withdrawal", aggregate="cluster", file=paste0("watdem_nonagr_ww_grper_", ctype, ".mz"))
   calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="consumption", aggregate="cluster", file=paste0("watdem_nonagr_wc_grper_", ctype, ".mz"))
 
