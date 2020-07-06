@@ -33,7 +33,9 @@ calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGA
   # Old Non-Agricultural Waterdemand data (current default, will be deleted soon):
   if(source=="WATCH_ISIMIP_WATERGAP"){
     # Read in nonagricultural water demand:
-    watdem_nonagr      <- readSource("WATERGAP", convert="onlycorrect", subtype=source)
+    watdem_nonagr <- readSource("WATERGAP", convert="onlycorrect", subtype=source)
+    # Add year 2100
+    watdem_nonagr <- toolFillYears(watdem_nonagr, seq(getYears(watdem_nonagr, as.integer=TRUE)[1],2100,by=5))
   }
 
   # New Non-Agricultural Waterdemand data (will be new default)
@@ -96,13 +98,13 @@ calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGA
       } else if(time=="spline"){
         # Smoothing data with spline method:
         watdem_nonagr   <- toolTimeSpline(x, dof=dof)
-        # Replace value in 2100 with value from 2099 (LPJmL output ends in 2099)
+        # Replace value in 2100 with value from 2099
         if ("y2099" %in% getYears(watdem_nonagr)) {
           watdem_nonagr <- toolFillYears(watdem_nonagr, c(getYears(watdem_nonagr, as.integer=TRUE)[1]:2100))
         }
 
       } else if(time!="raw"){
-          stop("Time argument not supported!")
+        stop("Time argument not supported!")
       }
     }
   }
@@ -136,12 +138,12 @@ calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGA
     # Calculate non-agricultural water demand in growing period
     out         <- watdem_nonagr[,years,]*grow_days[,years,]/365
     description <- "Non-agricultural water demand (industry, electiricty, domestic) in growing period"
-  }
-
-  ### Total non-agricultural water demands per year
-  if(seasonality=="total"){
+  } else if(seasonality=="total"){
+    ### Total non-agricultural water demands per year
     out         <- watdem_nonagr[,,]
     description <- "Total non-agricultural water demand (industry, electiricty, domestic)"
+  } else {
+    stop("Specify seasonality! grper or total")
   }
 
   # Check for NAs
