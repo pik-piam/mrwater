@@ -197,11 +197,9 @@ calcEnvmtlFlow <- function(selectyears="all",
     }
     out=EFR_total
     description="Total EFR per year"
-  }
 
   ### Water available in growing period per cell per year
-  if(seasonality=="grper"){
-
+  } else if(seasonality=="grper"){
     # magpie object with days per month with same dimension as EFR
     tmp <- c(31,28,31,30,31,30,31,31,30,31,30,31)
     month_days <- new.magpie(names=dimnames(EFR)[[3]])
@@ -235,6 +233,8 @@ calcEnvmtlFlow <- function(selectyears="all",
     }
     out=EFR_grper
     description="EFR in growing period per year"
+  } else {
+    stop("Specify seasonality! grper or total")
   }
 
   return(list(
