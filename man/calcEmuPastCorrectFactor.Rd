@@ -4,7 +4,10 @@
 \alias{calcEmuPastCorrectFactor}
 \title{calcEmuPastCorrectFactor}
 \usage{
-calcEmuPastCorrectFactor()
+calcEmuPastCorrectFactor(model = "109325f71e")
+}
+\arguments{
+\item{model}{grass harvest machine learnning model ID}
 }
 \value{
 MAgPIE objects with pasture correction factor on a celullar level.

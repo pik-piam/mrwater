@@ -7,7 +7,7 @@
 #' @param weights The learned weights and biases in a list format as outputed by the function \code{\link{get_weights}}. This function works with magpie objects
 #' @return The evaluated result of the neural network for the \code{input_ml} parameter.
 #' @author Marcos Alves
-#'
+#' @export toolNeuralNet
 
 toolNeuralNet <- function(inputs_ml, weights) {
   x <- paste0(".f <- function(input) {")
