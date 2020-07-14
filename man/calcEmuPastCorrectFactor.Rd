@@ -7,10 +7,10 @@
 calcEmuPastCorrectFactor(model = "109325f71e")
 }
 \arguments{
-\item{model}{grass harvest machine learnning model ID}
+\item{model}{grass harvest machine learning model ID}
 }
 \value{
-MAgPIE objects with pasture correction factor on a celullar level.
+MAgPIE objects with pasture correction factor on a cellular level.
 }
 \description{
 Loads the ANN trained grass emulator with historical data and calculates the pasture correction factor
@@ -18,7 +18,7 @@ Loads the ANN trained grass emulator with historical data and calculates the pas
 \examples{
 
 \dontrun{
-calOutput("EmuPastCorrectFactor", model_id = "20f33a2280", folder = "GrassYieldsEmulator")
+calOutput("EmuPastCorrectFactor", model = "109325f71e")
 }
 
 }

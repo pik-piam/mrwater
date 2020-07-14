@@ -1,12 +1,12 @@
 #' @title calcEmuPastCorrectFactor
 #' @description Loads the ANN trained grass emulator with historical data and calculates the pasture correction factor
-#' @return MAgPIE objects with pasture correction factor on a celullar level.
-#' @param model grass harvest machine learnning model ID
+#' @return MAgPIE objects with pasture correction factor on a cellular level.
+#' @param model grass harvest machine learning model ID
 #' @author Marcos Alves
 #' @examples
 #'
 #' \dontrun{
-#' calOutput("EmuPastCorrectFactor", model_id = "20f33a2280", folder = "GrassYieldsEmulator")
+#' calOutput("EmuPastCorrectFactor", model = "109325f71e")
 #' }
 #'
 #' @import madrat
@@ -43,16 +43,17 @@ calcEmuPastCorrectFactor <-
     ### Loading emulator data      ##
     #################################
 
-    inputs_vec          <- as.vector(readSource("GrassYldEmu", subtype = paste(model,"inputs", sep = "."), convert="onlycorrect"))
-    max_grass           <- toolCell2isoCell(readSource("GrassYldEmu", subtype = paste(model,"max_harvest", sep = "."), convert="onlycorrect"))[,1:length(past),]
-    getYears(max_grass) <- past
-    magpie_center       <- readSource("GrassYldEmu", subtype =paste(model,"mean", sep = "."), convert="onlycorrect")
-    center              <- as.numeric(magpie_center)
-    names(center)       <- getCells(magpie_center)
-    magpie_scale        <- readSource("GrassYldEmu", subtype = paste(model,"stddevs", sep = "."), convert="onlycorrect")
-    scale               <- as.numeric(magpie_scale)
-    names(scale)        <- getCells(magpie_scale)
-    weights             <- readSource("GrassYldEmu", subtype = paste(model,"weights", sep = "."), convert="onlycorrect")
+    inputs_vec             <- as.vector(readSource("GrassYldEmu", subtype = paste(model,"inputs", sep = "."), convert="onlycorrect"))
+    max_grass              <- toolCell2isoCell(readSource("GrassYldEmu", subtype = paste(model,"max_harvest", sep = "."), convert="onlycorrect"))[,1:length(past),]
+    getYears(max_grass)    <- past
+    max_grass[max_grass<0] <- 0
+    magpie_center          <- readSource("GrassYldEmu", subtype =paste(model,"mean", sep = "."), convert="onlycorrect")
+    center                 <- as.numeric(magpie_center)
+    names(center)          <- getCells(magpie_center)
+    magpie_scale           <- readSource("GrassYldEmu", subtype = paste(model,"stddevs", sep = "."), convert="onlycorrect")
+    scale                  <- as.numeric(magpie_scale)
+    names(scale)           <- getCells(magpie_scale)
+    weights                <- readSource("GrassYldEmu", subtype = paste(model,"weights", sep = "."), convert="onlycorrect")
 
     #################################
     ### Loading environmental data ##
