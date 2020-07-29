@@ -2,11 +2,13 @@
 #' @description Loads the ANN trained grass emulator with historical data and calculates the pasture correction factor
 #' @return MAgPIE objects with pasture correction factor on a cellular level.
 #' @param model grass harvest machine learning model ID
+#' @param GCMModel Global climate model name
+#' @param rcp RCP
 #' @author Marcos Alves
 #' @examples
 #'
 #' \dontrun{
-#' calOutput("EmuPastCorrectFactor", model = "109325f71e")
+#' calcOutput("EmuPastCorrectFactor", model = "f41f19be67", GCMModel = "HadGEM2", rcp = "rcp85")
 #' }
 #'
 #' @import madrat
@@ -17,17 +19,18 @@
 #' @export
 #'
 
-# #development
+# # #development
 # library(mrcommons)
+# library(stringi)
 # library(tidyr)
 # library(magpiesets)
 # library(mrmagpie)
-# setConfig(forcecache=T)
+# setConfig(forcecache=F)
 # setConfig(globalenv = T)
 # setwd("C:/magpie_inputdata/sources")
 
 calcEmuPastCorrectFactor <-
-  function(model = "109325f71e") {
+  function(model = "f41f19be67", GCMModel = "HadGEM2", rcp = "rcp85") {
 
     past <- findset("past")
     past <- past[7:length(past)]
@@ -44,7 +47,7 @@ calcEmuPastCorrectFactor <-
     #################################
 
     inputs_vec             <- as.vector(readSource("GrassYldEmu", subtype = paste(model,"inputs", sep = "."), convert="onlycorrect"))
-    max_grass              <- toolCell2isoCell(readSource("GrassYldEmu", subtype = paste(model,"max_harvest", sep = "."), convert="onlycorrect"))[,1:length(past),]
+    max_grass              <- toolCell2isoCell(readSource("GrassYldEmu", subtype = paste(model,"max_harvest", sep = "."), convert="onlycorrect"))
     getYears(max_grass)    <- past
     max_grass[max_grass<0] <- 0
     magpie_center          <- readSource("GrassYldEmu", subtype =paste(model,"mean", sep = "."), convert="onlycorrect")
@@ -58,56 +61,12 @@ calcEmuPastCorrectFactor <-
     #################################
     ### Loading environmental data ##
     #################################
-    soil_char  <- c("Ks", "Sf", "w_pwp", "w_fc", "w_sat", "hsg", "tdiff_0", "tdiff_15", "tdiff_100", "cond_pwp", "cond_100", "cond_100_ice")
-    ml_inputs  <- inputs_vec[is.na(match(inputs_vec, "lsu"))]
-    if (any(soil_char %in% ml_inputs)) {
-      inputs   <- ml_inputs[is.na(match(ml_inputs, soil_char))]
-      if (!("soil" %in% inputs)) {
-        inputs <- append(inputs, "soil")
-      }
-    }
 
-    list_mag_obj <- list()
-
-    for (input in inputs) {
-      if ("temperature" %in% input) {
-        list_mag_obj[[input]] <- calcOutput("GCMClimate", aggregate = FALSE, GCMModel = "HadGEM2", ClimateVariable = "temperature", rcp = "rcp85")[, past, ]
-      }
-
-      if ("precipitation" %in% input) {
-        list_mag_obj[[input]] <- calcOutput("GCMClimate", aggregate = FALSE, GCMModel = "HadGEM2", ClimateVariable = "precipitation", rcp = "rcp85")[, past, ]
-      }
-
-      if ("lwnet" %in% input) {
-        list_mag_obj[[input]] <- calcOutput("GCMClimate", aggregate = FALSE, GCMModel = "HadGEM2", ClimateVariable = "longwave_radiation", rcp = "rcp85")[, past, ]
-      }
-
-      if ("rsds" %in% input) {
-        list_mag_obj[[input]] <- calcOutput("GCMClimate", aggregate = FALSE, GCMModel = "HadGEM2", ClimateVariable = "shortwave_radiation", rcp = "rcp85")[, past, ]
-      }
-
-      if ("wetdays" %in% input) {
-        list_mag_obj[[input]] <- calcOutput("GCMClimate", aggregate = FALSE, GCMModel = "HadGEM2", ClimateVariable = "wetdays", rcp = "rcp85")[, past, ]
-      }
-
-      if ("co2" %in% input) {
-        list_mag_obj[[input]] <- calcOutput("CO2Atmosphere", aggregate = FALSE, rcp = "rcp85", level = "cellular")[, past, ]
-      }
-
-      if ("soil" %in% input) {
-        list_mag_obj[[input]] <- calcOutput("SoilCharacteristics", aggregate = FALSE)[, past, ]
-      }
-    }
-
-    environmental_data_1 <- list_mag_obj[[1]]
-    for (i in 2:length(inputs)) {
-      environmental_data_1 <- mbind(environmental_data_1, list_mag_obj[[i]])
-    }
-
+    environmental_data_1 <- calcOutput("CellEnvironmentData", model = model, GCMModel = GCMModel, rcp = rcp, years = past, aggregate = F)
     environmental_data_2 <- as.data.frame(environmental_data_1, rev = 2)
     environmental_data_3 <- pivot_wider(environmental_data_2, values_from = ".value", names_from = "data")
-    environmental_data_4 <- environmental_data_3[, -c(1, 2, 3)]
-    environmental_data   <- scale(environmental_data_4, center = center[ml_inputs], scale = scale[ml_inputs])
+    drops                <- grep("region+|year+", colnames(environmental_data_3))
+    environmental_data   <- as.matrix(environmental_data_3[,-drops])
 
     #############################
     ### Disaggregation weights###
@@ -192,12 +151,11 @@ calcEmuPastCorrectFactor <-
     # correction_factor[correction_factor>10] <- 10
 
 
-    # Analysis
-    # sum(pred_pasture_production) / sum(FAO_pasture_demand_cell)
+    #Analysis
     # sum(pred_pasture_production) / sum(FAO_pasture_demand_cell)
     # summary(correction_factor[, 1, ])
-    # quantile(correction_factor, probs = 0.95)
-    # luplot::plotmap2(max_grass[, 1, ])
+    # q <- quantile(correction_factor, probs = 0.95);q
+    # luplot::plotmap2(correction_factor[, 1, ], legend_range = c(0,q), lowcol = "#FFFFFF", midpoint = 4)
 
     return(list(
       x = correction_factor,
