@@ -175,10 +175,9 @@ calcEnvmtlFlow <- function(selectyears="all",
     }
     out=EFR
     description="Environmental flow requirements per cell per month"
-  }
 
   ### Total water available per cell per year
-  if(seasonality=="total"){
+  } else if(seasonality=="total"){
 
     # Sum up over all month:
     EFR_total <- dimSums(EFR, dim=3)
