@@ -22,7 +22,7 @@ calcSOCLossShare<- function(){
   SCFsub2IPCCclimate     <- readSource("IPCC",    subtype="SCF_sub" , convert=FALSE)[,,getNames(IPCC_climate)]
   SOCLossShare           <- dimSums(IPCC_climate * SCFsub2IPCCclimate, dim=3.1)
 
-  weight <- calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years="y1995", round=6)
+  weight <- dimSums(calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years="y1995", round=6), dim=3)
 
   return(list(
     x            = SOCLossShare ,
