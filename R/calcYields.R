@@ -73,12 +73,13 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
 
     FAOYields         <- dimSums(FAOproduction,dim=1)/dimSums(MAGarea, dim=1)
 
-    Calib <- new.magpie("GLO", getYears(yields),c(getNames(FAOYields), "pasture"), fill=1)
-    Calib[,getYears(FAOYields),"oilpalm"]   <- FAOYields[,,"oilpalm"]/FAOYields[,,"groundnut"]      # LPJmL proxy for oil palm is groundnut
-    Calib[,getYears(FAOYields),"cottn_pro"] <- FAOYields[,,"cottn_pro"]/FAOYields[,,"groundnut"]    # LPJmL proxy for cotton is groundnut
-    Calib[,getYears(FAOYields),"foddr"]     <- FAOYields[,,"foddr"]/FAOYields[,,"maiz"]             # LPJmL proxy for fodder is maize
-    Calib[,getYears(FAOYields),"others"]    <- FAOYields[,,"others"]/FAOYields[,,"maiz"]            # LPJmL proxy for others is maize
-    Calib[,getYears(FAOYields),"potato"]    <- FAOYields[,,"potato"]/FAOYields[,,"sugr_beet"]       # LPJmL proxy for potato is sugar beet
+    matchingFAOyears <- intersect(getYears(yields),getYears(FAOYields))
+    Calib            <- new.magpie("GLO", getYears(yields), c(getNames(FAOYields), "pasture"), fill=1)
+    Calib[,matchingFAOyears,"oilpalm"]   <- FAOYields[,,"oilpalm"]/FAOYields[,,"groundnut"]      # LPJmL proxy for oil palm is groundnut
+    Calib[,matchingFAOyears,"cottn_pro"] <- FAOYields[,,"cottn_pro"]/FAOYields[,,"groundnut"]    # LPJmL proxy for cotton is groundnut
+    Calib[,matchingFAOyears,"foddr"]     <- FAOYields[,,"foddr"]/FAOYields[,,"maiz"]             # LPJmL proxy for fodder is maize
+    Calib[,matchingFAOyears,"others"]    <- FAOYields[,,"others"]/FAOYields[,,"maiz"]            # LPJmL proxy for others is maize
+    Calib[,matchingFAOyears,"potato"]    <- FAOYields[,,"potato"]/FAOYields[,,"sugr_beet"]       # LPJmL proxy for potato is sugar beet
 
     # interpolate between FAO years
     Calib <- toolFillYears(Calib, getYears(yields))
