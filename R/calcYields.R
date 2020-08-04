@@ -74,6 +74,7 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
     FAOYields         <- dimSums(FAOproduction,dim=1)/dimSums(MAGarea, dim=1)
 
     matchingFAOyears <- intersect(getYears(yields),getYears(FAOYields))
+    FAOYields        <- FAOYields[,matchingFAOyears,]
     Calib            <- new.magpie("GLO", getYears(yields), c(getNames(FAOYields), "pasture"), fill=1)
     Calib[,matchingFAOyears,"oilpalm"]   <- FAOYields[,,"oilpalm"]/FAOYields[,,"groundnut"]      # LPJmL proxy for oil palm is groundnut
     Calib[,matchingFAOyears,"cottn_pro"] <- FAOYields[,,"cottn_pro"]/FAOYields[,,"groundnut"]    # LPJmL proxy for cotton is groundnut
