@@ -94,7 +94,7 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
 
   return(list(
     x=yields,
-    weight=NULL,
+    weight=crop_area_weight,
     unit="t per ha",
     description="Yields in tons per hectar for different crop types.",
     isocountries=FALSE))
