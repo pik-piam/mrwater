@@ -77,8 +77,8 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   calcOutput("ClimateClass", aggregate="cluster", years="y2015", file=paste0("koeppen_geiger_", ctype, ".mz"))
 
   #10 land
-  calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file="avl_land_t_0.5.mz")
-  calcOutput("LanduseInitialisation", aggregate="cluster", cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_short, round=6, file=paste0("avl_land_t_", ctype, ".mz"))
+  calcOutput("LanduseInitialisation", aggregate=FALSE, cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_long, round=6, file="avl_land_t_0.5.mz")
+  calcOutput("LanduseInitialisation", aggregate="cluster", cellular=TRUE, land="fao", input_magpie=TRUE, years=mag_years_past_long, round=6, file=paste0("avl_land_t_", ctype, ".mz"))
   calcOutput("SeaLevelRise", aggregate=FALSE, cellular=TRUE, years=mag_years, round=6, file="f10_SeaLevelRise_0.5.mz")
   calcOutput("AvlLandSi", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
 
@@ -109,8 +109,8 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   calcOutput("TransportDistance", aggregate="cluster", round=6, file=paste0("transport_distance_", ctype, ".mz"))
 
   #41 area equipped for irrigation
-  calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="Siebert", round=6, file=paste0("avl_irrig_", ctype, ".mz"))
-  calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="LUH2v2",  years=mag_years_past_short, round=6, file=paste0("avl_irrig_luh_t_", ctype, ".mz"))
+  calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="Siebert", years=mag_years_past_long, round=6, file=paste0("avl_irrig_", ctype, ".mz"))
+  calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="LUH2v2",  years=mag_years_past_long, round=6, file=paste0("avl_irrig_luh_t_", ctype, ".mz"))
 
   #42 water demand
   calcOutput("Irrigation", version="LPJmL5", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, file=paste0("lpj_airrig_", ctype, ".mz"))
@@ -127,8 +127,8 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   calcOutput("RRLayer",        aggregate="cluster", round=6, file=paste0("rr_layer_", ctype, ".mz"))
 
   #50 nitrogen
-  calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, years ="y1995", round=6, file="f50_AtmosphericDepositionRates_0.5.mz")
-  calcOutput("NitrogenFixationRateNatural",               aggregate=FALSE, years ="y1995", round=6, file="f50_NitrogenFixationRateNatural_0.5.mz")
+  calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate=FALSE, round=6, file="f50_AtmosphericDepositionRates_0.5.mz")
+  calcOutput("NitrogenFixationRateNatural",               aggregate=FALSE, round=6, file="f50_NitrogenFixationRateNatural_0.5.mz")
 
   calcOutput("AtmosphericDepositionRates", cellular=TRUE, aggregate="cluster", round=6, file=paste0("f50_AtmosphericDepositionRates_", ctype, ".mz"))
   calcOutput("NitrogenFixationRateNatural",               aggregate="cluster", round=6, file=paste0("f50_NitrogenFixationRateNatural_", ctype, ".mz"))
