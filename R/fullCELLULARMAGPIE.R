@@ -50,8 +50,8 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
 
   map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, aggregate=FALSE)
   weightID <- ifelse(is.null(clusterweight),"",paste0("_",names(clusterweight),clusterweight,collapse=""))
-  clustermapname <- paste0("rev",rev,dev,"_",ctype,weightID,"_",getConfig("regionmapping"))
-  toolStoreMapping(map,clustermapname,type="regional",error.existing = FALSE)
+  clustermapname <- sub("\\.[^.]*$",".rds",paste0("clustermap_rev",rev,dev,"_",ctype,weightID,"_",getConfig("regionmapping")))
+  toolStoreMapping(map,clustermapname,type="regional",where=c("mappingfolder","outputfolder"),error.existing = FALSE)
   setConfig(extramappings = clustermapname)
 
   # 09 drivers
@@ -60,7 +60,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   # 14 yields
   calcOutput("Yields", version="LPJmL5", climatetype=climatetype, time="spline", dof=4,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate = FALSE,
-             years=lpj_years, file=paste0("lpj_yields_0.5.mz"))
+             years="y1995", file=paste0("lpj_yields_0.5.mz"))
   calcOutput("Yields", version="LPJmL5", climatetype=climatetype, time="spline", dof=4,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate = "cluster",
              years=lpj_years, file=paste0("lpj_yields_", ctype, ".mz"))
@@ -84,8 +84,8 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
 
 
   #30 crop
-  calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate = FALSE,file="f30_croparea_initialisation_0.5.mz")
-  calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate = FALSE,file="f30_croparea_w_initialisation_0.5.mz")
+  #calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate = FALSE,file="f30_croparea_initialisation_0.5.mz")
+  #calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate = FALSE,file="f30_croparea_w_initialisation_0.5.mz")
   calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate = "cluster", file=paste0("f30_croparea_initialisation_", ctype, ".mz"))
   calcOutput("Croparea", sectoral="kcr", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate = "cluster",file=paste0("f30_croparea_w_initialisation_", ctype, ".mz"))
 
@@ -139,9 +139,9 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   calcOutput("Carbon", aggregate = FALSE, version="LPJmL4+5", climatetype=climatetype,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
              time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_stocks_0.5.mz")
-  calcOutput("TopsoilCarbon", aggregate = FALSE, version="LPJmL4", climatetype=climatetype,
-             harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-             time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_topsoil_0.5.mz")
+  # calcOutput("TopsoilCarbon", aggregate = FALSE, version="LPJmL4", climatetype=climatetype,
+  #            harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+  #            time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_topsoil_0.5.mz")
 
   calcOutput("Carbon", aggregate = "cluster", version="LPJmL4+5", climatetype=climatetype,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year,

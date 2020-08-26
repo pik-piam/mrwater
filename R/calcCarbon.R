@@ -40,7 +40,7 @@ calcCarbon <- function(version="LPJmL4", climatetype="CRU_4", time="raw", averag
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year,
                               aggregate=FALSE)
 
-  natveg       <- mbind(litc_natveg, vegc_natveg, soilc_natveg)
+  natveg       <- mbind(vegc_natveg, soilc_natveg, litc_natveg)
 
   if(version_backup == "LPJmL4+5") version <- "LPJmL5"
 
@@ -59,7 +59,8 @@ calcCarbon <- function(version="LPJmL4", climatetype="CRU_4", time="raw", averag
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year,
                               aggregate=FALSE)
 
-  grass           <- mbind(litc_grass, vegc_grass, soilc_grass)
+  grass           <- mbind(vegc_grass, soilc_grass, litc_grass)
+
   getNames(grass) <- getNames(natveg)
 
 
