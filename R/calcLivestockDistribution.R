@@ -73,7 +73,7 @@ calcLivestockDistribution <-
     # sum(pred_pasture_production) / sum(FAO_pasture_demand_cell)
     # summary(correction_factor[, 1, ])
     # q <- quantile(correction_factor, probs = 0.95);q
-    # luplot::plotmap2(correction_factor[, 1, ], legend_range = c(0,q), lowcol = "#FFFFFF", midpoint = 4)
+
 
     return(list(
       x = livestock_cell,

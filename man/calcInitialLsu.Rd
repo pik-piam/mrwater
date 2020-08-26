@@ -4,7 +4,7 @@
 \alias{calcInitialLsu}
 \title{calcInitialLsu}
 \usage{
-calcInitialLsu(model = "109325f71e")
+calcInitialLsu(model = "f41f19be67")
 }
 \arguments{
 \item{model}{Grass harvest machine learning model ID}
@@ -18,7 +18,7 @@ Loads the LSU that provides the maximum grass harvest as a initial values for MA
 \examples{
 
 \dontrun{
-calOutput("InitialLsu", model = "109325f71e")
+calOutput("InitialLsu", model = "f41f19be67")
 }
 
 }

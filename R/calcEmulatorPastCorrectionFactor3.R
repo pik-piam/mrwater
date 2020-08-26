@@ -128,7 +128,7 @@ calcEmuPastCorrectFactor3 <-
     lsu_ha[is.nan(lsu_ha)]              <- 0
     lsu_ha[lsu_ha > 2.5]                <- 2.5
     lsu_ha_scaled                       <- scale(lsu_ha, center = center["lsu"], scale = scale["lsu"])
-    luplot::plotmap2(lsu_ha[,1,1])
+
 
     #################################
     ### Predicted grass yield     ###
