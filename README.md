@@ -38,9 +38,8 @@ In case of questions / problems please contact Kristine Karstens <karstens@pik-p
 
 To cite package **mrmagpie** in publications use:
 
-Karstens K, Dietrich J, Chen D, Windisch M, Alves M, Beier F, v. Jeetze P, Mishra A
-(2020). _mrmagpie: madrat based MAgPIE Input Data Library_. R package version
-0.10.11.
+Karstens K, Dietrich J, Chen D, Windisch M, Alves M, Beier F, v. Jeetze P, Mishra A (2020). _mrmagpie: madrat based MAgPIE
+Input Data Library_. R package version 0.10.11.
 
 A BibTeX entry for LaTeX users is
 

@@ -6,7 +6,7 @@
 #' @examples
 #'
 #' \dontrun{
-#' calOutput("InitialLsu", model = "109325f71e")
+#' calOutput("InitialLsu", model = "f41f19be67")
 #' }
 #'
 #' @import madrat
@@ -15,7 +15,7 @@
 
 
 calcInitialLsu <-
-  function(model = "109325f71e") {
+  function(model = "f41f19be67") {
 
     past <- findset("past")
     past <- past[7:length(past)]
