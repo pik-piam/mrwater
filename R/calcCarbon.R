@@ -71,10 +71,7 @@ calcCarbon <- function(version="LPJmL4", climatetype="CRU_4", time="raw", averag
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year,
                               aggregate=FALSE)
   #find cshare
-  cshare_kcr        <- calcOutput("SOCLossShare", aggregate=FALSE, years="y1995")
-  croparea          <- calcOutput("Croparea", aggregate=FALSE, cellular=TRUE, years="y1995")
-  cshare            <- toolAggregate(cshare_kcr, rel=table(kcr=getNames(croparea),rep("crop", 19)), weight=croparea, from="kcr",to="crop", dim=3)
-  cshare[cshare==0] <- cshare_kcr[,,"maiz"][cshare==0]
+  cshare         <- calcOutput("SOCLossShare", aggregate=FALSE, years="y1995")
 
   ####################################################
   #Create the output file
@@ -96,7 +93,7 @@ calcCarbon <- function(version="LPJmL4", climatetype="CRU_4", time="raw", averag
   #Factor 0.012 is based on the script subversion/svn/tools/carbon_cropland, executed at 30.07.2013
   carbon_stocks[,,"crop.vegc"]       <- 0.012*natveg[,,"vegc"]
   carbon_stocks[,,"crop.litc"]       <- 0 # does not make sense
-  carbon_stocks[,,"crop.soilc"]      <- (1-cshare) * topsoilc + (soilc_natveg-topsoilc)
+  carbon_stocks[,,"crop.soilc"]      <- cshare * topsoilc + (soilc_natveg-topsoilc)
 
   carbon_stocks[,,"past"]            <- grass
   carbon_stocks[,,"forestry"]        <- natveg

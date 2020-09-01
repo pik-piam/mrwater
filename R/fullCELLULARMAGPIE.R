@@ -153,7 +153,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
 
   #59 som
   calcOutput("SOMinitialsiationPools", aggregate="cluster", round=6, file=paste0("f59_som_initialisation_pools_", ctype, ".mz"))
-  calcOutput("SOCLossShare",           aggregate="cluster", round=6, years="y1995", file=paste0("cshare_released_", ctype, ".mz"))
+  calcOutput("SOCLossShare",           aggregate="cluster", rate="loss", round=6, years="y1995", file=paste0("cshare_released_", ctype, ".mz"))
 
   ##### AGGREGATION ######
 

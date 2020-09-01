@@ -5,7 +5,7 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ readSource("ISIMIPinputs", subtype="ISIMIP3b:waterabstraction:histsoc.waterabstraction", convert="onlycorrect") }
+#' \dontrun{ readSource("ISIMIPinputs", convert="onlycorrect") }
 #'
 #' @import madrat
 #' @import magclass
