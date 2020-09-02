@@ -7,7 +7,7 @@
 readISIMIPinputs(subtype = "ISIMIP3b:water:histsoc.waterabstraction")
 }
 \arguments{
-\item{subtype}{Data source to be read from, subtype separated by "."}
+\item{subtype}{Data source to be read from including path separated by ":", subtype separated by "."}
 }
 \value{
 MAgPIE object of non-agricultural water demand at 0.5 cellular level in mio. m^3
@@ -16,7 +16,11 @@ MAgPIE object of non-agricultural water demand at 0.5 cellular level in mio. m^3
 Read in non-agricultural water demand data from ISIMIP inputs
 }
 \examples{
-\dontrun{ readSource("ISIMIPinputs", convert="onlycorrect") }
+\dontrun{
+readSource("ISIMIPinputs",
+subtype="ISIMIP3b:water:histsoc.waterabstraction",
+convert="onlycorrect")
+}
 
 }
 \author{

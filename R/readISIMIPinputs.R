@@ -1,11 +1,15 @@
 #' @title readISIMIPinputs
 #' @description Read in non-agricultural water demand data from ISIMIP inputs
-#' @param subtype Data source to be read from, subtype separated by "."
+#' @param subtype Data source to be read from including path separated by ":", subtype separated by "."
 #' @return MAgPIE object of non-agricultural water demand at 0.5 cellular level in mio. m^3
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ readSource("ISIMIPinputs", convert="onlycorrect") }
+#' \dontrun{
+#' readSource("ISIMIPinputs",
+#' subtype="ISIMIP3b:water:histsoc.waterabstraction",
+#' convert="onlycorrect")
+#' }
 #'
 #' @import madrat
 #' @import magclass
