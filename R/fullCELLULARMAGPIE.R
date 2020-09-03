@@ -81,6 +81,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   calcOutput("LanduseInitialisation", aggregate="cluster", cellular=TRUE, land="fao", input_magpie=TRUE, selectyears=mag_years_past_long, round=6, file=paste0("avl_land_t_", ctype, ".mz"))
   calcOutput("SeaLevelRise", aggregate=FALSE, cellular=TRUE, years=mag_years, round=6, file="f10_SeaLevelRise_0.5.mz")
   calcOutput("AvlLandSi", aggregate=FALSE, round=6, file="avl_land_si_0.5.mz")
+  calcOutput("AvlLandSi", aggregate="cluster", round=6, file=paste0("avl_land_si_", ctype, ".mz"))
 
 
   #30 crop
@@ -139,9 +140,9 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   calcOutput("Carbon", aggregate = FALSE, version="LPJmL4+5", climatetype=climatetype,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
              time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_stocks_0.5.mz")
-  # calcOutput("TopsoilCarbon", aggregate = FALSE, version="LPJmL4", climatetype=climatetype,
-  #            harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-  #            time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_topsoil_0.5.mz")
+  calcOutput("TopsoilCarbon", aggregate = FALSE, version="LPJmL4", climatetype=climatetype,
+             harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+             time="spline", dof=4, round=6, years="y1995", file="lpj_carbon_topsoil_0.5.mz")
 
   calcOutput("Carbon", aggregate = "cluster", version="LPJmL4+5", climatetype=climatetype,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
