@@ -175,7 +175,6 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
               paste('* Call:', functioncall))
     cat(info,file=file,sep='\n')
   }
-  writeInfo(file='info.txt', lpjml_data="default", res_high="0.5", res_out="IDK", rev=rev)
-
+  writeInfo(file=paste0(getConfig("outputfolder"),'/info.txt'), lpjml_data=climatetype, res_high="0.5", res_out=ctype, rev=rev)
 
 }
