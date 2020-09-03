@@ -160,7 +160,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
 
   # create info file
   writeInfo <- function(file,lpjml_data, res_high, res_out, rev) {
-    functioncall <- paste(deparse(sys.call(-1)), collapse = "")
+    functioncall <- paste(deparse(sys.call(-2)), collapse = "")
 
     map <- toolMappingFile("regional", getConfig("regionmapping"),
                            readcsv = TRUE)
