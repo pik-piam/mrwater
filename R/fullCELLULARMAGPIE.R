@@ -152,6 +152,13 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
              time="spline", dof=4, round=6, years=lpj_years, file=paste0("lpj_carbon_topsoil_", ctype, ".mz"))
 
 
+  #58 peatland
+  calcOutput("Peatland", subtype="degraded", aggregate = FALSE, round=6, file="f58_peatland_degrad_0.5.mz")
+  calcOutput("Peatland", subtype="intact",   aggregate = FALSE, round=6, file="f58_peatland_intact_0.5.mz")
+  calcOutput("Peatland", subtype="degraded", aggregate = "cluster", round=6, file=paste0("f58_peatland_degrad_", ctype, ".mz"))
+  calcOutput("Peatland", subtype="intact",   aggregate = "cluster", round=6, file=paste0("f58_peatland_intact_", ctype, ".mz"))
+
+
   #59 som
   calcOutput("SOMinitialsiationPools", aggregate="cluster", round=6, file=paste0("f59_som_initialisation_pools_", ctype, ".mz"))
   calcOutput("SOCLossShare",           aggregate="cluster", rate="loss", round=6, years="y1995", file=paste0("cshare_released_", ctype, ".mz"))
