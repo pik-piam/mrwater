@@ -16,43 +16,42 @@
 
 calcPeatland <-function(subtype="degraded"){
 
-GPD <- readSource("GPD", convert="onlycorrect")
+  GPD         <- readSource("GPD", convert=TRUE)
+  potPeatArea <- readSource("Leifeld2018", convert="onlycorrect")
 
-potPeatArea <- readSource("Leifeld2018", convert="onlycorrect")
+  #Total and drained peatland area
+  PeatAreaTotal   <- collapseNames(GPD[,,"PeatAreaTotal"])
+  PeatAreaDrained <- collapseNames(GPD[,,"PeatAreaDrained"])
 
-#Total and drained peatland area
-PeatAreaTotal <- collapseNames(GPD[,,"PeatAreaTotal"])
-PeatAreaDrained <- collapseNames(GPD[,,"PeatAreaDrained"])
+  #Dissag. from country to cell
+  CountryToCell   <- toolGetMapping("CountryToCellMapping.csv", type = "cell")
+  PeatAreaTotal   <- toolAggregate(x=toolIso2CellCountries(PeatAreaTotal),   rel=CountryToCell, weight=potPeatArea, dim=1, from="iso", to="celliso")
+  PeatAreaDrained <- toolAggregate(x=toolIso2CellCountries(PeatAreaDrained), rel=CountryToCell, weight=potPeatArea, dim=1, from="iso", to="celliso")
 
-#Dissag. from country to cell
-CountryToCell   <- toolGetMapping("CountryToCellMapping.csv", type = "cell")
-PeatAreaTotal   <- toolAggregate(x=toolIso2CellCountries(PeatAreaTotal),   rel=CountryToCell, weight=potPeatArea, dim=1, from="iso", to="celliso")
-PeatAreaDrained <- toolAggregate(x=toolIso2CellCountries(PeatAreaDrained), rel=CountryToCell, weight=potPeatArea, dim=1, from="iso", to="celliso")
+  #potPeatArea is the upper limit of peatland area in a cell; this will reduce the peatland area of GPD!
+  PeatAreaTotal[PeatAreaTotal>potPeatArea] <- potPeatArea[PeatAreaTotal>potPeatArea]
+  PeatAreaDrained[PeatAreaDrained>potPeatArea] <- potPeatArea[PeatAreaDrained>potPeatArea]
 
-#potPeatArea is the upper limit of peatland area in a cell; this will reduce the peatland area of GPD!
-PeatAreaTotal[PeatAreaTotal>potPeatArea] <- potPeatArea[PeatAreaTotal>potPeatArea]
-PeatAreaDrained[PeatAreaDrained>potPeatArea] <- potPeatArea[PeatAreaDrained>potPeatArea]
+  #check; GPD is somewhat higher because we used potPeatArea as upper limit!
+  # dimSums(GPD,dim=1)
+  # dimSums(PeatAreaTotal,dim=1)
+  # dimSums(PeatAreaDrained,dim=1)
+  PeatAreaTotal <- clean_magpie(PeatAreaTotal)
+  PeatAreaDrained <- clean_magpie(PeatAreaDrained)
+  PeatAreaIntact <- PeatAreaTotal - PeatAreaDrained
 
-#check; GPD is somewhat higher because we used potPeatArea as upper limit!
-# dimSums(GPD,dim=1)
-# dimSums(PeatAreaTotal,dim=1)
-# dimSums(PeatAreaDrained,dim=1)
-PeatAreaTotal <- clean_magpie(PeatAreaTotal)
-PeatAreaDrained <- clean_magpie(PeatAreaDrained)
-PeatAreaIntact <- PeatAreaTotal - PeatAreaDrained
+  if(subtype=="degraded") {
+    description <- "Degraded peatland area (Mha) in 0.5 degree resolution as used in Humpenoeder et al 2020 (DOI 10.1088/1748-9326/abae2a)"
+    x <- PeatAreaDrained
+  } else if(subtype=="intact") {
+    description <- "Intact peatland area (Mha) in 0.5 degree resolution as used in Humpenoeder et al 2020 (DOI 10.1088/1748-9326/abae2a)"
+    x <- PeatAreaIntact
+  }
 
-if(subtype=="degraded") {
-  description <- "Degraded peatland area (Mha) in 0.5 degree resolution as used in Humpenoeder et al 2020 (DOI 10.1088/1748-9326/abae2a)"
-  x <- PeatAreaDrained
-} else if(subtype=="intact") {
-  description <- "Intact peatland area (Mha) in 0.5 degree resolution as used in Humpenoeder et al 2020 (DOI 10.1088/1748-9326/abae2a)"
-  x <- PeatAreaIntact
-}
-
-return(list(
-  x=x,
-  weight=NULL,
-  unit="Mha",
-  description=description,
-  isocountries=FALSE))
+  return(list(
+    x=x,
+    weight=NULL,
+    unit="Mha",
+    description=description,
+    isocountries=FALSE))
 }

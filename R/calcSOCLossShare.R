@@ -45,6 +45,7 @@ calcSOCLossShare<- function(subsystems=FALSE, rate="change", ipcc="guide2006"){
       MAGCrop      <- calcOutput("Croparea", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)
       kcr2all      <- data.frame(list(kcr=getNames(SOCLossShare), all=rep("all",19)))
       SOCLossShare <- toolAggregate(SOCLossShare, weight=MAGCrop, rel=kcr2all, from="kcr", to="all", dim=3)
+      getNames(SOCLossShare) <- NULL
     }
   }
 
