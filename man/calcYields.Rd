@@ -14,6 +14,7 @@ calcYields(
   ref_year = "y2015",
   calib_proxy = TRUE,
   split_cropcalc = TRUE,
+  crops = "magpie",
   selectyears = "all"
 )
 }
@@ -36,6 +37,8 @@ calcYields(
 
 \item{split_cropcalc}{split calculation for different crop types (e.g. for parallelization)}
 
+\item{crops}{magpie (default) crops or lpjml crops}
+
 \item{selectyears}{defaults to all years available}
 }
 \value{
@@ -49,5 +52,5 @@ This function extracts yields from LPJmL to MAgPIE
 
 }
 \author{
-Kristine Karstens
+Kristine Karstens, Felicitas Beier
 }
