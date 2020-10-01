@@ -7,7 +7,6 @@
 #' @author David Chen
 #' @importFrom magpiesets findset
 #' @importFrom mstools toolHoldConstant
-#' @importFrom magclass nregions
 
 calcLabourProdImpact <-function(timestep = "5year", subtype="Orlov", cellular=TRUE){
 
