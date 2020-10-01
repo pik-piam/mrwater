@@ -26,14 +26,15 @@ calcLabourProdImpact <-function(timestep = "5year", subtype="Orlov", cellular=TR
     }
 
   }
-  weight <- calcOutput("ValueProduction",aggregate=F)[,2010,]
+  #weight <- calcOutput("ValueProduction",aggregate=F)[,2010,]
+  #no weight yet because doesn't work in old preprocessing
 
   if(subtype!="LUH2v2") {
     stop("Not a Valid Subtype")}
 
   return(list(
     x=out,
-    weight=weight,
+    weight=NULL,
     unit="Percentage of total labour productivity",
     isocountries=(!cellular & (nregions(out)!=1)),
     description="Labour productivity impacts as percentage of full labour prod 1"))
