@@ -98,13 +98,19 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   calcOutput("NpiNdcAdAolcPol", aggregate="cluster", round=6, file=paste0("npi_ndc_ad_aolc_pol_", ctype, ".mz"))
   calcOutput("NpiNdcAffPol",    aggregate="cluster", round=6, file=paste0("npi_ndc_aff_pol_", ctype, ".mz"))
 
-  #35 natveg
-  calcOutput("AgeClassDistribution", aggregate="cluster", round=6, file=paste0("secdf_age_class_dist_", ctype, ".mz"))
-  calcOutput("ProtectArea",          aggregate="cluster", round=6, file=paste0("protect_area_", ctype, ".mz") )
+
 
   #34
   calcOutput("UrbanLandFuture", aggregate=FALSE, round=6, years=short_years, file="f34_UrbanLand_0.5.mz")
   calcOutput("UrbanLandFuture", aggregate="cluster", round=6, years=short_years, file=paste0("f34_UrbanLand_", ctype, ".mz"))
+
+    #35 natveg
+  calcOutput("AgeClassDistribution", aggregate="cluster", round=6, file=paste0("secdf_age_class_dist_", ctype, ".mz"))
+  calcOutput("ProtectArea",          aggregate="cluster", round=6, file=paste0("protect_area_", ctype, ".mz") )
+
+  #38 factor costs
+  calcOutput("LabourProdImpact", aggregate=FALSE, round=6, years=short_years, file="labour_impact.mz")
+
 
   #40
   calcOutput("TransportDistance", aggregate="cluster", round=6, file=paste0("transport_distance_", ctype, ".mz"))

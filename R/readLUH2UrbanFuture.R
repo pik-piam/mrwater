@@ -38,8 +38,7 @@ readLUH2UrbanFuture <- function() {
 
   for (i in 1:length(files)){
   for (t in c(1:length(time_sel))){
-     #print(files[i])
-     #print(t)
+
      shr <- brick(files[i],varname=data_sel)
      shr <- subset(shr,t)
      x <- shr*carea
