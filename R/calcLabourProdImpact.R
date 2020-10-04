@@ -7,6 +7,8 @@
 #' @author David Chen
 #' @importFrom magpiesets findset
 #' @importFrom mstools toolHoldConstant
+#' @importFrom magclass collapseNames
+
 
 calcLabourProdImpact <-function(timestep = "5year", subtype="Orlov", cellular=TRUE){
 
@@ -24,6 +26,8 @@ calcLabourProdImpact <-function(timestep = "5year", subtype="Orlov", cellular=TR
       out <- out[,(1995:2099),]
       out <- toolHoldConstant(out, c(2100:2150))
     }
+out <- collapseNames(out)
+getNames(out) <- "factor"
 
   }
   #weight <- calcOutput("ValueProduction",aggregate=F)[,2010,]
@@ -32,7 +36,11 @@ calcLabourProdImpact <-function(timestep = "5year", subtype="Orlov", cellular=TR
   if(subtype!="Orlov") {
     stop("Not a Valid Subtype")}
 
-  return(list(
+  normal <- new.magpie(cells_and_regions = getCells(out), years = getYears(out), names="normal", fill=1)
+  out <- mbind(out,normal)
+
+
+    return(list(
     x=out,
     weight=NULL,
     unit="Percentage of total labour productivity",
