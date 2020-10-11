@@ -2,8 +2,9 @@
 #' @description This function calculates the aggregation mapping for a given cluster methodology
 #' @param ctype aggregation clustering type, which is a combination of a single letter, indicating the cluster methodology, and a number,
 #' indicating the number of resulting clusters. Available methodologies are hierarchical clustering (h), normalized k-means clustering
-#' (n) and combined hierarchical/normalized k-means clustering (c). In the latter hierarchical clustering is used to determine the
-#' cluster distribution among regions whereas normalized k-means is used for the clustering within a region.
+#' (n), combined hierarchical/normalized k-means clustering (c) and for manual setting for clusters per region (m). In the combined clustering
+#' hierarchical clustering is used to determine the cluster distribution among regions whereasit is manually set for the m type.
+#' Both use normalized k-means for the clustering within a region.
 #' @param regionscode regionscode of the regional mapping to be used. Must agree with the regionscode of the mapping
 #' mentioned in the madrat config! Can be retrieved via \code{regionscode()}.
 #' @param seed Seed for Random Number Generation. If set to NULL it is chosen automatically, if set to an integer it will
@@ -41,6 +42,13 @@ calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weigh
     mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster,
                           weight=weight, cpr=calcCPR(sub("^[^\\.]*\\.","",getCells(tmpmap))),
                           seed=seed, aggregate=FALSE)
+  } else if(mode=="m"){
+
+    cdata <- toolApplyRegionNames(calcOutput("ClusterBase", aggregate=FALSE), regionscode)
+    cpr   <- toolClusterPerRegionManual(sub("^[^\\.]*\\.","",getCells(cdata)), ncluster=ncluster, ncluster2reg=weight)
+
+    mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster,
+                          weight=weight, cpr=cpr, seed=seed, aggregate=FALSE)
   } else {
     stop("Unkown clustering mode ",mode,"!")
   }

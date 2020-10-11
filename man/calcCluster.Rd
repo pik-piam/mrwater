@@ -14,8 +14,9 @@ calcCluster(
 \arguments{
 \item{ctype}{aggregation clustering type, which is a combination of a single letter, indicating the cluster methodology, and a number,
 indicating the number of resulting clusters. Available methodologies are hierarchical clustering (h), normalized k-means clustering
-(n) and combined hierarchical/normalized k-means clustering (c). In the latter hierarchical clustering is used to determine the
-cluster distribution among regions whereas normalized k-means is used for the clustering within a region.}
+(n), combined hierarchical/normalized k-means clustering (c) and for manual setting for clusters per region (m). In the combined clustering
+hierarchical clustering is used to determine the cluster distribution among regions whereasit is manually set for the m type.
+Both use normalized k-means for the clustering within a region.}
 
 \item{regionscode}{regionscode of the regional mapping to be used. Must agree with the regionscode of the mapping
 mentioned in the madrat config! Can be retrieved via \code{regionscode()}.}
