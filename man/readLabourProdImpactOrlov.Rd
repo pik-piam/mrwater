@@ -8,7 +8,7 @@ readLabourProdImpactOrlov(
   outdoor = TRUE,
   intensity = "high",
   hothaps = TRUE,
-  gcm = "HadGEM2-ES",
+  gcm = "IPSL-CM5A-LR",
   rcp = "rcp85"
 )
 }

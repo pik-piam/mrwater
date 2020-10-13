@@ -11,7 +11,7 @@
 #' @importFrom magclass as.magpie
 #' @importFrom ncdf4 nc_open ncvar_get
 
-readLabourProdImpactOrlov <- function(outdoor= TRUE, intensity = "high", hothaps=TRUE, gcm="HadGEM2-ES", rcp="rcp85") {
+readLabourProdImpactOrlov <- function(outdoor= TRUE, intensity = "high", hothaps=TRUE, gcm="IPSL-CM5A-LR", rcp="rcp85") {
 
   path <- paste0("./ISIMIP/",gcm, "_", rcp, "/")
 
