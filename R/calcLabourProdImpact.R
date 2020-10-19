@@ -15,49 +15,38 @@ calcLabourProdImpact <-function(timestep = "5year", subtype="Orlov", cellular=TR
   if (subtype=="Orlov"){
 
 
-    out <- readSource("LabourProdImpactOrlov",convert=FALSE)
-
+    out <- readSource("LabourProdImpactOrlov", subtype="IPSL-CM5A-LR_rcp85_wbgtod_hothaps_400W.nc", convert=FALSE)
+    out <- toolTimeSpline(out)
+    tran <- readSource("LabourProdImpactOrlov", subtype="IPSL-CM5A-LR_rcp60_wbgtod_hothaps_400W.nc", convert=FALSE)
+    tran <- toolTimeSpline(tran)
+    out[,c(2006:2020),] <- tran[,c(2006:2020),]
 
 
     if(timestep == "5year"){
       #add future
       out <- out[,seq(1985,2095,5),]
-      out <- toolHoldConstant(out, seq(2100,2150, 5))
 
+      past <- new.magpie(cells_and_regions = getCells(out), years=seq(1965,1980,5), names=getNames(out),fill=1)
+      past[,seq(1965,1980,5),] <- setYears(out[,1985,],NULL)
+      out <- mbind(past,out)
+
+      out <- toolHoldConstantBeyondEnd(out)
       out <- collapseNames(out)
       getNames(out) <- "factor"
-
-      #add dummy 1 fill for no cliamte impacts
-      normal <- new.magpie(cells_and_regions = getCells(out), years = getYears(out), names="normal", fill=1)
-      out <- mbind(out,normal)
-
-
-      ## harmonize the years until 2020 so they don't give different initial results
-
-      out[,seq(1985,2020,5),"normal"] <- out[,seq(1985,2020,5),"factor"]
-      out[,seq(2025,2150,5),"normal"] <-out[,2020,"factor"]
-
-      #add past
-      past <- new.magpie(cells_and_regions = getCells(out), years=seq(1965,1980, 5), names=getNames(out),fill=1)
-      out <- mbind(past,out)
 
     }
 
     else if(timestep=="yearly"){
-      out <- out[,(1995:2099),]
-      out <- toolHoldConstant(out, c(2100:2150))
+
+      past <- new.magpie(cells_and_regions = getCells(out), years=c(1965:1980), names=getNames(out),fill=1)
+      past[,c(1965:1980),] <- setYears(out[,1981,],NULL)
+      out <- mbind(past,out)
+      out <- toolHoldConstantBeyondEnd(out)
 
       out <- collapseNames(out)
       getNames(out) <- "factor"
 
-      normal <- new.magpie(cells_and_regions = getCells(out), years = getYears(out), names="normal", fill=1)
-      out <- mbind(out,normal)
 
-      out[,c(1995:2020),"normal"] <- out[,c(1995:2020),"factor"]
-      out[,c(2021:2150),"normal"] <-out[,2020,"factor"]
-
-      past <- new.magpie(cells_and_regions = getCells(out), years=c(1965:1980), names=getNames(out),fill=1)
-      out <- mbind(past,out)
 
     }
 

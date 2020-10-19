@@ -1,31 +1,28 @@
 #' @title readLabourProdImpactOrlov
 #' @description read in labour productivity impacts from climate change from Orlov (see Orlov et al. 2019. Economic Losses of Heat-Induced Reductions in Outdoor Worker Productivity: a Case Study of Europe. Economics of Disasters and Climate Change, 3(3), 191-211.)
 #' @return magpie object of gridded productivity as share of 1 (full productivity)
-#' @param gcm option of 3 gcms IPSL-CM5A-LR, HadGEM2-ES, GFDL-ESM2M
-#' @param rcp option of rcp26,rcp60, rcp85
-#' @param outdoor outdoor or indoor (shady) work
-#' @param intensity high or low - 400W is high intensity 300W moderate industrial intensity
-#' @param hothaps method of translating heat into labour prod. hothaps (epidemiological) or iso (standards and working time based)
+#' @param subtype subtype of choice between indoor outdoor work, GCM, work intesnsity (300W medium, 400W high, rcp)
 #' @author David Chen
 #' @seealso \code{\link{readSource}}
 #' @importFrom magclass as.magpie
 #' @importFrom ncdf4 nc_open ncvar_get
 
-readLabourProdImpactOrlov <- function(outdoor= TRUE, intensity = "high", hothaps=TRUE, gcm="IPSL-CM5A-LR", rcp="rcp85") {
+readLabourProdImpactOrlov <- function(subtype="IPSL-CM5A-LR_rcp85_wbgtod_hothaps_400W.nc") {
 
-  path <- paste0("./ISIMIP/",gcm, "_", rcp, "/")
+  files <- vector()
 
-    if (outdoor==TRUE){
-    od <- "od" } else {
-    od <- "id"}
-  if(intensity == "high") {
-    int <- "400W" } else if (intensity=="low"){
-    int <- "300W"}
-  if(hothaps == TRUE) {
-    hothaps <- "hothaps"} else {
-      hothaps ="iso"}
+  for (od in (c("od","id"))){
+            for (int in c("300W", "400W")){
+              for (gcm in c("IPSL-CM5A-LR", "GFDL-ESM2M", "HadGEM2-ES")){
+                for (rcp in c("rcp26", "rcp60", "rcp85")){
+    files <- append(files, paste0(gcm,"_",rcp,"_","wbgt",od,"_","hothaps","_",int,".nc" ))
+        }}}}
 
-  nc <- nc_open(paste0(path,gcm,"_",rcp,"_","wbgt",od,"_",hothaps,"_",int,".nc" ) ,verbose=F)
+    names(files) <- files
+
+    file <- toolSubtypeSelect(subtype, files)
+
+  nc <- nc_open(file ,verbose=F)
   years <- ncvar_get(nc, "years")
   buf <-ncvar_get(nc,names(nc$var)[1])
   #define dims
@@ -34,8 +31,8 @@ readLabourProdImpactOrlov <- function(outdoor= TRUE, intensity = "high", hothaps
   lon <- seq(-179.75,179.75,by=0.5)
   lat <- rev(seq(-89.75,89.75,by=0.5))
 
-  mag <- array(NA,dim=c(59199,length(years),1),dimnames=list(cellNames,paste0("y",years),paste("Productivity",gcm,rcp,od,int,hothaps,sep=".")))
-
+  mag <- array(NA,dim=c(59199,length(years),1),dimnames=list(cellNames,paste0("y",years),paste("Productivity",gsub("_",".",file),sep=".")))
+  mag <- collapseNames(mag, collapsedim=7)
   for (t in 1:length(years)){
     bif <- buf[,,t]
     for (j in 1:59199) {

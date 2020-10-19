@@ -5,23 +5,11 @@
 \title{readLabourProdImpactOrlov}
 \usage{
 readLabourProdImpactOrlov(
-  outdoor = TRUE,
-  intensity = "high",
-  hothaps = TRUE,
-  gcm = "IPSL-CM5A-LR",
-  rcp = "rcp85"
+  subtype = "IPSL-CM5A-LR_rcp85_wbgtod_hothaps_400W.nc"
 )
 }
 \arguments{
-\item{outdoor}{outdoor or indoor (shady) work}
-
-\item{intensity}{high or low - 400W is high intensity 300W moderate industrial intensity}
-
-\item{hothaps}{method of translating heat into labour prod. hothaps (epidemiological) or iso (standards and working time based)}
-
-\item{gcm}{option of 3 gcms IPSL-CM5A-LR, HadGEM2-ES, GFDL-ESM2M}
-
-\item{rcp}{option of rcp26,rcp60, rcp85}
+\item{subtype}{subtype of choice between indoor outdoor work, GCM, work intesnsity (300W medium, 400W high, rcp)}
 }
 \value{
 magpie object of gridded productivity as share of 1 (full productivity)
