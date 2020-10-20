@@ -32,7 +32,6 @@ calcLabourProdImpact <-function(timestep = "5year", subtype="Orlov", cellular=TR
 
       out <- toolHoldConstantBeyondEnd(out)
       out <- collapseNames(out)
-      getNames(out) <- "factor"
 
     }
 
@@ -44,9 +43,6 @@ calcLabourProdImpact <-function(timestep = "5year", subtype="Orlov", cellular=TR
       out <- toolHoldConstantBeyondEnd(out)
 
       out <- collapseNames(out)
-      getNames(out) <- "factor"
-
-
 
     }
 
