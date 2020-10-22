@@ -31,6 +31,13 @@
 
 fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
 
+
+  if(grepl("watertest",dev)){
+    waterversion <- "LPJmL2"
+  } else {
+    waterversion <- "LPJmL4"
+  }
+
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit=1e+10)
   on.exit(options(magclass_sizeLimit=sizelimit))
@@ -128,13 +135,13 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   calcOutput("GrowingPeriod", version="LPJmL5", climatetype=climatetype, time="spline", dof=4, harmonize_baseline=harmonize_baseline, ref_year=ref_year, yield_ratio=0.1,
              aggregate=FALSE, round=2, file="lpj_grper_0.5.mz")
 
-  calcOutput("EnvmtlFlow", version="LPJmL4", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, seasonality="grper", file=paste0("lpj_envflow_grper_", ctype, ".mz"))
+  calcOutput("EnvmtlFlow", version=waterversion, years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, seasonality="grper", file=paste0("lpj_envflow_grper_", ctype, ".mz"))
   calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", years=lpj_years, seasonality="grper", aggregate="cluster", file=paste0("watdem_nonagr_grper_", ctype, ".mz"))
   calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="withdrawal", aggregate="cluster", file=paste0("watdem_nonagr_ww_grper_", ctype, ".mz"))
   calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="consumption", aggregate="cluster", file=paste0("watdem_nonagr_wc_grper_", ctype, ".mz"))
 
   #43 water availability
-  calcOutput("AvlWater", version="LPJmL4", years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file=paste0("lpj_watavail_grper_", ctype, ".mz"))
+  calcOutput("AvlWater", version=waterversion, years=lpj_years, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file=paste0("lpj_watavail_grper_", ctype, ".mz"))
 
   #44 biodiversity
   calcOutput("Luh2SideLayers", aggregate="cluster", round=6, file=paste0("luh2_side_layers_", ctype, ".mz"))
