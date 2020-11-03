@@ -142,6 +142,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
 
   #43 water availability
   calcOutput("AvlWater", version=waterversion, years=lpj_years, climatetype=climatetype, harmonize_baseline=ifelse(waterversion!="LPJmL2", harmonize_baseline, FALSE), ref_year=ref_year, time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file=paste0("lpj_watavail_grper_", ctype, ".mz"))
+  calcOutput("AvlWater", version=waterversion, years=lpj_years, climatetype=climatetype, harmonize_baseline=ifelse(waterversion!="LPJmL2", harmonize_baseline, FALSE), ref_year=ref_year, time="total", dof=4, seasonality="grper", aggregate="cluster", round=6, file=paste0("lpj_watavail_total_", ctype, ".mz"))
 
   #44 biodiversity
   calcOutput("Luh2SideLayers", aggregate="cluster", round=6, file=paste0("luh2_side_layers_", ctype, ".mz"))
