@@ -11,7 +11,8 @@ readISIMIPoutputs(
 \arguments{
 \item{subtype}{Data source to be read from and subtype separated by ".";
 For water: subtype consisting of variable ("airrww") watermodel ("cwatm","h08","lpjml","matsiro","mpi-hm","pcr-globwb") and GCM ("ipsl-cm5a-lr","gfdl-esm2m","miroc5","hadgem2-es") separated by "_"
-For yields: subtype is "ISIMIP3b:yields.cropmodel_gcm_ssp_co2" cropmodels ("LPJmL", "EPIC-IIASA") gcms ("ukesm1-0-ll","gfdl-esm4","ipsl-cm6a-lr") ssp ("ssp126", "ssp585")}
+For yields: subtype is "ISIMIP3b:yields.cropmodel_gcm_ssp_co2" cropmodels ("LPJmL", "EPIC-IIASA") gcms ("ukesm1-0-ll","gfdl-esm4","ipsl-cm6a-lr") ssp ("ssp126", "ssp585")
+Yields subtype example: "ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default"}
 }
 \value{
 MAgPIE object of non-agricultural water demand at 0.5 cellular level in mio. m^3
