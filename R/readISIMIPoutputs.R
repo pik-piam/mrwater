@@ -105,12 +105,12 @@ readISIMIPoutputs <- function(subtype="ISIMIP2b:water.histsoc_airrww_pcr-globwb_
 
   if(grepl("yields", folder))
 
-  vars    <- strsplit(subtype,split="\\_")
+  var    <- strsplit(subtype,split="\\_")
 
-  mo <- unlist(vars)[1]
-  gcm      <- unlist(vars)[2]
-  ssp    <- unlist(vars)[3]
-  co2 <- unlist(vars)[4]
+  mo <- unlist(var)[1]
+  gcm      <- unlist(var)[2]
+  ssp    <- unlist(var)[3]
+  co2 <- unlist(var)[4]
 
   crops<- c("mai","soy", "ri1","ri2", "swh","wwh")
   crops2 <-  c("mai","swh","wwh")
@@ -153,8 +153,6 @@ out <- array(NA,dim=c(59199,length(years_out),length(crops),2),dimnames=list(cel
     for (cr in crops2){
     for (ir in irrs){
       # put all yields into cropmodel/climatemodel/ folder
-      ## hist <- read.magpie(paste0(folder, "/", mo,"/", gcm, "/", tolower(mo),"_",gcm,"_w5e5_","historical", "_2015soc_", co2, "_yield-",cr,"-", ir,"_global_annual_", "1850_2014.nc"))
-      ## fut <- read.magpie(paste0(folder, "/", mo, "/"tolower(mo),"_",gcm,"_w5e5_",ssp, "_2015soc_", co2, "_yield-",cr, "-", ir, "_global_annual_", "2015_2100.nc"))
 
       hist <- nc_open(paste0(folder,"/", mo, "/", gcm, "/", tolower(mo),"_",gcm,"_w5e5_","historical", "_2015soc_", co2, "_yield-",cr,"-", ir,"_global_annual_", "1850_2014.nc"))
       fut <- nc_open(paste0(folder,"/", mo, "/", gcm, "/",tolower(mo),"_",gcm,"_w5e5_",ssp, "_2015soc_", co2, "_yield-",cr, "-", ir, "_global_annual_", "2015_2100.nc"))
@@ -183,5 +181,5 @@ getNames(out,dim=2) <- c("irrigated","rainfed")
 
 
 fulldim(out)
-return(x)
+return(out)
 }
