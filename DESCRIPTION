@@ -21,6 +21,7 @@ Depends:
     mrcommons,
     mrland
 Imports:
+    abind,
     digest,
     dplyr,
     magpiesets,
