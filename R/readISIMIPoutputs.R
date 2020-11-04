@@ -19,7 +19,6 @@
 #' @importFrom abind abind
 
 readISIMIPoutputs <- function(subtype="ISIMIP2b:water.histsoc_airrww_pcr-globwb_gfdl-esm2m"){
-#subtype = "ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default"
   if(grepl("\\.",subtype)){
     subtype     <- strsplit(gsub(":", "/", subtype), split="\\.")
     folder      <- unlist(subtype)[1]
@@ -160,7 +159,7 @@ out <- array(NA,dim=c(59199,length(years_out),length(crops),2),dimnames=list(cel
       fut <- nc_open(paste0(folder,"/", mo, "/", gcm, "/",tolower(mo),"_",gcm,"_w5e5_",ssp, "_2015soc_", co2, "_yield-",cr, "-", ir, "_global_annual_", "2015_2100.nc"))
 
       p <- make.array(hist,irr=ir,t ="past")
-      f <- make.array(fut,irr=ir, past="scen")
+      f <- make.array(fut,irr=ir, t="scen")
 
       t <- abind(p,f, along=2)
       out[,,cr,ir]<- t
