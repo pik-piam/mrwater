@@ -3,7 +3,7 @@
 #' @param subtype Data source to be read from and subtype separated by ".";
 #' For water: subtype consisting of variable ("airrww") watermodel ("cwatm","h08","lpjml","matsiro","mpi-hm","pcr-globwb") and GCM ("ipsl-cm5a-lr","gfdl-esm2m","miroc5","hadgem2-es") separated by "_"
 #' For yields: subtype is "ISIMIP3b:yields.cropmodel_gcm_ssp_co2" cropmodels ("LPJmL", "EPIC-IIASA") gcms ("ukesm1-0-ll","gfdl-esm4","ipsl-cm6a-lr") ssp ("ssp126", "ssp585")
-
+#' Yields subtype example: "ISIMIP3b"yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default"
 #' @return MAgPIE object of non-agricultural water demand at 0.5 cellular level in mio. m^3
 #' @author Felicitas Beier, David CHen
 #'
@@ -116,8 +116,10 @@ readISIMIPoutputs <- function(subtype="ISIMIP2b:water.histsoc_airrww_pcr-globwb_
   crops2 <-  c("mai","swh","wwh")
   irrs <- c("firr", "noirr")
 
-   mapping<-toolMappingFile(type="cell",name="CountryToCellMapping.csv",readcsv=TRUE)
+  mapping<-toolMappingFile(type="cell",name="CountryToCellMapping.csv",readcsv=TRUE)
   cellNames <- mapping$celliso
+  lon <- seq(-179.75,179.75,by=0.5)
+  lat <- rev(seq(-89.75,89.75,by=0.5))
   years_out <- c(1965:2099)
 
   #helper function to create magpie arrays from nc only for desired years
