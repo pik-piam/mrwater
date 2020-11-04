@@ -180,6 +180,5 @@ getNames(out,dim=1) <- c("maiz","soybean","tece","rice_pro")
 getNames(out,dim=2) <- c("irrigated","rainfed")
 
 
-fulldim(out)
 return(out)
 }
