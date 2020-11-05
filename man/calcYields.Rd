@@ -15,7 +15,8 @@ calcYields(
   calib_proxy = TRUE,
   split_cropcalc = TRUE,
   crops = "magpie",
-  selectyears = "all"
+  selectyears = "all",
+  replace_isimip3b = FALSE
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ calcYields(
 \item{crops}{magpie (default) crops or lpjml crops}
 
 \item{selectyears}{defaults to all years available}
+
+\item{replace_isimip3b}{replace yields of maize rice wheat soy with outputs from isimip3b crop modesl}
 }
 \value{
 magpie object in cellular resolution

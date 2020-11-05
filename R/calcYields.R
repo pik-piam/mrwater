@@ -12,6 +12,7 @@
 #' @param split_cropcalc split calculation for different crop types (e.g. for parallelization)
 #' @param crops magpie (default) crops or lpjml crops
 #' @param selectyears defaults to all years available
+#' @param replace_isimip3b replace yields of maize rice wheat soy with outputs from isimip3b crop modesl
 #'
 #' @return magpie object in cellular resolution
 #' @author Kristine Karstens, Felicitas Beier
@@ -24,7 +25,8 @@
 #' @importFrom madrat toolFillYears
 
 calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", averaging_range=NULL, dof=4,
-                       harmonize_baseline=FALSE, ref_year="y2015", calib_proxy=TRUE, split_cropcalc=TRUE, crops="magpie", selectyears="all"){
+                       harmonize_baseline=FALSE, ref_year="y2015", calib_proxy=TRUE, split_cropcalc=TRUE, crops="magpie", selectyears="all",
+                       replace_isimip3b=FALSE){
 
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit=1e+10)
@@ -52,6 +54,13 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
     yields    <- calcOutput("LPJmL", version=version, climatetype=climatetype, subtype="harvest", time=time, averaging_range=averaging_range, dof=dof,
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE, selectyears=selectyears, aggregate=FALSE)
   }
+
+  if (replace_isimip3b == TRUE){
+    to_rep <- calcOutput("ISIMIPYields", years=selectyears, subtype="ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default", aggregate=F)
+    yields[,,c("maiz","soybean","tece","rice_pro")] <- to_rep[,,c("maiz","soybean","tece","rice_pro")]
+  }
+
+
   # Aggregate to MAgPIE crops
   if (crops!="lpjml"){
     yields    <- toolAggregate(yields, LPJ2MAG, from = "LPJmL", to = "MAgPIE", dim=3.1, partrel=TRUE)
