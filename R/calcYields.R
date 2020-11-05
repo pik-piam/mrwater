@@ -57,7 +57,7 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
 
   if (replace_isimip3b == TRUE){
     to_rep <- calcOutput("ISIMIPYields", years=selectyears, subtype="ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default", aggregate=F)
-    yields[,,c("maiz","soybean","tece","rice_pro")] <- to_rep[,,c("maiz","soybean","tece","rice_pro")]
+    yields[,getYears(to_rep),c("maiz","soybean","tece","rice_pro")] <- to_rep[,,c("maiz","soybean","tece","rice_pro")]
   }
 
 
