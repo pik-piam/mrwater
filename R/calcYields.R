@@ -55,12 +55,6 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, limited=TRUE, hard_cut=FALSE, selectyears=selectyears, aggregate=FALSE)
   }
 
-  if (replace_isimip3b == TRUE){
-    to_rep <- calcOutput("ISIMIPYields", subtype="ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default", aggregate=F)
-    yields[,getYears(to_rep),c("maiz","soybean","tece","rice_pro")] <- to_rep[,,c("maiz","soybean","tece","rice_pro")]
-  }
-
-
   # Aggregate to MAgPIE crops
   if (crops!="lpjml"){
     yields    <- toolAggregate(yields, LPJ2MAG, from = "LPJmL", to = "MAgPIE", dim=3.1, partrel=TRUE)
@@ -107,6 +101,12 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
     crop_area_weight     <- yields
     crop_area_weight[,,] <- 1
   }
+
+  if (replace_isimip3b == TRUE){
+    to_rep <- calcOutput("ISIMIPYields", subtype="ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default", aggregate=F)
+    yields[,getYears(to_rep),c("maiz","soybean","tece","rice_pro")] <- to_rep[,,c("maiz","soybean","tece","rice_pro")]
+  }
+
 
   return(list(
     x=yields,
