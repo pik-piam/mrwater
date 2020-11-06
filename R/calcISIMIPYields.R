@@ -16,7 +16,7 @@ calcISIMIPYields <-function(subtype="ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp5
   x[is.na(x)] <- 0
 
   if (time=="spline"){
-  x <- toolTimeSpline(x, dof=3)
+  x <- toolTimeSpline(x, dof=4)
   if("y2099" %in%getYears(x)) x <- toolFillYears(x, c(getYears(x, as.integer=TRUE)[1]:2100))
 }
   if (time=="average"){
