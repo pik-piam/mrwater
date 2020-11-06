@@ -29,7 +29,7 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
                        replace_isimip3b=FALSE){
 
   sizelimit <- getOption("magclass_sizeLimit")
-  options(magclass_sizeLimit=1e+10)
+  options(magclass_sizeLimit=1e+12)
   on.exit(options(magclass_sizeLimit=sizelimit))
 
   LPJ2MAG      <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
@@ -104,7 +104,10 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
 
   if (replace_isimip3b == TRUE){
     to_rep <- calcOutput("ISIMIPYields", subtype="ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default", aggregate=F)
-    yields[,getYears(to_rep),c("maiz","soybean","tece","rice_pro")] <- to_rep[,,c("maiz","soybean","tece","rice_pro")]
+    common_yrs <- intersect(getYears(yields),getYears(to_rep))
+    common_vars <- intersect(getNames(yields),getNames(to_rep))
+    gc()
+    yields[,common_yrs,common_vars] <- to_rep[,common_yrs,common_vars]
   }
 
 
