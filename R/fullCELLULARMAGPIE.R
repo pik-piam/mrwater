@@ -39,7 +39,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   }
 
   sizelimit <- getOption("magclass_sizeLimit")
-  options(magclass_sizeLimit=1e+10)
+  options(magclass_sizeLimit=1e+12)
   on.exit(options(magclass_sizeLimit=sizelimit))
 
   setConfig(debug=TRUE)
