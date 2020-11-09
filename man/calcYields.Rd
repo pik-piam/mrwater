@@ -17,6 +17,7 @@ calcYields(
   crops = "magpie",
   selectyears = "all",
   replace_isimip3b = FALSE,
+  replace_years = "lpj",
   isimip_subtype = "ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default"
 )
 }
@@ -45,8 +46,12 @@ calcYields(
 
 \item{replace_isimip3b}{replace yields of maize rice wheat soy with outputs from isimip3b crop modesl}
 
-\item{isimip_subtype}{crop model, gcm, ssp and co2 fert of isimip outputs"ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default"
-@return magpie object in cellular resolution}
+\item{replace_years}{only to subset years for isimip replacement, to reduce memory re}
+
+\item{isimip_subtype}{crop model, gcm, ssp and co2 fert of isimip outputs"ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default"}
+}
+\value{
+magpie object in cellular resolution
 }
 \description{
 This function extracts yields from LPJmL to MAgPIE
