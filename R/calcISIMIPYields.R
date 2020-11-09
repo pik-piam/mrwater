@@ -23,7 +23,10 @@ calcISIMIPYields <-function(subtype="ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp5
     x <- toolTimeAverage(x)
   }
 
+# toolTimeSpline creates very small values, set these to 0
+  x[x<=0.01] <- 0
 
+#weights
   crop_area_weight     <- x
   crop_area_weight[,,] <- 1
 

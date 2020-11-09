@@ -30,8 +30,10 @@ calcYieldsReplaceISIMIP <- function(version="LPJmL5", climatetype="HadGEM2_ES:rc
 
   common_yrs <- intersect(getYears(yields),getYears(to_rep))
   common_vars <- intersect(getNames(yields),getNames(to_rep))
-  gc()
+  yields <- as.array(yields); to_rep <- as.array(to_rep)
   yields[,common_yrs,common_vars] <- to_rep[,common_yrs,common_vars]
+  yields <- as.magpie(yields); to_rep <- as.magpie(to_rep)
+
 
   crop_area_weight     <- yields
   crop_area_weight[,,] <- 1
