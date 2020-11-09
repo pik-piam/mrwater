@@ -27,7 +27,7 @@ calcYieldsReplaceISIMIP <- function(version="LPJmL5", climatetype="HadGEM2_ES:rc
              harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate = FALSE)
 
   to_rep <- calcOutput("ISIMIPYields", time=time, subtype=isimip_subtype, aggregate=FALSE)
-
+gc()
   common_yrs <- intersect(getYears(yields),getYears(to_rep))
   common_vars <- intersect(getNames(yields),getNames(to_rep))
   yields <- as.array(yields); to_rep <- as.array(to_rep)

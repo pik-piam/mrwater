@@ -14,7 +14,8 @@
 #' @param selectyears defaults to all years available
 #' @param replace_isimip3b replace yields of maize rice wheat soy with outputs from isimip3b crop modesl
 #' @param isimip_subtype crop model, gcm, ssp and co2 fert of isimip outputs"ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default"
-#' @return magpie object in cellular resolution
+#' @param replace_years only to subset years for isimip replacement, to reduce memory requirement
+#'  @return magpie object in cellular resolution
 #' @author Kristine Karstens, Felicitas Beier
 #'
 #' @examples
@@ -26,7 +27,8 @@
 
 calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", averaging_range=NULL, dof=4,
                        harmonize_baseline=FALSE, ref_year="y2015", calib_proxy=TRUE, split_cropcalc=TRUE, crops="magpie", selectyears="all",
-                       replace_isimip3b=FALSE, isimip_subtype="ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default"){
+                       replace_isimip3b=FALSE, replace_years="lpj",
+                       isimip_subtype="ISIMIP3b:yields.EPIC-IIASA_ukesm1-0-ll_ssp585_default"){
 
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit=1e+12)
@@ -103,12 +105,14 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
   }
 
   if (replace_isimip3b == TRUE){
+    if(replace_years=="lpj"){
+      rep_years = seq(1995,2100,5)
+    }
     to_rep <- calcOutput("ISIMIPYields", subtype=isimip_subtype, aggregate=F)
-    common_yrs <- intersect(getYears(yields),getYears(to_rep))
     common_vars <- intersect(getNames(yields),getNames(to_rep))
 # convert to array for memory
-    yields <- as.array(yields); to_rep <- as.array(to_rep)
-    yields[,common_yrs,common_vars] <- to_rep[,common_yrs,common_vars]
+    yields <- as.array(yields[,rep,]); to_rep <- as.array(to_rep[,rep_years,])
+    yields[,,common_vars] <- to_rep[,,common_vars]
     yields <- as.magpie(yields); to_rep <- as.magpie(to_rep)
 
       }
