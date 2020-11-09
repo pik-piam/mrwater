@@ -107,9 +107,11 @@ calcYields <- function(version="LPJmL5", climatetype="CRU_4", time="spline", ave
 
     to_rep <- calcOutput("ISIMIPYields", subtype=isimip_subtype, aggregate=F)
     common_vars <- intersect(getNames(yields),getNames(to_rep))
+    common_yrs <- intersect(getYears(yields),getYears(to_rep))
+
 # convert to array for memory
     yields <- as.array(yields); to_rep <- as.array(to_rep)
-    yields[,,common_vars] <- to_rep[,,common_vars]
+    yields[,common_yrs,common_vars] <- to_rep[,common_yrs,common_vars]
     yields <- as.magpie(yields); to_rep <- as.magpie(to_rep)
 
       }
