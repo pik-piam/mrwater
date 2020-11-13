@@ -23,6 +23,7 @@ readISIMIPoutputs <- function(subtype="ISIMIP2b:water.histsoc_airrww_pcr-globwb_
     subtype     <- strsplit(gsub(":", "/", subtype), split="\\.")
     folder      <- unlist(subtype)[1]
     subtype     <- unlist(subtype)[2]
+
   }
 
   if (grepl("water",folder)) {
@@ -102,7 +103,7 @@ readISIMIPoutputs <- function(subtype="ISIMIP2b:water.histsoc_airrww_pcr-globwb_
     x <- x/(1000*1000000)
   }
 
-  if(grepl("yields", folder))
+  if(grepl("yields", folder)) {
 
   var    <- strsplit(subtype,split="\\_")
 
@@ -176,10 +177,10 @@ rice_names=list(cellNames,paste0("y",years_out),c(crops,"wheat","rice"),irrs)
 out <- abind(out,rice, along=3, new.names=rice_names)
 
 out <- as.magpie(out)
-out <- out[,,c("mai", "soy", "wheat","rice")]
-getNames(out,dim=1) <- c("maiz","soybean","tece","rice_pro")
-getNames(out,dim=2) <- c("irrigated","rainfed")
+x <- out[,,c("mai", "soy", "wheat","rice")]
+getNames(x,dim=1) <- c("maiz","soybean","tece","rice_pro")
+getNames(x,dim=2) <- c("irrigated","rainfed")
+}
 
-
-return(out)
+return(x)
 }

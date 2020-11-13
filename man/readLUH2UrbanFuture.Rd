@@ -10,7 +10,7 @@ readLUH2UrbanFuture()
 magpie object of gridded future urban land use in Mha, 2015-2100
 }
 \description{
-read in gridded future urban land use datasets
+read in gridded future urban land use datasets, from LUH2 initiative
 }
 \seealso{
 \code{\link{readSource}}
