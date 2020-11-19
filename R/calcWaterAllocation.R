@@ -264,27 +264,6 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
         # Update minimum water required in cell:
         required_wat_min <- required_wat_min + NAg_ww[,y,scen]*frac_NAg_fulfilled
 
-        ### Interim routing: Update discharge and inflow considering known non-agricultural uses of river routing 2 ###
-        inflow[] <- 0
-
-        for (o in 1:max(calcorder)){
-          # Note: the calcorder ensures that the upstreamcells are calculated first
-          cells <- which(calcorder==o)
-
-          for (c in cells){
-            # available water
-            avl_wat_act[c] <- inflow[c] + yearly_runoff[c,y] - lake_evap_new[c]
-
-            # discharge
-            discharge[c]   <- avl_wat_act[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
-
-            # inflow into nextcell
-            if (nextcell[c]>0){
-              inflow[nextcell[c]] <- inflow[nextcell[c]] + discharge[c]
-            }
-          }
-        }
-
         # inflow needs to be set to 0 prior to every river routing (is recalculated by the routing)
         inflow[] <- 0
 
@@ -309,11 +288,11 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
                 if (upstream_cons>required_wat_min[c]-avl_wat_act[c]){
                   # if upstream_cons high enough to account for difference: reduce upstream consumption respectively
                   frac_CAg_fulfilled[upstreamcells[[c]]] <- (1-(required_wat_min[c]-avl_wat_act[c])/upstream_cons)*frac_CAg_fulfilled[upstreamcells[[c]]]
-                  discharge[c] <- required_wat_min[c]
+                  discharge[c] <- required_wat_min[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
                 } else {
                   # if upstream_cons not sufficient to account for difference: no water can be used upstream
                   frac_CAg_fulfilled[upstreamcells[[c]]] <- 0
-                  discharge[c] <- avl_wat_act[c]+upstream_cons
+                  discharge[c] <- avl_wat_act[c]+upstream_cons - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
                 }
               }
 
