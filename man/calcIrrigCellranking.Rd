@@ -34,7 +34,7 @@ calcIrrigCellranking(
 
 \item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
 
-\item{cellrankyear}{year for which cell rank is calculated}
+\item{cellrankyear}{year(s) for which cell rank is calculated}
 
 \item{cells}{switch between "lpjcell" (67420) and "magpiecell" (59199)}
 

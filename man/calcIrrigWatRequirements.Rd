@@ -10,9 +10,9 @@ calcIrrigWatRequirements(
   crops = "magpie",
   version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
-  time = "raw",
+  time = "spline",
   averaging_range = NULL,
-  dof = NULL,
+  dof = 4,
   harmonize_baseline = FALSE,
   ref_year = NULL,
   irrig_requirement = "withdrawal"
@@ -29,15 +29,15 @@ calcIrrigWatRequirements(
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
-\item{time}{Time smoothing: average, spline or raw (default)}
+\item{time}{Time smoothing: average, spline or raw (default) of input data to this function}
 
 \item{averaging_range}{only specify if time=="average": number of time steps to average}
 
 \item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
 
-\item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
+\item{harmonize_baseline}{FALSE (default): no harmonization of input data to this function, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
 
-\item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
+\item{ref_year}{Reference year for harmonization baseline of input data to this function (just specify when harmonize_baseline=TRUE)}
 
 \item{irrig_requirement}{Consumptive (consumption) or non-consumptive (withdrawals) irrigation water requirements}
 }

@@ -8,7 +8,7 @@
 #' @param dof             just specify for time=="spline": degrees of freedom
 #' @param harmonize_baseline FALSE (default) no harmonization, harmonization: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
 #' @param ref_year           just specify for harmonize_baseline != FALSE : Reference year
-#' @param cellrankyear year for which cell rank is calculated
+#' @param cellrankyear year(s) for which cell rank is calculated
 #' @param cells       switch between "lpjcell" (67420) and "magpiecell" (59199)
 #' @param crops       switch between "magpie" and "lpjml" (default) crops
 #' @param method      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops
@@ -24,8 +24,8 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
                                  cellrankyear="y1995", cells="lpjcell", crops="magpie", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro")){
 
   ### Read in potential yield gain per cell
-  yield_gain <- calcOutput("YieldImprovementPotential", version=version, climatetype=climatetype, harmonize_baseline=harmonize_baseline,
-                           time=time, averaging_range=averaging_range, dof=dof, selectyears=cellrankyear,
+  yield_gain <- calcOutput("YieldImprovementPotential", version=version, climatetype=climatetype, selectyears=cellrankyear,
+                           harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
                            cells=cells, crops=crops, aggregate=FALSE)
   # select proxy crops
   yield_gain <- yield_gain[,,proxycrop]

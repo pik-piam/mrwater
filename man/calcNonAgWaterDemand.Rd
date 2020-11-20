@@ -7,10 +7,10 @@
 calcNonAgWaterDemand(
   selectyears = "all",
   source = "WATCH_ISIMIP_WATERGAP",
+  waterusetype = "withdrawal",
   time = "raw",
   averaging_range = NULL,
   dof = NULL,
-  waterusetype = "withdrawal",
   seasonality = "grper",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   harmonize_baseline = "CRU_4",
@@ -20,7 +20,9 @@ calcNonAgWaterDemand(
 \arguments{
 \item{selectyears}{years to be returned}
 
-\item{source}{data source to be used}
+\item{source}{data source to be used (e.g. WATERGAP2020)}
+
+\item{waterusetype}{withdrawal (default) or consumption}
 
 \item{time}{Time smoothing: average, spline or raw (default)}
 
@@ -28,13 +30,11 @@ calcNonAgWaterDemand(
 
 \item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
 
-\item{waterusetype}{withdrawal (default) or consumption}
-
 \item{seasonality}{grper (default): non-agricultural water demand in growing period per year; total: non-agricultural water demand throughout the year}
 
-\item{climatetype}{Switch between different climate scenarios (default: "CRU_4") for calcGrowingPeriod}
+\item{climatetype}{switch between different climate scenarios (default: "CRU_4") for calcGrowingPeriod}
 
-\item{harmonize_baseline}{FALSE (default), if a baseline is specified here data is harmonized to that baseline (from ref_year onwards) for calcGrowingPeriod}
+\item{harmonize_baseline}{FALSE (default), if a baseline is specified here input data is harmonized to that baseline (from ref_year onwards) Note: only applies for calcGrowingPeriod}
 
 \item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year for calcGrowingPeriod}
 }
@@ -45,7 +45,7 @@ magpie object in cellular resolution
 This function extracts non-agricultural water demand
 }
 \examples{
-\dontrun{ calcOutput("NonAgWaterDemand", aggregate = FALSE) }
+\dontrun{ calcOutput("NonAgWaterDemand", aggregate=FALSE) }
 
 }
 \author{

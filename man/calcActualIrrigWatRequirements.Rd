@@ -6,7 +6,7 @@
 \usage{
 calcActualIrrigWatRequirements(
   selectyears = "all",
-  cells = "lpjcell",
+  cells = "magpiecell",
   crops = "magpie",
   version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
@@ -15,7 +15,8 @@ calcActualIrrigWatRequirements(
   dof = NULL,
   harmonize_baseline = FALSE,
   ref_year = NULL,
-  irrig_requirement = "withdrawal"
+  irrig_requirement = "withdrawal",
+  irrig_system_source = "Jaegermeyr_magpiecell"
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ calcActualIrrigWatRequirements(
 \item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 
 \item{irrig_requirement}{Consumptive (consumption) or non-consumptive (withdrawals) irrigation water requirements}
+
+\item{irrig_system_source}{Source of irrigation system initialization data including information about cellular detail (e.g. Jaegermeyr_magpiecell)}
 }
 \value{
 magpie object in cellular resolution
@@ -50,6 +53,9 @@ This function calculates actual irrigation water requirements per cell given a c
 \examples{
 \dontrun{ calcOutput("ActualIrrigWatRequirements", aggregate=FALSE) }
 
+}
+\seealso{
+\code{\link{calcIrrigationSystem}}, \code{\link{calcIrrigWatRequirements}}
 }
 \author{
 Felicitas Beier

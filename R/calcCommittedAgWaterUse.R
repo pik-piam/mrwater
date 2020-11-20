@@ -18,7 +18,7 @@
 #' \dontrun{ calcOutput("CommittedAgWaterUse", aggregate = FALSE) }
 #'
 
-calcCommittedAgWaterUse <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2",
+calcCommittedAgWaterUse <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", selectyears=seq(1995,2095,by=5),
                                     time="spline", dof=4, averaging_range=NULL, iniyear=1995, irrigini="Jaegermeyr_lpjcell"){
 
   ##############################
@@ -28,21 +28,17 @@ calcCommittedAgWaterUse <- function(version="LPJmL5", climatetype="HadGEM2_ES:rc
   irrigation_system <- calcOutput("IrrigationSystem", source=irrigini, aggregate=FALSE)
 
   ## Read in Irrigation Water Withdrawals (in m^3 per hectar per year) [smoothed]
-  irrig_withdrawal  <- calcOutput("IrrigWatRequirements", version="LPJmL5", cells="lpjcell", selectyears=iniyear, climatetype=climatetype, harmonize_baseline=FALSE, time=time, dof=dof, irrig_requirement="withdrawal", aggregate=FALSE)
+  irrig_withdrawal  <- calcOutput("IrrigWatRequirements", version="LPJmL5", cells="lpjcell", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=FALSE, time=time, dof=dof, irrig_requirement="withdrawal", aggregate=FALSE)
   # Pasture is not irrigated in MAgPIE
   irrig_withdrawal  <- irrig_withdrawal[,,"pasture",invert=T]
 
   ## Read in Irrigation Water Consumption (in m^3 per hectar per year) [smoothed]
-  irrig_consumption <- calcOutput("IrrigWatRequirements", version="LPJmL5", cells="lpjcell", selectyears=iniyear, climatetype=climatetype, harmonize_baseline=FALSE, time=time, dof=dof, irrig_requirement="consumption", aggregate=FALSE)
+  irrig_consumption <- calcOutput("IrrigWatRequirements", version="LPJmL5", cells="lpjcell", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=FALSE, time=time, dof=dof, irrig_requirement="consumption", aggregate=FALSE)
   # Pasture is not irrigated in MAgPIE
   irrig_consumption <- irrig_consumption[,,"pasture",invert=T]
 
   ## Read in cropland area (by crop) from crop area initialization (in mio. ha)
-  crops_grown <- calcOutput("Croparea", sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
-  # Only initialization year needed
-  crops_grown <- crops_grown[,paste0("y",iniyear),]
-  # Only irrigated needed
-  crops_grown <- collapseNames(crops_grown[,,"irrigated"])
+  crops_grown    <- calcOutput("IrrigatedArea", selectyears=selectyears, iniyear=iniyear, cells="lpjcell", aggregate=FALSE)
 
   ##############################
   ######## Calculations ########

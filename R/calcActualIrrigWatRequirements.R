@@ -11,10 +11,14 @@
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
-#' @param irrig_requirement  Consumptive (consumption) or non-consumptive (withdrawals) irrigation water requirements
+#' @param irrig_requirement   Consumptive (consumption) or non-consumptive (withdrawals) irrigation water requirements
+#' @param irrig_system_source Source of irrigation system initialization data including information about cellular detail (e.g. Jaegermeyr_magpiecell)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
+#'
+#' @seealso
+#' \code{\link{calcIrrigationSystem}}, \code{\link{calcIrrigWatRequirements}}
 #'
 #' @examples
 #' \dontrun{ calcOutput("ActualIrrigWatRequirements", aggregate=FALSE) }
@@ -23,45 +27,47 @@
 #' @import magclass
 #' @import madrat
 
-### NOTE: not yet implemented
-
-calcActualIrrigWatRequirements <- function(selectyears="all", cells="lpjcell", crops="magpie",
+calcActualIrrigWatRequirements <- function(selectyears="all", cells="magpiecell", crops="magpie",
                                      version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="raw", averaging_range=NULL, dof=NULL,
-                                     harmonize_baseline=FALSE, ref_year=NULL, irrig_requirement="withdrawal"){
+                                     harmonize_baseline=FALSE, ref_year=NULL, irrig_requirement="withdrawal", irrig_system_source="Jaegermeyr_magpiecell"){
+
+  if (cells!=gsub(".*_","",irrig_system_source)){
+    stop("Cells mismatch. Please select the same cell type in the function arguments cells and irrig_system_source!")
+  }
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
-  irrig_wat_requirement <- calcOutput("IrrigWatRequirements", selectyears=selectyears, cells=cells, crops=crops, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
-                                      harmonize_baseline=harmonize_baseline, ref_year=ref_year, irrig_requirement=irrig_requirement, aggregate=FALSE)
-  names(dimnames(irrig_wat_requirement))[3] <- "iso.cell"
+  irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", selectyears=selectyears, cells=cells, crops=crops, irrig_requirement=irrig_requirement,
+                                      version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
+                                      harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
+  names(dimnames(irrig_wat_requirement))[1] <- "iso.cell"
   names(dimnames(irrig_wat_requirement))[3] <- "crop.system"
 
   # irrigation system share (share of irrigated area)
-  #irrig_system_share    <- calcOutput("IrrigationSystem",source="Jaegermeyr_magpiecell",aggregate=FALSE)
+  irrig_system_share           <- calcOutput("IrrigationSystem", source=irrig_system_source, aggregate=FALSE)
 
-  # irrigated area
+  # composite mean
+  mean_irrig_wat_requirement   <- dimSums(irrig_system_share*irrig_wat_requirement,dim=3.1)/dimSums(irrig_system_share, dim=3)
 
-  #
-  #x <- irrig_wat_requirement * irrig_system_share
-  x <- irrig_wat_requirement
-
-
+  # Correction of years
   if(selectyears!="all"){
-    years <- sort(findset(selectyears,noset="original"))
-    x     <- x[,years,]
+    years                      <- sort(findset(selectyears,noset="original"))
+    mean_irrig_wat_requirement <- mean_irrig_wat_requirement[,years,]
   }
 
   # Check for NAs and negative values
-  if(any(is.na(out))){
+  if(any(is.na(mean_irrig_wat_requirement))){
     stop("produced NA irrigation water requirements")
   }
-  if(any(out<0)){
+  if(any(mean_irrig_wat_requirement<0)){
     stop("produced negative irrigation water requirements")
   }
 
+  # irrigation area as weight + 1e-10 (cropland area[irrigated])
+
   return(list(
-    x=out,
+    x=mean_irrig_wat_requirement,
     weight=NULL,
     unit="m^3 per ha per yr",
-    description="Irrigation water requirements for irrigation for different crop types under selected irrigation system scenario",
+    description="Irrigation water requirements for irrigation for different crop types under selected irrigation system share per cell",
     isocountries=FALSE))
 }

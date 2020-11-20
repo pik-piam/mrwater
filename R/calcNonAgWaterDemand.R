@@ -1,33 +1,32 @@
 #' @title calcNonAgWaterDemand
 #' @description This function extracts non-agricultural water demand
 #' @param selectyears years to be returned
-#' @param source data source to be used
-#' @param time Time smoothing: average, spline or raw (default)
+#' @param source      data source to be used (e.g. WATERGAP2020)
+#' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param waterusetype withdrawal (default) or consumption
-#' @param seasonality grper (default): non-agricultural water demand in growing period per year; total: non-agricultural water demand throughout the year
-#' @param climatetype Switch between different climate scenarios (default: "CRU_4") for calcGrowingPeriod
-#' @param harmonize_baseline FALSE (default), if a baseline is specified here data is harmonized to that baseline (from ref_year onwards) for calcGrowingPeriod
-#' @param ref_year just specify for harmonize_baseline != FALSE : Reference year for calcGrowingPeriod
+#' @param seasonality        grper (default): non-agricultural water demand in growing period per year; total: non-agricultural water demand throughout the year
+#' @param climatetype        switch between different climate scenarios (default: "CRU_4") for calcGrowingPeriod
+#' @param harmonize_baseline FALSE (default), if a baseline is specified here input data is harmonized to that baseline (from ref_year onwards) Note: only applies for calcGrowingPeriod
+#' @param ref_year           just specify for harmonize_baseline != FALSE : Reference year for calcGrowingPeriod
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("NonAgWaterDemand", aggregate = FALSE) }
+#' \dontrun{ calcOutput("NonAgWaterDemand", aggregate=FALSE) }
 #'
 #' @import madrat
 #' @import magclass
-#' @importFrom mrcommons toolHarmonize2Baseline
+#' @import mrcommons
 
-calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGAP",
+calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGAP", waterusetype="withdrawal",
                                  time="raw", averaging_range=NULL, dof=NULL,
-                                 waterusetype="withdrawal", seasonality="grper",
-                                 climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", ref_year="y2015"){
+                                 seasonality="grper", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", ref_year="y2015"){
 
-  ########################################
-  ############ Calculations  #############
+  #######################################
+  ############ Calculations  ############
   #######################################
 
   # Old Non-Agricultural Waterdemand data (current default, will be deleted soon):
@@ -64,7 +63,7 @@ calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGA
       watdem_nonagr[,getYears(watdem_nonagr_ISIMIP_hist),] <- watdem_nonagr_ISIMIP_hist[,getYears(watdem_nonagr_ISIMIP_hist),]
 
       # future WATERGAP scenarios (adjusted to transition year of historical data)
-      watdem_nonagr_WATERGAP_adjusted <- watdem_nonagr_WATERGAP
+      watdem_nonagr_WATERGAP_adjusted     <- watdem_nonagr_WATERGAP
       watdem_nonagr_WATERGAP_adjusted[,,] <- NA
 
       # Calibration of WATERGAP data to ISIMIP baseline:
@@ -87,7 +86,7 @@ calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGA
 
     } else {
       # Time smoothing:
-      x     <- calcOutput("NonAgWaterDemand", selectyears=selectyears, source=source, seasonality=seasonality,
+      x                <- calcOutput("NonAgWaterDemand", selectyears=selectyears, source=source, seasonality=seasonality,
                           waterusetype=waterusetype, climatetype=climatetype, harmonize_baseline=harmonize_baseline,
                           ref_year=ref_year, time="raw", averaging_range=NULL, dof=NULL, aggregate=FALSE)
 

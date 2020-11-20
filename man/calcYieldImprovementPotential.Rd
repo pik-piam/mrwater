@@ -11,6 +11,7 @@ calcYieldImprovementPotential(
   averaging_range = NULL,
   dof = 4,
   harmonize_baseline = FALSE,
+  ref_year = NULL,
   selectyears = seq(1995, 2095, by = 5),
   cells = "magpiecell",
   crops = "lpjml"
@@ -29,13 +30,13 @@ calcYieldImprovementPotential(
 
 \item{harmonize_baseline}{harmonization in calcYields function: FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)}
 
-\item{selectyears}{years selected in calcYields function}
+\item{ref_year}{reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
+
+\item{selectyears}{years to be returned by the function}
 
 \item{cells}{switch between "lpjcell" (67420) and "magpiecell" (59199)}
 
 \item{crops}{switch between "magpie" and "lpjml" (default) crops}
-
-\item{ref_year}{reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 }
 \value{
 magpie object in cellular resolution

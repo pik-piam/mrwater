@@ -23,10 +23,12 @@
 #' @import madrat
 #' @import magclass
 
-calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, cells="lpjcell", selectyears=seq(1995, 2095,by=5), iniyear=1995, iniarea=TRUE, irrig_requirement="withdrawal"){
+calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, cells="lpjcell", selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrig_requirement="withdrawal"){
 
-  # read in irrigation water requirements [in m^3 per hectar per year]
-  irrig_wat <- calcOutput("IrrigWatRequirements", version=version, cells="magpiecell", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, irrig_requirement=irrig_requirement, aggregate=FALSE)
+  # read in irrigation water requirements [in m^3 per hectar per year] (smoothed & harmonized)
+  irrig_wat <- calcOutput("IrrigWatRequirements", selectyears=selectyears, version=version, climatetype=climatetype,
+                          harmonize_baseline=harmonize_baseline, time=time, dof=dof,
+                          irrig_requirement=irrig_requirement, cells="magpiecell", aggregate=FALSE)
   # pasture is not irrigated in MAgPIE
   irrig_wat <- irrig_wat[,,"pasture",invert=T]
   irrig_wat <- toolCell2isoCell(irrig_wat)
@@ -34,11 +36,10 @@ calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2
   # read in land available for agricultural use (in mio. ha)
   land <- collapseNames(calcOutput("AvlLandSi", aggregate=FALSE)[,,"si0"])
   if (iniarea) {
-    # subtract area already irrigated in initialization (in mio. ha)
-    crops_grown <- calcOutput("Croparea", sectoral="kcr", cells="magpiecell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)[,,"irrigated"]
-    crops_grown <- collapseNames(dimSums(crops_grown[,paste0("y",iniyear),],dim=3))
+    # subtract area already reserved for irrigation by committed agricultural uses (in mio. ha)
+    crops_grown    <- calcOutput("IrrigatedArea", selectyears=selectyears, iniyear=iniyear, cells="magpiecell", aggregate=FALSE)
+    crops_grown    <- collapseNames(dimSums(crops_grown,dim=3))
     land           <- land - crops_grown
-    getYears(land) <- NULL
   }
   # negative values may occur because AvlLandSi is based on Ramankutty data and Cropara based on LUH -> set to 0
   land[land<0] <- 0

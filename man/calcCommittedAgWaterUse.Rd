@@ -7,6 +7,7 @@
 calcCommittedAgWaterUse(
   version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
+  selectyears = seq(1995, 2095, by = 5),
   time = "spline",
   dof = 4,
   averaging_range = NULL,

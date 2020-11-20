@@ -32,10 +32,10 @@ calcEnvmtlFlowRequirements <- function(version="LPJmL4", climatetype="HadGEM2_ES
 
   ### Monthly Discharge from LPJmL
   monthly_discharge_magpie <- calcOutput("LPJmL", selectyears=EFRyears, version=version, climatetype=climatetype, subtype="mdischarge_lpjcell", aggregate=FALSE,
-                                         harmonize_baseline=FALSE, time="raw")
+                                         harmonize_baseline=FALSE, ref_year=NULL, time="raw", averaging_range=NULL, dof=NULL)
 
   # Extract years
-  years <- getYears(monthly_discharge_magpie, as.integer = TRUE)
+  years <- getYears(monthly_discharge_magpie, as.integer=TRUE)
   # Transform to array (faster calculation)
   monthly_discharge_magpie <-  as.array(collapseNames(monthly_discharge_magpie))
 

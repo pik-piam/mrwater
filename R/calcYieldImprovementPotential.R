@@ -3,12 +3,12 @@
 #'
 #' @param version     switch between LPJmL4 and LPJmL5 of calcYields function
 #' @param climatetype switch between different climate scenarios (default: "CRU_4") of calcYields function
+#' @param selectyears years to be returned by the function
 #' @param time            time smoothing of calcYields function: average, spline (default) or raw
 #' @param averaging_range only specify if time=="average": number of time steps to average
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param harmonize_baseline harmonization in calcYields function: FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
 #' @param ref_year           reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
-#' @param selectyears years selected in calcYields function
 #' @param cells       switch between "lpjcell" (67420) and "magpiecell" (59199)
 #' @param crops       switch between "magpie" and "lpjml" (default) crops
 #'
@@ -22,11 +22,11 @@
 #' @import magclass
 
 calcYieldImprovementPotential <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
-                                          harmonize_baseline=FALSE, selectyears=seq(1995, 2095,by=5), cells="magpiecell", crops="lpjml"){
+                                          harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), cells="magpiecell", crops="lpjml"){
 
   # read in yields [in tons/ha]
-  yields <- calcOutput("Yields", version=version, climatetype=climatetype, time=time, dof=dof,
-                       harmonize_baseline=harmonize_baseline, aggregate=FALSE, selectyears=selectyears, crops=crops)
+  yields <- calcOutput("Yields", version=version, climatetype=climatetype, selectyears=selectyears, crops=crops,
+                       time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
 
   # yield gap (irrigated vs. rainfed) [in tons/ha]
   tmp <- collapseNames(yields[,,"irrigated"])-collapseNames(yields[,,"rainfed"])
