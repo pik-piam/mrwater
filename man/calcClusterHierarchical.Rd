@@ -4,7 +4,13 @@
 \alias{calcClusterHierarchical}
 \title{MAgPIE Hierarchical clustering}
 \usage{
-calcClusterHierarchical(regionscode, ncluster, mode = "h", weight = NULL)
+calcClusterHierarchical(
+  regionscode,
+  ncluster,
+  clusterdata = "yield_airrig",
+  mode = "h",
+  weight = NULL
+)
 }
 \arguments{
 \item{regionscode}{regionscode of the regional mapping to be used. Must agree
@@ -13,9 +19,10 @@ retrieved via \code{regionscode()}.}
 
 \item{ncluster}{The desired total number of clusters.}
 
+\item{clusterdata}{similarity data to be used to determine clusters: yield_airrig (current default) or yield_increment}
+
 \item{mode}{Clustering type. At the moment you can choose between complete
-linkage clustering (h), single linkage clustering (s) and Ward clustering
-(w).}
+linkage clustering (h), single linkage clustering (s) and Ward clustering (w).}
 
 \item{weight}{named vector with weighting factors for each region for the cluster distribution
 ,e.g. weight=c(AFR=3,EUR=0.5). weight > 1 will grant more cluster to a region and

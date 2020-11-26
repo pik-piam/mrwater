@@ -28,10 +28,10 @@ calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weigh
 
   if(mode=="n") {
     mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster, weight=weight,
-                          seed=seed, aggregate=FALSE)
+                          seed=seed, clusterdata=clusterdata, aggregate=FALSE)
   } else if(mode=="h" | mode=="w" | mode=="s") {
     mapping <- calcOutput("ClusterHierarchical", regionscode=regionscode, ncluster=ncluster,
-                          mode=mode, weight=weight, aggregate=FALSE)
+                          mode=mode, weight=weight, clusterdata=clusterdata, aggregate=FALSE)
   } else if(mode=="c"){
     calcCPR <- function(x) {
       clusters <- table(sub("\\..*$","",unique(sub("\\..*\\.",".",x))))
@@ -39,17 +39,17 @@ calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weigh
       return(cbind(cells,clusters))
     }
     tmpmap  <- calcOutput("ClusterHierarchical", regionscode=regionscode, ncluster=ncluster,
-                          mode="h", weight=weight, aggregate=FALSE)
+                          mode="h", weight=weight, clusterdata=clusterdata, aggregate=FALSE)
     mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster,
                           weight=weight, cpr=calcCPR(sub("^[^\\.]*\\.","",getCells(tmpmap))),
-                          seed=seed, aggregate=FALSE)
+                          seed=seed, clusterdata=clusterdata, aggregate=FALSE)
   } else if(mode=="m"){
 
     cdata <- toolApplyRegionNames(calcOutput("ClusterBase", aggregate=FALSE, clusterdata=clusterdata), regionscode)
     cpr   <- toolClusterPerRegionManual(sub("^[^\\.]*\\.","",getCells(cdata)), ncluster=ncluster, ncluster2reg=weight)
 
     mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster,
-                          weight=weight, cpr=cpr, seed=seed, aggregate=FALSE)
+                          weight=weight, cpr=cpr, seed=seed, clusterdata=clusterdata, aggregate=FALSE)
   } else {
     stop("Unkown clustering mode ",mode,"!")
   }

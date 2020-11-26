@@ -38,6 +38,12 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
     waterversion <- "LPJmL4"
   }
 
+  if(grepl("waterallocation",dev)){
+    clusterdata="yield_increment"
+  } else {
+    clusterdata="yield_airrig"
+  }
+
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit=1e+12)
   on.exit(options(magclass_sizeLimit=sizelimit))
@@ -55,7 +61,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   harmonize_baseline="CRU_4"
   ref_year="y2015"
 
-  map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, aggregate=FALSE)
+  map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, clusterdata=clusterdata, aggregate=FALSE)
   weightID <- ifelse(is.null(clusterweight),"",paste0("_",names(clusterweight),clusterweight,collapse=""))
   clustermapname <- sub("\\.[^.]*$",".rds",paste0("clustermap_rev",rev,dev,"_",ctype,weightID,"_",getConfig("regionmapping")))
   toolStoreMapping(map,clustermapname,type="regional",where=c("mappingfolder","outputfolder"),error.existing = FALSE)
