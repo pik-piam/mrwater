@@ -4,7 +4,10 @@
 \alias{calcClusterBase}
 \title{calcClusterBase}
 \usage{
-calcClusterBase()
+calcClusterBase(clusterdata = "yield_airrig")
+}
+\arguments{
+\item{clusterdata}{similarity data to be used to determine clusters: yield_airrig (current default) or yield_increment}
 }
 \value{
 A matrix containing the data
@@ -17,5 +20,5 @@ which is then used for calculating a clustering.
 \code{\link{calcCluster}}
 }
 \author{
-Jan Philipp Dietrich
+Jan Philipp Dietrich, Felicitas Beier
 }

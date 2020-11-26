@@ -12,15 +12,16 @@
 #' @param cpr cells-per-region information as returned by cluster_per_region. Weight and ncluster are
 #' ignored in case that cpr is provided!
 #' @param seed a single value, interpreted as an integer, or NULL, to define seed for random calculations
+#' @param clusterdata similarity data to be used to determine clusters: yield_airrig (current default) or yield_increment
 #' @return A mapping between regions and clusters
 #' @author Jan Philipp Dietrich
 #' @importFrom stats kmeans
 #' @seealso \code{\link{toolClusterPerRegion}}, \code{\link{calcClusterHierarchical}}
 #' @export
 
-calcClusterKMeans <- function(regionscode, ncluster, weight=NULL, cpr=NULL, seed=42) {
+calcClusterKMeans <- function(regionscode, ncluster, weight=NULL, cpr=NULL, seed=42, clusterdata="yield_airrig") {
 
-  cdata <- toolApplyRegionNames(calcOutput("ClusterBase", aggregate=FALSE),regionscode)
+  cdata <- toolApplyRegionNames(calcOutput("ClusterBase", aggregate=FALSE, clusterdata=clusterdata),regionscode)
 
   if(is.null(cpr)) cpr <- toolClusterPerRegion(sub("^[^\\.]*\\.","",getCells(cdata)),ncluster,weight)
 

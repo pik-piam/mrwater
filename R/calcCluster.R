@@ -13,6 +13,7 @@
 #' @param weight Should specific regions be resolved with more or less detail? Values > 1 mean higher share, < 1 lower share
 #' e.g. cfg$cluster_weight <- c(LAM=2) means that a higher level of detail for region LAM if set to NULL all weights will be
 #' assumed to be 1 (examples: c(LAM=1.5,SSA=1.5,OAS=1.5), c(LAM=2,SSA=2,OAS=2))
+#' @param clusterdata similarity data to be used to determine clusters: yield_airrig (current default) or yield_increment
 #' @return magpie object in cellular resolution
 #' @author Jan Philipp Dietrich
 #'
@@ -20,7 +21,7 @@
 #' \dontrun{ calcOutput("Cluster", type="c200", aggregate = FALSE) }
 #' @importFrom madrat calcOutput
 
-calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weight=NULL){
+calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weight=NULL, clusterdata="yield_airrig"){
 
   mode <- substr(ctype,0,1)
   ncluster <- as.integer(substring(ctype,2))
@@ -44,7 +45,7 @@ calcCluster <- function(ctype, regionscode=madrat::regionscode(), seed=42, weigh
                           seed=seed, aggregate=FALSE)
   } else if(mode=="m"){
 
-    cdata <- toolApplyRegionNames(calcOutput("ClusterBase", aggregate=FALSE), regionscode)
+    cdata <- toolApplyRegionNames(calcOutput("ClusterBase", aggregate=FALSE, clusterdata=clusterdata), regionscode)
     cpr   <- toolClusterPerRegionManual(sub("^[^\\.]*\\.","",getCells(cdata)), ncluster=ncluster, ncluster2reg=weight)
 
     mapping <- calcOutput("ClusterKMeans", regionscode=regionscode, ncluster=ncluster,

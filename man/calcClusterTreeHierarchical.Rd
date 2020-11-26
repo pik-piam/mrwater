@@ -4,7 +4,12 @@
 \alias{calcClusterTreeHierarchical}
 \title{MAgPIE Hierarchical clustering tree}
 \usage{
-calcClusterTreeHierarchical(regionscode, mode = "h", weight = NULL)
+calcClusterTreeHierarchical(
+  regionscode,
+  mode = "h",
+  weight = NULL,
+  clusterdata = "yield_airrig"
+)
 }
 \arguments{
 \item{regionscode}{regionscode of the regional mapping to be used. Must agree with the regionscode of the mapping
@@ -17,6 +22,8 @@ linkage clustering (h), single linkage clustering (s) and Ward clustering
 \item{weight}{named vector with weighting factors for each region for the cluster distribution
 ,e.g. weight=c(AFR=3,EUR=0.5). weight > 1 will grant more cluster to a region and
 weight < 1 less cluster than by default.}
+
+\item{clusterdata}{similarity data to be used to determine clusters: yield_airrig (current default) or yield_increment}
 }
 \value{
 A spam relation matrix

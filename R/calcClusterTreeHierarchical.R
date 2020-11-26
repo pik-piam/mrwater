@@ -10,6 +10,7 @@
 #' @param weight named vector with weighting factors for each region for the cluster distribution
 #' ,e.g. weight=c(AFR=3,EUR=0.5). weight > 1 will grant more cluster to a region and
 #' weight < 1 less cluster than by default.
+#' @param clusterdata similarity data to be used to determine clusters: yield_airrig (current default) or yield_increment
 #' @return A spam relation matrix
 #' @author Jan Philipp Dietrich
 #' @importFrom magclass getCells ncells getRegions getItems
@@ -17,9 +18,9 @@
 #' @seealso \code{\link{cluster_per_region}}, \code{\link{mag_kmeans}},
 #' \code{\link{clusterspam}}
 #' @export
-calcClusterTreeHierarchical <- function(regionscode, mode="h", weight=NULL) {
+calcClusterTreeHierarchical <- function(regionscode, mode="h", weight=NULL, clusterdata="yield_airrig") {
 
-  cdata <- as.array(toolApplyRegionNames(calcOutput("ClusterBase", aggregate=FALSE),regionscode))[,,]
+  cdata <- as.array(toolApplyRegionNames(calcOutput("ClusterBase", clusterdata=clusterdata, aggregate=FALSE),regionscode))[,,]
 
   calcw <- function(weight, regions) {
     w <- rep(1,length(regions))

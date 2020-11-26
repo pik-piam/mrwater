@@ -8,7 +8,8 @@ calcCluster(
   ctype,
   regionscode = madrat::regionscode(),
   seed = 42,
-  weight = NULL
+  weight = NULL,
+  clusterdata = "yield_airrig"
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ clustering)}
 \item{weight}{Should specific regions be resolved with more or less detail? Values > 1 mean higher share, < 1 lower share
 e.g. cfg$cluster_weight <- c(LAM=2) means that a higher level of detail for region LAM if set to NULL all weights will be
 assumed to be 1 (examples: c(LAM=1.5,SSA=1.5,OAS=1.5), c(LAM=2,SSA=2,OAS=2))}
+
+\item{clusterdata}{similarity data to be used to determine clusters: yield_airrig (current default) or yield_increment}
 }
 \value{
 magpie object in cellular resolution
