@@ -1,4 +1,4 @@
-#' @title calcCommittedAgWaterUse
+#' @title calcWaterUseCommittedAg
 #' @description This function calculates committed agricultural water uses that are used in the river routing algorithm for distributing available water across the basin
 #'
 #' @param version     Switch between LPJmL4 and LPJmL5
@@ -15,10 +15,10 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("CommittedAgWaterUse", aggregate = FALSE) }
+#' \dontrun{ calcOutput("WaterUseCommittedAg", aggregate = FALSE) }
 #'
 
-calcCommittedAgWaterUse <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", selectyears=seq(1995,2095,by=5),
+calcWaterUseCommittedAg <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", selectyears=seq(1995,2095,by=5),
                                     time="spline", dof=4, averaging_range=NULL, iniyear=1995, irrigini="Jaegermeyr_lpjcell"){
 
   ##############################

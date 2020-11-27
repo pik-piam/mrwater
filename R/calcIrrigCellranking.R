@@ -24,7 +24,7 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
                                  cellrankyear="y1995", cells="lpjcell", crops="magpie", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro")){
 
   ### Read in potential yield gain per cell
-  yield_gain <- calcOutput("YieldImprovementPotential", version=version, climatetype=climatetype, selectyears=cellrankyear,
+  yield_gain <- calcOutput("IrrigYieldImprovementPotential", version=version, climatetype=climatetype, selectyears=cellrankyear,
                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
                            cells=cells, crops=crops, aggregate=FALSE)
   # select proxy crops

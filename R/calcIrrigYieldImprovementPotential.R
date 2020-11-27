@@ -1,4 +1,4 @@
-#' @title calcYieldImprovementPotential
+#' @title calcIrrigYieldImprovementPotential
 #' @description This function calculates the yield improvement potential of irrigation for different crops
 #'
 #' @param version     switch between LPJmL4 and LPJmL5 of calcYields function
@@ -16,12 +16,12 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("YieldImprovementPotential", aggregate=FALSE) }
+#' \dontrun{ calcOutput("IrrigYieldImprovementPotential", aggregate=FALSE) }
 #'
 #' @import madrat
 #' @import magclass
 
-calcYieldImprovementPotential <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
+calcIrrigYieldImprovementPotential <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
                                           harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), cells="magpiecell", crops="lpjml"){
 
   # read in yields [in tons/ha]

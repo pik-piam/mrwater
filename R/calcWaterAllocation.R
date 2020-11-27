@@ -76,7 +76,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
   yearly_runoff <- yearly_runoff + input_lake
 
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-  NAg_ww_magpie           <- calcOutput("NonAgWaterDemand", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="withdrawal", seasonality="total", aggregate=FALSE)
+  NAg_ww_magpie           <- calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="withdrawal", seasonality="total", aggregate=FALSE)
   getCells(NAg_ww_magpie) <- paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep=".")
   NAg_ww           <- new.magpie(1:NCELLS,getYears(NAg_ww_magpie),getNames(NAg_ww_magpie))
   NAg_ww[,,]       <- 0
@@ -86,7 +86,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
   rm(NAg_ww_magpie)
 
   # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
-  NAg_wc_magpie           <- calcOutput("NonAgWaterDemand", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="consumption", seasonality="total", aggregate=FALSE)
+  NAg_wc_magpie           <- calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="consumption", seasonality="total", aggregate=FALSE)
   getCells(NAg_wc_magpie) <- paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep=".")
   NAg_wc           <- new.magpie(1:NCELLS,getYears(NAg_wc_magpie),getNames(NAg_wc_magpie))
   NAg_wc[,,]       <- 0
@@ -100,7 +100,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
   NAg_wc <- pmax(NAg_wc, 0.01*NAg_ww)
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
-  CAU_magpie <- calcOutput("CommittedAgWaterUse",selectyears=selectyears,iniyear=1995,irrigini="Jaegermeyr_lpjcell",time="raw",dof=NULL,aggregate=FALSE)
+  CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,iniyear=1995,irrigini="Jaegermeyr_lpjcell",time="raw",dof=NULL,aggregate=FALSE)
   CAW_magpie <- as.array(collapseNames(dimSums(CAU_magpie[,,"withdrawal"],dim=3)))
   CAC_magpie <- as.array(collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3)))
   rm(CAU_magpie)

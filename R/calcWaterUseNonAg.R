@@ -1,4 +1,4 @@
-#' @title calcNonAgWaterDemand
+#' @title calcWaterUseNonAg
 #' @description This function extracts non-agricultural water demand
 #' @param selectyears years to be returned
 #' @param source      data source to be used (e.g. WATERGAP2020)
@@ -15,13 +15,13 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("NonAgWaterDemand", aggregate=FALSE) }
+#' \dontrun{ calcOutput("WaterUseNonAg", aggregate=FALSE) }
 #'
 #' @import madrat
 #' @import magclass
 #' @import mrcommons
 
-calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGAP", waterusetype="withdrawal",
+calcWaterUseNonAg <- function(selectyears="all", source="WATCH_ISIMIP_WATERGAP", waterusetype="withdrawal",
                                  time="raw", averaging_range=NULL, dof=NULL,
                                  seasonality="grper", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline="CRU_4", ref_year="y2015"){
 
@@ -86,7 +86,7 @@ calcNonAgWaterDemand <- function(selectyears="all", source="WATCH_ISIMIP_WATERGA
 
     } else {
       # Time smoothing:
-      x                <- calcOutput("NonAgWaterDemand", selectyears=selectyears, source=source, seasonality=seasonality,
+      x                <- calcOutput("WaterUseNonAg", selectyears=selectyears, source=source, seasonality=seasonality,
                           waterusetype=waterusetype, climatetype=climatetype, harmonize_baseline=harmonize_baseline,
                           ref_year=ref_year, time="raw", averaging_range=NULL, dof=NULL, aggregate=FALSE)
 

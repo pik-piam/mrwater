@@ -38,7 +38,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
     waterversion <- "LPJmL4"
   }
 
-  if(grepl("waterallocation",dev)){
+  if(grepl("riverrouting_allocation",dev)){
     clusterdata="yield_increment"
   } else {
     clusterdata="yield_airrig"
@@ -142,9 +142,9 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
              aggregate=FALSE, round=2, file="lpj_grper_0.5.mz")
 
   calcOutput("EnvmtlFlow", version=waterversion, years=lpj_years, climatetype=climatetype, harmonize_baseline=ifelse(waterversion!="LPJmL2", harmonize_baseline, FALSE), ref_year=ref_year, time="spline", dof=4, aggregate="cluster", round=6, seasonality="grper", file=paste0("lpj_envflow_grper_", ctype, ".mz"))
-  calcOutput("NonAgWaterDemand", source="WATCH_ISIMIP_WATERGAP", years=lpj_years, seasonality="grper", aggregate="cluster", file=paste0("watdem_nonagr_grper_", ctype, ".mz"))
-  calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="withdrawal", aggregate="cluster", file=paste0("watdem_nonagr_ww_grper_", ctype, ".mz"))
-  calcOutput("NonAgWaterDemand", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="consumption", aggregate="cluster", file=paste0("watdem_nonagr_wc_grper_", ctype, ".mz"))
+  calcOutput("WaterUseNonAg", source="WATCH_ISIMIP_WATERGAP", years=lpj_years, seasonality="grper", aggregate="cluster", file=paste0("watdem_nonagr_grper_", ctype, ".mz"))
+  calcOutput("WaterUseNonAg", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="withdrawal", aggregate="cluster", file=paste0("watdem_nonagr_ww_grper_", ctype, ".mz"))
+  calcOutput("WaterUseNonAg", source="WATERGAP2020", years=lpj_years, seasonality="grper", waterusetype="consumption", aggregate="cluster", file=paste0("watdem_nonagr_wc_grper_", ctype, ".mz"))
 
   #43 water availability
   calcOutput("AvlWater", version=waterversion, years=lpj_years, climatetype=climatetype, harmonize_baseline=ifelse(waterversion!="LPJmL2", harmonize_baseline, FALSE), ref_year=ref_year, time="spline", dof=4, seasonality="grper", aggregate="cluster", round=6, file=paste0("lpj_watavail_grper_", ctype, ".mz"))

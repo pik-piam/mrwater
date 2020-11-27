@@ -6,6 +6,7 @@
 \usage{
 calcActualIrrigWatRequirements(
   selectyears = "all",
+  iniyear = 1995,
   cells = "magpiecell",
   crops = "magpie",
   version = "LPJmL5",
@@ -21,6 +22,8 @@ calcActualIrrigWatRequirements(
 }
 \arguments{
 \item{selectyears}{Years to be returned}
+
+\item{iniyear}{Initialization year (for weight by cropland)}
 
 \item{cells}{Switch between "lpjcell" (67420) and "magpiecell" (59199)}
 
