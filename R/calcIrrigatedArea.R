@@ -3,7 +3,7 @@
 #'
 #' @param iniyear      initialization year
 #' @param selectyears  select years
-#' @param depreciation parameter defining rate at which previously irrigated cropland becomes "unreserved" for irrigation
+#' @param depreciation parameter defining yearly depreciation rate at which previously irrigated cropland becomes "unreserved" for irrigation
 #' @param cells        cells to be returned by the function (lpjcell or magpiecell)
 #'
 #' @return magpie object in cellular resolution
@@ -26,9 +26,14 @@ calcIrrigatedArea <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, dep
   irrig_area <- new.magpie(getCells(tmp),selectyears,getNames(tmp))
 
   # Each year certain share (parameter: "depreciation") of irrigated cropland is lost
-  for (y in selectyears){
-    irrig_area[,y,] <- tmp
-    tmp             <- tmp*(1-depreciation)
+  for (y in (1:length(selectyears))){
+    # irrigated area in respective year
+    irrig_area[,selectyears[y],] <- tmp
+    # adjust yearly depreciation rate to time steps
+    timegap <- selectyears[y+1]-selectyears[y]
+    dep_adj <- (1-depreciation)^timegap
+    # depreciation of irrigated area
+    tmp     <- tmp*dep_adj
   }
 
   # Corrections

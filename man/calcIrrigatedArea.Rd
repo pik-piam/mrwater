@@ -16,7 +16,7 @@ calcIrrigatedArea(
 
 \item{iniyear}{initialization year}
 
-\item{depreciation}{parameter defining rate at which previously irrigated cropland becomes "unreserved" for irrigation}
+\item{depreciation}{parameter defining yearly depreciation rate at which previously irrigated cropland becomes "unreserved" for irrigation}
 
 \item{cells}{cells to be returned by the function (lpjcell or magpiecell)}
 }
