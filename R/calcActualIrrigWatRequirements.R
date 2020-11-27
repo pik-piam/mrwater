@@ -2,6 +2,7 @@
 #' @description This function calculates actual irrigation water requirements per cell given a certain irrigation system
 #'
 #' @param selectyears Years to be returned
+#' @param iniyear     Initialization year (for weight by cropland)
 #' @param version     Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param cells       Switch between "lpjcell" (67420) and "magpiecell" (59199)
@@ -27,7 +28,7 @@
 #' @import magclass
 #' @import madrat
 
-calcActualIrrigWatRequirements <- function(selectyears="all", cells="magpiecell", crops="magpie",
+calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, cells="magpiecell", crops="magpie",
                                      version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="raw", averaging_range=NULL, dof=NULL,
                                      harmonize_baseline=FALSE, ref_year=NULL, irrig_requirement="withdrawal", irrig_system_source="Jaegermeyr_magpiecell"){
 
@@ -62,11 +63,13 @@ calcActualIrrigWatRequirements <- function(selectyears="all", cells="magpiecell"
     stop("produced negative irrigation water requirements")
   }
 
-  # irrigation area as weight + 1e-10 (cropland area[irrigated])
+  # irrigated cropland area as weight
+  irrig_area <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells=cells, physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
+  irrig_area <- collapseNames(irrig_area[,,"irrigated"][,,"pasture",invert=T])+1e-9
 
   return(list(
     x=mean_irrig_wat_requirement,
-    weight=NULL,
+    weight=irrig_area,
     unit="m^3 per ha per yr",
     description="Irrigation water requirements for irrigation for different crop types under selected irrigation system share per cell",
     isocountries=FALSE))
