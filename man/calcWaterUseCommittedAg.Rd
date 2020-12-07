@@ -11,6 +11,8 @@ calcWaterUseCommittedAg(
   time = "spline",
   dof = 4,
   averaging_range = NULL,
+  harmonize_baseline = "CRU_4",
+  ref_year = "y2015",
   iniyear = 1995,
   irrigini = "Jaegermeyr_lpjcell"
 )
@@ -25,6 +27,10 @@ calcWaterUseCommittedAg(
 \item{dof}{Only specify if time=="spline": degrees of freedom needed for spline}
 
 \item{averaging_range}{Only specify if time=="average": number of time steps to average}
+
+\item{harmonize_baseline}{FALSE (default): no harmonization of input data to this function, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
+
+\item{ref_year}{Reference year for harmonization baseline of input data to this function (just specify when harmonize_baseline=TRUE)}
 
 \item{iniyear}{Year of initialization for cropland area}
 
