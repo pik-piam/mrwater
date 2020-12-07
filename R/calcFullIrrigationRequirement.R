@@ -22,6 +22,8 @@
 #'
 #' @import madrat
 #' @import magclass
+#' @import mrcommons
+#' @import mrmagpie
 
 calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, cells="lpjcell", selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrig_requirement="withdrawal"){
 

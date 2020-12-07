@@ -15,10 +15,12 @@
 #' @param gainthreshold   Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param irrigini         When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
+#' @param iniyear          Initialization year of irrigation system
 #'
 #' @import magclass
 #' @import madrat
-#' @importFrom mrcommons toolHarmonize2Baseline
+#' @import mrcommons
+#' @import mrmagpie
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -28,10 +30,10 @@
 #'
 
 calcWaterAllocation <- function(selectyears="all", output="consumption",
-                                version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="raw", averaging_range=NULL, dof=NULL,
-                                harmonize_baseline=FALSE, ref_year="y2015",
+                                version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
+                                harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, gainthreshold=1,
-                                irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell"){
+                                irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995){
 
   #############################
   ####### Read in Data ########
@@ -39,7 +41,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
 
   ### Read in river structure
   # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
-  data <- toolGetMapping("River_structure_stn.rda",type="cell")
+  data <- toolGetMapping("River_structure_stn.rda", where="mrwater")
   for (i in 1:length(data)){
     assign(paste(names(data[[i]])), data[[i]][[1]])
   }
@@ -65,12 +67,18 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
   lake_evap     <- as.array(collapseNames(lake_evap))
   lake_evap     <- lake_evap[,,1]
+  #### LAKE EVAP PLACEHOLDER
+  # lake_evap     <- yearly_runoff
+  # lake_evap[]   <- 0
 
   # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
   input_lake    <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="input_lake_lpjcell", aggregate=FALSE,
                                harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
   input_lake    <- as.array(collapseNames(input_lake))
   input_lake    <- input_lake[,,1]
+  #### LAKE EVAP PLACEHOLDER
+  # input_lake     <- yearly_runoff
+  # input_lake[]   <- 0
 
   # runoff (on land and water)
   yearly_runoff <- yearly_runoff + input_lake
@@ -100,7 +108,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
   NAg_wc <- pmax(NAg_wc, 0.01*NAg_ww)
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
-  CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,iniyear=1995,irrigini="Jaegermeyr_lpjcell",time="raw",dof=NULL,aggregate=FALSE)
+  CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,iniyear=iniyear,irrigini=irrigini,time=time,dof=dof,averaging_range=averaging_range,harmonize_baseline=harmonize_baseline,ref_year=ref_year,aggregate=FALSE)
   CAW_magpie <- as.array(collapseNames(dimSums(CAU_magpie[,,"withdrawal"],dim=3)))
   CAC_magpie <- as.array(collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3)))
   rm(CAU_magpie)
@@ -156,17 +164,17 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
 
   for (EFP in c("on", "off")) {
 
-    # Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
+    # Environmental Flow Requirements (share of mean annual discharge) [long-term average]
     if (EFP=="on"){
-      EFR_magpie <- calcOutput("EnvmtlFlowRequirements", version="LPJmL4", climatetype=climatetype, aggregate=FALSE, cells="lpjcell",
+      EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirements", version="LPJmL4", climatetype="CRU_4", aggregate=FALSE, cells="lpjcell",
                                LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                                EFRyears=c(1980:2010))
     } else if (EFP=="off"){
-      EFR_magpie <- new.magpie(1:NCELLS,fill=0)
-      getCells(EFR_magpie) <- paste(lpj_cells_map$ISO,1:67420,sep=".")
+      EFR_magpie_frac <- new.magpie(1:NCELLS,fill=0)
+      getCells(EFR_magpie_frac) <- paste(lpj_cells_map$ISO,1:67420,sep=".")
     }
-    EFR_magpie <- as.array(collapseNames(EFR_magpie))
-    EFR_magpie <- EFR_magpie[,1,1]
+    EFR_magpie_frac <- as.array(collapseNames(EFR_magpie_frac))
+    EFR_magpie_frac <- EFR_magpie_frac[,1,1]
 
     for (scen in c("ssp1","ssp2","ssp3")){
       for (y in selectyears){
@@ -177,18 +185,18 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
 
         ## Global river routing variables
         # Naturalized discharge
-        discharge_nat <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
-        inflow_nat    <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
-        lake_evap_new <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
+        discharge_nat <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
+        inflow_nat    <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
+        lake_evap_new <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
         # Discharge considering human uses
-        discharge   <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
-        inflow      <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
-        avl_wat_act <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
+        discharge   <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
+        inflow      <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
+        avl_wat_act <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
         # Water fractions reserved for certain uses
-        frac_NAg_fulfilled <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
-        frac_CAg_fulfilled <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
-        frac_fullirrig     <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
-        required_wat_min   <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie)))
+        frac_NAg_fulfilled <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
+        frac_CAg_fulfilled <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
+        frac_fullirrig     <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
+        required_wat_min   <- array(data=0,dim=NCELLS,dimnames=list(names(EFR_magpie_frac)))
 
         ### River Routing 1.1: Natural flows ###
         # Determine natural discharge
@@ -209,6 +217,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
           }
         }
 
+        # EFRs (in mio. m^3 / yr)
+        EFR_magpie <- EFR_magpie_frac*discharge_nat
         # Minimum availability of water in river to fulfill local EFRs
         required_wat_min <- EFR_magpie
 

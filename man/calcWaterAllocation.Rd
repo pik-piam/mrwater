@@ -9,16 +9,17 @@ calcWaterAllocation(
   output = "consumption",
   version = "LPJmL4",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
-  time = "raw",
+  time = "spline",
   averaging_range = NULL,
-  dof = NULL,
-  harmonize_baseline = FALSE,
+  dof = 4,
+  harmonize_baseline = "CRU_4",
   ref_year = "y2015",
   allocationrule = "optimization",
   allocationshare = NULL,
   gainthreshold = 1,
   irrigationsystem = "initialization",
-  irrigini = "Jaegermeyr_lpjcell"
+  irrigini = "Jaegermeyr_lpjcell",
+  iniyear = 1995
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ calcWaterAllocation(
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
 \item{irrigini}{When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")}
+
+\item{iniyear}{Initialization year of irrigation system}
 }
 \value{
 magpie object in cellular resolution

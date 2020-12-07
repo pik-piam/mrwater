@@ -1,12 +1,12 @@
 # madrat based MAgPIE Input Data Library
 
-R package **mrmagpie**, version **0.27.3**
+R package **mrwater**, version **0.2.0**
 
   
 
 ## Purpose and Functionality
 
-Provides functions for MAgPIE country and cellular input data generation.
+Provides functions for MAgPIE cellular input data generation and stand-alone water calculations.
 
 
 ## Installation
@@ -21,7 +21,7 @@ The additional repository can be made available permanently by adding the line a
 After that the most recent version of the package can be installed using `install.packages`:
 
 ```r 
-install.packages("mrmagpie")
+install.packages("mrwater")
 ```
 
 Package updates can be installed using `update.packages` (make sure that the additional repository has been added before running that command):
@@ -32,23 +32,23 @@ update.packages()
 
 ## Questions / Problems
 
-In case of questions / problems please contact Kristine Karstens <karstens@pik-potsdam.de>.
+In case of questions / problems please contact Felicitas Beier <beier@pik-potsdam.de>.
 
 ## Citation
 
-To cite package **mrmagpie** in publications use:
+To cite package **mrwater** in publications use:
 
-Karstens K, Dietrich J, Chen D, Windisch M, Alves M, Beier F, v. Jeetze P, Mishra A, Humpenoeder F
-(2020). _mrmagpie: madrat based MAgPIE Input Data Library_. R package version 0.27.3.
+Beier F, Heinke J, Dietrich J (2020). _mrwater: madrat based MAgPIE Input Data Library_. R
+package version 0.2.0.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
 @Manual{,
-  title = {mrmagpie: madrat based MAgPIE Input Data Library},
-  author = {Kristine Karstens and Jan Philipp Dietrich and David Chen and Michael Windisch and Marcos Alves and Felicitas Beier and Patrick {v. Jeetze} and Abhijeet Mishra and Florian Humpenoeder},
+  title = {mrwater: madrat based MAgPIE Input Data Library},
+  author = {Felicitas Beier and Jens Heinke and Jan Philipp Dietrich},
   year = {2020},
-  note = {R package version 0.27.3},
+  note = {R package version 0.2.0},
 }
 ```
 

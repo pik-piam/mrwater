@@ -20,6 +20,7 @@
 #'
 #' @import madrat
 #' @import magclass
+#' @import mrmagpie
 
 calcIrrigYieldImprovementPotential <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
                                           harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), cells="magpiecell", crops="lpjml"){

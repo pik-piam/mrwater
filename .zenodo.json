@@ -1,34 +1,16 @@
 {
-  "title": "mrmagpie: madrat based MAgPIE Input Data Library",
-  "version": "0.27.3",
-  "description": "<p>Provides functions for MAgPIE country and cellular input data generation.<\/p>",
+  "title": "mrwater: madrat based MAgPIE Input Data Library",
+  "version": "0.2.0",
+  "description": "<p>Provides functions for MAgPIE cellular input data generation and stand-alone water calculations.<\/p>",
   "creators": [
-    {
-      "name": "Karstens, Kristine"
-    },
-    {
-      "name": "Dietrich, Jan Philipp"
-    },
-    {
-      "name": "Chen, David"
-    },
-    {
-      "name": "Windisch, Michael"
-    },
-    {
-      "name": "Alves, Marcos"
-    },
     {
       "name": "Beier, Felicitas"
     },
     {
-      "name": "v. Jeetze, Patrick"
+      "name": "Heinke, Jens"
     },
     {
-      "name": "Mishra, Abhijeet"
-    },
-    {
-      "name": "Humpenoeder, Florian"
+      "name": "Dietrich, Jan Philipp"
     }
   ]
 }
