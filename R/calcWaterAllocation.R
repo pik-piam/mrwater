@@ -119,9 +119,9 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
 
   ### Required inputs for Allocation Algorithm:
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig_ww <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=seq(1995, 2095,by=5), climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, irrig_requirement="withdrawal", cells="lpjcell", aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
+  required_wat_fullirrig_ww <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, irrig_requirement="withdrawal", cells="lpjcell", aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
   required_wat_fullirrig_ww <- pmax(required_wat_fullirrig_ww,0)
-  required_wat_fullirrig_wc <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=seq(1995, 2095,by=5), climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, irrig_requirement="consumption", cells="lpjcell", aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
+  required_wat_fullirrig_wc <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, irrig_requirement="consumption", cells="lpjcell", aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
   required_wat_fullirrig_wc <- pmax(required_wat_fullirrig_wc,0)
 
   # Full irrigation water requirement depending on irrigation system in use
@@ -151,13 +151,17 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   meancellrank <- calcOutput("IrrigCellranking", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                             cellrankyear=seq(1995, 2095,by=5), cells="lpjcell", crops="magpie", method="meancroprank", proxycrop=c("maiz", "rapeseed", "puls_pro"), aggregate=FALSE)
+                             cellrankyear=selectyears, cells="lpjcell", crops="magpie", method="meancroprank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=iniyear, aggregate=FALSE)
   meancellrank <- as.array(meancellrank)[,,1]
 
 
   ############################################
   ####### Routing and Allocation Loop ########
   ############################################
+  if (class(selectyears)=="numeric") {
+    selectyears <- paste0("y",selectyears)
+  }
+
   out_tmp1 <- NULL
   out_tmp2 <- NULL
   out      <- NULL
@@ -488,8 +492,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
         #### OUTPUTS ####
         #################
         ### MAIN OUTPUT VARIABLE: water available for irrigation (consumptive agricultural use)
-        wat_avl_irrig_c <- CAC_magpie[,y]*frac_CAg_fulfilled + frac_fullirrig*required_wat_fullirrig_wc
-        wat_avl_irrig_w <- CAW_magpie[,y]*frac_CAg_fulfilled + frac_fullirrig*required_wat_fullirrig_ww
+        wat_avl_irrig_c <- CAC_magpie[,y]*frac_CAg_fulfilled + frac_fullirrig*required_wat_fullirrig_wc[,y]
+        wat_avl_irrig_w <- CAW_magpie[,y]*frac_CAg_fulfilled + frac_fullirrig*required_wat_fullirrig_ww[,y]
 
         if (output=="consumption") {
           wat_avl_irrig <- wat_avl_irrig_c
