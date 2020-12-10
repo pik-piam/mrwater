@@ -11,8 +11,9 @@
 #' @param cellrankyear year(s) for which cell rank is calculated
 #' @param cells       switch between "lpjcell" (67420) and "magpiecell" (59199)
 #' @param crops       switch between "magpie" and "lpjml" (default) crops
-#' @param method      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops
+#' @param method      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price)
 #' @param proxycrop   proxycrop(s) selected for rank calculation
+#' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -21,9 +22,9 @@
 #' \dontrun{ calcOutput("calcIrrigCellranking", aggregate=FALSE) }
 
 calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                                 cellrankyear="y1995", cells="lpjcell", crops="magpie", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro")){
+                                 cellrankyear="y1995", cells="lpjcell", crops="magpie", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=1995){
 
-  ### Read in potential yield gain per cell
+  ### Read in potential yield gain per cell (tons per ha)
   yield_gain <- calcOutput("IrrigYieldImprovementPotential", version=version, climatetype=climatetype, selectyears=cellrankyear,
                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
                            cells=cells, crops=crops, aggregate=FALSE)
@@ -44,6 +45,25 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
 
     # Def. "meancroprank": average over yield gain of proxycrops, then: ranking of resulting average yield gain
   } else if (method=="meancroprank"){
+
+    # normalize yield gains of proxy crops (unity-based normalization)
+    min_yield  <- as.magpie(apply(yield_gain,c(2,3),min))
+    max_yield  <- as.magpie(apply(yield_gain,c(2,3),max))
+    yield_gain <- (yield_gain-min_yield)/(max_yield-min_yield)
+
+    # calculate average yield gain over normalized proxy crops
+    yield_gain <- dimSums(yield_gain,dim=3)/length(getNames(yield_gain))
+
+    # calculate rank (ties are solved by first occurence)
+    glocellrank <- apply(-yield_gain,c(2,3),rank,ties.method="first")
+
+  } else if (method=="meanpricedcroprank"){
+
+    # price in initialization (USD05/tDM)
+    p <- calcOutput("IniFoodPrice", datasource="FAO", years=NULL, aggregate=FALSE, year=iniyear)[,,proxycrop]
+
+    # monetary yield gain (in USD05/ha)
+    yield_gain <- yield_gain*p
 
     # normalize yield gains of proxy crops (unity-based normalization)
     min_yield  <- as.magpie(apply(yield_gain,c(2,3),min))

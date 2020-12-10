@@ -16,7 +16,8 @@ calcIrrigCellranking(
   cells = "lpjcell",
   crops = "magpie",
   method = "meancellrank",
-  proxycrop = c("maiz", "rapeseed", "puls_pro")
+  proxycrop = c("maiz", "rapeseed", "puls_pro"),
+  iniyear = 1995
 )
 }
 \arguments{
@@ -40,9 +41,11 @@ calcIrrigCellranking(
 
 \item{crops}{switch between "magpie" and "lpjml" (default) crops}
 
-\item{method}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops}
+\item{method}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price)}
 
 \item{proxycrop}{proxycrop(s) selected for rank calculation}
+
+\item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank}
 }
 \value{
 magpie object in cellular resolution
