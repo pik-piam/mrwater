@@ -1,7 +1,6 @@
-#' @title calcIrrigCellranking
-#' @description This function calculates a cellranking for the river basin discharge allocation based on yield improvement potential through irrigation
+#' @title plotIrrigCellranking
+#' @description This function plots the cellranking based on yield improvement potential through irrigation on a global map
 #'
-#' @param version     switch between LPJmL version for yields
 #' @param climatetype switch between different climate scenarios for yields
 #' @param time            time smoothing: average, spline (default) or raw
 #' @param averaging_range just specify for time=="average": number of time steps to average
@@ -9,7 +8,6 @@
 #' @param harmonize_baseline FALSE (default) no harmonization, harmonization: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
 #' @param ref_year           just specify for harmonize_baseline != FALSE : Reference year
 #' @param cellrankyear year(s) for which cell rank is calculated
-#' @param cells       switch between "lpjcell" (67420) and "magpiecell" (59199)
 #' @param crops       switch between "magpie" and "lpjml" (default) crops
 #' @param method      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price)
 #' @param proxycrop   proxycrop(s) selected for rank calculation
@@ -19,10 +17,19 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("IrrigCellranking", aggregate=FALSE) }
+#' \dontrun{ plotIrrigCellranking() }
 
-calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
+plotIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
                                  cellrankyear="y1995", cells="lpjcell", crops="magpie", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=1995){
+
+  # read in cell ranking
+  x <- calcOutput("IrrigCellranking", version="LPJmL5", cells="lpjcell", aggregate=FALSE,
+                  climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+                  cellrankyear=cellrankyear,  crops=crops, method=method, proxycrop=proxycrop, iniyear=iniyear)
+
+
+  toolLPJarrayToMAgPIEmap
+
 
   ### Read in potential yield gain per cell (tons per ha)
   yield_gain <- calcOutput("IrrigYieldImprovementPotential", version=version, climatetype=climatetype, selectyears=cellrankyear,

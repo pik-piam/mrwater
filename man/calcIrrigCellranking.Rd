@@ -54,7 +54,7 @@ magpie object in cellular resolution
 This function calculates a cellranking for the river basin discharge allocation based on yield improvement potential through irrigation
 }
 \examples{
-\dontrun{ calcOutput("calcIrrigCellranking", aggregate=FALSE) }
+\dontrun{ calcOutput("IrrigCellranking", aggregate=FALSE) }
 }
 \author{
 Felicitas Beier

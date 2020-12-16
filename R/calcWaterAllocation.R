@@ -16,6 +16,7 @@
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param irrigini         When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #' @param iniyear          Initialization year of irrigation system
+#' @param finalcells       Number of cells to be returned by the function (lpjcell: 67420, magpiecell: 59199)
 #'
 #' @import magclass
 #' @import madrat
@@ -29,7 +30,7 @@
 #' \dontrun{ calcOutput("WaterAllocation", aggregate = FALSE) }
 #'
 
-calcWaterAllocation <- function(selectyears="all", output="consumption",
+calcWaterAllocation <- function(selectyears="all", output="consumption", finalcells="magpiecell",
                                 version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
                                 harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, gainthreshold=1,
@@ -517,8 +518,16 @@ calcWaterAllocation <- function(selectyears="all", output="consumption",
     out_tmp2 <- NULL
   }
 
-  out <- out[magclassdata$cellbelongings$LPJ_input.Index,,]
-  out <- toolCell2isoCell(out)
+  ### Correct number of cells
+  if (finalcells=="lpjcell"){
+    out <- out
+  } else if (finalcells=="magpiecell"){
+    out <- out[magclassdata$cellbelongings$LPJ_input.Index,,]
+    out <- toolCell2isoCell(out)
+  } else {
+    stop("Cell argument not supported. Select lpjcell for 67420 cells or magpiecell for 59199 cells")
+  }
+
   description="Available water per year"
 
   return(list(

@@ -65,7 +65,7 @@ calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, cell
 
   # irrigated cropland area as weight
   irrig_area <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells=cells, physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
-  irrig_area <- collapseNames(irrig_area[,,"irrigated"][,,"pasture",invert=T])+1e-9
+  irrig_area <- collapseNames(irrig_area[,,"irrigated"])+1e-9
 
   return(list(
     x=mean_irrig_wat_requirement,
