@@ -1,6 +1,6 @@
 # madrat based MAgPIE Input Data Library
 
-R package **mrwater**, version **0.3.0**
+R package **mrwater**, version **0.4.0**
 
   
 
@@ -38,8 +38,8 @@ In case of questions / problems please contact Felicitas Beier <beier@pik-potsda
 
 To cite package **mrwater** in publications use:
 
-Beier F, Heinke J, Dietrich J (2020). _mrwater: madrat based MAgPIE Input Data Library_. R package
-version 0.3.0.
+Beier F, Heinke J, Dietrich J (2021). _mrwater: madrat based MAgPIE Input Data Library_. R package
+version 0.4.0.
 
 A BibTeX entry for LaTeX users is
 
@@ -47,8 +47,8 @@ A BibTeX entry for LaTeX users is
 @Manual{,
   title = {mrwater: madrat based MAgPIE Input Data Library},
   author = {Felicitas Beier and Jens Heinke and Jan Philipp Dietrich},
-  year = {2020},
-  note = {R package version 0.3.0},
+  year = {2021},
+  note = {R package version 0.4.0},
 }
 ```
 

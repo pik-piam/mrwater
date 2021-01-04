@@ -1,8 +1,8 @@
 Package: mrwater
 Type: Package
 Title: madrat based MAgPIE Input Data Library
-Version: 0.3.0
-Date: 2020-12-16
+Version: 0.4.0
+Date: 2021-01-04
 Authors@R: c(person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = c("aut","cre")),
              person("Jens", "Heinke", email = "heinke@pik-potsdam.de", role = "aut"),
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = "aut"))
@@ -16,7 +16,8 @@ Depends:
     mrmagpie,
     mstools
 Imports:
-    stats
+    stats,
+    luplot
 License: LGPL-3 | file LICENSE
 LazyData: no
 Encoding: UTF-8

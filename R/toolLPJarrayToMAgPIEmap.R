@@ -1,5 +1,5 @@
 #' @title toolLPJarrayToMAgPIEmap
-#' @description transforms object with 67420 cells to be able to be used in plotmap function
+#' @description transforms object (arra with 67420 cells to be able to be used in plotmap function
 #'
 #' This tool function selects the required cells from object with
 #' 67420 cells to be able to plot using plotmap or plotmap2 that

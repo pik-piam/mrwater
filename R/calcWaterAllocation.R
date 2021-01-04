@@ -22,6 +22,7 @@
 #' @import madrat
 #' @import mrcommons
 #' @import mrmagpie
+#' @importFrom stringr str_split
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -109,7 +110,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   NAg_wc <- pmax(NAg_wc, 0.01*NAg_ww)
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
-  CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,iniyear=iniyear,irrigini=irrigini,time=time,dof=dof,averaging_range=averaging_range,harmonize_baseline=harmonize_baseline,ref_year=ref_year,aggregate=FALSE)
+  CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,cells="lpjcell",iniyear=iniyear,irrigini=paste0(unlist(str_split(irrigini, "_"))[[1]],"_lpjcell"),time=time,dof=dof,averaging_range=averaging_range,harmonize_baseline=harmonize_baseline,ref_year=ref_year,aggregate=FALSE)
   CAW_magpie <- as.array(collapseNames(dimSums(CAU_magpie[,,"withdrawal"],dim=3)))
   CAC_magpie <- as.array(collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3)))
   rm(CAU_magpie)

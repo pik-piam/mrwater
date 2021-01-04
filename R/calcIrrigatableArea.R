@@ -17,6 +17,7 @@
 #' @param irrigini           When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #' @param iniyear            Initialization year of irrigation system
 #' @param proxycrops         Proxycrops for water requirements
+#' @param output             Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -27,7 +28,7 @@
 #' @import magclass
 #' @import magpiesets
 
-calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell",
+calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrigatable_area",
                                 climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, gainthreshold=1, irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995,
                                 landtype="potentialcropland", proxycrops="maiz"){
@@ -49,9 +50,9 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell",
   wat_req_ww <- dimSums(wat_req_ww,dim=3)/length(getNames(wat_req_ww))
 
   # calculate area that could be irrigated given water available for withdrawal (ha)
-  irrig_area_ww <- new.magpie(getCells(avl_wat_ww), getYears(avl_wat_ww), getNames(avl_wat_ww), fill=0)
+  irrig_area_ww               <- new.magpie(getCells(avl_wat_ww), getYears(avl_wat_ww), getNames(avl_wat_ww), fill=0)
   irrig_area_ww[wat_req_ww>0] <- avl_wat_ww[wat_req_ww>0]/wat_req_ww[wat_req_ww>0]
-  irrig_area_ww <- collapseNames(irrig_area_ww)
+  irrig_area_ww               <- collapseNames(irrig_area_ww)
 
   ## Area that can be irrigated given water available for consumption (in ha)
   # read in water available for consumption (in mio. m^3)
@@ -69,10 +70,9 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell",
   wat_req_wc <- dimSums(wat_req_wc,dim=3)/length(getNames(wat_req_wc))
 
   # calculate area that could be irrigated given water available for withdrawal (ha)
-  irrig_area_wc <- new.magpie(getCells(avl_wat_wc), getYears(avl_wat_wc), getNames(avl_wat_wc), fill=0)
+  irrig_area_wc               <- new.magpie(getCells(avl_wat_wc), getYears(avl_wat_wc), getNames(avl_wat_wc), fill=0)
   irrig_area_wc[wat_req_wc>0] <- avl_wat_wc[wat_req_wc>0]/wat_req_ww[wat_req_wc>0]
-  irrig_area_wc <- collapseNames(irrig_area_wc)
-
+  irrig_area_wc               <- collapseNames(irrig_area_wc)
 
   ## Area available and suitable for cropland
   avl_land <- new.magpie(getCells(irrig_area_wc), getYears(irrig_area_wc), getNames(irrig_area_wc))
@@ -109,8 +109,20 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell",
   # irrigatable area (area that can be irrigated): enough local water available & enough local land available
   irrigatable_area <- pmin(avl_land, irrig_area_wc, irrig_area_ww)
 
+  if (output=="irrigatable_area") {
+    out <- irrigatable_area
+  } else if (output=="irrig_area_ww") {
+    out <- irrig_area_ww
+  } else if (output=="irrig_area_wc") {
+    out <- irrig_area_wc
+  } else if (output=="avl_land") {
+    out <- avl_land
+  } else {
+    stop("Please select which area type should be returned: irrigatable_area includes both the water and the land constraint.")
+  }
+
   # convert to mio. ha
-  out <- irrigatable_area*1e-6
+  out <- out*1e-6
 
   # Corrections
   # years
