@@ -17,7 +17,8 @@ calcWaterAllocation(
   ref_year = "y2015",
   allocationrule = "optimization",
   allocationshare = NULL,
-  gainthreshold = 1,
+  thresholdtype = TRUE,
+  gainthreshold = 10,
   irrigationsystem = "initialization",
   irrigini = "Jaegermeyr_lpjcell",
   iniyear = 1995
@@ -47,6 +48,8 @@ calcWaterAllocation(
 \item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
 
 \item{allocationshare}{Share of water to be allocated to cell (only needs to be selected in case of allocationrule=="equality")}
+
+\item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
 \item{gainthreshold}{Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)}
 

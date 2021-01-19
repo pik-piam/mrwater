@@ -41,7 +41,7 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
                            allocationrule=allocationrule, allocationshare=allocationshare, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, irrigini=irrigini, iniyear=iniyear, aggregate=FALSE)
   avl_wat_ww <- avl_wat_ww[,selectyears,]
   # transform from mio. m^3 to m^3
-  avl_wat_ww <- avl_wat_ww*1e-6
+  avl_wat_ww <- avl_wat_ww*1e6
   # read in water withdrawal required for irrigation of proxy crop(s) (in m^3 per ha)
   wat_req_ww <- calcOutput("ActualIrrigWatRequirements", version="LPJmL5", irrig_requirement="withdrawal", cells=cells, crops="magpie",
                            selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year, irrig_system_source=irrigini, aggregate=FALSE)
@@ -61,7 +61,7 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
                            allocationrule=allocationrule, allocationshare=allocationshare, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, irrigini=irrigini, iniyear=iniyear, aggregate=FALSE)
   avl_wat_wc <- avl_wat_wc[,selectyears,]
   # transform from mio. m^3 to m^3
-  avl_wat_wc <- avl_wat_wc*1e-6
+  avl_wat_wc <- avl_wat_wc*1e6
   # read in water withdrawal required for irrigation of proxy crop(s) (in m^3 per ha)
   wat_req_wc <- calcOutput("ActualIrrigWatRequirements", version="LPJmL5", irrig_requirement="consumption", cells=cells, crops="magpie",
                            selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year, irrig_system_source=irrigini, aggregate=FALSE)
@@ -80,6 +80,30 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
   if (landtype=="potentialcropland") {
     # Potential cropland: area suitable for crop production (Mha)
     tmp <- collapseNames(calcOutput("AvlLandSi", aggregate=FALSE)[,,"si0"])
+
+    # correct LUH and Ramankutty mismatch
+    # rainfed and irrigated cropland in LUH (in Mha)
+    # tmp_correction <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="magpiecell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
+    # tmp_correction <- dimSums(tmp_correction,dim=3)
+    # test <- tmp - tmp_correction
+    #
+    # tmp_correction <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="magpiecell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
+    # tmp_correction <- dimSums(tmp_correction[,,"irrigated"],dim=3)
+    # test <- tmp - tmp_correction
+    #
+    # tmp[tmp_correction<0] <-
+
+    # # read in land available for agricultural use (in mio. ha)
+    # land <- collapseNames(calcOutput("AvlLandSi", aggregate=FALSE)[,,"si0"])
+    # if (iniarea) {
+    #   # subtract area already reserved for irrigation by committed agricultural uses (in mio. ha)
+    #   crops_grown    <- calcOutput("IrrigatedArea", selectyears=selectyears, iniyear=iniyear, cells="magpiecell", aggregate=FALSE)
+    #   crops_grown    <- collapseNames(dimSums(crops_grown,dim=3))
+    #   land           <- land - crops_grown
+    # }
+    # # negative values may occur because AvlLandSi is based on Ramankutty data and Cropara based on LUH -> set to 0
+    # land[land<0] <- 0
+
     # convert from Mha to ha
     tmp <- tmp*1e6
 

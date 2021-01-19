@@ -39,7 +39,7 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
   # mag_years_past_long  <- c("y1995","y2000","y2005","y2010","y2015")
   # mag_years <- findset("time")
   # short_years <- findset("t_all")
-  # lpj_years <- seq(1995, 2100,by=5)
+  lpj_years <- seq(1995, 2100,by=5)
   #
   # ### test settings (will be loaded from config in fina version)
   # climatetype=climatetype
@@ -60,13 +60,31 @@ fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGE
 
   # KEEP IN MRMAGPIE OR MOVE TO MRWATER?????
 
+  ##### CREATE FILES FOR FIRST TEST RUN ######
+  setConfig(extramappings="clustermap_rev4.54+mrmagpie10_riverrouting_allocation_c200_h12.rds")
+
+  #42 water demand
+  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, cells="magpiecell", crops="magpie", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
+             harmonize_baseline=FALSE, ref_year=NULL, irrig_requirement="consumption", irrig_system_source="Jaegermeyr_magpiecell", aggregate="cluster", round=6)
+  wat_req_crops_c <- collapseNames(wat_req_crops_c)
+  write.magpie(wat_req_crops_c, file_name = "C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/wat_req_crops_c.cs2")
+
+  #43 water availability
+  avl_wat_agr_c <- calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL, finalcells="magpiecell",
+             allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=1, irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995, aggregate="cluster", round=6)
+  avl_wat_agr_c <- collapseNames(avl_wat_agr_c)
+  write.magpie(avl_wat_agr_c, file_name="C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/avl_wat_agr_c.cs3")
+
+
+  #### -- only temporary -- ####
+
   #42 water demand
   calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, cells="magpiecell", crops="magpie", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year, irrig_requirement="consumption", irrig_system_source="Jaegermeyr_magpiecell", aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
 
   #43 water availability
-  calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-               allocationrule="optimization", allocationshare=NULL, gainthreshold=1, irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995, aggregate="cluster", round=6, file=paste0("avl_wat_agr_c_",ctype,".mz"))
+  calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=harmonize_baseline, ref_year=ref_year, finalcells="magpiecell",
+               allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=1, irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995, aggregate="cluster", round=6, file=paste0("avl_wat_agr_c_",ctype,".mz"))
 
   ##### AGGREGATION ######
 

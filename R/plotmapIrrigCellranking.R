@@ -41,7 +41,7 @@ plotmapIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="s
   }
 
   # Plot
-  out <- plotmap2(x)
+  out <- plotmap2(x, lowcol="#8B0000", highcol="white")
 
   return(out)
 }

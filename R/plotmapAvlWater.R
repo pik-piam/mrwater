@@ -32,9 +32,9 @@ plotIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spli
 
 
   ### Read in potential yield gain per cell (tons per ha)
-  yield_gain <- calcOutput("IrrigYieldImprovementPotential", version=version, climatetype=climatetype, selectyears=cellrankyear,
+  yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                           cells=cells, crops=crops, aggregate=FALSE)
+                           cells=cells, crops=crops, proxycrop="all", monetary=FALSE, aggregate=FALSE)
   # select proxy crops
   yield_gain <- yield_gain[,,proxycrop]
 

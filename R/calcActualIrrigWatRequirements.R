@@ -40,6 +40,7 @@ calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, cell
   irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", selectyears=selectyears, cells=cells, crops=crops, irrig_requirement=irrig_requirement,
                                       version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
                                       harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
+  irrig_wat_requirement        <- irrig_wat_requirement[,,"pasture",invert=T]
   names(dimnames(irrig_wat_requirement))[1] <- "iso.cell"
   names(dimnames(irrig_wat_requirement))[3] <- "crop.system"
 

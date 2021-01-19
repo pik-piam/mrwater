@@ -12,6 +12,7 @@
 #' @param output      Water availability output to be returned: withdrawal or consumption
 #' @param allocationrule  Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
 #' @param allocationshare Share of water to be allocated to cell (only needs to be selected in case of allocationrule=="equality")
+#' @param thresholdtype   Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param gainthreshold   Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param irrigini         When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
@@ -34,7 +35,7 @@
 calcWaterAllocation <- function(selectyears="all", output="consumption", finalcells="magpiecell",
                                 version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
                                 harmonize_baseline="CRU_4", ref_year="y2015",
-                                allocationrule="optimization", allocationshare=NULL, gainthreshold=1,
+                                allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
                                 irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995){
 
   #############################
@@ -156,6 +157,10 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
                              cellrankyear=selectyears, cells="lpjcell", crops="magpie", method="meancroprank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=iniyear, aggregate=FALSE)
   meancellrank <- as.array(meancellrank)[,,1]
 
+  # Yield gain potential through irrigation of proxy crops
+  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
+                                cells="lpjcell", crops="magpie", proxycrop=c("maiz", "rapeseed", "puls_pro"), monetary=thresholdtype, aggregate=FALSE)
+  irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
 
   ############################################
   ####### Routing and Allocation Loop ########
@@ -182,7 +187,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
     EFR_magpie_frac <- as.array(collapseNames(EFR_magpie_frac))
     EFR_magpie_frac <- EFR_magpie_frac[,1,1]
 
-    for (scen in c("ssp1","ssp2","ssp3")){
+    for (scen in getNames(NAg_ww)){
       for (y in selectyears){
 
         #############################
@@ -222,6 +227,9 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
             }
           }
         }
+
+        # REPORTING: cellular natural discharge
+        wat_av_natural    <- discharge_nat
 
         # EFRs (in mio. m^3 / yr)
         EFR_magpie <- EFR_magpie_frac*discharge_nat
@@ -279,6 +287,10 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
         # Update minimum water required in cell:
         required_wat_min <- required_wat_min + NAg_ww[,y,scen]*frac_NAg_fulfilled
+
+        # REPORTING: Non-agricultural water use
+        water_use_nonag_ww <- NAg_ww[,y,scen]*frac_NAg_fulfilled
+        water_use_nonag_wc <- NAg_wc[,y,scen]*frac_NAg_fulfilled
 
         # inflow needs to be set to 0 prior to every river routing (is recalculated by the routing)
         inflow[] <- 0
@@ -360,6 +372,9 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
         # Minimum water required
         required_wat_min_allocation <- required_wat_min
 
+        ### REPORTING: discharge before algorithm is executed
+        discharge_befalgo <- discharge
+
         # Allocate water for full irrigation to cell with highest yield improvement through irrigation
         if (allocationrule=="optimization") {
 
@@ -384,49 +399,48 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               discharge[c(downstreamcells[[c]],c)] <- discharge[c(downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
               # update minimum water required in cell:
               required_wat_min_allocation[c] <- required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
-
             }
           }
+          ### REPORTING: discharge after optimization
+          discharge_optimization <- discharge
+
         } else if (allocationrule=="upstreamfirst") {
           # Allocate full irrigation requirements to most upstream cell first (calcorder)
 
-          # Only consider cells where irrigation potential > 0
-          # (or even: above certain threshold (e.g. 1 t/ha), maybe flexible (set in argument))
-          # STILL MISSING
+          for (o in 1:max(calcorder)){
+            cells <- which(calcorder==o)
 
-          # loop over basin
-          for (b in unique(endcell) ) {
+            for (c in cells){
 
-            # allocation to upstream first (calcorder=1)
-            for (o in (1:max(calcorder[which(endcell==b)],na.rm=T))){
-              c <- which(endcell==b & calcorder==o)
-
-              # several cells with same calcorder in one basin
-              for (k in (1:length(which(endcell==b & calcorder==o)))){
+              # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
+              if (irrig_yieldgainpotential[c,y] > gainthreshold) {
                 # available water for additional irrigation withdrawals
-                avl_wat_ww <- max(discharge[c[k]]-required_wat_min_allocation[c[k]],0)
+                avl_wat_ww <- max(discharge[c]-required_wat_min_allocation[c],0)
 
                 # withdrawal constraint
-                if (required_wat_fullirrig_ww[c[k],y]>0) {
+                if (required_wat_fullirrig_ww[c,y]>0) {
                   # how much withdrawals can be fulfilled by available water
-                  frac_fullirrig[c[k]] <- min(avl_wat_ww/required_wat_fullirrig_ww[c[k],y],1)
+                  frac_fullirrig[c] <- min(avl_wat_ww/required_wat_fullirrig_ww[c,y],1)
 
                   # consumption constraint
-                  if (required_wat_fullirrig_wc[c[k],y]>0 & length(downstreamcells[[c[k]]])>0) {
+                  if (required_wat_fullirrig_wc[c,y]>0 & length(downstreamcells[[c]])>0) {
                     # available water for additional irrigation consumption (considering downstream availability)
-                    avl_wat_wc          <- max(min(discharge[downstreamcells[[c[k]]]] - required_wat_min_allocation[downstreamcells[[c[k]]]]),0)
+                    avl_wat_wc          <- max(min(discharge[downstreamcells[[c]]] - required_wat_min_allocation[downstreamcells[[c]]]),0)
                     # how much consumption can be fulfilled by available water
-                    frac_fullirrig[c[k]]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c[k],y],frac_fullirrig[c[k]])
+                    frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
                   }
 
                   # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-                  discharge[c(downstreamcells[[c[k]]],c[k])] <- discharge[c(downstreamcells[[c[k]]],c[k])] - required_wat_fullirrig_wc[c[k],y]*frac_fullirrig[c[k]]
+                  discharge[c(downstreamcells[[c]],c)] <- discharge[c(downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
                   # update minimum water required in cell:
-                  required_wat_min_allocation[c[k]] <- required_wat_min_allocation[c[k]] + frac_fullirrig[c[k]]*required_wat_fullirrig_ww[c[k],y]
+                  required_wat_min_allocation[c] <- required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
                 }
               }
             }
           }
+          ### REPORTING: discharge after optimization
+          discharge_upstreamfirst <- discharge
+
         } else if (allocationrule=="equality") {
 
           ## while loop?
@@ -496,13 +510,69 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
         ### MAIN OUTPUT VARIABLE: water available for irrigation (consumptive agricultural use)
         wat_avl_irrig_c <- CAC_magpie[,y]*frac_CAg_fulfilled + frac_fullirrig*required_wat_fullirrig_wc[,y]
         wat_avl_irrig_w <- CAW_magpie[,y]*frac_CAg_fulfilled + frac_fullirrig*required_wat_fullirrig_ww[,y]
+        wat_avl_total_human_c <- CAC_magpie[,y]*frac_CAg_fulfilled + frac_fullirrig*required_wat_fullirrig_wc[,y] + frac_NAg_fulfilled*NAg_wc[,y,scen]
+        wat_avl_total_human_w <- CAW_magpie[,y]*frac_CAg_fulfilled + frac_fullirrig*required_wat_fullirrig_ww[,y] + frac_NAg_fulfilled*NAg_ww[,y,scen]
+        wat_avl_nonAg_c <- frac_NAg_fulfilled*NAg_wc[,y,scen]
+        wat_avl_nonAg_w <- frac_NAg_fulfilled*NAg_ww[,y,scen]
+        wat_avl_commAg_c <- CAC_magpie[,y]*frac_CAg_fulfilled
+        wat_avl_commAg_w <- CAW_magpie[,y]*frac_CAg_fulfilled
 
         if (output=="consumption") {
+          # Main output for MAgPIE: water available for agricultural consumption
           wat_avl_irrig <- wat_avl_irrig_c
           dataname <- "wat_avl_irrig_c"
+          description="Available water for irrigation consumption per year"
         } else if (output=="withdrawal") {
+          # Main output for MAgPIE: water available for agricultural withdrawal
           wat_avl_irrig <- wat_avl_irrig_w
           dataname <- "wat_avl_irrig_w"
+          description="Available water for irrigation withdrawals per year"
+
+        ### Reporting outputs
+        } else if (output=="total_consumption") {
+          # Total human water consumption
+          wat_avl_irrig <- wat_avl_total_human_c
+          dataname <- "wat_avl_total_human_c"
+          description="Total human water consumption per year"
+        } else if (output=="total_withdrawal") {
+          # Total human water withdrawal
+          wat_avl_irrig <- wat_avl_total_human_w
+          dataname <- "wat_avl_total_human_w"
+          description="Total human water withdrawal per year"
+        } else if (output=="nonag_consumption") {
+          # Non-agricultural water consumption
+          if (any(water_use_nonag_wc!=wat_avl_nonAg_c)) stop("This shouldn't be the case. Check the function again.")
+          wat_avl_irrig <- wat_avl_nonAg_c
+          dataname <- "wat_avl_nonAg_c"
+          description="Non-agricultural water consumption per year"
+        } else if (output=="nonag_withdrawal") {
+          # Non-agricultural water withdrawals
+          if (any(water_use_nonag_ww!=wat_avl_nonAg_w)) stop("This shouldn't be the case. Check the function again.")
+          wat_avl_irrig <- wat_avl_nonAg_w
+          dataname <- "wat_avl_nonAg_w"
+          description="Non-agricultural water withdrawals per year"
+
+        ### Intermediate outputs
+        } else if (output=="nat_discharge") {
+          # Natural discharge before human uses are considered
+          wat_avl_irrig <- wat_av_natural
+          dataname <- "nat_discharge"
+          description="Cellular natural discharge not considering human uses"
+        } else if (output=="discharge_before") {
+          # Discharge after river routing, before allocation algorithm
+          wat_avl_irrig <- discharge_befalgo
+          dataname <- "discharge_befalgo"
+          description="Cellular discharge before allocation algorithm executed"
+        } else if (output=="discharge_opt") {
+          # Discharge after optimization allocation algorithm
+          wat_avl_irrig <- discharge_optimization
+          dataname <- "discharge_optimization"
+          description="Cellular discharge after optimization allocation algorithm executed"
+        } else if (output=="discharge_up") {
+          # Discharge after upstreamfirst allocation algorithm
+          wat_avl_irrig <- discharge_upstreamfirst
+          dataname <- "discharge_upstreamfirst"
+          description="Cellular discharge after upstreamfirst allocation algorithm executed"
         } else {
           stop("specify type of water availability output: withdrawal or consumption")
         }
@@ -528,8 +598,6 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   } else {
     stop("Cell argument not supported. Select lpjcell for 67420 cells or magpiecell for 59199 cells")
   }
-
-  description="Available water per year"
 
   return(list(
     x=out,

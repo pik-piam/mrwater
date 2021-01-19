@@ -49,11 +49,12 @@ calcIrrigWatRequirements <- function(selectyears="all", cells="lpjcell", crops="
   systemnames <- c("drip","sprinkler","surface")
 
   ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
+  ### Alternatively: use regional efficiencies from Sauer et al. (2010), Table 5,
   field_efficiency                <- new.magpie(1:67420,years,sort(paste(systemnames, rep(cropnames,3), sep=".")),sets=c("iso.cell","year","system.crop"))
   getCells(field_efficiency)      <- paste(lpj_cells_map$ISO,1:67420,sep=".")
-  field_efficiency[,,"drip"]      <- 0.88
-  field_efficiency[,,"sprinkler"] <- 0.78
-  field_efficiency[,,"surface"]   <- 0.52
+  field_efficiency[,,"drip"]      <- 0.88 # Sauer: 0.8-0.93
+  field_efficiency[,,"sprinkler"] <- 0.78 # Sauer: 0.6-0.86
+  field_efficiency[,,"surface"]   <- 0.52 # Sauer: 0.25-0.5
   ### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?]
 
   ### Conveyance efficiency proxy [placeholder]

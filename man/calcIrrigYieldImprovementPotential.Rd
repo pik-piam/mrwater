@@ -5,21 +5,20 @@
 \title{calcIrrigYieldImprovementPotential}
 \usage{
 calcIrrigYieldImprovementPotential(
-  version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
   averaging_range = NULL,
   dof = 4,
+  monetary = FALSE,
   harmonize_baseline = FALSE,
   ref_year = NULL,
   selectyears = seq(1995, 2095, by = 5),
   cells = "magpiecell",
-  crops = "lpjml"
+  crops = "lpjml",
+  proxycrop = "all"
 )
 }
 \arguments{
-\item{version}{switch between LPJmL4 and LPJmL5 of calcYields function}
-
 \item{climatetype}{switch between different climate scenarios (default: "CRU_4") of calcYields function}
 
 \item{time}{time smoothing of calcYields function: average, spline (default) or raw}
@@ -27,6 +26,8 @@ calcIrrigYieldImprovementPotential(
 \item{averaging_range}{only specify if time=="average": number of time steps to average}
 
 \item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
+
+\item{monetary}{yield improvement potential in tDM (FALSE, default) or priced yield improvement potential in USD05 (TRUE)}
 
 \item{harmonize_baseline}{harmonization in calcYields function: FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)}
 
@@ -37,6 +38,8 @@ calcIrrigYieldImprovementPotential(
 \item{cells}{switch between "lpjcell" (67420) and "magpiecell" (59199)}
 
 \item{crops}{switch between "magpie" and "lpjml" (default) crops}
+
+\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations (default: "all")}
 }
 \value{
 magpie object in cellular resolution
