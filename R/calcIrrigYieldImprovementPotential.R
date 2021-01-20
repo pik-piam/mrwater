@@ -7,6 +7,7 @@
 #' @param averaging_range only specify if time=="average": number of time steps to average
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param monetary        yield improvement potential in tDM (FALSE, default) or priced yield improvement potential in USD05 (TRUE)
+#' @param iniyear         year to be used when monetary activated
 #' @param harmonize_baseline harmonization in calcYields function: FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
 #' @param ref_year           reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #' @param cells       switch between "lpjcell" (67420) and "magpiecell" (59199)
@@ -23,7 +24,7 @@
 #' @import magclass
 #' @import mrmagpie
 
-calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, monetary=FALSE,
+calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, monetary=FALSE, iniyear=1995,
                                           harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), cells="magpiecell", crops="lpjml", proxycrop="all"){
 
   # read in yields [in tons/ha]

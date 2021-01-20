@@ -10,6 +10,7 @@ calcIrrigYieldImprovementPotential(
   averaging_range = NULL,
   dof = 4,
   monetary = FALSE,
+  iniyear = 1995,
   harmonize_baseline = FALSE,
   ref_year = NULL,
   selectyears = seq(1995, 2095, by = 5),
@@ -28,6 +29,8 @@ calcIrrigYieldImprovementPotential(
 \item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
 
 \item{monetary}{yield improvement potential in tDM (FALSE, default) or priced yield improvement potential in USD05 (TRUE)}
+
+\item{iniyear}{year to be used when monetary activated}
 
 \item{harmonize_baseline}{harmonization in calcYields function: FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)}
 
