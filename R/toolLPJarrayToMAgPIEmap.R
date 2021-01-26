@@ -7,6 +7,9 @@
 #'
 #' @return magpie object with correct dimension for use in plotmap
 #' @author Felicitas Beier
+#'
+#' @import magclass
+
 
 toolLPJarrayToMAgPIEmap <- function(x){
   # select correct cells and transform to magpie object
