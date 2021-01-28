@@ -28,7 +28,7 @@
 #'
 #' @import magclass
 #' @import magpiesets
-#' @importFrom mrmagpie calcProtectArea
+
 
 calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrigatable_area",
                                 climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
@@ -127,11 +127,11 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
     land <- calcOutput("Croparea", years=selectyears, sectoral="kcr", cells=cells, physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
     land <- dimSums(land, dim=3)
 
-  } else if (landtype=="nonprotected") {
+ # } else if (landtype=="nonprotected") {
     # Read in protected area
 
 
-    protect_area <- calcOutput("ProtectArea", aggregate = FALSE)
+  #  protect_area <- calcOutput("ProtectArea", aggregate = FALSE)
 
 
     # land <- calcOutput("Croparea", years=selectyears, sectoral="kcr", cells=cells, physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)

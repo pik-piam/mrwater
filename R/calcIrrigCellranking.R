@@ -87,13 +87,13 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     # calculate rank (ties are solved by first occurence)
     glocellrank <- apply(-watvalue,c(2,3),rank,ties.method="first")
 
-  } else if (method=="mostprofitable") {
+ # } else if (method=="mostprofitable") {
 
 
     ## Read in average potential yield gain per cell for all crops (USD05 per ha)
-    yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
-                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                             cells=cells, crops=crops, proxycrop="all", monetary=TRUE, aggregate=FALSE)
+  #  yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
+   #                          harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
+    #                         cells=cells, crops=crops, proxycrop="all", monetary=TRUE, aggregate=FALSE)
     #
     ## max(yield_gain[,,"crops"])
 
