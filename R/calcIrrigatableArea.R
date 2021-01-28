@@ -3,7 +3,8 @@
 #'
 #' @param selectyears  years for which irrigatable area is calculated
 #' @param cells        cells to be returned by the function (lpjcell or magpiecell)
-#' @param landtype     current cropland area (currentcropland) or potential cropland area (potentialcropland)
+#' @param landtype     current cropland area (currentcropland) or potential cropland area (potentialcropland) or nonprotected (restriction of withdrawals in protected areas)
+#' @param protectscen  protection scenario for protected areas ("WDPA", "HalfEarth", )
 #' @param climatetype        Switch between different climate scenarios (default: "CRU_4")
 #' @param time               Time smoothing: average, spline or raw (default)
 #' @param averaging_range    only specify if time=="average": number of time steps to average
@@ -17,7 +18,7 @@
 #' @param irrigini           When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #' @param iniyear            Initialization year of irrigation system
 #' @param proxycrops         Proxycrops for water requirements
-#' @param output             Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land
+#' @param output             Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land, protect_area (restricts water withdrawal in protected areas)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -27,11 +28,12 @@
 #'
 #' @import magclass
 #' @import magpiesets
+#' @importFrom mrmagpie calcProtectArea
 
 calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrigatable_area",
                                 climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, gainthreshold=1, irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995,
-                                landtype="potentialcropland", proxycrops="maiz"){
+                                landtype="potentialcropland", protectscen="WDPA", proxycrops="maiz"){
 
   ### Irrigatable area = MIN (area that can be irrigated given water resources; available suitable land area)
   ## Area that can be irrigated given water available for withdrawals (in ha)
@@ -124,8 +126,19 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
     # Current cropland: area currently under crop production (sum over both rainfed and irrigated, sum over all crops)
     land <- calcOutput("Croparea", years=selectyears, sectoral="kcr", cells=cells, physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
     land <- dimSums(land, dim=3)
+
+  } else if (landtype=="nonprotected") {
+    # Read in protected area
+
+
+    protect_area <- calcOutput("ProtectArea", aggregate = FALSE)
+
+
+    # land <- calcOutput("Croparea", years=selectyears, sectoral="kcr", cells=cells, physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
+    # land <- dimSums(land, dim=3)
+
   } else {
-    stop("Choose potentialcropland or currentcropland as landtype")
+    stop("Choose potentialcropland or currentcropland or nonprotected as available landtype")
   }
 
   avl_land[,,] <- land

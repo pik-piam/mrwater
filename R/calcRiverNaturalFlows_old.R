@@ -1,4 +1,4 @@
-#' @title calcRiverNaturalFlows
+#' @title calcRiverNaturalFlows_old
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
@@ -18,10 +18,10 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("calcRiverNaturalFlows", aggregate = FALSE) }
+#' \dontrun{ calcOutput("calcRiverNaturalFlows_old", aggregate = FALSE) }
 #'
 
-calcRiverNaturalFlows <- function(selectyears="all",
+calcRiverNaturalFlows_old <- function(selectyears="all",
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
@@ -39,12 +39,10 @@ calcRiverNaturalFlows <- function(selectyears="all",
   ### Required inputs for Natural Flows River Routing:
   ## LPJmL water data
   .getLPJmLData <- function(subtype, cfg) {
-    # read in LPJmL data
     x <- calcOutput("LPJmL", version="LPJmL4", selectyears=cfg$selectyears,
                     climatetype=cfg$climatetype, harmonize_baseline=cfg$harmonize_baseline, ref_year=cfg$ref_year, time=cfg$time, dof=cfg$dof, averaging_range=cfg$averaging_range,
                     subtype=subtype, aggregate=FALSE)
-    # transform to array for faster calculation
-    x <- as.array(collapseNames(x))
+    x <- as.array(collapseNames(x))[,,1]
     return(x)
   }
   #!# NOTE: Only for development purposes.
@@ -69,40 +67,60 @@ calcRiverNaturalFlows <- function(selectyears="all",
   ############################################
   ###### River Routing: Natural Flows ########
   ############################################
-
-  ## Empty magpie objects that will be filled by the following natural river routing algorithm
-  discharge_nat     <- yearly_runoff
-  discharge_nat[,,] <- 0
-  inflow_nat        <- discharge_nat
-  lake_evap_new     <- discharge_nat
-
-  ### River Routing 1: Natural flows ###
-  # Determine natural discharge
-  for (o in 1:max(rs$calcorder)){
-    # Note: the calcorder ensures that upstreamcells are calculated first
-    cells <- which(rs$calcorder==o)
-
-    for (c in cells){
-      ### Natural water balance
-      # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
-      lake_evap_new[c,,] <- min(lake_evap[c,,], inflow_nat[c,,] + yearly_runoff[c,,])
-      # natural discharge
-      discharge_nat[c,,] <- inflow_nat[c,,] + yearly_runoff[c,,] - lake_evap_new[c,,]
-      # inflow into nextcell
-      if (rs$nextcell[c]>0){
-        inflow_nat[rs$nextcell[c],,] <- inflow_nat[rs$nextcell[c],,] + discharge_nat[c,,]
-      }
-    }
+  if (class(selectyears)=="numeric") {
+    selectyears <- paste0("y",selectyears)
   }
 
-  out <- new.magpie(cells_and_regions = getCells(discharge_nat), years=getYears(discharge_nat), names=c("discharge_nat", "lake_evap_nat"))
-  out[,,"discharge_nat"] <- discharge_nat[,,]
-  out[,,"lake_evap_nat"] <- lake_evap_new[,,]
+  tmp <- NULL
+  out <- NULL
 
-return(list(
-  x=out,
-  weight=NULL,
-  unit="mio. m^3",
-  description="Cellular natural discharge and lake evaporation in natural river condition",
-  isocountries=FALSE))
+  for (y in selectyears){
+
+    #############################
+    ####### River routing #######
+    #############################
+
+    ## Global river routing variables
+    # Naturalized discharge
+    discharge_nat <- array(data=0,dim=67420)
+    inflow_nat    <- array(data=0,dim=67420)
+    lake_evap_new <- array(data=0,dim=67420)
+
+    ### River Routing 1.1: Natural flows ###
+    # Determine natural discharge
+    for (o in 1:max(rs$calcorder)){
+      # Note: the calcorder ensures that upstreamcells are calculated first
+      cells <- which(rs$calcorder==o)
+
+      for (c in cells){
+        ### Natural water balance
+        # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
+        lake_evap_new[c] <- min(lake_evap[c,y], inflow_nat[c]+yearly_runoff[c,y])
+        # natural discharge
+        discharge_nat[c] <- inflow_nat[c] + yearly_runoff[c,y] - lake_evap_new[c]
+        # inflow into nextcell
+        if (rs$nextcell[c]>0){
+          inflow_nat[rs$nextcell[c]] <- inflow_nat[rs$nextcell[c]] + discharge_nat[c]
+        }
+      }
+    }
+
+    tmp <- new.magpie(cells_and_regions = getCells(yearly_runoff), years=y, names=c("discharge_nat", "lake_evap_nat"))
+
+    discharge_nat <- setCells(setNames(setYears(as.magpie(discharge_nat,spatial=1),y), nm="discharge_nat"), getCells(yearly_runoff))
+    lake_evap_nat <- setCells(setNames(setYears(as.magpie(lake_evap_new,spatial=1),y), nm="lake_evap_nat"), getCells(yearly_runoff))
+
+    tmp[,,"discharge_nat"] <- discharge_nat[,,]
+    tmp[,,"lake_evap_nat"] <- lake_evap_nat[,,]
+
+    out <- mbind(out, tmp)
+    tmp <- NULL
+  }
+
+  return(list(
+    x=out,
+    weight=NULL,
+    unit="mio. m^3",
+    description="Cellular natural discharge and lake evaporation in natural river condition",
+    isocountries=FALSE))
 }

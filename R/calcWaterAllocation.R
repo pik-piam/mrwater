@@ -551,6 +551,16 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
           wat_avl_irrig <- wat_avl_nonAg_w
           dataname <- "wat_avl_nonAg_w"
           description="Non-agricultural water withdrawals per year"
+        } else if (output=="commag_consumption") {
+          # Total human water consumption
+          wat_avl_irrig <- wat_avl_commAg_c
+          dataname <- "wat_avl_commAg_c"
+          description="Committed agricultural water consumption per year"
+        } else if (output=="commag_withdrawal") {
+          # Total human water withdrawal
+          wat_avl_irrig <- wat_avl_commAg_w
+          dataname <- "wat_avl_commAg_w"
+          description="Committed agricultural water withdrawal per year"
 
         ### Intermediate outputs
         } else if (output=="nat_discharge") {

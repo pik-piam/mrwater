@@ -27,7 +27,7 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
 
   ### Calculate global cell rank
   # Def. "meancellrank": ranking of cells or proxy crops, then: average over ranks
-  if (method=="meancellrank"){
+  if (method=="meancellrank") {
 
     ## Read in potential yield gain per cell (tons per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
@@ -45,7 +45,7 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     glocellrank <- apply(glocellrank,2,rank,ties.method="first")
 
     # Def. "meancroprank": average over yield gain of proxycrops, then: ranking of resulting average yield gain
-  } else if (method=="meancroprank"){
+  } else if (method=="meancroprank") {
 
     ## Read in potential yield gain per cell (tons per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
@@ -65,7 +65,7 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     # calculate rank (ties are solved by first occurence)
     glocellrank <- apply(-yield_gain,c(2,3),rank,ties.method="first")
 
-  } else if (method=="meanpricedcroprank"){
+  } else if (method=="meanpricedcroprank") {
 
     ## Read in average potential yield gain per cell (USD05 per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
@@ -75,7 +75,7 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     # calculate rank (ties are solved by first occurence)
     glocellrank <- apply(-yield_gain,c(2,3),rank,ties.method="first")
 
-  } else if (method=="watervalue"){
+  } else if (method=="watervalue") {
 
     watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
                            cells=cells, crops=crops, iniyear=iniyear, irrigini=irrigini, aggregate=FALSE)
@@ -86,6 +86,27 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
 
     # calculate rank (ties are solved by first occurence)
     glocellrank <- apply(-watvalue,c(2,3),rank,ties.method="first")
+
+  } else if (method=="mostprofitable") {
+
+
+    ## Read in average potential yield gain per cell for all crops (USD05 per ha)
+    yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
+                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
+                             cells=cells, crops=crops, proxycrop="all", monetary=TRUE, aggregate=FALSE)
+    #
+    ## max(yield_gain[,,"crops"])
+
+
+    # watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+    #                        cells=cells, crops=crops, iniyear=iniyear, irrigini=irrigini, aggregate=FALSE)
+    # watvalue <- watvalue[,,proxycrop]
+    #
+    # # calculate average water value over proxy crops
+    # watvalue <- dimSums(watvalue,dim=3)/length(getNames(watvalue))
+    #
+    # # calculate rank (ties are solved by first occurence)
+    # glocellrank <- apply(-watvalue,c(2,3),rank,ties.method="first")
 
   } else {
     stop("Please select a method for rank calculation")

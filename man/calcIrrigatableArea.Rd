@@ -21,6 +21,7 @@ calcIrrigatableArea(
   irrigini = "Jaegermeyr_lpjcell",
   iniyear = 1995,
   landtype = "potentialcropland",
+  protectscen = "WDPA",
   proxycrops = "maiz"
 )
 }
@@ -29,7 +30,7 @@ calcIrrigatableArea(
 
 \item{cells}{cells to be returned by the function (lpjcell or magpiecell)}
 
-\item{output}{Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land}
+\item{output}{Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land, protect_area (restricts water withdrawal in protected areas)}
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
@@ -55,7 +56,9 @@ calcIrrigatableArea(
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{landtype}{current cropland area (currentcropland) or potential cropland area (potentialcropland)}
+\item{landtype}{current cropland area (currentcropland) or potential cropland area (potentialcropland) or nonprotected (restriction of withdrawals in protected areas)}
+
+\item{protectscen}{protection scenario for protected areas ("WDPA", "HalfEarth", )}
 
 \item{proxycrops}{Proxycrops for water requirements}
 }

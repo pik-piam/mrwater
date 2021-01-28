@@ -1,4 +1,4 @@
-#' @title calcRiverNaturalFlows
+#' @title calcRiverNaturalFlows_magpie_magpie
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
@@ -18,10 +18,10 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("calcRiverNaturalFlows", aggregate = FALSE) }
+#' \dontrun{ calcOutput("calcRiverNaturalFlows_magpie", aggregate = FALSE) }
 #'
 
-calcRiverNaturalFlows <- function(selectyears="all",
+calcRiverNaturalFlows_magpie <- function(selectyears="all",
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
@@ -39,12 +39,10 @@ calcRiverNaturalFlows <- function(selectyears="all",
   ### Required inputs for Natural Flows River Routing:
   ## LPJmL water data
   .getLPJmLData <- function(subtype, cfg) {
-    # read in LPJmL data
     x <- calcOutput("LPJmL", version="LPJmL4", selectyears=cfg$selectyears,
                     climatetype=cfg$climatetype, harmonize_baseline=cfg$harmonize_baseline, ref_year=cfg$ref_year, time=cfg$time, dof=cfg$dof, averaging_range=cfg$averaging_range,
                     subtype=subtype, aggregate=FALSE)
-    # transform to array for faster calculation
-    x <- as.array(collapseNames(x))
+    x <- collapseNames(x)
     return(x)
   }
   #!# NOTE: Only for development purposes.
@@ -85,7 +83,7 @@ calcRiverNaturalFlows <- function(selectyears="all",
     for (c in cells){
       ### Natural water balance
       # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
-      lake_evap_new[c,,] <- min(lake_evap[c,,], inflow_nat[c,,] + yearly_runoff[c,,])
+      lake_evap_new[c,,] <- min(lake_evap[c,,], inflow_nat[c,,]+yearly_runoff[c,,])
       # natural discharge
       discharge_nat[c,,] <- inflow_nat[c,,] + yearly_runoff[c,,] - lake_evap_new[c,,]
       # inflow into nextcell
