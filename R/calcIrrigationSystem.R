@@ -9,7 +9,7 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigationSystem",source="Jaegermeyr_lpjcell",aggregate = FALSE) }
 #'
-#' @import magclass
+#' @importFrom utils read.csv
 
 calcIrrigationSystem <- function(source="Jaegermeyr_lpjcell"){
 
