@@ -83,7 +83,7 @@ calcRiverNaturalFlows_magpie <- function(selectyears="all",
     for (c in cells){
       ### Natural water balance
       # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
-      lake_evap_new[c,,] <- min(lake_evap[c,,], inflow_nat[c,,]+yearly_runoff[c,,])
+      lake_evap_new[c,,] <- pmin(lake_evap[c,,], inflow_nat[c,,]+yearly_runoff[c,,])
       # natural discharge
       discharge_nat[c,,] <- inflow_nat[c,,] + yearly_runoff[c,,] - lake_evap_new[c,,]
       # inflow into nextcell

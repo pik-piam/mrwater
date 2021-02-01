@@ -12,6 +12,7 @@
 #'
 #' @importFrom magclass collapseNames new.magpie getCells mbind setYears
 #' @importFrom madrat calcOutput
+#' @importFrom abind abind
 #' @import mrcommons
 #'
 #' @return magpie object in cellular resolution
@@ -85,19 +86,19 @@ calcRiverNaturalFlows <- function(selectyears="all",
     for (c in cells){
       ### Natural water balance
       # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
-      lake_evap_new[c,,] <- min(lake_evap[c,,], inflow_nat[c,,] + yearly_runoff[c,,])
+      lake_evap_new[c,,] <- pmin(lake_evap[c,,,drop=F], inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F])
       # natural discharge
-      discharge_nat[c,,] <- inflow_nat[c,,] + yearly_runoff[c,,] - lake_evap_new[c,,]
+      discharge_nat[c,,] <- inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F] - lake_evap_new[c,,,drop=F]
       # inflow into nextcell
       if (rs$nextcell[c]>0){
-        inflow_nat[rs$nextcell[c],,] <- inflow_nat[rs$nextcell[c],,] + discharge_nat[c,,]
+        inflow_nat[rs$nextcell[c],,] <- inflow_nat[rs$nextcell[c],,,drop=F] + discharge_nat[c,,,drop=F]
       }
     }
   }
 
   out <- new.magpie(cells_and_regions = getCells(discharge_nat), years=getYears(discharge_nat), names=c("discharge_nat", "lake_evap_nat"))
-  out[,,"discharge_nat"] <- discharge_nat[,,]
-  out[,,"lake_evap_nat"] <- lake_evap_new[,,]
+  out[,,"discharge_nat"] <- discharge_nat[,,,drop=F]
+  out[,,"lake_evap_nat"] <- lake_evap_new[,,,drop=F]
 
 return(list(
   x=out,
