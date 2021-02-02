@@ -87,11 +87,11 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   yearly_runoff <- yearly_runoff + input_lake
 
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-  NAg_ww_magpie <- calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="withdrawal", seasonality="total", finalcells="lpjcell", aggregate=FALSE)
+  NAg_ww_magpie <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="withdrawal", seasonality="total", finalcells="lpjcell", aggregate=FALSE))
   NAg_ww        <- mrwater:::toolLPJcellCoordinates(NAg_ww_magpie, type="coord2lpj")
 
   # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
-  NAg_wc_magpie <- calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="consumption", seasonality="total", finalcells="lpjcell", aggregate=FALSE)
+  NAg_wc_magpie <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="consumption", seasonality="total", finalcells="lpjcell", aggregate=FALSE))
   NAg_wc        <- mrwater:::toolLPJcellCoordinates(NAg_wc_magpie, type="coord2lpj")
 
   # Harmonize non-agricultural consumption and withdrawals (withdrawals > consumption)
