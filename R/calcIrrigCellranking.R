@@ -91,11 +91,11 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
 
 
     ## Read in average potential yield gain per cell for all crops (USD05 per ha)
-  #  yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
-   #                          harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-    #                         cells=cells, crops=crops, proxycrop="all", monetary=TRUE, aggregate=FALSE)
+    yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
+                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
+                             cells=cells, crops=crops, proxycrop="all", monetary=TRUE, aggregate=FALSE)
     #
-    ## max(yield_gain[,,"crops"])
+    ## pmax(yield_gain[,,"crops"])
 
 
     # watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
