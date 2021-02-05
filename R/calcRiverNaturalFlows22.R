@@ -1,4 +1,4 @@
-#' @title calcRiverNaturalFlows
+#' @title calcRiverNaturalFlows_magpie_magpie22
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
@@ -10,19 +10,18 @@
 #' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #'
-#' @importFrom magclass collapseNames new.magpie getCells mbind setYears
+#' @importFrom magclass collapseNames new.magpie getCells mbind setYears setNames
 #' @importFrom madrat calcOutput
-#' @importFrom abind abind
 #' @import mrcommons
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("calcRiverNaturalFlows", aggregate = FALSE) }
+#' \dontrun{ calcOutput("calcRiverNaturalFlows_magpie22", aggregate = FALSE) }
 #'
 
-calcRiverNaturalFlows <- function(selectyears="all",
+calcRiverNaturalFlows22 <- function(selectyears="all",
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
@@ -73,29 +72,48 @@ calcRiverNaturalFlows <- function(selectyears="all",
   ###### River Routing: Natural Flows ########
   ############################################
 
-  ## Empty arrays that will be filled by the following natural river routing algorithm
+  ## Empty magpie objects that will be filled by the following natural river routing algorithm
   discharge_nat     <- yearly_runoff
   discharge_nat[,,] <- 0
   inflow_nat        <- discharge_nat
   lake_evap_new     <- discharge_nat
 
   ### River Routing 1: Natural flows ###
-  # Determine natural discharge
+  calculated <- NULL
+
   for (o in 1:max(rs$calcorder)){
     # Note: the calcorder ensures that upstreamcells are calculated first
-    cells <- which(rs$calcorder==o)
+    c <- which(rs$calcorder==o)
 
-    for (c in cells){
-      ### Natural water balance
-      # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
-      lake_evap_new[c,,] <- pmin(lake_evap[c,,,drop=F], inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F])
-      # natural discharge
-      discharge_nat[c,,] <- inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F] - lake_evap_new[c,,,drop=F]
-      # inflow into nextcell
-      if (rs$nextcell[c]>0){
-        inflow_nat[rs$nextcell[c],,] <- inflow_nat[rs$nextcell[c],,,drop=F] + discharge_nat[c,,,drop=F]
+    if(!is.null(calculated) && !all(unlist(rs$upstreamcells[c]) %in% calculated)) stop("Inconsistent calculation order!")
+    if(!is.null(calculated) && c %in% calculated) stop("Cell was already calculated!")
+
+    ### Natural water balance
+    # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
+    lake_evap_new[c,,] <- pmin(lake_evap[c,,,drop=F], inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F])
+    # natural discharge
+    discharge_nat[c,,] <- inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F] - lake_evap_new[c,,,drop=F]
+
+    # inflow into nextcell
+    if (any(rs$nextcell[c] > 0)) {
+      current  <- c[rs$nextcell[c] > 0]
+      nextcell <- rs$nextcell[current]
+
+      while (length(current) > 0) {
+        dn            <- duplicated(nextcell)
+        rest_c        <- current[dn]
+        current       <- current[!dn]
+        rest_nextcell <- nextcell[dn]
+        nextcell      <- nextcell[!dn]
+
+        inflow_nat[nextcell,,] <- inflow_nat[nextcell,,] + discharge_nat[current,,]
+
+        nextcell <- rest_nextcell
+        current  <- rest_c
       }
     }
+
+    calculated <- c(calculated, c)
   }
 
   out <- new.magpie(cells_and_regions = getCells(discharge_nat), years=getYears(discharge_nat), names=c("discharge_nat", "lake_evap_nat"))

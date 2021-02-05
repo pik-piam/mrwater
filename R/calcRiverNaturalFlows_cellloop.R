@@ -1,4 +1,4 @@
-#' @title calcRiverNaturalFlows
+#' @title calcRiverNaturalFlows_cellloop
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
@@ -19,10 +19,10 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("calcRiverNaturalFlows", aggregate = FALSE) }
+#' \dontrun{ calcOutput("calcRiverNaturalFlows_cellloop", aggregate = FALSE) }
 #'
 
-calcRiverNaturalFlows <- function(selectyears="all",
+calcRiverNaturalFlows_cellloop <- function(selectyears="all",
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
@@ -81,11 +81,11 @@ calcRiverNaturalFlows <- function(selectyears="all",
 
   ### River Routing 1: Natural flows ###
   # Determine natural discharge
-  for (o in 1:max(rs$calcorder)){
+  for (c in 1:max(rs$calcorder)){
     # Note: the calcorder ensures that upstreamcells are calculated first
-    cells <- which(rs$calcorder==o)
-
-    for (c in cells){
+    #cells <- which(rs$calcorder==o)
+    c <- which(rs$calcorder==o)
+    #for (c in cells){
       ### Natural water balance
       # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
       lake_evap_new[c,,] <- pmin(lake_evap[c,,,drop=F], inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F])
@@ -95,7 +95,7 @@ calcRiverNaturalFlows <- function(selectyears="all",
       if (rs$nextcell[c]>0){
         inflow_nat[rs$nextcell[c],,] <- inflow_nat[rs$nextcell[c],,,drop=F] + discharge_nat[c,,,drop=F]
       }
-    }
+   # }
   }
 
   out <- new.magpie(cells_and_regions = getCells(discharge_nat), years=getYears(discharge_nat), names=c("discharge_nat", "lake_evap_nat"))

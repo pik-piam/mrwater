@@ -87,26 +87,23 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     # calculate rank (ties are solved by first occurence)
     glocellrank <- apply(-watvalue,c(2,3),rank,ties.method="first")
 
- # } else if (method=="mostprofitable") {
-
+  } else if (method=="mostprofitable") {
 
     ## Read in average potential yield gain per cell for all crops (USD05 per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
                              cells=cells, crops=crops, proxycrop="all", monetary=TRUE, aggregate=FALSE)
-    #
-    ## pmax(yield_gain[,,"crops"])
+
+    # Maximum monetary yield gain in the location (across all crops)
+    yield_gain_max <- pmax(yield_gain[,,"tece"], yield_gain[,,"maiz"], yield_gain[,,"trce"], yield_gain[,,"soybean"],
+                           yield_gain[,,"rapeseed"], yield_gain[,,"groundnut"], yield_gain[,,"rice_pro"],
+                           yield_gain[,,"sunflower"], yield_gain[,,"puls_pro"], yield_gain[,,"potato"], yield_gain[,,"others"],
+                           yield_gain[,,"cassav_sp"], yield_gain[,,"sugr_cane"], yield_gain[,,"sugr_beet"])
+    getNames(yield_gain_max) <- NULL
 
 
-    # watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-    #                        cells=cells, crops=crops, iniyear=iniyear, irrigini=irrigini, aggregate=FALSE)
-    # watvalue <- watvalue[,,proxycrop]
-    #
-    # # calculate average water value over proxy crops
-    # watvalue <- dimSums(watvalue,dim=3)/length(getNames(watvalue))
-    #
-    # # calculate rank (ties are solved by first occurence)
-    # glocellrank <- apply(-watvalue,c(2,3),rank,ties.method="first")
+    # Calculate rank (ties are solved by first occurence)
+    glocellrank <- apply(-yield_gain_max,c(2,3),rank,ties.method="first")
 
   } else {
     stop("Please select a method for rank calculation")
