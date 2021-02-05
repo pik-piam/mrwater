@@ -50,7 +50,8 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   ## nextcell:        cell to which discharge of current cell flows (exactly 1 cell)
   ## endcell:         estuary cell of current cell, i.e. last cell of the river of which current cell is part of (exactly 1 cell)
   ## calcorder:       ordering of cells for calculation from upstream to downstream
-  rs <- readRDS(system.file("extdata/riverstructure_stn.rds", package="mrwater"))
+  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
+
 
   ### LPJ-MAgPIE cell mapping
   magpie2lpj    <- magclassdata$cellbelongings$LPJ_input.Index
@@ -71,24 +72,16 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   lake_evap_new <- as.array(collapseNames(natural_flows[,,"lake_evap_nat"]))[,,1]
 
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-  NAg_ww_magpie           <- calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="withdrawal", seasonality="total", aggregate=FALSE)
-  getCells(NAg_ww_magpie) <- paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep=".")
-  NAg_ww           <- new.magpie(1:67420,getYears(NAg_ww_magpie),getNames(NAg_ww_magpie))
-  NAg_ww[,,]       <- 0
-  NAg_ww[paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep="."),,] <- NAg_ww_magpie[,,]
-  getCells(NAg_ww) <- paste(lpj_cells_map$ISO,1:67420,sep=".")
-  NAg_ww           <- as.array(collapseNames(NAg_ww))
-  rm(NAg_ww_magpie)
+  NAg_ww_magpie <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="withdrawal", seasonality="total", finalcells="lpjcell", aggregate=FALSE))
+  NAg_ww        <- NAg_ww_magpie[rs$coordinates,,]
+  NAg_ww        <- as.array(NAg_ww)
+  #NAg_ww        <- mrwater:::toolLPJcellCoordinates(NAg_ww_magpie, type="coord2lpj")
 
   # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
-  NAg_wc_magpie           <- calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="consumption", seasonality="total", aggregate=FALSE)
-  getCells(NAg_wc_magpie) <- paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep=".")
-  NAg_wc           <- new.magpie(1:67420,getYears(NAg_wc_magpie),getNames(NAg_wc_magpie))
-  NAg_wc[,,]       <- 0
-  NAg_wc[paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep="."),,] <- NAg_wc_magpie[,,]
-  getCells(NAg_wc) <- paste(lpj_cells_map$ISO,1:67420,sep=".")
-  NAg_wc           <- as.array(collapseNames(NAg_wc))
-  rm(NAg_wc_magpie)
+  NAg_wc_magpie <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="consumption", seasonality="total", finalcells="lpjcell", aggregate=FALSE))
+  NAg_wc        <- NAg_wc_magpie[rs$coordinates,,]
+  NAg_wc        <- as.array(NAg_wc)
+  #NAg_wc        <- mrwater:::toolLPJcellCoordinates(NAg_wc_magpie, type="coord2lpj")
 
   # Harmonize non-agricultural consumption and withdrawals (withdrawals > consumption)
   NAg_ww <- pmax(NAg_ww, NAg_wc)

@@ -75,10 +75,11 @@ calcRiverNaturalFlows2 <- function(selectyears="all",
 
   ### River Routing 1: Natural flows ###
   # Determine natural discharge
+  calculated <- NULL
   for (o in 1:max(rs$calcorder)){
     # Note: the calcorder ensures that upstreamcells are calculated first
     c <- which(rs$calcorder==o)
-
+    if(!is.null(calculated) && !all(unlist(rs$upstreamcells[c]) %in% calculated)) stop("Inconsistent calculation order!")
     ### Natural water balance
     # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
     lake_evap_new[c,,] <- pmin(lake_evap[c,,], inflow_nat[c,,] + yearly_runoff[c,,])
@@ -100,6 +101,8 @@ calcRiverNaturalFlows2 <- function(selectyears="all",
       nextcell <- rest_nextcell
       c        <- rest_c
     }
+
+    calculated <- c(calculated, c)
   }
 
   out <- mbind(setNames(as.magpie(discharge_nat, spatial=1, temporal=2), "discharge_nat"),

@@ -1,23 +1,25 @@
 Package: mrwater
 Type: Package
 Title: madrat based MAgPIE Input Data Library
-Version: 0.4.6
-Date: 2021-01-28
+Version: 0.4.11
+Date: 2021-02-03
 Authors@R: c(person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = c("aut","cre")),
              person("Jens", "Heinke", email = "heinke@pik-potsdam.de", role = "aut"),
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = "aut"))
 Description: Provides functions for MAgPIE cellular input data generation and stand-alone water calculations.
 Depends:
     R(>= 3.5.0),
-    magclass(>= 3.17),
     madrat(>= 1.72),
-    magpiesets,
     mrcommons,
-    mrmagpie,
-    mstools
+    mrmagpie
 Imports:
     stats,
-    luplot
+    utils,
+    luplot,
+    stringr,
+    magclass(>= 3.17),
+    magpiesets,
+    mstools
 License: LGPL-3 | file LICENSE
 LazyData: no
 Encoding: UTF-8
@@ -25,5 +27,6 @@ RoxygenNote: 7.1.1
 Suggests: 
     knitr,
     rmarkdown,
+    testthat,
     covr
 VignetteBuilder: knitr
