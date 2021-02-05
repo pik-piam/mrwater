@@ -86,10 +86,19 @@ calcRiverNaturalFlows2 <- function(selectyears="all",
     discharge_nat[c,,] <- inflow_nat[c,,] + yearly_runoff[c,,] - lake_evap_new[c,,]
     # inflow into nextcell
     nextcell <- rs$nextcell[c]
-    if (any(nextcell > 0)) {
-      c <- c[nextcell > 0]
-      nextcell <- nextcell[nextcell > 0]
+    c <- c[nextcell > 0]
+    nextcell <- nextcell[nextcell > 0]
+    while (length(c) > 0) {
+      dn <- duplicated(nextcell)
+      rest_c <- c[dn]
+           c <- c[!dn]
+      rest_nextcell <- nextcell[dn]
+           nextcell <- nextcell[!dn]
+
       inflow_nat[nextcell,,] <- inflow_nat[nextcell,,] + discharge_nat[c,,]
+
+      nextcell <- rest_nextcell
+      c        <- rest_c
     }
   }
 
