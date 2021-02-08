@@ -36,7 +36,7 @@ calcRiverNaturalFlows22(
 magpie object in cellular resolution
 }
 \description{
-This function calculates natural discharge for the river routing derived from inputs from LPJmL
+This function calculates natural discharge and associated lake evaporation for the river routing derived from inputs from LPJmL
 }
 \examples{
 \dontrun{ calcOutput("calcRiverNaturalFlows_magpie22", aggregate = FALSE) }

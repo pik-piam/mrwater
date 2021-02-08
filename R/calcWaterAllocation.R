@@ -278,6 +278,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
         # Update minimum water required in cell:
         required_wat_min <- required_wat_min + NAg_ww[,y,scen]*frac_NAg_fulfilled
 
+        test_output_non_ag_reqwat <- required_wat_min
+
         # REPORTING: Non-agricultural water use
         water_use_nonag_ww <- NAg_ww[,y,scen]*frac_NAg_fulfilled
         water_use_nonag_wc <- NAg_wc[,y,scen]*frac_NAg_fulfilled
@@ -573,6 +575,11 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
           wat_avl_irrig <- discharge_upstreamfirst
           dataname <- "discharge_upstreamfirst"
           description="Cellular discharge after upstreamfirst allocation algorithm executed"
+        } else if (output=="test_output_non_ag_reqwat") {
+          # Discharge after upstreamfirst allocation algorithm
+          wat_avl_irrig <- test_output_non_ag_reqwat
+          dataname <- "test_output_non_ag_reqwat"
+          description="test_output_non_ag_reqwat"
         } else {
           stop("specify type of water availability output: withdrawal or consumption")
         }

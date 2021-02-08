@@ -1,4 +1,4 @@
-#' @title calcRiverHumanUses_withif
+#' @title calcRiverHumanUses_ifandfor
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
@@ -21,10 +21,10 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("calcRiverHumanUses_withif", aggregate = FALSE) }
+#' \dontrun{ calcOutput("calcRiverHumanUses_ifandfor", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses_withif <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
+calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
@@ -115,8 +115,10 @@ calcRiverHumanUses_withif <- function(selectyears="all", humanuse="non_agricultu
   yearly_runoff <- as.array(.transformObject(I_yearly_runoff))
 
   # helper variables for river routing
+  avl_wat_act   <- as.array(.transformObject(0))
+  upstream_cons <- as.array(.transformObject(0))
   inflow        <- as.array(.transformObject(0))
-  avl_wat_act <- as.array(.transformObject(0))
+  ##### QUESTION: WHEN IS IT NECESSARY TO PREDEFINE EMPTY ARRAYS? WHEN NOT?
 
   # output variable that will be filled during river routing
   O_frac_currHuman_fulfilled <- as.array(.transformObject(0))
@@ -134,7 +136,7 @@ calcRiverHumanUses_withif <- function(selectyears="all", humanuse="non_agricultu
                                               LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                                               EFRyears=c(1980:2010))
     # Bring to correct object size
-    IO_required_wat_min <- .transformObject(IO_required_wat_min)
+    IO_required_wat_min <- as.array(.transformObject(IO_required_wat_min))
 
     ## Current human uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
@@ -150,11 +152,11 @@ calcRiverHumanUses_withif <- function(selectyears="all", humanuse="non_agricultu
   } else if (humanuse=="committed_agriculture") {
 
     # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
-    IO_required_wat_min <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", subtype="required_wat_min",
-                                      version=version, climatetype=climatetype, time=spline, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+    IO_required_wat_min <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", subtype="required_wat_min", aggregate=FALSE,
+                                      version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
     ## Previous human uses (determined in non-agricultural uses river routing):
-    frac_prevHuman_fulfilled <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", subtype="frac_fulfilled",
-                                           version=version, climatetype=climatetype, time=spline, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+    frac_prevHuman_fulfilled <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", subtype="frac_fulfilled", aggregate=FALSE,
+                                           version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
     ## Previous human uses (inputs)
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
     prevHuman_ww <- NAg_ww
@@ -174,6 +176,7 @@ calcRiverHumanUses_withif <- function(selectyears="all", humanuse="non_agricultu
   ####################################################
   ###### River Routing considering Human Uses ########
   ####################################################
+
 
   for (o in 1:max(rs$calcorder)) {
     # Note: the calcorder ensures that the upstreamcells are calculated first
@@ -199,7 +202,7 @@ calcRiverHumanUses_withif <- function(selectyears="all", humanuse="non_agricultu
             O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,] <- ( 1 - (IO_required_wat_min[c,,,drop=F] - avl_wat_act[c,,,drop=F]) / upstream_cons[,,,drop=F] ) * O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,,drop=F]
             O_discharge[c,,]                                    <- IO_required_wat_min[c,,,drop=F] - prevHuman_wc[c,,,drop=F]*frac_prevHuman_fulfilled[c,,,drop=F]
 
-          # if upstream_cons not sufficient to account for difference: no water can be used upstream
+            # if upstream_cons not sufficient to account for difference: no water can be used upstream
           } else {
             O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,] <- 0
             O_discharge[c,,]                                    <- avl_wat_act[c,,,drop=F] + upstream_cons[,,,drop=F] - prevHuman_wc[c,,,drop=F] * frac_prevHuman_fulfilled[c,,,drop=F]
