@@ -95,7 +95,7 @@ calcRiverNaturalFlows22 <- function(selectyears="all",
     discharge_nat[c,,] <- inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F] - lake_evap_new[c,,,drop=F]
 
     # inflow into nextcell
-    mrwater:::toolInflowIntoNextcell(cell= c , previous_inflow = inflow_nat, cell_discharge = discharge_nat)
+    toolInflowIntoNextcell(cell= c , previous_inflow = inflow_nat, cell_discharge = discharge_nat)
     # if (any(rs$nextcell[c] > 0)) {
     #   current  <- c[rs$nextcell[c] > 0]
     #   nextcell <- rs$nextcell[current]

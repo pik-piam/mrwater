@@ -11,6 +11,8 @@
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
+#' @param iniyear          Initialization year of irrigation system
+#' @param irrigini         When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -24,7 +26,7 @@
 #' \dontrun{ calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE) }
 #'
 
-calcRiverDischargeNatAndHuman <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
+calcRiverDischargeNatAndHuman <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge", iniyear="y1995", irrigini="Jaegermeyr_lpjcell",
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #

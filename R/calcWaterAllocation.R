@@ -44,14 +44,10 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
   ### Read in river structure
   # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
-  data <- toolGetMapping("River_structure_stn.rda", where="mrwater")
-  for (i in 1:length(data)){
-    assign(paste(names(data[[i]])), data[[i]][[1]])
-  }
-  rm(data,i)
+  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   # Number of cells to be used for calculation
-  NCELLS <- length(calcorder)
+  NCELLS <- 67420
 
   ### LPJ-MAgPIE cell mapping
   magpie2lpj    <- magclassdata$cellbelongings$LPJ_input.Index
@@ -88,12 +84,12 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
   NAg_ww_magpie <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="withdrawal", seasonality="total", finalcells="lpjcell", aggregate=FALSE))
-  NAg_ww        <- mrwater:::toolLPJcellCoordinates(NAg_ww_magpie, type="coord2lpj")
+  NAg_ww        <- toolLPJcellCoordinates(NAg_ww_magpie, type="coord2lpj")
   NAg_ww        <- as.array(NAg_ww)
 
   # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
   NAg_wc_magpie <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="consumption", seasonality="total", finalcells="lpjcell", aggregate=FALSE))
-  NAg_wc        <- mrwater:::toolLPJcellCoordinates(NAg_wc_magpie, type="coord2lpj")
+  NAg_wc        <- toolLPJcellCoordinates(NAg_wc_magpie, type="coord2lpj")
   NAg_wc        <- as.array(NAg_wc)
 
   # Harmonize non-agricultural consumption and withdrawals (withdrawals > consumption)
@@ -201,9 +197,9 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
         ### River Routing 1.1: Natural flows ###
         # Determine natural discharge
-        for (o in 1:max(calcorder)){
+        for (o in 1:max(rs$calcorder)){
           # Note: the calcorder ensures that upstreamcells are calculated first
-          cells <- which(calcorder==o)
+          cells <- which(rs$calcorder==o)
 
           for (c in cells){
             ### Natural water balance
@@ -212,8 +208,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
             # natural discharge
             discharge_nat[c] <- inflow_nat[c] + yearly_runoff[c,y] - lake_evap_new[c]
             # inflow into nextcell
-            if (nextcell[c]>0){
-              inflow_nat[nextcell[c]] <- inflow_nat[nextcell[c]] + discharge_nat[c]
+            if (rs$nextcell[c]>0){
+              inflow_nat[rs$nextcell[c]] <- inflow_nat[rs$nextcell[c]] + discharge_nat[c]
             }
           }
         }
@@ -227,9 +223,9 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
         required_wat_min <- EFR_magpie
 
         ### River Routing 2: Non-agricultural uses considering local EFRs ###
-        for (o in 1:max(calcorder)) {
+        for (o in 1:max(rs$calcorder)) {
           # Note: the calcorder ensures that the upstreamcells are calculated first
-          cells <- which(calcorder==o)
+          cells <- which(rs$calcorder==o)
 
           for (c in cells){
             # available water in cell
@@ -241,16 +237,16 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               # if cell has upstreamcells: upstreamcells must release missing water (cannot be consumed upstream)
               # -> reduce non-agricultural water consumption in upstream cells
               # -> locally: cannot withdraw
-              if (length(upstreamcells[[c]])>0){
+              if (length(rs$upstreamcells[[c]])>0){
                 # upstream non-agricultural water consumption
-                upstream_cons <- sum(NAg_wc[upstreamcells[[c]],y,scen]*frac_NAg_fulfilled[upstreamcells[[c]]])
+                upstream_cons <- sum(NAg_wc[rs$upstreamcells[[c]],y,scen]*frac_NAg_fulfilled[rs$upstreamcells[[c]]])
                 if (upstream_cons>required_wat_min[c]-avl_wat_act[c]){
                   # if missing water (difference) can be fulfilled by upstream consumption: reduce upstream consumption
-                  frac_NAg_fulfilled[upstreamcells[[c]]] <- (1-(required_wat_min[c]-avl_wat_act[c])/upstream_cons)*frac_NAg_fulfilled[upstreamcells[[c]]]
+                  frac_NAg_fulfilled[rs$upstreamcells[[c]]] <- (1-(required_wat_min[c]-avl_wat_act[c])/upstream_cons)*frac_NAg_fulfilled[rs$upstreamcells[[c]]]
                   discharge[c] <- required_wat_min[c]
                 } else {
                   # if missing water (difference) cannot be fulfilled by upstream consumption: no upstream consumption
-                  frac_NAg_fulfilled[upstreamcells[[c]]] <- 0
+                  frac_NAg_fulfilled[rs$upstreamcells[[c]]] <- 0
                   discharge[c] <- avl_wat_act[c]+upstream_cons
                 }
               }
@@ -269,8 +265,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               discharge[c] <- avl_wat_act[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
             }
 
-            if (nextcell[c]>0){
-              inflow[nextcell[c]] <- inflow[nextcell[c]] + discharge[c]
+            if (rs$nextcell[c]>0){
+              inflow[rs$nextcell[c]] <- inflow[rs$nextcell[c]] + discharge[c]
             }
           }
         }
@@ -288,9 +284,9 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
         inflow[] <- 0
 
         ### River Routing 3: Committed agricultural uses considering local EFRs and non-agricultural uses ###
-        for (o in 1:max(calcorder)) {
+        for (o in 1:max(rs$calcorder)) {
           # Note: the calcorder ensures that the upstreamcells are calculated first
-          cells <- which(calcorder==o)
+          cells <- which(rs$calcorder==o)
 
           for (c in cells){
             # available water in cell
@@ -302,16 +298,16 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               # if cell has upstreamcells: upstreamcells must release missing water (cannot be consumed upstream)
               # -> reduce committed agricultural water consumption in upstream cells
               # -> locally: cannot withdraw
-              if (length(upstreamcells[[c]])>0){
+              if (length(rs$upstreamcells[[c]])>0){
                 # upstream committed agricultural water consumption:
-                upstream_cons <- sum(CAC_magpie[upstreamcells[[c]],y]*frac_CAg_fulfilled[upstreamcells[[c]]])
+                upstream_cons <- sum(CAC_magpie[rs$upstreamcells[[c]],y]*frac_CAg_fulfilled[rs$upstreamcells[[c]]])
                 if (upstream_cons>required_wat_min[c]-avl_wat_act[c]){
                   # if upstream_cons high enough to account for difference: reduce upstream consumption respectively
-                  frac_CAg_fulfilled[upstreamcells[[c]]] <- (1-(required_wat_min[c]-avl_wat_act[c])/upstream_cons)*frac_CAg_fulfilled[upstreamcells[[c]]]
+                  frac_CAg_fulfilled[rs$upstreamcells[[c]]] <- (1-(required_wat_min[c]-avl_wat_act[c])/upstream_cons)*frac_CAg_fulfilled[rs$upstreamcells[[c]]]
                   discharge[c] <- required_wat_min[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
                 } else {
                   # if upstream_cons not sufficient to account for difference: no water can be used upstream
-                  frac_CAg_fulfilled[upstreamcells[[c]]] <- 0
+                  frac_CAg_fulfilled[rs$upstreamcells[[c]]] <- 0
                   discharge[c] <- avl_wat_act[c]+upstream_cons - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
                 }
               }
@@ -330,8 +326,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               discharge[c] <- avl_wat_act[c] - CAC_magpie[c,y]*frac_CAg_fulfilled[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
             }
 
-            if (nextcell[c]>0){
-              inflow[nextcell[c]] <- inflow[nextcell[c]] + discharge[c]
+            if (rs$nextcell[c]>0){
+              inflow[rs$nextcell[c]] <- inflow[rs$nextcell[c]] + discharge[c]
             }
           }
         }
@@ -342,9 +338,9 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
         ### Interim routing: Update discharge and inflow considering known non-agricultural and committed agricultural uses of river routing 3 ###
         inflow[] <- 0
 
-        for (o in 1:max(calcorder)){
+        for (o in 1:max(rs$calcorder)){
           # Note: the calcorder ensures that the upstreamcells are calculated first
-          cells <- which(calcorder==o)
+          cells <- which(rs$calcorder==o)
 
           for (c in cells){
             # available water
@@ -352,8 +348,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
             # discharge
             discharge[c]   <- avl_wat_act[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c] - CAC_magpie[c,y]*frac_CAg_fulfilled[c]
             # inflow into nextcell
-            if (nextcell[c]>0){
-              inflow[nextcell[c]] <- inflow[nextcell[c]] + discharge[c]
+            if (rs$nextcell[c]>0){
+              inflow[rs$nextcell[c]] <- inflow[rs$nextcell[c]] + discharge[c]
             }
           }
         }
@@ -380,15 +376,15 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               frac_fullirrig[c] <- min(avl_wat_ww/required_wat_fullirrig_ww[c,y],1)
 
               # consumption constraint
-              if (required_wat_fullirrig_wc[c,y]>0 & length(downstreamcells[[c]])>0) {
+              if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
                 # available water for additional irrigation consumption (considering downstream availability)
-                avl_wat_wc          <- max(min(discharge[downstreamcells[[c]]] - required_wat_min_allocation[downstreamcells[[c]]]),0)
+                avl_wat_wc          <- max(min(discharge[rs$downstreamcells[[c]]] - required_wat_min_allocation[rs$downstreamcells[[c]]]),0)
                 # how much consumption can be fulfilled by available water
                 frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
               }
 
               # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-              discharge[c(downstreamcells[[c]],c)] <- discharge[c(downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
+              discharge[c(rs$downstreamcells[[c]],c)] <- discharge[c(rs$downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
               # update minimum water required in cell:
               required_wat_min_allocation[c] <- required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
             }
@@ -399,8 +395,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
         } else if (allocationrule=="upstreamfirst") {
           # Allocate full irrigation requirements to most upstream cell first (calcorder)
 
-          for (o in 1:max(calcorder)){
-            cells <- which(calcorder==o)
+          for (o in 1:max(rs$calcorder)){
+            cells <- which(rs$calcorder==o)
 
             for (c in cells){
 
@@ -415,15 +411,15 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
                   frac_fullirrig[c] <- min(avl_wat_ww/required_wat_fullirrig_ww[c,y],1)
 
                   # consumption constraint
-                  if (required_wat_fullirrig_wc[c,y]>0 & length(downstreamcells[[c]])>0) {
+                  if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
                     # available water for additional irrigation consumption (considering downstream availability)
-                    avl_wat_wc          <- max(min(discharge[downstreamcells[[c]]] - required_wat_min_allocation[downstreamcells[[c]]]),0)
+                    avl_wat_wc          <- max(min(discharge[rs$downstreamcells[[c]]] - required_wat_min_allocation[rs$downstreamcells[[c]]]),0)
                     # how much consumption can be fulfilled by available water
                     frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
                   }
 
                   # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-                  discharge[c(downstreamcells[[c]],c)] <- discharge[c(downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
+                  discharge[c(rs$downstreamcells[[c]],c)] <- discharge[c(rs$downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
                   # update minimum water required in cell:
                   required_wat_min_allocation[c] <- required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
                 }
@@ -448,15 +444,15 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               frac_fullirrig[c] <- min(avl_wat_ww/required_wat_fullirrig_ww[c,y],1)
 
               # consumption constraint
-              if (required_wat_fullirrig_wc[c,y]>0 & length(downstreamcells[[c]])>0) {
+              if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
                 # available water for additional irrigation consumption (considering downstream availability)
-                avl_wat_wc          <- max(min(discharge[downstreamcells[[c]]] - required_wat_min_allocation[downstreamcells[[c]]]),0)
+                avl_wat_wc          <- max(min(discharge[rs$downstreamcells[[c]]] - required_wat_min_allocation[rs$downstreamcells[[c]]]),0)
                 # how much consumption can be fulfilled by available water
                 frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
               }
 
               # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-              discharge[c(downstreamcells[[c]],c)] <- discharge[c(downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
+              discharge[c(rs$downstreamcells[[c]],c)] <- discharge[c(rs$downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
               # update minimum water required in cell:
               required_wat_min_allocation[c] <- required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
 
@@ -477,9 +473,9 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               frac_fullirrig[c] <- min(avl_wat_ww/required_wat_fullirrig_ww[c,y],1)
 
               # consumption constraint
-              if (required_wat_fullirrig_wc[c,y]>0 & length(downstreamcells[[c]])>0) {
+              if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
                 # available water for additional irrigation consumption (considering downstream availability)
-                avl_wat_wc          <- max(min(discharge[downstreamcells[[c]]] - required_wat_min_allocation[downstreamcells[[c]]]),0)
+                avl_wat_wc          <- max(min(discharge[rs$downstreamcells[[c]]] - required_wat_min_allocation[rs$downstreamcells[[c]]]),0)
                 # how much consumption can be fulfilled by available water
                 frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
               }
@@ -487,7 +483,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               frac_fullirrig[c] <- frac_fullirrig[c]*allocationshare
 
               # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-              discharge[c(downstreamcells[[c]],c)] <- discharge[c(downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
+              discharge[c(rs$downstreamcells[[c]],c)] <- discharge[c(rs$downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
               # update minimum water required in cell:
               required_wat_min_allocation[c] <- required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
             }

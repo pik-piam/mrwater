@@ -1,6 +1,7 @@
 #' @title toolLPJcellCoordinates
 #' @description maps LPJ cells and coordinates
 #'
+#' @param x    magpie object for which coordinatese should be remapped
 #' @param type direction of transformation (coord2lpj or lpj2coord)
 #'
 #' @return magpie object with coordinates in LPJ cell ordering
@@ -10,7 +11,7 @@
 #' @importFrom madrat toolGetMapping
 
 
-toolLPJcellCoordinates <- function(type){
+toolLPJcellCoordinates <- function(x, type){
 
   # read in LPJmL mapping
   LPJcells <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell", where="mappingfolder")

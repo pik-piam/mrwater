@@ -4,9 +4,11 @@
 \alias{toolLPJcellCoordinates}
 \title{toolLPJcellCoordinates}
 \usage{
-toolLPJcellCoordinates(type)
+toolLPJcellCoordinates(x, type)
 }
 \arguments{
+\item{x}{magpie object for which coordinatese should be remapped}
+
 \item{type}{direction of transformation (coord2lpj or lpj2coord)}
 }
 \value{

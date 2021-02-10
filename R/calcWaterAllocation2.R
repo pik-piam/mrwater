@@ -171,13 +171,13 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
 
         ## Global river routing variables
         # Discharge considering human uses
-        discharge   <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie_frac)))
-        inflow      <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie_frac)))
-        avl_wat_act <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie_frac)))
+        discharge   <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie)))
+        inflow      <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie)))
+        avl_wat_act <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie)))
         # Water fractions reserved for certain uses
-        frac_NAg_fulfilled <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie_frac)))
-        frac_CAg_fulfilled <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie_frac)))
-        frac_fullirrig     <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie_frac)))
+        frac_NAg_fulfilled <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie)))
+        frac_CAg_fulfilled <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie)))
+        frac_fullirrig     <- array(data=0,dim=67420,dimnames=list(names(EFR_magpie)))
 
         # Minimum availability of water in river to fulfill local EFRs
         required_wat_min <- EFR_magpie[,y]

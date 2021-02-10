@@ -50,7 +50,7 @@
 #'   ## nextcell:        cell to which discharge of current cell flows (exactly 1 cell)
 #'   ## endcell:         estuary cell of current cell, i.e. last cell of the river of which current cell is part of (exactly 1 cell)
 #'   ## calcorder:       ordering of cells for calculation from upstream to downstream
-#'   rs <- readRDS(system.file("extdata/riverstructure_stn.rds", package="mrwater"))
+#'   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 #'
 #'   ### LPJ-MAgPIE cell mapping
 #'   magpie2lpj    <- magclassdata$cellbelongings$LPJ_input.Index

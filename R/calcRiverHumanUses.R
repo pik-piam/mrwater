@@ -11,6 +11,8 @@
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
+#' @param iniyear          Initialization year of irrigation system
+#' @param irrigini         When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -25,6 +27,7 @@
 #'
 
 calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
+                               iniyear=1995, irrigini="Jaegermeyr_lpjcell",
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
@@ -56,7 +59,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
     # sort cells
     x <- x[rs$coordinates,,]
     # rename cells (NOTE: THIS IS ONLY TEMPORARILY NECESSARY UNTIL ALL INPUTS ARE PROVIDED AT COORDINATE DATA!!!!)
-    x <- mrwater:::toolLPJcellCoordinates(x, type="coord2lpj")
+    x <- toolLPJcellCoordinates(type="coord2lpj")
     return(x)
   }
   ## Committed agricultural water demand data

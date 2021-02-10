@@ -43,8 +43,8 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   #
   # ### test settings (will be loaded from config in fina version)
   # climatetype=climatetype
-  # harmonize_baseline="CRU_4"
-  # ref_year="y2015"
+  harmonize_baseline="CRU_4"
+  ref_year="y2015"
 
   #### THIS MIGHT BE NECESSARY IF I WANT MY OWN AGGREGATION (E.G. TO RIVER BASINS)
  # map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, clusterdata=clusterdata, aggregate=FALSE)
