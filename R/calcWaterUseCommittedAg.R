@@ -2,6 +2,7 @@
 #' @description This function calculates committed agricultural water uses that are used in the river routing algorithm for distributing available water across the basin
 #'
 #' @param version     Switch between LPJmL4 and LPJmL5
+#' @param selectyears Years to be returned
 #' @param cells       Cells to be returned by the function (lpjcell or magpiecell)
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average or spline (default)

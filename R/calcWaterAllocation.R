@@ -241,7 +241,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               # if cell has upstreamcells: upstreamcells must release missing water (cannot be consumed upstream)
               # -> reduce non-agricultural water consumption in upstream cells
               # -> locally: cannot withdraw
-              if (length(upstreamcells[c])>0){
+              if (length(upstreamcells[[c]])>0){
                 # upstream non-agricultural water consumption
                 upstream_cons <- sum(NAg_wc[upstreamcells[[c]],y,scen]*frac_NAg_fulfilled[upstreamcells[[c]]])
                 if (upstream_cons>required_wat_min[c]-avl_wat_act[c]){
@@ -302,7 +302,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
               # if cell has upstreamcells: upstreamcells must release missing water (cannot be consumed upstream)
               # -> reduce committed agricultural water consumption in upstream cells
               # -> locally: cannot withdraw
-              if (length(upstreamcells[c])>0){
+              if (length(upstreamcells[[c]])>0){
                 # upstream committed agricultural water consumption:
                 upstream_cons <- sum(CAC_magpie[upstreamcells[[c]],y]*frac_CAg_fulfilled[upstreamcells[[c]]])
                 if (upstream_cons>required_wat_min[c]-avl_wat_act[c]){

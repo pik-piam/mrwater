@@ -22,7 +22,8 @@ calcLandAvl(
   iniyear = 1995,
   landtype = "potentialcropland",
   protectscen = "WDPA",
-  proxycrops = "maiz"
+  proxycrops = "maiz",
+  iniarea = "something"
 )
 }
 \arguments{
@@ -62,7 +63,7 @@ calcLandAvl(
 
 \item{proxycrops}{Proxycrops for water requirements}
 
-\item{depreciation}{parameter defining yearly depreciation rate at which previously irrigated cropland becomes "unreserved" for irrigation}
+\item{iniarea}{initially irrigated area}
 }
 \value{
 magpie object in cellular resolution

@@ -21,9 +21,7 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("calcRiverDischargeNatAndHuman", aggregate = FALSE) }
-#'
-#' \seealso{\code{\link{calcRiverNaturalFlows}},\code{\link{calcRiverHumanUses}}}
+#' \dontrun{ calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE) }
 #'
 
 calcRiverDischargeNatAndHuman <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",

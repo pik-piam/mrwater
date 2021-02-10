@@ -4,7 +4,7 @@
 \alias{toolLPJcellCoordinates}
 \title{toolLPJcellCoordinates}
 \usage{
-toolLPJcellCoordinates(x, type)
+toolLPJcellCoordinates(type)
 }
 \arguments{
 \item{type}{direction of transformation (coord2lpj or lpj2coord)}

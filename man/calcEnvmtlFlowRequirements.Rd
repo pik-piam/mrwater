@@ -9,6 +9,11 @@ calcEnvmtlFlowRequirements(
   selectyears = "all",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   cells = "lpjcell",
+  time = "spline",
+  averaging_range = NULL,
+  dof = 4,
+  harmonize_baseline = "CRU_4",
+  ref_year = "y2015",
   LFR_val = 0.1,
   HFR_LFR_less10 = 0.2,
   HFR_LFR_10_20 = 0.15,
@@ -25,6 +30,16 @@ calcEnvmtlFlowRequirements(
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
 \item{cells}{Number of cells to be reported: lpjcell (67420, default) or magpiecell (59199)}
+
+\item{time}{Time smoothing: average, spline or raw (default)}
+
+\item{averaging_range}{only specify if time=="average": number of time steps to average}
+
+\item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
+
+\item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
+
+\item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 
 \item{LFR_val}{Strictness of environmental flow requirements}
 

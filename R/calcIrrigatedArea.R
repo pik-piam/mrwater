@@ -58,10 +58,10 @@ calcIrrigatedArea <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, dep
   }
 
   # check for NAs and negative values
-  if(any(is.na(out))){
+  if(any(is.na(out))) {
     stop("produced NA irrigation water requirements")
   }
-  if(any(out<0)){
+  if(any(out<0)) {
     stop("produced negative irrigation water requirements")
   }
 

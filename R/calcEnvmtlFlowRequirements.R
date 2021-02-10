@@ -11,6 +11,11 @@
 #' @param HFR_LFR_20_30  High flow requirements (share of total water for cells) with 20percent < LFR < 30percent of total water
 #' @param HFR_LFR_more30 High flow requirements (share of total water for cells) with LFR>30percent of total water
 #' @param EFRyears Long-term reference time frame for EFR calculation
+#' @param time            Time smoothing: average, spline or raw (default)
+#' @param averaging_range only specify if time=="average": number of time steps to average
+#' @param dof             only specify if time=="spline": degrees of freedom needed for spline
+#' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
+#' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #'
 #' @importFrom magclass collapseNames as.magpie
 #' @importFrom madrat calcOutput
@@ -24,6 +29,7 @@
 
 calcEnvmtlFlowRequirements <- function(version="LPJmL4", selectyears="all",
                                        climatetype="HadGEM2_ES:rcp2p6:co2", cells="lpjcell",
+                                       time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
                                        LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                                        EFRyears=c(1985:2015)){
   # Read in EFR share

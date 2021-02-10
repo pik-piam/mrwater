@@ -12,14 +12,13 @@
 #'
 #' @importFrom magclass collapseNames new.magpie getCells mbind setYears
 #' @importFrom madrat calcOutput
-#' @importFrom abind abind
 #' @import mrcommons
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("calcRiverNaturalFlows", aggregate = FALSE) }
+#' \dontrun{ calcOutput("RiverNaturalFlows", aggregate = FALSE) }
 #'
 
 calcRiverNaturalFlows <- function(selectyears="all",

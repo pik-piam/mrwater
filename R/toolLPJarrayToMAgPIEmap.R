@@ -11,7 +11,7 @@
 #' @import magclass
 
 
-toolLPJarrayToMAgPIEmap <- function(x){
+toolLPJarrayToMAgPIEmap <- function() {
   # select correct cells and transform to magpie object
   out <- as.magpie(x[magclassdata$cellbelongings$LPJ_input.Index],spatial=1)
 

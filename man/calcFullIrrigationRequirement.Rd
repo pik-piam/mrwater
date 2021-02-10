@@ -10,6 +10,8 @@ calcFullIrrigationRequirement(
   harmonize_baseline = FALSE,
   time = "spline",
   dof = 4,
+  averaging_range = NULL,
+  ref_year = NULL,
   cells = "lpjcell",
   selectyears = seq(1995, 2095, by = 5),
   iniyear = 1995,
@@ -28,6 +30,10 @@ calcFullIrrigationRequirement(
 
 \item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
 
+\item{averaging_range}{only specify if time=="average": number of time steps to average}
+
+\item{ref_year}{reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
+
 \item{cells}{switch between "lpjcell" (67420) and "magpiecell" (59199)}
 
 \item{selectyears}{years to be returned}
@@ -37,10 +43,6 @@ calcFullIrrigationRequirement(
 \item{iniarea}{if TRUE (default): already irrigated area is subracted, if FALSE: total potential land area is used}
 
 \item{irrig_requirement}{consumptive (consumption) or non-consumptive (withdrawals) irrigation water requirements}
-
-\item{averaging_range}{only specify if time=="average": number of time steps to average}
-
-\item{ref_year}{reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 }
 \value{
 magpie object in cellular resolution

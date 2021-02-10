@@ -3,7 +3,6 @@
 #'
 #' @param iniyear      initialization year used for irrigated area
 #' @param selectyears  years to be returned by this function
-#' @param depreciation parameter defining yearly depreciation rate at which previously irrigated cropland becomes "unreserved" for irrigation
 #' @param cells        cells to be returned by the function (lpjcell or magpiecell)
 #'
 #'
@@ -22,6 +21,7 @@
 #' @param irrigini           When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #' @param proxycrops         Proxycrops for water requirements
 #' @param output             Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land, protect_area (restricts water withdrawal in protected areas)
+#' @param iniarea initially irrigated area
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -31,59 +31,19 @@
 #'
 #' @import magclass
 #' @import magpiesets
+#' @import mrmagpie
 
 
 calcLandAvl <- function(selectyears=1995, cells="lpjcell", output="irrigatable_area",
                                 climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, gainthreshold=1, irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995,
-                                landtype="potentialcropland", protectscen="WDPA", proxycrops="maiz"){
-
-#
-  # w001001 <- brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/w001001.adf")
-
-
-
-#
-#    summary(as.data.frame(w001001,na.omit=T))
-#    #w001001 <- raster("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/w001001.adf")
-#
-#    test <- as.magpie(w001001)
-# #
-#
-#    plot(brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/w001001.adf"))
-#    plot(brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/w001001x.adf"))
-#    plot(brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/dblbnd.adf"))
-#    plot(brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/sta.adf"))
-#    plot(brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/hdr.adf"))
-#
-#
-#    brick1 <- brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/w001001x.adf")
-#    plot(brick1)
-#
-#    brick2 <- brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/dblbnd.adf")
-#    plot(brick2)
-#
-#    test1 <- as.magpie(brick1)
-#
-#   brick2 <- brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/dblbnd.adf")
-#   test2 <- as.magpie(brick2)
-#
-#   brick3 <- brick("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/suit/sta.adf")
-#   test3 <- as.magpie(brick3)
-#
-#   info <- read.table("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/info/arc0002.dat", header=T)
-#
-#   info <- read.delim("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/info/arc0002.dat", sep=" ")
-#   info <- readLines("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/info/arc0003.dat", warn=F)
-#
-#   info <- readLines("C:/Users/beier/Documents/Modelle/inputdata/sources/suit/info/arc0002.dat")
-
+                                landtype="potentialcropland", protectscen="WDPA", proxycrops="maiz", iniarea="something"){
 
   ## Area available and suitable for cropland
   # read in land available for agricultural use (in mio. ha)
   land <- collapseNames(calcOutput("AvlLandSi", aggregate=FALSE)[,,"si0"])
 
-  if (iniarea) {
+  if (iniarea=="something") {
     # subtract area already reserved for irrigation by committed agricultural uses (in mio. ha)
     crops_grown    <- calcOutput("IrrigatedArea", selectyears=selectyears, iniyear=iniyear, cells="magpiecell", aggregate=FALSE)
     crops_grown    <- collapseNames(dimSums(crops_grown,dim=3))
@@ -97,7 +57,7 @@ calcLandAvl <- function(selectyears=1995, cells="lpjcell", output="irrigatable_a
   # land (mio ha -> ha): multiply with 1e6,
   # irrigation water requirements (m^3 per ha -> mio. m^3 per ha): devide by 1e6
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
-  tmp <- irrig_wat*land
+  #tmp <- irrig_wat*land
 
 
 

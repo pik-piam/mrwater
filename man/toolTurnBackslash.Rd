@@ -4,7 +4,7 @@
 \alias{toolTurnBackslash}
 \title{toolTurnBackslash}
 \usage{
-toolTurnBackslash(x)
+toolTurnBackslash()
 }
 \value{
 string

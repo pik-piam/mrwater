@@ -23,6 +23,8 @@ calcWaterUseCommittedAg(
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
+\item{selectyears}{Years to be returned}
+
 \item{cells}{Cells to be returned by the function (lpjcell or magpiecell)}
 
 \item{time}{Time smoothing: average or spline (default)}

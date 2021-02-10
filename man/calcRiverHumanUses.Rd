@@ -45,7 +45,7 @@ magpie object in cellular resolution
 This function calculates natural discharge for the river routing derived from inputs from LPJmL
 }
 \examples{
-\dontrun{ calcOutput("calcRiverHumanUses", aggregate = FALSE) }
+\dontrun{ calcOutput("RiverHumanUses", aggregate = FALSE) }
 
 }
 \author{

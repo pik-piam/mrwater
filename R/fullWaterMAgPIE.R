@@ -27,7 +27,7 @@
 #' @importFrom madrat setConfig getConfig
 #' @importFrom magpiesets findset
 
-fullCELLULARMAGPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
+fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
 
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit=1e+12)

@@ -21,7 +21,7 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("calcRiverHumanUses_withif", aggregate = FALSE) }
+#' \dontrun{ calcOutput("RiverHumanUses_withif", aggregate = FALSE) }
 #'
 
 calcRiverHumanUses_withif <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",

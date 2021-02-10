@@ -1,10 +1,12 @@
 #' @title toolTurnBackslash
 #' @description turns around backslashes in a string
 #'
+#' @importFrom utils readClipboard
+#'
 #' @return string
 #' @author Felicitas Beier
 
-toolTurnBackslash <- function(x) {
+toolTurnBackslash <- function() {
   # read in string
   x   <- readClipboard()
 

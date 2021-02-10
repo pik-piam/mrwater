@@ -10,7 +10,7 @@
 #' @importFrom madrat toolGetMapping
 
 
-toolLPJcellCoordinates <- function(x, type){
+toolLPJcellCoordinates <- function(type){
 
   # read in LPJmL mapping
   LPJcells <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell", where="mappingfolder")

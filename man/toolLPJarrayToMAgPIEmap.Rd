@@ -4,7 +4,7 @@
 \alias{toolLPJarrayToMAgPIEmap}
 \title{toolLPJarrayToMAgPIEmap}
 \usage{
-toolLPJarrayToMAgPIEmap(x)
+toolLPJarrayToMAgPIEmap()
 }
 \value{
 magpie object with correct dimension for use in plotmap

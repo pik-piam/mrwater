@@ -14,7 +14,14 @@ calcRiverSurplusDischargeAllocation(
   averaging_range = NULL,
   dof = 4,
   harmonize_baseline = "CRU_4",
-  ref_year = "y2015"
+  ref_year = "y2015",
+  allocationrule = "optimization",
+  allocationshare = NULL,
+  thresholdtype = TRUE,
+  gainthreshold = 10,
+  irrigationsystem = "initialization",
+  irrigini = "Jaegermeyr_lpjcell",
+  iniyear = 1995
 )
 }
 \arguments{
@@ -37,6 +44,20 @@ calcRiverSurplusDischargeAllocation(
 \item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
 
 \item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
+
+\item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
+
+\item{allocationshare}{Share of water to be allocated to cell (only needs to be selected in case of allocationrule=="equality")}
+
+\item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
+
+\item{gainthreshold}{Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)}
+
+\item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
+
+\item{irrigini}{When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")}
+
+\item{iniyear}{Initialization year of irrigation system}
 }
 \value{
 magpie object in cellular resolution
@@ -45,9 +66,7 @@ magpie object in cellular resolution
 This function distributes surplus basin discharge following certain management assumptions
 }
 \examples{
-\dontrun{ calcOutput("calcRiverSurplusDischargeAllocation", aggregate = FALSE) }
-
-\seealso{\code{\link{calcRiverNaturalFlows}},\code{\link{calcRiverHumanUses}},\code{\link{calcDischargeNatAndHuman}}}
+\dontrun{ calcOutput("RiverSurplusDischargeAllocation", aggregate = FALSE) }
 
 }
 \author{

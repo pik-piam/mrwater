@@ -20,21 +20,17 @@
 #' \dontrun{ plotIrrigCellranking() }
 
 plotIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                                 cellrankyear="y1995", cells="lpjcell", crops="magpie", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=1995){
+                                 cellrankyear="y1995", crops="magpie", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=1995) {
 
   # read in cell ranking
   x <- calcOutput("IrrigCellranking", version="LPJmL5", cells="lpjcell", aggregate=FALSE,
                   climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
                   cellrankyear=cellrankyear,  crops=crops, method=method, proxycrop=proxycrop, iniyear=iniyear)
 
-
-  toolLPJarrayToMAgPIEmap
-
-
   ### Read in potential yield gain per cell (tons per ha)
   yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                           cells=cells, crops=crops, proxycrop="all", monetary=FALSE, aggregate=FALSE)
+                           cells="lpjcell", crops=crops, proxycrop="all", monetary=FALSE, aggregate=FALSE)
   # select proxy crops
   yield_gain <- yield_gain[,,proxycrop]
 

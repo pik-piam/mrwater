@@ -18,7 +18,7 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("calcRiverNaturalFlows_magpie", aggregate = FALSE) }
+#' \dontrun{ calcOutput("RiverNaturalFlows_magpie", aggregate = FALSE) }
 #'
 
 calcRiverNaturalFlows_magpie <- function(selectyears="all",
