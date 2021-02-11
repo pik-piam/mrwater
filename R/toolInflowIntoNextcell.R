@@ -8,6 +8,8 @@
 #'
 #' @return magpie object
 #' @author Felicitas Beier
+#'
+#' @export
 
 toolInflowIntoNextcell <- function(cell, previous_inflow, cell_discharge) {
 

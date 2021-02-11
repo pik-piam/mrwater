@@ -9,9 +9,11 @@
 #'
 #' @import magclass
 #' @importFrom madrat toolGetMapping
+#'
+#' @export
 
 
-toolLPJcellCoordinates <- function(x, type){
+toolLPJcellCoordinates <- function(x, type) {
 
   # read in LPJmL mapping
   LPJcells <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell", where="mappingfolder")
@@ -25,17 +27,10 @@ toolLPJcellCoordinates <- function(x, type){
 
   if (type=="coord2lpj") {
 
-    # EXAMPLE DATA:
-    #x <- calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="withdrawal", seasonality="total", finalcells="lpjcell", aggregate=FALSE)
-
     out <- x[LPJcells$coordinates,,]
     getCells(out) <- LPJcells$cell
 
   } else if (type=="lpj2coord") {
-
-
-    # EXAMPLE DATA
-    #x <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="runoff_lpjcell", aggregate=FALSE, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
 
     # transform lpjcells to coordinates
     getCells(x) <- LPJcells$coordinates

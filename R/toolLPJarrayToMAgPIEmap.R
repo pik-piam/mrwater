@@ -11,6 +11,8 @@
 #' @author Felicitas Beier
 #'
 #' @import magclass
+#'
+#' @export
 
 
 toolLPJarrayToMAgPIEmap <- function(x) {
