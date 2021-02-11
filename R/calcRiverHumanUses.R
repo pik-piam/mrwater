@@ -59,7 +59,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
     # sort cells
     x <- x[rs$coordinates,,]
     # rename cells (NOTE: THIS IS ONLY TEMPORARILY NECESSARY UNTIL ALL INPUTS ARE PROVIDED AT COORDINATE DATA!!!!)
-    x <- toolLPJcellCoordinates(type="coord2lpj")
+    x <- toolLPJcellCoordinates(x, type="coord2lpj")
     return(x)
   }
   ## Committed agricultural water demand data

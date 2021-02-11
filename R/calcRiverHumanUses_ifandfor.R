@@ -13,7 +13,7 @@
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
+#' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums add_dimension
 #' @importFrom stringr str_split
 #' @import mrmagpie
 #'
@@ -71,12 +71,12 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
               harmonize_baseline=harmonize_baseline, ref_year=ref_year,
               time=time, dof=dof, averaging_range=averaging_range)
   # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  I_yearly_runoff <- .getLPJmLData("runoff_lpjcell",     cfg)
+  yearly_runoff <- .getLPJmLData("runoff_lpjcell",     cfg)
   # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
   input_lake    <- .getLPJmLData("input_lake_lpjcell", cfg)
 
   # Calculate Runoff (on land and water)
-  I_yearly_runoff <- I_yearly_runoff + input_lake
+  yearly_runoff <- yearly_runoff + input_lake
 
   ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
@@ -96,12 +96,20 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
   lake_evap_new <- as.array(lake_evap_new)[,,1]
   NAg_wc        <- as.array(I_NAg_wc)
   NAg_ww        <- as.array(I_NAg_ww)
-  yearly_runoff <- as.array(I_yearly_runoff)[,,1]
+  yearly_runoff <- as.array(yearly_runoff)[,,1]
 
 
   ####################################################
   ###### River Routing considering Human Uses ########
   ####################################################
+
+  if (class(selectyears)=="numeric") {
+    selectyears <- paste0("y",selectyears)
+  }
+
+  out_tmp1 <- NULL
+  out_tmp2 <- NULL
+  out      <- NULL
 
   for (EFP in c("on", "off")) {
 
@@ -114,8 +122,8 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
       required_wat_min[,] <- 0
     }
 
-    for (scen in getNames(NAg_ww)){
-      for (y in selectyears){
+    for (scen in getNames(NAg_ww)) {
+      for (y in selectyears) {
 
         # Discharge considering human uses
         discharge   <- array(data=0,dim=67420)
@@ -135,14 +143,14 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
 
             # available water in cell not sufficient to fulfill requirements
             # -> no more water can be withdrawn
-            if (avl_wat_act[c]<required_wat_min[c,y]){
+            if (avl_wat_act[c]<required_wat_min[c,y]) {
               # if cell has upstreamcells: upstreamcells must release missing water (cannot be consumed upstream)
               # -> reduce non-agricultural water consumption in upstream cells
               # -> locally: cannot withdraw
-              if (length(rs$upstreamcells[[c]])>0){
+              if (length(rs$upstreamcells[[c]])>0) {
                 # upstream non-agricultural water consumption
                 upstream_cons <- sum(NAg_wc[rs$upstreamcells[[c]],y,scen]*frac_NAg_fulfilled[rs$upstreamcells[[c]]])
-                if (upstream_cons>required_wat_min[c,y]-avl_wat_act[c]){
+                if (upstream_cons>required_wat_min[c,y]-avl_wat_act[c]) {
                   # if missing water (difference) can be fulfilled by upstream consumption: reduce upstream consumption
                   frac_NAg_fulfilled[rs$upstreamcells[[c]]] <- (1-(required_wat_min[c,y]-avl_wat_act[c])/upstream_cons)*frac_NAg_fulfilled[rs$upstreamcells[[c]]]
                   discharge[c] <- required_wat_min[c,y]
@@ -157,7 +165,7 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
               # -> further withdrawals are possible
             } else {
               # Non-agricultural withdrawals
-              if (NAg_ww[c,y,scen]>0){
+              if (NAg_ww[c,y,scen]>0) {
                 ## Water withdrawal constraint:
                 frac_NAg_fulfilled[c] <- min((avl_wat_act[c]-required_wat_min[c,y])/NAg_ww[c,y,scen], 1)
               }
@@ -167,38 +175,49 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
               discharge[c] <- avl_wat_act[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
             }
 
-            if (rs$nextcell[c]>0){
+            if (rs$nextcell[c]>0) {
               inflow[rs$nextcell[c]] <- inflow[rs$nextcell[c]] + discharge[c]
             }
           }
         }
 
         # Update minimum water required in cell:
-        required_wat_min <- required_wat_min[,y] + NAg_ww[,y,scen]*frac_NAg_fulfilled
-      }
-    }
-  }
+        required_wat_min[,y] <- required_wat_min[,y] + NAg_ww[,y,scen]*frac_NAg_fulfilled
 
-  ########################
-  ### Output Variables ###
-  ########################
-  if (subtype=="discharge") {
-    out         <- as.magpie(discharge, spatial=1)
-    description <- paste0("Cellular discharge after accounting for human uses: ", humanuse)
-  } else if (subtype=="required_wat_min") {
-    out         <- as.magpie(required_wat_min, spatial=1)
-    description <- paste0("Minimum requirements that need to stay in respective cell after human uses river routing: ", humanuse)
-  } else if (subtype=="frac_fulfilled") {
-    out         <- as.magpie(frac_NAg_fulfilled, spatial=1)
-    description <- paste0("Fraction of human uses (", humanuse, ") that can be fulfilled given local water availabilities and previous water requirements")
-  } else {
-    stop("Please specify subtype that should be returned by this function: discharge, required_wat_min or frac_fulfilled")
-  }
+
+      if (subtype=="discharge") {
+        wat_avl_irrig <- discharge
+        dataname <- "discharge"
+        description="discharge"
+      } else if (subtype=="required_wat_min") {
+        wat_avl_irrig <- required_wat_min[,y]
+        dataname <- "required_wat_min"
+        description="required_wat_min"
+      } else if (subtype=="frac_fulfilled") {
+        wat_avl_irrig <- frac_NAg_fulfilled
+        dataname <- "frac_NAg_fulfilled"
+        description="frac_NAg_fulfilled"
+      } else {
+        stop("Please specify subtype that should be returned by this function: discharge, required_wat_min or frac_fulfilled")
+      }
+
+      wat_avl_irrig <- setNames(setYears(as.magpie(wat_avl_irrig, spatial=1),y), dataname)
+      getCells(wat_avl_irrig) <- rs$cells
+      wat_avl_irrig <- add_dimension(wat_avl_irrig, dim=3.1, add="nonag_scen", nm=scen)
+      wat_avl_irrig <- add_dimension(wat_avl_irrig, dim=3.1, add="EFP", nm=EFP)
+      out_tmp1      <- mbind(out_tmp1, wat_avl_irrig)
+      }
+      out_tmp2 <- mbind(out_tmp2, out_tmp1)
+      out_tmp1 <- NULL
+      }
+    out      <- mbind(out, out_tmp2)
+    out_tmp2 <- NULL
+    }
 
   return(list(
     x=out,
     weight=NULL,
     unit="mio. m^3",
-    description=description,
+    description="test output",
     isocountries=FALSE))
 }
