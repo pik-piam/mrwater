@@ -1,4 +1,4 @@
-#' @title calcRiverHumanUses
+#' @title calcRiverHumanUses_backup
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
@@ -23,12 +23,12 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("RiverHumanUses", aggregate = FALSE) }
+#' \dontrun{ calcOutput("RiverHumanUses_backup", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
+calcRiverHumanUses_backup <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
                                iniyear=1995, irrigini="Jaegermeyr_lpjcell",
-                               version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
+                                  version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
   # # # # # # # # # # #
@@ -96,7 +96,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
   CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3))
 
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, version="LPJmL4", aggregate=FALSE,
+  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, version=version, aggregate=FALSE,
                                                       climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
                                                       harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
 
@@ -110,26 +110,22 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
   }
 
   # bring all inputs to correct object size and transform to array for faster calculation
-  lake_evap_new <- .transformObject(lake_evap_new)
-  CAC_magpie    <- .transformObject(CAC_magpie)
-  CAW_magpie    <- .transformObject(CAW_magpie)
-  NAg_wc        <- .transformObject(I_NAg_wc)
-  NAg_ww        <- .transformObject(I_NAg_ww)
-  yearly_runoff <- .transformObject(I_yearly_runoff)
+  lake_evap_new <- as.array(.transformObject(lake_evap_new))
+  CAC_magpie    <- as.array(.transformObject(CAC_magpie))
+  CAW_magpie    <- as.array(.transformObject(CAW_magpie))
+  NAg_wc        <- as.array(.transformObject(I_NAg_wc))
+  NAg_ww        <- as.array(.transformObject(I_NAg_ww))
+  yearly_runoff <- as.array(.transformObject(I_yearly_runoff))
 
   # helper variables for river routing
-  inflow        <- .transformObject(0)
-  avl_wat_act   <- .transformObject(0)
-  upstream_cons <- .transformObject(0)
-  sufficient_water <- .transformObject(0)
-  insufficient_water <- .transformObject(0)
-  sufficient_upstream   <- .transformObject(0)
-  insufficient_upstream <- .transformObject(0)
+  inflow        <- as.array(.transformObject(0))
+  avl_wat_act   <- as.array(.transformObject(0))
+  upstream_cons <- as.array(.transformObject(0))
+  ##### QUESTION: WHEN IS IT NECESSARY TO PREDEFINE EMPTY ARRAYS? WHEN NOT?
 
   # output variable that will be filled during river routing
-  O_frac_currHuman_fulfilled <- .transformObject(0)
-  O_discharge                <- .transformObject(0)
-
+  O_frac_currHuman_fulfilled <- as.array(.transformObject(0))
+  O_discharge                <- as.array(.transformObject(0))
 
   ########################################################
   ### River Routing accounting for Human Uses and EFRs ###
@@ -139,12 +135,12 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
 
     # Minimum flow requirements determined by natural flow river routing: Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
     IO_required_wat_min         <- new.magpie(cells_and_regions = getCells(yearly_runoff), years = getYears(yearly_runoff), names = c("on", "off"), fill = 0)
-    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, version="LPJmL4", climatetype=climatetype,
+    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, version="LPJmL4", climatetype=climatetype, aggregate=FALSE,
                                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range,
                                               LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                                               EFRyears=c(1980:2010))
     # Bring to correct object size
-    IO_required_wat_min <- .transformObject(IO_required_wat_min)
+    IO_required_wat_min <- as.array(.transformObject(IO_required_wat_min))
 
     ## Current human uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
@@ -153,9 +149,9 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
     currHuman_wc <- NAg_wc
 
     # There are no previous human uses yet to be considered (empty arrays)
-    frac_prevHuman_fulfilled     <- .transformObject(0)
-    prevHuman_wc                 <- .transformObject(0)
-    prevHuman_ww                 <- .transformObject(0)
+    frac_prevHuman_fulfilled     <- as.array(.transformObject(0))
+    prevHuman_wc                 <- as.array(.transformObject(0))
+    prevHuman_ww                 <- as.array(.transformObject(0))
 
   } else if (humanuse=="committed_agriculture") {
 
@@ -191,14 +187,13 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
 
     for (c in cells) {
       # available water in cell
-      avl_wat_act[c,,]  <- inflow[c,,] + yearly_runoff[c,,] - lake_evap_new[c,,]
+      avl_wat_act[c,,]  <- inflow[c,,,drop=F] + yearly_runoff[c,,,drop=F] - lake_evap_new[c,,,drop=F]
 
       ### Is there sufficient water available to fulfill previously determined requirements? ###
-      sufficient_water[c,,]   <- (avl_wat_act[c,,] >= IO_required_wat_min[c,,])
-      insufficient_water[c,,] <- 1 - sufficient_water[c,,]
+      sufficient_water <- (avl_wat_act[c,,,drop=F] >= IO_required_wat_min[c,,,drop=F])
 
       #### (1) Available Water in cell is not sufficient to fulfill previously determined requirements ####
-      ####     (avl_wat_act[c,,] < IO_required_wat_min[c,,])                             ####
+      ####     (avl_wat_act[c,,,drop=F] < IO_required_wat_min[c,,,drop=F])                             ####
       ####      -> no more water can be withdrawn locally                                              ####
       ####      & if possible upstream consumption reduced to release missing water                    ####
 
@@ -210,58 +205,58 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
       if (length(rs$upstreamcells[[c]]) > 0) {
 
         # Determine upstream current water consumption:
-        upstream_cons[c,,] <- dimSums(currHuman_wc[rs$upstreamcells[[c]],,] * O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,], dim=1)
+        upstream_cons[!sufficient_water] <- colSums(currHuman_wc[rs$upstreamcells[[c]],,,drop=F][!sufficient_water] * O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,,drop=F][!sufficient_water], dims=1)
 
         ## (1.1.1) Is current upstream water consumption high enough to release required water dermined by  ##
         ##         previous (priority) routing?                                                             ##
-        ##         (upstream_cons[,,] > (IO_required_wat_min[c,,] - avl_wat_act[c,,])) ##
+        ##         (upstream_cons[,,,drop=F] > (IO_required_wat_min[c,,,drop=F] - avl_wat_act[c,,,drop=F])) ##
         # if cell has upstreamcells: upstreamcells must release missing water (cannot be consumed upstream)
         # -> reduce current water consumption in upstream cells
         # -> locally: cannot withdraw
 
-        sufficient_upstream[c,,]   <- (upstream_cons[c,,] > (IO_required_wat_min[c,,] - avl_wat_act[c,,]))
-        insufficient_upstream[c,,] <- 1 - sufficient_upstream
+        sufficient_upstream <- (upstream_cons[c,,,drop=F] > (IO_required_wat_min[c,,,drop=F] - avl_wat_act[c,,,drop=F]))
 
-        ## (A) upstream_cons high enough to release required water: (upstream_cons[,,] > (IO_required_wat_min[c,,] - avl_wat_act[c,,]))
+        ## (A) upstream_cons high enough to release required water: (upstream_cons[,,,drop=F] > (IO_required_wat_min[c,,,drop=F] - avl_wat_act[c,,,drop=F]))
         ## if upstream_cons high enough to account for difference: reduce upstream consumption respectively
         # Fraction of current human uses that can fulfilled in upstreamcells is reduced by respective amount
-        O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,] <- insufficient_water[c,,] * sufficient_upstream[c,,] * ( 1 - (IO_required_wat_min[c,,] - avl_wat_act[c,,]) / upstream_cons[c,,] ) * O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,]
-
+        O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,][!sufficient_water & sufficient_upstream]  <- ( 1 - (IO_required_wat_min[c,,,drop=F][!sufficient_water & sufficient_upstream] - avl_wat_act[c,,,drop=F][!sufficient_water & sufficient_upstream]) / upstream_cons[c,,,drop=F][!sufficient_water & sufficient_upstream] ) * O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,,drop=F][!sufficient_water & sufficient_upstream]
         # Discharge in current cell when (1) Water not sufficient to fulfill requirements, (1.1) upstreamcells available,
         # (1.1.1) (A) missing water water requirements can be fulfilled by upstream cells
-        O_discharge[c,,]  <- insufficient_water[c,,] * sufficient_upstream[c,,] * IO_required_wat_min[c,,] - prevHuman_wc[c,,] * frac_prevHuman_fulfilled[c,,]
+        O_discharge[c,,][!sufficient_water & sufficient_upstream]  <- IO_required_wat_min[c,,,drop=F][!sufficient_water & sufficient_upstream] - prevHuman_wc[c,,,drop=F][!sufficient_water & sufficient_upstream] * frac_prevHuman_fulfilled[c,,,drop=F][!sufficient_water & sufficient_upstream]
 
-        ## (B) upstream_cons not high enough to release required water: (upstream_cons[,,] <= (IO_required_wat_min[c,,] - avl_wat_act[c,,]))
+        ## (B) upstream_cons not high enough to release required water: (upstream_cons[,,,drop=F] <= (IO_required_wat_min[c,,,drop=F] - avl_wat_act[c,,,drop=F]))
         ## if upstream_cons not sufficient to account for difference: no more water can be used upstream
         # Fraction of current human uses that can fulfilled in upstreamcells is set to 0
-        O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,] <- 0
+        O_frac_currHuman_fulfilled[rs$upstreamcells[[c]],,][!sufficient_water & !sufficient_upstream] <- 0
         # Discharge in current cell when (1) Water not sufficient to fulfill requirements, (1.1) upstreamcells available,
         # (1.1.1) (B) missing water water requirements cannot be fulfilled by upstream cells
         # (since there is not upstream consumption, this water is additionally available in the current cell)
-        O_discharge[c,,] <- avl_wat_act[c,,] + upstream_cons[c,,] - prevHuman_wc[c,,] * frac_prevHuman_fulfilled[c,,]
+        O_discharge[c,,][!sufficient_water & !sufficient_upstream] <- avl_wat_act[c,,,drop=F][!sufficient_water & !sufficient_upstream] + upstream_cons[c,,,drop=F][!sufficient_water & !sufficient_upstream] - prevHuman_wc[c,,,drop=F][!sufficient_water & !sufficient_upstream] * frac_prevHuman_fulfilled[c,,,drop=F][!sufficient_water & !sufficient_upstream]
       }
 
       #### (2) Available Water in cell is sufficient to fulfill previously determined requirements     ####
-      ####     (avl_wat_act[c,,] >= IO_required_wat_min[c,,])                            ####
+      ####     (avl_wat_act[c,,,drop=F] >= IO_required_wat_min[c,,,drop=F])                            ####
       ####      -> further withdrawals possible                                                        ####
+      ## Are there current withdrawals requested? ##
+      curr_withdrawal <- (currHuman_ww[c,,,drop=F] > 0)
 
-      ## If there are current human water withdrawals (currHuman_ww[c,,] > 0)
+      ## If there are current human water withdrawals (currHuman_ww[c,,,drop=F] > 0)
       # Water withdrawal constraint: All withdrawals that can be fulfilled given available water are served
-      O_frac_currHuman_fulfilled[c,,] <- sufficient_water[c,,] * pmin( (avl_wat_act[c,,] - IO_required_wat_min[c,,]) / currHuman_ww[c,,], 1)
+      O_frac_currHuman_fulfilled[c,,][sufficient_water & curr_withdrawal] <- pmin( (avl_wat_act[c,,,drop=F][sufficient_water & curr_withdrawal] - IO_required_wat_min[c,,,drop=F][sufficient_water & curr_withdrawal]) / currHuman_ww[c,,,drop=F][sufficient_water & curr_withdrawal], 1)
 
       # Discharge in current cell for case where sufficient water available for requirements (2)
       # (Subtract local water consumption in current cell (and previous if applicable)
-      O_discharge[c,,] <- sufficient_water[c,,] * (avl_wat_act[c,,] - currHuman_wc[c,,] * O_frac_currHuman_fulfilled[c,,] - prevHuman_wc[c,,] * frac_prevHuman_fulfilled[c,,])
+      O_discharge[c,,][sufficient_water] <- avl_wat_act[c,,,drop=F][sufficient_water] - currHuman_wc[c,,,drop=F][sufficient_water] * O_frac_currHuman_fulfilled[c,,,drop=F][sufficient_water] - prevHuman_wc[c,,,drop=F][sufficient_water] * frac_prevHuman_fulfilled[c,,,drop=F][sufficient_water]
 
       # Inflow to nextcell (if there is a downstreamcell)
       if (rs$nextcell[c]>0) {
-        inflow[rs$nextcell[c],,] <- inflow[rs$nextcell[c],,] + O_discharge[c,,]
+        inflow[rs$nextcell[c],,] <- inflow[rs$nextcell[c],,,drop=F] + O_discharge[c,,,drop=F]
       }
     }
   }
 
   # Update minimum water required in cell (for further river processing steps):
-  IO_required_wat_min[,,] <- IO_required_wat_min[,,] + currHuman_ww[,,] * O_frac_currHuman_fulfilled[,,]
+  IO_required_wat_min[,,] <- IO_required_wat_min[,,,drop=F] + currHuman_ww[,,,drop=F] * O_frac_currHuman_fulfilled[,,,drop=F]
 
   ########################
   ### Output Variables ###

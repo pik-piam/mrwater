@@ -1,4 +1,4 @@
-#' @title calcRiverHumanUses_ifandfor
+#' @title calcRiverHumanUses_year
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
@@ -21,10 +21,10 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("RiverHumanUses_ifandfor", aggregate = FALSE) }
+#' \dontrun{ calcOutput("RiverHumanUses_year", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
+calcRiverHumanUses_year <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
@@ -114,9 +114,9 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
   for (EFP in c("on", "off")) {
 
     required_wat_min <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, version="LPJmL4", climatetype=climatetype, aggregate=FALSE,
+                                      LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                                    harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range,
-                                   LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
-                                      EFRyears=c(1980:2010))
+                                   EFRyears=c(1980:2010))
     required_wat_min <- as.array(required_wat_min)[,,1]
 
     if (EFP=="off"){

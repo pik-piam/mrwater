@@ -155,6 +155,7 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
     # Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
     EFR_magpie <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, version="LPJmL4", climatetype=climatetype, aggregate=FALSE,
                              LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
+                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range,
                              EFRyears=c(1980:2010))
 
     if (EFP=="off") {

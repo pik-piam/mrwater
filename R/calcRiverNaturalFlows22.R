@@ -95,26 +95,26 @@ calcRiverNaturalFlows22 <- function(selectyears="all",
     discharge_nat[c,,] <- inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F] - lake_evap_new[c,,,drop=F]
 
     # inflow into nextcell
-    toolInflowIntoNextcell(cell= c , previous_inflow = inflow_nat, cell_discharge = discharge_nat)
-    # if (any(rs$nextcell[c] > 0)) {
-    #   current  <- c[rs$nextcell[c] > 0]
-    #   nextcell <- rs$nextcell[current]
-    #
-    #   # inflow needs to be calculated for all nextcells separately to account for
-    #   # fact that there can be several cells that discharge into same nextcell
-    #   while (length(current) > 0) {
-    #     dn            <- duplicated(nextcell)
-    #     rest_c        <- current[dn]
-    #     current       <- current[!dn]
-    #     rest_nextcell <- nextcell[dn]
-    #     nextcell      <- nextcell[!dn]
-    #
-    #     inflow_nat[nextcell,,] <- inflow_nat[nextcell,,] + discharge_nat[current,,]
-    #
-    #     nextcell <- rest_nextcell
-    #     current  <- rest_c
-    #   }
-    # }
+    #toolInflowIntoNextcell(cell= c , previous_inflow = inflow_nat, cell_discharge = discharge_nat)
+    if (any(rs$nextcell[c] > 0)) {
+      current  <- c[rs$nextcell[c] > 0]
+      nextcell <- rs$nextcell[current]
+
+      # inflow needs to be calculated for all nextcells separately to account for
+      # fact that there can be several cells that discharge into same nextcell
+      while (length(current) > 0) {
+        dn            <- duplicated(nextcell)
+        rest_c        <- current[dn]
+        current       <- current[!dn]
+        rest_nextcell <- nextcell[dn]
+        nextcell      <- nextcell[!dn]
+
+        inflow_nat[nextcell,,] <- inflow_nat[nextcell,,] + discharge_nat[current,,]
+
+        nextcell <- rest_nextcell
+        current  <- rest_c
+      }
+    }
 
     calculated <- c(calculated, c)
   }
