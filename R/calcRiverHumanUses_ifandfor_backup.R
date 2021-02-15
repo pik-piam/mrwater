@@ -1,4 +1,4 @@
-#' @title calcRiverHumanUses_ifandfor
+#' @title calcRiverHumanUses_ifandfor_backup
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
@@ -21,10 +21,10 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("RiverHumanUses_ifandfor", aggregate = FALSE) }
+#' \dontrun{ calcOutput("RiverHumanUses_ifandfor_backup", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
+calcRiverHumanUses_ifandfor_backup <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
