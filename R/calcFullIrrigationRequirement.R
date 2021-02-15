@@ -43,7 +43,7 @@ calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2
     crops_grown    <- collapseNames(dimSums(crops_grown,dim=3))
     land           <- land - crops_grown
   }
-  # negative values may occur because AvlLandSi is based on Ramankutty data and Cropara based on LUH -> set to 0
+  # negative values may occur because AvlLandSi is based on Ramankutty data and Croparea based on LUH -> set to 0
   land[land<0] <- 0
 
   # water requirements for full irrigation in cell per crop (in mio. m^3)

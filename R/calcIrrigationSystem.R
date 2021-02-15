@@ -10,6 +10,8 @@
 #' \dontrun{ calcOutput("IrrigationSystem",source="Jaegermeyr_lpjcell",aggregate = FALSE) }
 #'
 #' @importFrom utils read.csv
+#' @importFrom madrat readSource
+#' @importFrom magclass getSets
 
 calcIrrigationSystem <- function(source="Jaegermeyr_lpjcell"){
 

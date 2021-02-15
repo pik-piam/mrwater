@@ -7,7 +7,7 @@
 #' @examples
 #' \dontrun{ readSource("IrrigationSystem", convert="onlycorrect") }
 #'
-#' @import madrat
+#' @importFrom madrat toolCountry2isocode toolCountryFill toolGetMapping
 #' @import magclass
 #' @importFrom mrcommons toolCell2isoCell
 
