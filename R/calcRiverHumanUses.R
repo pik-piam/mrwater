@@ -185,7 +185,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
 
     for (c in cells) {
 
-      if (c==51190) stop("check loop")
+      #if (c==51190) stop("check loop")
 
       # available water in cell
       avl_wat_act[c,,]  <- inflow[c,,,drop=F] + yearly_runoff[c,,,drop=F] - lake_evap_new[c,,,drop=F]
