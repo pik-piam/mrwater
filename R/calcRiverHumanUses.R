@@ -123,10 +123,10 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
   upstream_cons <- as.array(.transformObject(0))
 
   # true-false objects as if conditions
-  sufficient_water      <- as.array(.transformObject(NA))
-  insufficient_water    <- as.array(.transformObject(NA))
-  sufficient_upstream   <- as.array(.transformObject(NA))
-  insufficient_upstream <- as.array(.transformObject(NA))
+  #sufficient_water      <- as.array(.transformObject(FALSE))
+  #insufficient_water    <- as.array(.transformObject(NA))
+  #sufficient_upstream   <- as.array(.transformObject(NA))
+  #insufficient_upstream <- as.array(.transformObject(NA))
 
   # output variable that will be filled during river routing
   O_discharge    <- as.array(.transformObject(0))
@@ -185,14 +185,14 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
 
     for (c in cells) {
 
-      #if (c==51190) stop("check loop")
+     # if (c==2806) stop("check loop from here")
 
       # available water in cell
       avl_wat_act[c,,]  <- inflow[c,,,drop=F] + yearly_runoff[c,,,drop=F] - lake_evap_new[c,,,drop=F]
 
       ### Is there sufficient water available to fulfill previously determined requirements? ###
-      sufficient_water[c,,]   <- (avl_wat_act[c,,,drop=F] >= IO_required_wat_min[c,,,drop=F])
-      insufficient_water[c,,] <- !sufficient_water[c,,,drop=F]
+      sufficient_water  <- (avl_wat_act[c,,,drop=F] >= IO_required_wat_min[c,,,drop=F])
+      #insufficient_water[c,,] <- !sufficient_water[c,,,drop=F]
 
       #### (1) Available Water in cell is not sufficient to fulfill previously determined requirements ####
       ####     (avl_wat_act[c,,] < IO_required_wat_min[c,,])                                           ####
@@ -207,44 +207,47 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
         up <- unlist(rs$upstreamcells[[c]])
         # vector of c in length of upstreamcells of c
         lc <- rep(c, length(rs$upstreamcells[[c]]))
+        cc <- rep(1:length(c), length(rs$upstreamcells[[c]]))
+
+        #if (1000 %in% up & any(insufficient_water[c,,]==1)) stop("check loop")
 
         # Determine upstream current water consumption:
         upstream_cons[c,,] <- colSums(currHuman_wc[up,,,drop=F], dims=1)
 
         ### (A or B) Is there current upstream water consumption that can be reduced to release water ###
         ###          required by previous (prioritary) uses?                                          ###
-        sufficient_upstream[c,,]   <- (upstream_cons[c,,,drop=F] > (IO_required_wat_min[c,,,drop=F] - avl_wat_act[c,,,drop=F]))
-        insufficient_upstream[c,,] <- !sufficient_upstream[c,,,drop=F]
+        sufficient_upstream   <- (upstream_cons[c,,,drop=F] > (IO_required_wat_min[c,,,drop=F] - avl_wat_act[c,,,drop=F]))
+        #insufficient_upstream[c,,] <- !sufficient_upstream[c,,,drop=F]
 
         ## (A) upstream_cons high enough to release required water:
         ## -> reduce upstream consumption respectively
         # Consumption constraint: fraction that stays in upstream cell(s) = 1 - fraction of water that needs to be released by each upstream cell
-        frac_wc_constraint <- 1 - pmin((IO_required_wat_min[lc,,,drop=F] - avl_wat_act[lc,,,drop=F])[insufficient_water[lc,,,drop=F] & sufficient_upstream[lc,,,drop=F]] / upstream_cons[lc,,,drop=F][insufficient_water[lc,,,drop=F] & sufficient_upstream[lc,,,drop=F]], 1)
+        frac_wc_constraint <- 1 - (IO_required_wat_min[lc,,,drop=F] - avl_wat_act[lc,,,drop=F])[!sufficient_water[cc,,] & sufficient_upstream[cc,,]] / upstream_cons[lc,,,drop=F][!sufficient_water[cc,,] & sufficient_upstream[cc,,]]
         # correct fraction where NA (0/0)
         #frac_wc_constraint[is.na(frac_wc_constraint)] <- 0
 
         # Current human uses (consumption and withdrawal) in upstreamcells is reduced by respective amount
-        currHuman_wc[up,,][insufficient_water[lc,,,drop=F] & sufficient_upstream[lc,,,drop=F]] <- frac_wc_constraint * (currHuman_wc[up,,,drop=F])[insufficient_water[lc,,,drop=F] & sufficient_upstream[lc,,,drop=F]]
-        currHuman_ww[up,,][insufficient_water[lc,,,drop=F] & sufficient_upstream[lc,,,drop=F]] <- frac_wc_constraint * (currHuman_ww[up,,,drop=F])[insufficient_water[lc,,,drop=F] & sufficient_upstream[lc,,,drop=F]]
+        currHuman_wc[up,,][!sufficient_water[cc,,] & sufficient_upstream[cc,,]] <- frac_wc_constraint * (currHuman_wc[up,,,drop=F])[!sufficient_water[cc,,] & sufficient_upstream[cc,,]]
+        currHuman_ww[up,,][!sufficient_water[cc,,] & sufficient_upstream[cc,,]] <- frac_wc_constraint * (currHuman_ww[up,,,drop=F])[!sufficient_water[cc,,] & sufficient_upstream[cc,,]]
 
         # Discharge in current cell when water not sufficient to fulfill requirements,
         # but missing water water requirements can be fulfilled by upstream cells (A)
-        O_discharge[c,,][insufficient_water[c,,,drop=F] & sufficient_upstream[c,,,drop=F]]  <-  (IO_required_wat_min[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[insufficient_water[c,,,drop=F] & sufficient_upstream[c,,,drop=F]]
+        O_discharge[c,,][!sufficient_water & sufficient_upstream]  <-  (IO_required_wat_min[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[!sufficient_water & sufficient_upstream]
 
         ## (B) upstream_cons not high enough to release required water:
         ## -> no water can be used upstream (current human uses in upstreamcells are set to 0)
-        currHuman_wc[up,,][insufficient_water[lc,,,drop=F] & insufficient_upstream[lc,,,drop=F]] <- 0
-        currHuman_ww[up,,][insufficient_water[lc,,,drop=F] & insufficient_upstream[lc,,,drop=F]] <- 0
+        currHuman_wc[up,,][!sufficient_water[cc,,] & !sufficient_upstream[cc,,]] <- 0
+        currHuman_ww[up,,][!sufficient_water[cc,,] & !sufficient_upstream[cc,,]] <- 0
 
         # Discharge in current cell when (1) Water not sufficient to fulfill requirements, (1.1) upstreamcells available,
         # (1.1.1) (B) missing water water requirements cannot be fulfilled by upstream cells
         # (since there is not upstream consumption, this water is additionally available in the current cell)
-        O_discharge[c,,][insufficient_water[c,,,drop=F] & insufficient_upstream[c,,,drop=F]] <- (avl_wat_act[c,,,drop=F] + upstream_cons[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[insufficient_water[c,,,drop=F] & insufficient_upstream[c,,,drop=F]]
+        O_discharge[c,,][!sufficient_water & !sufficient_upstream] <- (avl_wat_act[c,,,drop=F] + upstream_cons[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[!sufficient_water & !sufficient_upstream]
       } else {
         # insufficient water and no upstream cells: no additional withdrawals take place
-        currHuman_wc[c,,][insufficient_water[c,,,drop=F]] <- 0
-        currHuman_ww[c,,][insufficient_water[c,,,drop=F]] <- 0
-        O_discharge[c,,][insufficient_water[c,,,drop=F]]  <- 0 #not necessary b/c initialized to 0
+        currHuman_wc[c,,][!sufficient_water] <- 0
+        currHuman_ww[c,,][!sufficient_water] <- 0
+        O_discharge[c,,][!sufficient_water]  <- 0 #not necessary b/c initialized to 0
       }
 
       #### (2) Available Water in cell is sufficient to fulfill previously determined requirements     ####
@@ -252,16 +255,17 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", su
       ####      -> further withdrawals possible                                                        ####
 
       ## If there are current human water withdrawals (currHuman_ww[c,,] > 0)
+      positive_ww <- (currHuman_ww[c,,,drop=F]>0)
       # Water withdrawal constraint: All withdrawals that can be fulfilled given available water are served
-      frac_ww_constraint <- pmin( (avl_wat_act[c,,,drop=F] - IO_required_wat_min[c,,,drop=F])[sufficient_water[c,,,drop=F] & currHuman_ww[c,,,drop=F]>0] / currHuman_ww[c,,,drop=F][sufficient_water[c,,,drop=F] & currHuman_ww[c,,,drop=F]>0], 1)
+      frac_ww_constraint <- pmin( (avl_wat_act[c,,,drop=F] - IO_required_wat_min[c,,,drop=F])[sufficient_water & positive_ww] / currHuman_ww[c,,,drop=F][sufficient_water & positive_ww], 1)
       # correct fraction where NA (0/0)
       #frac_ww_constraint[is.na(frac_ww_constraint)] <- 0
-      currHuman_wc[c,,][sufficient_water[c,,,drop=F] & currHuman_ww[c,,,drop=F]>0] <- frac_ww_constraint * (currHuman_wc[c,,,drop=F])[sufficient_water[c,,,drop=F] & currHuman_ww[c,,,drop=F]>0]
-      currHuman_ww[c,,][sufficient_water[c,,,drop=F] & currHuman_ww[c,,,drop=F]>0] <- frac_ww_constraint * (currHuman_ww[c,,,drop=F])[sufficient_water[c,,,drop=F] & currHuman_ww[c,,,drop=F]>0]
+      currHuman_wc[c,,][sufficient_water & positive_ww] <- frac_ww_constraint * (currHuman_wc[c,,,drop=F])[sufficient_water & positive_ww]
+      currHuman_ww[c,,][sufficient_water & positive_ww] <- frac_ww_constraint * (currHuman_ww[c,,,drop=F])[sufficient_water & positive_ww]
 
       # Discharge in current cell for case where sufficient water available for requirements (2)
       # (Subtract local water consumption in current cell (and previous if applicable)
-      O_discharge[c,,][sufficient_water[c,,,drop=F]] <- (avl_wat_act[c,,,drop=F] - currHuman_wc[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[sufficient_water[c,,,drop=F]]
+      O_discharge[c,,][sufficient_water] <- (avl_wat_act[c,,,drop=F] - currHuman_wc[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[sufficient_water]
 
      # if (any(is.na(currHuman_wc))) stop("currHuman_wc is na")
       #if (any(is.na(currHuman_ww))) stop("currHuman_ww is na")

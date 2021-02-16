@@ -139,6 +139,9 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
           cells <- which(rs$calcorder==o)
 
           for (c in cells){
+
+          #  if (c==2806) stop("check loop from here")
+
             # available water in cell
             avl_wat_act[c]  <- inflow[c]+yearly_runoff[c,y]-lake_evap_new[c,y]
 
