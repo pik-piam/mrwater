@@ -27,7 +27,9 @@ toolLPJcellCoordinates <- function(x, type) {
 
   if (type=="coord2lpj") {
 
+    # sort cells
     out <- x[LPJcells$coordinates,,]
+    # rename
     getCells(out) <- LPJcells$cell
 
   } else if (type=="lpj2coord") {
