@@ -60,14 +60,14 @@ readIrrigationSystem <- function(subtype="Jaegermeyr_magpiecell"){
   }
 
   # Object dimensions
-  if (grepl("lpjcell", subtype)){
+  if (grepl("lpjcell", subtype)) {
     lpj_map <- toolGetMapping("LPJ_CellBelongingsToCountries.csv",type="cell")
     tmp           <- x
     getCells(tmp) <- paste(getCells(tmp),magclassdata$cellbelongings$LPJ_input.Index,sep=".")
     x   <- new.magpie(cells_and_regions=paste(lpj_map$ISO,1:67420,sep="."),years=NULL,getNames(x),fill=0)
     x[magclassdata$cellbelongings$LPJ_input.Index,,] <- tmp[,,]
     x   <- toolCell2isoCell(x,cells="lpjcell")
-  } else if (grepl("magpiecell", subtype)){
+  } else if (grepl("magpiecell", subtype)) {
     x   <- toolCell2isoCell(x,cells="magpiecell")
   }
 

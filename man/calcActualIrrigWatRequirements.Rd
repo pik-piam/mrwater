@@ -7,8 +7,8 @@
 calcActualIrrigWatRequirements(
   selectyears = "all",
   iniyear = 1995,
-  cells = "magpiecell",
   crops = "magpie",
+  irrig_system_source = "Jaegermeyr_lpjcell",
   version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "raw",
@@ -16,8 +16,7 @@ calcActualIrrigWatRequirements(
   dof = NULL,
   harmonize_baseline = FALSE,
   ref_year = NULL,
-  irrig_requirement = "withdrawal",
-  irrig_system_source = "Jaegermeyr_magpiecell"
+  irrig_requirement = "withdrawal"
 )
 }
 \arguments{
@@ -25,9 +24,9 @@ calcActualIrrigWatRequirements(
 
 \item{iniyear}{Initialization year (for weight by cropland)}
 
-\item{cells}{Switch between "lpjcell" (67420) and "magpiecell" (59199)}
-
 \item{crops}{Selects "magpie" (default) or "lpjml" crops}
+
+\item{irrig_system_source}{Source of irrigation system initialization data including information about cellular detail (e.g. Jaegermeyr_magpiecell)}
 
 \item{version}{Switch between LPJmL4 and LPJmL5}
 
@@ -44,8 +43,6 @@ calcActualIrrigWatRequirements(
 \item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 
 \item{irrig_requirement}{Consumptive (consumption) or non-consumptive (withdrawals) irrigation water requirements}
-
-\item{irrig_system_source}{Source of irrigation system initialization data including information about cellular detail (e.g. Jaegermeyr_magpiecell)}
 }
 \value{
 magpie object in cellular resolution

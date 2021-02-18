@@ -7,8 +7,7 @@
 calcIrrigatedArea(
   selectyears = seq(1995, 2100, by = 5),
   iniyear = 1995,
-  depreciation = 0.1,
-  cells = "lpjcell"
+  depreciation = 0.1
 )
 }
 \arguments{
@@ -17,8 +16,6 @@ calcIrrigatedArea(
 \item{iniyear}{initialization year}
 
 \item{depreciation}{parameter defining yearly depreciation rate at which previously irrigated cropland becomes "unreserved" for irrigation}
-
-\item{cells}{cells to be returned by the function (lpjcell or magpiecell)}
 }
 \value{
 magpie object in cellular resolution

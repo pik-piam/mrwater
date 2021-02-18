@@ -51,7 +51,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
-  CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,cells="lpjcell",iniyear=iniyear,irrigini=paste0(unlist(str_split(irrigini, "_"))[[1]],"_lpjcell"),time=time,dof=dof,averaging_range=averaging_range,harmonize_baseline=harmonize_baseline,ref_year=ref_year,aggregate=FALSE)
+  CAU_magpie <- calcOutput("WaterUseCommittedAg", aggregate=FALSE, selectyears=selectyears, iniyear=iniyear, irrigini=paste0(unlist(str_split(irrigini, "_"))[[1]],"_lpjcell"), time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   CAW_magpie <- collapseNames(dimSums(CAU_magpie[,,"withdrawal"],dim=3))
   CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3))
 

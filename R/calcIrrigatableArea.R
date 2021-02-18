@@ -99,7 +99,7 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
     # land <- collapseNames(calcOutput("AvlLandSi", aggregate=FALSE)[,,"si0"])
     # if (iniarea) {
     #   # subtract area already reserved for irrigation by committed agricultural uses (in mio. ha)
-    #   crops_grown    <- calcOutput("IrrigatedArea", selectyears=selectyears, iniyear=iniyear, cells="magpiecell", aggregate=FALSE)
+    #   crops_grown    <- calcOutput("IrrigatedArea", selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
     #   crops_grown    <- collapseNames(dimSums(crops_grown,dim=3))
     #   land           <- land - crops_grown
     # }

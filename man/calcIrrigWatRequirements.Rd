@@ -6,7 +6,6 @@
 \usage{
 calcIrrigWatRequirements(
   selectyears = "all",
-  cells = "lpjcell",
   crops = "magpie",
   version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
@@ -14,14 +13,11 @@ calcIrrigWatRequirements(
   averaging_range = NULL,
   dof = 4,
   harmonize_baseline = FALSE,
-  ref_year = NULL,
-  irrig_requirement = "withdrawal"
+  ref_year = NULL
 )
 }
 \arguments{
 \item{selectyears}{Years to be returned}
-
-\item{cells}{Switch between "lpjcell" (67420) and "magpiecell" (59199)}
 
 \item{crops}{Selects "magpie" (default) or "lpjml" crops}
 
@@ -38,8 +34,6 @@ calcIrrigWatRequirements(
 \item{harmonize_baseline}{FALSE (default): no harmonization of input data to this function, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
 
 \item{ref_year}{Reference year for harmonization baseline of input data to this function (just specify when harmonize_baseline=TRUE)}
-
-\item{irrig_requirement}{Consumptive (consumption) or non-consumptive (withdrawals) irrigation water requirements}
 }
 \value{
 magpie object in cellular resolution

@@ -1,11 +1,10 @@
-#' @title calcActualIrrigWatRequirements
+#' @title       calcActualIrrigWatRequirements
 #' @description This function calculates actual irrigation water requirements per cell given a certain irrigation system
 #'
 #' @param selectyears Years to be returned
 #' @param iniyear     Initialization year (for weight by cropland)
 #' @param version     Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
-#' @param cells       Switch between "lpjcell" (67420) and "magpiecell" (59199)
 #' @param crops       Selects "magpie" (default) or "lpjml" crops
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -28,18 +27,12 @@
 #' @import magclass
 #' @import madrat
 
-calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, cells="magpiecell", crops="magpie",
+calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, crops="magpie", irrig_system_source="Jaegermeyr_lpjcell",
                                      version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="raw", averaging_range=NULL, dof=NULL,
-                                     harmonize_baseline=FALSE, ref_year=NULL, irrig_requirement="withdrawal", irrig_system_source="Jaegermeyr_magpiecell"){
-
-  if (cells!=gsub(".*_","",irrig_system_source)){
-    stop("Cells mismatch. Please select the same cell type in the function arguments cells and irrig_system_source!")
-  }
+                                     harmonize_baseline=FALSE, ref_year=NULL, irrig_requirement="withdrawal") {
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
-  irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", selectyears=selectyears, cells=cells, crops=crops, irrig_requirement=irrig_requirement,
-                                      version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
-                                      harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
+  irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", aggregate=FALSE, crops=crops, selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   irrig_wat_requirement        <- irrig_wat_requirement[,,"pasture",invert=T]
   names(dimnames(irrig_wat_requirement))[1] <- "iso.cell"
   names(dimnames(irrig_wat_requirement))[3] <- "crop.system"
@@ -48,24 +41,24 @@ calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, cell
   irrig_system_share           <- calcOutput("IrrigationSystem", source=irrig_system_source, aggregate=FALSE)
 
   # composite mean
-  mean_irrig_wat_requirement   <- dimSums(irrig_system_share*irrig_wat_requirement,dim=3.1)/dimSums(irrig_system_share, dim=3)
+  mean_irrig_wat_requirement   <- dimSums(irrig_system_share * irrig_wat_requirement,dim=3.1) / dimSums(irrig_system_share, dim=3)
 
   # Correction of years
-  if(selectyears!="all"){
+  if (selectyears!="all") {
     years                      <- sort(findset(selectyears,noset="original"))
     mean_irrig_wat_requirement <- mean_irrig_wat_requirement[,years,]
   }
 
   # Check for NAs and negative values
-  if(any(is.na(mean_irrig_wat_requirement))){
+  if (any(is.na(mean_irrig_wat_requirement))) {
     stop("produced NA irrigation water requirements")
   }
-  if(any(mean_irrig_wat_requirement<0)){
+  if (any(mean_irrig_wat_requirement<0)) {
     stop("produced negative irrigation water requirements")
   }
 
   # irrigated cropland area as weight
-  irrig_area <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells=cells, physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
+  irrig_area <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
   irrig_area <- collapseNames(irrig_area[,,"irrigated"])+1e-9
 
   return(list(

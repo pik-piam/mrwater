@@ -8,7 +8,6 @@ calcWaterUseCommittedAg(
   version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   selectyears = seq(1995, 2095, by = 5),
-  cells = "lpjcell",
   time = "spline",
   dof = 4,
   averaging_range = NULL,
@@ -24,8 +23,6 @@ calcWaterUseCommittedAg(
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
 \item{selectyears}{Years to be returned}
-
-\item{cells}{Cells to be returned by the function (lpjcell or magpiecell)}
 
 \item{time}{Time smoothing: average or spline (default)}
 

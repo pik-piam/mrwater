@@ -34,7 +34,8 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), version="LPJmL5", clim
 
   # Read in irrigation water requirement (withdrawals) (in m^3 per hectar per year) [smoothed and harmonized]
   # Note: Following D'Odorico et al. (2020), results refer to water withdrawals (because that's what one would pay for rather than for consumption)
-  irrig_withdrawal <- calcOutput("IrrigWatRequirements", version=version, cells="lpjcell", selectyears=iniyear, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, irrig_requirement="withdrawal", aggregate=FALSE)
+  irrig_withdrawal <- calcOutput("IrrigWatRequirements", aggregate=FALSE, version=version, selectyears=iniyear, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof)
+  irrig_withdrawal <- collapseNames(irrig_withdrawal[,,"withdrawal"])
   irrig_withdrawal <- irrig_withdrawal[,,intersect(gsub("[.].*","",getNames(irrig_withdrawal)), getNames(yield_gain))]
 
   # Read in irrigation system area initialization

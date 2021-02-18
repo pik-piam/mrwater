@@ -4,7 +4,6 @@
 #' @param iniyear      initialization year
 #' @param selectyears  select years
 #' @param depreciation parameter defining yearly depreciation rate at which previously irrigated cropland becomes "unreserved" for irrigation
-#' @param cells        cells to be returned by the function (lpjcell or magpiecell)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -12,10 +11,10 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigatedArea", aggregate=FALSE) }
 #'
-#' @import magclass
-#' @import magpiesets
+#' @importFrom madrat calcOutput
+#' @importFrom magclass collapseNames new.magpie getCells getNames
 
-calcIrrigatedArea <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, depreciation=0.1, cells="lpjcell"){
+calcIrrigatedArea <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, depreciation=0.1){
 
   # Read in data: crop- and water supply type specific crop area (in Mha) in initialization year:
   tmp <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
@@ -36,26 +35,16 @@ calcIrrigatedArea <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, dep
     tmp     <- tmp * dep_adj
   }
 
-  ### Correct number of cells
-  if (cells=="lpjcell") {
-    out <- irrig_area
-  } else if (cells=="magpiecell") {
-    out <- irrig_area[magclassdata$cellbelongings$LPJ_input.Index,,]
-    out <- toolCell2isoCell(out)
-  } else {
-    stop("Cell argument not supported. Select lpjcell for 67420 cells or magpiecell for 59199 cells")
-  }
-
   # check for NAs and negative values
-  if(any(is.na(out))) {
+  if (any(is.na(irrig_area))) {
     stop("produced NA irrigation water requirements")
   }
-  if(any(out<0)) {
+  if (any(irrig_area<0)) {
     stop("produced negative irrigation water requirements")
   }
 
   return(list(
-    x=out,
+    x=irrig_area,
     weight=NULL,
     unit="mio. ha",
     description="Cropland area reserved for irrigation per crop",

@@ -21,9 +21,8 @@
 #' \dontrun{ calcOutput("EnvmtlFlowRequirementsShare", aggregate=FALSE) }
 #'
 
-calcEnvmtlFlowRequirementsShare <- function(version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2",
-                                       LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
-                                       EFRyears=c(1985:2015)){
+calcEnvmtlFlowRequirementsShare <- function(version="LPJmL4", EFRyears=c(1985:2015), climatetype="HadGEM2_ES:rcp2p6:co2",
+                                       LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00) {
 
   # Long-term reference period for EFR calculation
   EFRyears <- paste0("y",EFRyears)
@@ -75,7 +74,7 @@ calcEnvmtlFlowRequirementsShare <- function(version="LPJmL4", climatetype="HadGE
   EFR <- as.magpie(EFR, spatial=1)
 
   # Check for NAs
-  if(any(is.na(EFR))){
+  if (any(is.na(EFR))) {
     stop("produced NA EFR")
   }
 

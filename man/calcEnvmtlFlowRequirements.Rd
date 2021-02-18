@@ -7,8 +7,8 @@
 calcEnvmtlFlowRequirements(
   version = "LPJmL4",
   selectyears = "all",
+  EFRyears = c(1985:2015),
   climatetype = "HadGEM2_ES:rcp2p6:co2",
-  cells = "lpjcell",
   time = "spline",
   averaging_range = NULL,
   dof = 4,
@@ -18,8 +18,7 @@ calcEnvmtlFlowRequirements(
   HFR_LFR_less10 = 0.2,
   HFR_LFR_10_20 = 0.15,
   HFR_LFR_20_30 = 0.07,
-  HFR_LFR_more30 = 0,
-  EFRyears = c(1985:2015)
+  HFR_LFR_more30 = 0
 )
 }
 \arguments{
@@ -27,9 +26,9 @@ calcEnvmtlFlowRequirements(
 
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
-\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
+\item{EFRyears}{Long-term reference time frame for EFR calculation}
 
-\item{cells}{Number of cells to be reported: lpjcell (67420, default) or magpiecell (59199)}
+\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
 \item{time}{Time smoothing: average, spline or raw (default)}
 
@@ -50,8 +49,6 @@ calcEnvmtlFlowRequirements(
 \item{HFR_LFR_20_30}{High flow requirements (share of total water for cells) with 20percent < LFR < 30percent of total water}
 
 \item{HFR_LFR_more30}{High flow requirements (share of total water for cells) with LFR>30percent of total water}
-
-\item{EFRyears}{Long-term reference time frame for EFR calculation}
 }
 \value{
 magpie object in cellular resolution

@@ -1,4 +1,4 @@
-#' @title calcIrrigationSystem
+#' @title       calcIrrigationSystem
 #' @description This function returns the irrigation system share initialization
 #'
 #' @param source Data source to be used: Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or LPJmL (dominant irrigation system per country) and number of cells (lpjcell or magpiecell) separated by _
@@ -7,17 +7,17 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("IrrigationSystem",source="Jaegermeyr_lpjcell",aggregate = FALSE) }
+#' \dontrun{ calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate = FALSE) }
 #'
 #' @importFrom utils read.csv
 #' @importFrom madrat readSource
-#' @importFrom magclass getSets
+#' @importFrom magclass getSets getCells
 
 calcIrrigationSystem <- function(source="Jaegermeyr_lpjcell"){
 
   # Jägermeyr et al. (2015): Shares of surface, sprinkler and drip irrigated areas
   # (Note: compiled from FAO (2014), ICID (2012), Rohwer et al. (2007))
-  if (grepl("Jaegermeyr", source)){
+  if (grepl("Jaegermeyr", source)) {
 
     # Read in source
     x           <- readSource("IrrigationSystem", convert="onlycorrect", subtype=source)
@@ -26,7 +26,7 @@ calcIrrigationSystem <- function(source="Jaegermeyr_lpjcell"){
 
   # Irrigation functional type (IFT) from LPJmL representing the dominant irrigation system per country
   # (Note: share of 100% of dominant system assumed)
-  if (grepl("LPJmL", source)){
+  if (grepl("LPJmL", source)) {
 
     # Read in source
     tmp <- readSource("IrrigationSystem", convert="onlycorrect", subtype=source)
@@ -58,10 +58,10 @@ calcIrrigationSystem <- function(source="Jaegermeyr_lpjcell"){
   getSets(x)[4]      <- "system"
 
   # Checks
-  if(any(is.na(x))){
+  if (any(is.na(x))) {
     stop("produced NA irrigation system share")
   }
-  if (any(round(dimSums(x, dim=3))!=1)){
+  if (any(round(dimSums(x, dim=3))!=1)) {
     stop("sum over shares not equal to 1")
   }
 

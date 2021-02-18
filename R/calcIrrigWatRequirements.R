@@ -1,17 +1,15 @@
-#' @title calcIrrigWatRequirements
+#' @title       calcIrrigWatRequirements
 #' @description This function calculates irrigation water requirements based on LPJmL blue water consumption of plants and considering irrigation efficiencies
 #'
 #' @param selectyears Years to be returned
 #' @param version     Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
-#' @param cells       Switch between "lpjcell" (67420) and "magpiecell" (59199)
-#' @param crops       Selects "magpie" (default) or "lpjml" crops
 #' @param time            Time smoothing: average, spline or raw (default) of input data to this function
 #' @param averaging_range only specify if time=="average": number of time steps to average
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param harmonize_baseline FALSE (default): no harmonization of input data to this function, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline of input data to this function (just specify when harmonize_baseline=TRUE)
-#' @param irrig_requirement  Consumptive (consumption) or non-consumptive (withdrawals) irrigation water requirements
+#' @param crops       Selects "magpie" (default) or "lpjml" crops
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -19,13 +17,13 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigWatRequirements", aggregate=FALSE) }
 #'
-#' @import magpiesets
-#' @import magclass
-#' @import madrat
+#' @importFrom magpiesets findset
+#' @importFrom magclass collapseNames getYears getCells getNames new.magpie add_dimension
+#' @importFrom madrat calcOutput toolAggregate toolGetMapping
+#' @importFrom mrcommons toolCell2isoCell
 
-calcIrrigWatRequirements <- function(selectyears="all", cells="lpjcell", crops="magpie",
-                                     version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
-                                     harmonize_baseline=FALSE, ref_year=NULL, irrig_requirement="withdrawal"){
+calcIrrigWatRequirements <- function(selectyears="all", crops="magpie",
+                                     version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL) {
 
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit=1e+12)
@@ -39,9 +37,9 @@ calcIrrigWatRequirements <- function(selectyears="all", cells="lpjcell", crops="
   LPJ2MAG       <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
   ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr):
-  blue_water_consumption <- collapseNames(calcOutput("LPJmL", version=version, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-                                                     time=time, averaging_range=averaging_range, dof=dof,
-                                                     selectyears=selectyears, subtype="cwater_b_lpjcell", aggregate=FALSE)[,,"irrigated"])
+  blue_water_consumption <- calcOutput("LPJmL", subtype="cwater_b_lpjcell", aggregate=FALSE, selectyears=selectyears,
+                                       version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  blue_water_consumption <- collapseNames(blue_water_consumption[,,"irrigated"])
   names(dimnames(blue_water_consumption))[1] <- "iso.cell"
   names(dimnames(blue_water_consumption))[3] <- "crop"
   years       <- getYears(blue_water_consumption)
@@ -73,55 +71,41 @@ calcIrrigWatRequirements <- function(selectyears="all", cells="lpjcell", crops="
   project_efficiency     <- field_efficiency * conveyance_efficiency
 
   # Water withdrawal = crop water consumption + field losses + conveyance losses
-  water_withdrawal       <- blue_water_consumption/project_efficiency
+  water_withdrawal       <- blue_water_consumption / project_efficiency
 
   # Conveyance loss (from river to field)
-  conveyance_loss        <- water_withdrawal*(1-conveyance_efficiency)
+  conveyance_loss        <- water_withdrawal * (1 - conveyance_efficiency)
 
   # consumptive irrigation water = consumptive plant transpiration + evaporative conveyance loss
   # (Note: According to Rost et al. (2007) 50% of conveyance loss are evaporative)
-  water_consumption      <- blue_water_consumption + 0.5*conveyance_loss
+  water_consumption      <- blue_water_consumption + 0.5 * conveyance_loss
 
-  # Output: irrigation water requirements (consumption or withdrawals)
-  if (irrig_requirement=="consumption"){
-    irrig_requirements <- water_consumption
-  } else if (irrig_requirement=="withdrawal"){
-    irrig_requirements <- water_withdrawal
-  } else {
-    stop("Specify consumption or withdrawal in irrig_requirement")
-  }
+  # Output: irrigation water requirements (consumption and withdrawals)
+  irrig_requirements <- new.magpie(cells_and_regions = getCells(water_consumption), years=getYears(water_consumption), names=getNames(water_consumption))
+  irrig_requirements <- add_dimension(irrig_requirements, dim=3.3, add="type", nm=c("consumption","withdrawal"))
+  irrig_requirements[,,"consumption"] <- water_consumption
+  irrig_requirements[,,"withdrawal"]  <- water_withdrawal
 
   # Aggregate to MAgPIE crops
   if (crops=="magpie") {
     irrig_requirements  <- toolAggregate(irrig_requirements, LPJ2MAG, from="LPJmL", to="MAgPIE", dim=3.1, partrel=TRUE)
   }
 
-  if(selectyears!="all"){
+  if (selectyears!="all") {
     years               <- sort(findset(selectyears,noset="original"))
     irrig_requirements  <- irrig_requirements[,years,]
   }
 
-  ### Correct number of cells
-  if (cells=="lpjcell"){
-    out <- irrig_requirements
-  } else if (cells=="magpiecell"){
-    irrig_requirements <- irrig_requirements[magclassdata$cellbelongings$LPJ_input.Index,,]
-    irrig_requirements <- toolCell2isoCell(irrig_requirements)
-    out <- irrig_requirements
-  } else {
-    stop("Cell argument not supported. Select lpjcell for 67420 cells or magpiecell for 59199 cells")
-  }
-
   # Check for NAs and negative values
-  if(any(is.na(out))){
+  if (any(is.na(irrig_requirements))) {
     stop("produced NA irrigation water requirements")
   }
-  if(any(out<0)){
+  if (any(irrig_requirements<0)) {
     stop("produced negative irrigation water requirements")
   }
 
   return(list(
-    x=out,
+    x=irrig_requirements,
     weight=NULL,
     unit="m^3 per ha per yr",
     description="Irrigation water requirements for irrigation for different crop types under different irrigation systems",
