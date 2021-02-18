@@ -75,8 +75,8 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non
   required_wat_fullirrig_wc <- dimSums(required_wat_fullirrig_wc,dim=3)/length(getNames(required_wat_fullirrig_wc))
 
   # transform to array for further calculations
-  required_wat_fullirrig_ww <- as.array(collapseNames(required_wat_fullirrig_ww))[,,1]
-  required_wat_fullirrig_wc <- as.array(collapseNames(required_wat_fullirrig_wc))[,,1]
+  #required_wat_fullirrig_ww <- as.array(collapseNames(required_wat_fullirrig_ww))[,,1]
+ # required_wat_fullirrig_wc <- as.array(collapseNames(required_wat_fullirrig_wc))[,,1]
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   meancellrank <- calcOutput("IrrigCellranking", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
@@ -85,9 +85,12 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
                                          cells="lpjcell", crops="magpie", proxycrop=c("maiz", "rapeseed", "puls_pro"), monetary=thresholdtype, aggregate=FALSE)
-  irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
+  #irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
 
 
+  #################################
+  ###### Transform objects ########
+  #################################
   ## Transform object dimensions
   .transformObject <- function(x) {
     # empty magpie object structure
@@ -97,11 +100,12 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non
     return(out)
   }
 
-  meancellrank             <- .transformObject(meancellrank)
-  irrig_yieldgainpotential <- .transformObject(irrig_yieldgainpotential)
-
-  required_wat_min_allocation <- .transformObject(required_wat_min)
-  frac_fullirrig              <- .transformObject(0)
+  meancellrank                <- as.array(.transformObject(meancellrank))
+  irrig_yieldgainpotential    <- as.array(.transformObject(irrig_yieldgainpotential))
+  required_wat_fullirrig_ww   <- as.array(.transformObject(collapseNames(required_wat_fullirrig_ww)))
+  required_wat_fullirrig_wc   <- as.array(.transformObject(collapseNames(required_wat_fullirrig_wc)))
+  required_wat_min_allocation <- as.array(.transformObject(required_wat_min))
+  frac_fullirrig              <- as.array(.transformObject(0))
 
   ################################################
   ####### River basin discharge allocation #######

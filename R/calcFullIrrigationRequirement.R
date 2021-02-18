@@ -28,9 +28,9 @@
 calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, averaging_range=NULL, ref_year=NULL, cells="lpjcell", selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrig_requirement="withdrawal"){
 
   # read in irrigation water requirements [in m^3 per hectar per year] (smoothed & harmonized)
-  irrig_wat <- calcOutput("IrrigWatRequirements", selectyears=selectyears, version=version, climatetype=climatetype,
+  irrig_wat <- calcOutput("IrrigWatRequirements", cells="magpiecell", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype,
                           harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range,
-                          irrig_requirement=irrig_requirement, cells="magpiecell", aggregate=FALSE)
+                          irrig_requirement=irrig_requirement)
   # pasture is not irrigated in MAgPIE
   irrig_wat <- irrig_wat[,,"pasture",invert=T]
   irrig_wat <- toolCell2isoCell(irrig_wat)
