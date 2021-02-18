@@ -158,8 +158,8 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
       #                                  local previously determined water requirements are served
       frac_ww_constraint <- pmin( (avl_wat_act[c,,,drop=F] - IO_required_wat_min[c,,,drop=F])[sufficient_water & !no_ww] / currHuman_ww[c,,,drop=F][sufficient_water & !no_ww], 1)
       # Current water uses (withdrawals and consumption) given withdrawal constraint
-      currHuman_wc[c,,][sufficient_water] <- frac_ww_constraint * (currHuman_wc[c,,,drop=F])[sufficient_water & !no_ww]
-      currHuman_ww[c,,][sufficient_water] <- frac_ww_constraint * (currHuman_ww[c,,,drop=F])[sufficient_water & !no_ww]
+      currHuman_wc[c,,][sufficient_water & !no_ww] <- frac_ww_constraint * (currHuman_wc[c,,,drop=F])[sufficient_water & !no_ww]
+      currHuman_ww[c,,][sufficient_water & !no_ww] <- frac_ww_constraint * (currHuman_ww[c,,,drop=F])[sufficient_water & !no_ww]
 
       # Discharge in current cell for case where sufficient water available for requirements
       # (Subtract local water consumption in current cell (and previous if applicable)
