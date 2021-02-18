@@ -7,7 +7,6 @@
 calcRiverHumanUses(
   selectyears = "all",
   humanuse = "non_agriculture",
-  subtype = "discharge",
   iniyear = 1995,
   irrigini = "Jaegermeyr_lpjcell",
   version = "LPJmL4",
@@ -23,8 +22,6 @@ calcRiverHumanUses(
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
 \item{humanuse}{Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture}
-
-\item{subtype}{Subtype to be returned: discharge or required_wat_min or frac_fulfilled}
 
 \item{iniyear}{Initialization year of irrigation system}
 

@@ -23,6 +23,7 @@
 #' @import madrat
 #' @import mrcommons
 #' @import mrmagpie
+#' @importFrom magpiesets addLocation
 #' @importFrom stringr str_split
 #'
 #' @return magpie object in cellular resolution
@@ -59,7 +60,6 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
   yearly_runoff <- as.array(collapseNames(yearly_runoff))
   yearly_runoff <- yearly_runoff[,,1]
-  years <- getYears(yearly_runoff)
 
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
   lake_evap     <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="evap_lake_lpjcell", aggregate=FALSE,
@@ -83,20 +83,9 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   yearly_runoff <- yearly_runoff + input_lake
 
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-  NAg_ww_magpie <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="withdrawal", seasonality="total", finalcells="lpjcell", aggregate=FALSE))
-  NAg_ww_magpie <- NAg_ww_magpie[rs$coordinates,,]
-  NAg_ww        <- toolLPJcellCoordinates(NAg_ww_magpie, type="coord2lpj")
-  NAg_ww        <- as.array(NAg_ww)
-
-  # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
-  NAg_wc_magpie <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, waterusetype="consumption", seasonality="total", finalcells="lpjcell", aggregate=FALSE))
-  NAg_wc_magpie <- NAg_wc_magpie[rs$coordinates,,]
-  NAg_wc        <- toolLPJcellCoordinates(NAg_wc_magpie, type="coord2lpj")
-  NAg_wc        <- as.array(NAg_wc)
-
-  # Harmonize non-agricultural consumption and withdrawals (withdrawals > consumption)
-  NAg_ww <- pmax(NAg_ww, NAg_wc)
-  NAg_wc <- pmax(NAg_wc, 0.01*NAg_ww)
+  wat_nonag <- addLocation(calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  NAg_ww  <- as.array(collapseNames(wat_nonag[,,"withdrawal"]))
+  NAg_wc  <- as.array(collapseNames(wat_nonag[,,"consumption"]))
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
   CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,cells="lpjcell",iniyear=iniyear,irrigini=paste0(unlist(str_split(irrigini, "_"))[[1]],"_lpjcell"),time=time,dof=dof,averaging_range=averaging_range,harmonize_baseline=harmonize_baseline,ref_year=ref_year,aggregate=FALSE)
@@ -253,6 +242,10 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
                 }
               }
 
+              # available water not sufficient & no upstream cells: no withdrawals take place
+              frac_NAg_fulfilled[c] <- 0
+              discharge[c]          <- avl_wat_act[c]
+
               # available water in cell is sufficient to fulfill requirements
               # -> further withdrawals are possible
             } else {
@@ -313,6 +306,10 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
                   discharge[c] <- avl_wat_act[c]+upstream_cons - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
                 }
               }
+
+              # available water not sufficient & no upstream cells: no withdrawals take place
+              frac_CAg_fulfilled[c] <- 0
+              discharge[c]          <- avl_wat_act[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
 
               # available water in cell is sufficient to fulfill requirements
               # -> further withdrawal possible

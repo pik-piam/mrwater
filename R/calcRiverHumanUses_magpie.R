@@ -17,6 +17,7 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
 #' @importFrom stringr str_split
+#' @importFrom magpiesets addLocation
 #' @import mrmagpie
 #'
 #' @return magpie object in cellular resolution
@@ -44,51 +45,18 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
   ## coordinates:     coordinate data of cells
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
-  ### Internal functions
-  ## Read in LPJmL data
-  .getLPJmLData <- function(subtype, cfg) {
-    x <- collapseNames(calcOutput("LPJmL", version="LPJmL4", selectyears=cfg$selectyears,
-                                  climatetype=cfg$climatetype, harmonize_baseline=cfg$harmonize_baseline, ref_year=cfg$ref_year, time=cfg$time, dof=cfg$dof, averaging_range=cfg$averaging_range,
-                                  subtype=subtype, aggregate=FALSE))
-    return(x)
-  }
-  ## Non-agricultural water demand data
-  .getNonAgData <- function(subtype, cfg) {
-    x <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", waterusetype=subtype, seasonality="total", finalcells="lpjcell", aggregate=FALSE,
-                                  selectyears=cfg$selectyears, climatetype=cfg$climatetype, harmonize_baseline=cfg$harmonize_baseline, ref_year=cfg$ref_year, time=cfg$time, dof=cfg$dof, averaging_range=cfg$averaging_range))
-    # sort cells
-    x <- x[rs$coordinates,,]
-    # rename cells (NOTE: THIS IS ONLY TEMPORARILY NECESSARY UNTIL ALL INPUTS ARE PROVIDED AT COORDINATE DATA!!!!)
-    x <- toolLPJcellCoordinates(x, type="coord2lpj")
-    return(x)
-  }
-  ## Committed agricultural water demand data
-  # .getCommAgData
-
   ### Required inputs for River Routing:
-  ## LPJmL water data
-  #!# NOTE: Only for development purposes.
-  #!# In future: can drop smoothing and harmonization argument.
-  #!# Water inputs should always be harmonized and smoothed before read in...
+  I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+
   cfg <- list(selectyears=selectyears, climatetype=climatetype,
               harmonize_baseline=harmonize_baseline, ref_year=ref_year,
               time=time, dof=dof, averaging_range=averaging_range)
-  # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  I_yearly_runoff <- .getLPJmLData("runoff_lpjcell",     cfg)
-  # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
-  input_lake    <- .getLPJmLData("input_lake_lpjcell",   cfg)
-
-  # Calculate Runoff (on land and water)
-  I_yearly_runoff <- I_yearly_runoff + input_lake
 
   ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
-  I_NAg_ww <- .getNonAgData("withdrawal",  cfg)
-  I_NAg_wc <- .getNonAgData("consumption", cfg)
-
-  # Harmonize non-agricultural consumption and withdrawals (withdrawals > consumption)
-  I_NAg_ww <- pmax(I_NAg_ww, I_NAg_wc)
-  I_NAg_wc <- pmax(I_NAg_wc, 0.01*I_NAg_ww)
+  wat_nonag <- addLocation(calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  I_NAg_ww  <- collapseNames(wat_nonag[,,"withdrawal"])
+  I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
   CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,cells="lpjcell",iniyear=iniyear,irrigini=paste0(unlist(str_split(irrigini, "_"))[[1]],"_lpjcell"),time=time,dof=dof,averaging_range=averaging_range,harmonize_baseline=harmonize_baseline,ref_year=ref_year,aggregate=FALSE)
@@ -279,10 +247,7 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
   ########################
   ### Output Variables ###
   ########################
-  if (subtype=="discharge") {
-    out         <- as.magpie(O_discharge, spatial=1)
-    description <- paste0("Cellular discharge after accounting for human uses: ", humanuse)
-  } else if (subtype=="required_wat_min") {
+  if (subtype=="required_wat_min") {
     out         <- as.magpie(IO_required_wat_min, spatial=1)
     description <- paste0("Minimum requirements that need to stay in respective cell after human uses river routing: ", humanuse)
   } else if (subtype=="currHuman_wc") {

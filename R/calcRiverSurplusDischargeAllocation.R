@@ -52,17 +52,16 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non
 
   ### Read in required data
   # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
-  required_wat_min <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="committed_agriculture", subtype="required_wat_min", aggregate=FALSE,
+  required_wat_min <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", subtype="required_wat_min", aggregate=FALSE, selectyears=selectyears,
                                     version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
 
   # Discharge determined by previous river routing (in mio. m^3 / yr)
-  discharge <- calcOutput("RiverDischargeNatAndHuman", selectyears=selectyears, humanuse=humanuse, subtype="discharge",
-                                            version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  discharge <- calcOutput("RiverDischargeNatAndHuman", selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
 
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig_ww <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, irrig_requirement="withdrawal", cells="lpjcell", aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
+  required_wat_fullirrig_ww <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, irrig_requirement="withdrawal", cells="lpjcell", aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
   required_wat_fullirrig_ww <- pmax(required_wat_fullirrig_ww,0)
-  required_wat_fullirrig_wc <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, irrig_requirement="consumption", cells="lpjcell", aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
+  required_wat_fullirrig_wc <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, irrig_requirement="consumption", cells="lpjcell", aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
   required_wat_fullirrig_wc <- pmax(required_wat_fullirrig_wc,0)
 
   # Full irrigation water requirement depending on irrigation system in use
@@ -112,7 +111,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non
   meancellrank             <- .transformObject(meancellrank)
   irrig_yieldgainpotential <- .transformObject(irrig_yieldgainpotential)
 
-  required_wat_min_allocation <- .transformObject(0)
+  required_wat_min_allocation <- .transformObject(required_wat_min)
   frac_fullirrig              <- .transformObject(0)
 
   ################################################

@@ -38,35 +38,11 @@ calcRiverNaturalFlows22 <- function(selectyears="all",
   ## coordinates:     coordinate data of cells
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
-  ### Required inputs for Natural Flows River Routing:
-  ## LPJmL water data
-  .getLPJmLData <- function(subtype, cfg) {
-    # read in LPJmL data
-    x <- calcOutput("LPJmL", version="LPJmL4", selectyears=cfg$selectyears,
-                    climatetype=cfg$climatetype, harmonize_baseline=cfg$harmonize_baseline, ref_year=cfg$ref_year, time=cfg$time, dof=cfg$dof, averaging_range=cfg$averaging_range,
-                    subtype=subtype, aggregate=FALSE)
-    # transform to array for faster calculation
-    x <- as.array(collapseNames(x))
-    return(x)
-  }
-  #!# NOTE: Only for development purposes.
-  #!# In future: can drop smoothing and harmonization argument.
-  #!# Water inputs should always be harmonized and smoothed before read in...
-  cfg <- list(selectyears=selectyears, climatetype=climatetype,
-              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-              time=time, dof=dof, averaging_range=averaging_range)
-  # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  yearly_runoff <- .getLPJmLData("runoff_lpjcell",     cfg)
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
-  lake_evap     <- .getLPJmLData("evap_lake_lpjcell",  cfg)
-  # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
-  input_lake    <- .getLPJmLData("input_lake_lpjcell", cfg)
+  lake_evap     <- as.array(collapseNames(calcOutput("LPJmL",        aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)))
 
-  # # # # # # # # # # #
-  # # # CALCULATIONS # #
-  # # # # # # # # # # #
-  ### Runoff (on land and water)
-  yearly_runoff <- yearly_runoff + input_lake
+  # Runoff (on land and water)
+  yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)))
 
   ############################################
   ###### River Routing: Natural Flows ########

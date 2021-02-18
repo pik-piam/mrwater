@@ -36,7 +36,7 @@ calcYearlyRunoff(
 magpie object in cellular resolution
 }
 \description{
-This function calculates yearly runoff from runoff on land and water from LPJmL
+This function calculates yearly runoff from runoff on land and water provided by LPJmL
 }
 \examples{
 \dontrun{ calcOutput("YearlyRunoff", aggregate = FALSE) }

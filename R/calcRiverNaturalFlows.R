@@ -12,7 +12,6 @@
 #'
 #' @importFrom magclass collapseNames new.magpie getCells mbind setYears
 #' @importFrom madrat calcOutput
-#' @import mrcommons
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -38,35 +37,11 @@ calcRiverNaturalFlows <- function(selectyears="all",
   ## coordinates:     coordinate data of cells
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
-  ### Required inputs for Natural Flows River Routing:
-  ## LPJmL water data
-  .getLPJmLData <- function(subtype, cfg) {
-    # read in LPJmL data
-    x <- calcOutput("LPJmL", version="LPJmL4", selectyears=cfg$selectyears,
-                    climatetype=cfg$climatetype, harmonize_baseline=cfg$harmonize_baseline, ref_year=cfg$ref_year, time=cfg$time, dof=cfg$dof, averaging_range=cfg$averaging_range,
-                    subtype=subtype, aggregate=FALSE)
-    # transform to array for faster calculation
-    x <- as.array(collapseNames(x))
-    return(x)
-  }
-  #!# NOTE: Only for development purposes.
-  #!# In future: can drop smoothing and harmonization argument.
-  #!# Water inputs should always be harmonized and smoothed before read in...
-  cfg <- list(selectyears=selectyears, climatetype=climatetype,
-              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-              time=time, dof=dof, averaging_range=averaging_range)
-  # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  yearly_runoff <- .getLPJmLData("runoff_lpjcell",     cfg)
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
-  lake_evap     <- .getLPJmLData("evap_lake_lpjcell",  cfg)
-  # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
-  input_lake    <- .getLPJmLData("input_lake_lpjcell", cfg)
+  lake_evap     <- as.array(collapseNames(calcOutput("LPJmL", subtype="evap_lake_lpjcell", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)))
 
-  # # # # # # # # # # #
-  # # # CALCULATIONS # #
-  # # # # # # # # # # #
-  ### Runoff (on land and water)
-  yearly_runoff <- yearly_runoff + input_lake
+  # Runoff (on land and water)
+  yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff",                       aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)))
 
   ############################################
   ###### River Routing: Natural Flows ########
@@ -80,27 +55,26 @@ calcRiverNaturalFlows <- function(selectyears="all",
 
   ### River Routing 1: Natural flows ###
   # Determine natural discharge
-  for (o in 1:max(rs$calcorder)){
+  for (o in 1:max(rs$calcorder)) {
     # Note: the calcorder ensures that upstreamcells are calculated first
     cells <- which(rs$calcorder==o)
 
-    for (c in cells){
+    for (c in cells) {
       ### Natural water balance
       # lake evap that can be fulfilled (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
       lake_evap_new[c,,] <- pmin(lake_evap[c,,,drop=F], inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F])
       # natural discharge
       discharge_nat[c,,] <- inflow_nat[c,,,drop=F] + yearly_runoff[c,,,drop=F] - lake_evap_new[c,,,drop=F]
       # inflow into nextcell
-      if (rs$nextcell[c]>0){
+      if (rs$nextcell[c]>0) {
         inflow_nat[rs$nextcell[c],,] <- inflow_nat[rs$nextcell[c],,,drop=F] + discharge_nat[c,,,drop=F]
       }
     }
   }
 
-  out <- new.magpie(cells_and_regions = getCells(discharge_nat), years=getYears(discharge_nat), names=c("discharge_nat", "lake_evap_nat", "inflow_nat"))
+  out <- new.magpie(cells_and_regions = getCells(discharge_nat), years=getYears(discharge_nat), names=c("discharge_nat", "lake_evap_nat"))
   out[,,"discharge_nat"] <- as.magpie(discharge_nat, spatial=1, temporal=2)
   out[,,"lake_evap_nat"] <- as.magpie(lake_evap_new, spatial=1, temporal=2)
-  out[,,"inflow_nat"]    <- as.magpie(inflow_nat, spatial=1, temporal=2)
 
 return(list(
   x=out,

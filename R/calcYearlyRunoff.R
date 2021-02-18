@@ -1,5 +1,5 @@
 #' @title       calcYearlyRunoff
-#' @description This function calculates yearly runoff from runoff on land and water from LPJmL
+#' @description This function calculates yearly runoff from runoff on land and water provided by LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param version     Switch between LPJmL4 and LPJmL5
@@ -11,6 +11,7 @@
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #'
 #' @importFrom madrat calcOutput
+#' @importFrom magclass collapseNames
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -31,9 +32,6 @@ calcYearlyRunoff <- function(selectyears="all", version="LPJmL4", climatetype="H
 
   ### Required inputs for River Routing:
   ## LPJmL water data
-  #!# NOTE: Only for development purposes.
-  #!# In future: can drop smoothing and harmonization argument.
-  #!# Water inputs should always be harmonized and smoothed before read in...
   cfg <- list(selectyears=selectyears, version=version, climatetype=climatetype,
               harmonize_baseline=harmonize_baseline, ref_year=ref_year,
               time=time, dof=dof, averaging_range=averaging_range)

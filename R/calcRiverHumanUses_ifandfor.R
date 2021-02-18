@@ -41,51 +41,13 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
   ## coordinates:     coordinate data of cells
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
-  ### Internal functions
-  ## Read in LPJmL data
-  .getLPJmLData <- function(subtype, cfg) {
-    x <- collapseNames(calcOutput("LPJmL", version="LPJmL4", selectyears=cfg$selectyears,
-                    climatetype=cfg$climatetype, harmonize_baseline=cfg$harmonize_baseline, ref_year=cfg$ref_year, time=cfg$time, dof=cfg$dof, averaging_range=cfg$averaging_range,
-                    subtype=subtype, aggregate=FALSE))
-    return(x)
-  }
-  ## Non-agricultural water demand data
-  .getNonAgData <- function(subtype, cfg) {
-    x <- collapseNames(calcOutput("WaterUseNonAg", source="WATERGAP2020", waterusetype=subtype, seasonality="total", finalcells="lpjcell", aggregate=FALSE,
-                             selectyears=cfg$selectyears, climatetype=cfg$climatetype, harmonize_baseline=cfg$harmonize_baseline, ref_year=cfg$ref_year, time=cfg$time, dof=cfg$dof, averaging_range=cfg$averaging_range))
-    # sort cells
-    x <- x[rs$coordinates,,]
-    # rename cells (NOTE: THIS IS ONLY TEMPORARILY NECESSARY UNTIL ALL INPUTS ARE PROVIDED AT COORDINATE DATA!!!!)
-    x <- toolLPJcellCoordinates(x, type="coord2lpj")
-    return(x)
-  }
-  ## Committed agricultural water demand data
-  # .getCommAgData
-
   ### Required inputs for River Routing:
-  ## LPJmL water data
-  #!# NOTE: Only for development purposes.
-  #!# In future: can drop smoothing and harmonization argument.
-  #!# Water inputs should always be harmonized and smoothed before read in...
-  cfg <- list(selectyears=selectyears, climatetype=climatetype,
-              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-              time=time, dof=dof, averaging_range=averaging_range)
-  # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  yearly_runoff <- .getLPJmLData("runoff_lpjcell",     cfg)
-  # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
-  input_lake    <- .getLPJmLData("input_lake_lpjcell", cfg)
+  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
 
-  # Calculate Runoff (on land and water)
-  yearly_runoff <- yearly_runoff + input_lake
-
-  ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
-  I_NAg_ww <- .getNonAgData("withdrawal",  cfg)
-  I_NAg_wc <- .getNonAgData("consumption", cfg)
-
-  # Harmonize non-agricultural consumption and withdrawals (withdrawals > consumption)
-  I_NAg_ww <- pmax(I_NAg_ww, I_NAg_wc)
-  I_NAg_wc <- pmax(I_NAg_wc, 0.01*I_NAg_ww)
+  wat_nonag <- addLocation(calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  I_NAg_ww  <- collapseNames(wat_nonag[,,"withdrawal"])
+  I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 
   # Lake evaporation as calculated by natural flow river routing
   lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, version=version, aggregate=FALSE,
@@ -165,6 +127,9 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
                 }
               }
 
+              # available water not sufficient & no upstream cells: no withdrawals take place
+              discharge[c]          <- avl_wat_act[c]
+
               # available water in cell is sufficient to fulfill requirements
               # -> further withdrawals are possible
             } else {
@@ -189,11 +154,7 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
         required_wat_min[,y] <- required_wat_min[,y] + NAg_ww[,y,scen]*frac_NAg_fulfilled
 
 
-      if (subtype=="discharge") {
-        wat_avl_irrig <- discharge
-        dataname <- "discharge"
-        description="discharge"
-      } else if (subtype=="required_wat_min") {
+      if (subtype=="required_wat_min") {
         wat_avl_irrig <- required_wat_min[,y]
         dataname <- "required_wat_min"
         description="required_wat_min"
