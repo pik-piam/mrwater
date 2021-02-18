@@ -24,7 +24,6 @@
 #' @import mrcommons
 #' @import mrmagpie
 #' @importFrom stringr str_split
-#' @importFrom magpiesets addLocation
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -73,13 +72,11 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   lake_evap_new <- as.array(collapseNames(natural_flows[,,"lake_evap_nat"]))[,,1]
 
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-  wat_nonag <- addLocation(calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  wat_nonag <- wat_nonag[rs$coordinates,,]
+  getCells(wat_nonag) <- rs$cells
   NAg_ww  <- as.array(collapseNames(wat_nonag[,,"withdrawal"]))
   NAg_wc  <- as.array(collapseNames(wat_nonag[,,"consumption"]))
-
-  # Harmonize non-agricultural consumption and withdrawals (withdrawals > consumption)
-  NAg_ww <- pmax(NAg_ww, NAg_wc)
-  NAg_wc <- pmax(NAg_wc, 0.01*NAg_ww)
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
   CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,cells="lpjcell",iniyear=iniyear,irrigini=paste0(unlist(str_split(irrigini, "_"))[[1]],"_lpjcell"),time=time,dof=dof,averaging_range=averaging_range,harmonize_baseline=harmonize_baseline,ref_year=ref_year,aggregate=FALSE)

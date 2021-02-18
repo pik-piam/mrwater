@@ -23,7 +23,6 @@
 #' @import madrat
 #' @import mrcommons
 #' @import mrmagpie
-#' @importFrom magpiesets addLocation
 #' @importFrom stringr str_split
 #'
 #' @return magpie object in cellular resolution
@@ -83,7 +82,10 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   yearly_runoff <- yearly_runoff + input_lake
 
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-  wat_nonag <- addLocation(calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
+  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  wat_nonag <- wat_nonag[rs$coordinates,,]
+  getCells(wat_nonag) <- rs$cells
   NAg_ww  <- as.array(collapseNames(wat_nonag[,,"withdrawal"]))
   NAg_wc  <- as.array(collapseNames(wat_nonag[,,"consumption"]))
 

@@ -16,7 +16,6 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
 #' @importFrom stringr str_split
-#' @importFrom magpiesets addLocation
 #' @import mrmagpie
 #'
 #' @return magpie object in cellular resolution
@@ -45,7 +44,8 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
 
   ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
-  wat_nonag <- addLocation(calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  wat_nonag <- wat_nonag[rs$coordinates,,]
   getCells(wat_nonag) <- rs$cells
   I_NAg_ww  <- collapseNames(wat_nonag[,,"withdrawal"])
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
@@ -105,9 +105,9 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
 
     ## Current human uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-    currHuman_ww <- as.array(NAg_ww)
+    currHuman_ww <- NAg_ww
     # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
-    currHuman_wc <- as.array(NAg_wc)
+    currHuman_wc <- NAg_wc
 
     # There are no previous human uses yet to be considered (empty arrays)
     prevHuman_wc <- as.array(.transformObject(0))
@@ -123,9 +123,9 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
 
     ## Current human uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-    currHuman_ww <- as.array(CAW_magpie)
+    currHuman_ww <- CAW_magpie
     # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
-    currHuman_wc <- as.array(CAC_magpie)
+    currHuman_wc <- CAC_magpie
 
   } else {
     stop("Please specify for which type of human uses river routing shall be calculated: non_agriculture or committed_agriculture")
@@ -151,15 +151,15 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
       ####     (avl_wat_act[c,,] >= IO_required_wat_min[c,,])                                          ####
       ####      -> further withdrawals possible                                                        ####
 
+      # no current withdrawals requested:
+      no_ww             <- (currHuman_ww[c,,,drop=F]==0)
+
       # (I) Water withdrawal constraint: All withdrawals that can be fulfilled considering
       #                                  local previously determined water requirements are served
-      frac_ww_constraint <- pmin( (avl_wat_act[c,,,drop=F] - IO_required_wat_min[c,,,drop=F]) / currHuman_ww[c,,,drop=F], 1)
-      # correct fraction where no current human withdrawals requested (NAs=0/0, Inf=x/0)
-      no_ww                     <- (currHuman_ww[c,,,drop=F]==0)
-      frac_ww_constraint[no_ww] <- 0
+      frac_ww_constraint <- pmin( (avl_wat_act[c,,,drop=F] - IO_required_wat_min[c,,,drop=F])[sufficient_water & !no_ww] / currHuman_ww[c,,,drop=F][sufficient_water & !no_ww], 1)
       # Current water uses (withdrawals and consumption) given withdrawal constraint
-      currHuman_wc[c,,][sufficient_water] <- (frac_ww_constraint * currHuman_wc[c,,,drop=F])[sufficient_water]
-      currHuman_ww[c,,][sufficient_water] <- (frac_ww_constraint * currHuman_ww[c,,,drop=F])[sufficient_water]
+      currHuman_wc[c,,][sufficient_water] <- frac_ww_constraint * (currHuman_wc[c,,,drop=F])[sufficient_water & !no_ww]
+      currHuman_ww[c,,][sufficient_water] <- frac_ww_constraint * (currHuman_ww[c,,,drop=F])[sufficient_water & !no_ww]
 
       # Discharge in current cell for case where sufficient water available for requirements
       # (Subtract local water consumption in current cell (and previous if applicable)
