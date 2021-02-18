@@ -35,28 +35,17 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
                                   allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
                                   irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995) {
-  # # # # # # # # # # #
-  # # # READ IN DATA # #
-  # # # # # # # # # # #
-  ### Read in river structure
-  # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
-  # Information contained:
-  ## upstreamcells:   all cells that are upstream of current cell (list of cells)
-  ## downstreamcells: all cells that are downstream of current cell (list of cells)
-  ## nextcell:        cell to which discharge of current cell flows (exactly 1 cell)
-  ## endcell:         estuary cell of current cell, i.e. last cell of the river of which current cell is part of (exactly 1 cell)
-  ## calcorder:       ordering of cells for calculation from upstream to downstream
-  ## cells:           LPJmL cell ordering with ISO code
-  ## coordinates:     coordinate data of cells
+  #######################################
+  ###### Read in Required Inputs ########
+  #######################################
+  # River Structure
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
-  ### Read in required data
   # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
-  required_wat_min <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", subtype="required_wat_min", aggregate=FALSE, selectyears=selectyears,
-                                    version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  required_wat_min <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"required_wat_min"])
 
-  # Discharge determined by previous river routing (in mio. m^3 / yr)
-  discharge <- calcOutput("RiverDischargeNatAndHuman", selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  # Discharge determined by previous river routings (in mio. m^3 / yr)
+  discharge        <- calcOutput("RiverDischargeNatAndHuman", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
 
   # Required water for full irrigation per cell (in mio. m^3)
   required_wat_fullirrig_ww <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, irrig_requirement="withdrawal", cells="lpjcell", aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
