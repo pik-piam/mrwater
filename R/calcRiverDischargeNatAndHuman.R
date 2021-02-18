@@ -43,13 +43,15 @@ calcRiverDischargeNatAndHuman <- function(selectyears="all", version="LPJmL4", c
   ## Transform object dimensions
   .transformObject <- function(x) {
     # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getCells(yearly_runoff), years = getYears(yearly_runoff), names = c(paste("on",getNames(NAg_wc),sep="."), paste("off",getNames(NAg_wc),sep=".")), fill=0)
+    object0 <- new.magpie(cells_and_regions = getCells(yearly_runoff), years = getYears(yearly_runoff), names = getNames(NAg_wc), fill=0)
     # bring object x to dimension of object0
     out     <- x + object0
     return(out)
   }
 
-  # bring all inputs to correct object size and transform to array for faster calculation
+  #######################################
+  ###### Transform object size   ########
+  #######################################
   lake_evap_new <- as.array(.transformObject(lake_evap_new))
   CAg_wc        <- as.array(.transformObject(CAg_wc))
   NAg_wc        <- as.array(.transformObject(NAg_wc))
