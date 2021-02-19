@@ -85,6 +85,7 @@ calcIrrigWatRequirements <- function(selectyears="all", crops="magpie",
   irrig_requirements <- add_dimension(irrig_requirements, dim=3.3, add="type", nm=c("consumption","withdrawal"))
   irrig_requirements[,,"consumption"] <- water_consumption
   irrig_requirements[,,"withdrawal"]  <- water_withdrawal
+  names(dimnames(irrig_requirements))[3] <- "crop.system.irrig_type"
 
   # Aggregate to MAgPIE crops
   if (crops=="magpie") {

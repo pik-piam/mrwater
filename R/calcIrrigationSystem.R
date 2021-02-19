@@ -13,7 +13,7 @@
 #' @importFrom madrat readSource
 #' @importFrom magclass getSets getCells
 
-calcIrrigationSystem <- function(source="Jaegermeyr_lpjcell"){
+calcIrrigationSystem <- function(source) {
 
   # Jägermeyr et al. (2015): Shares of surface, sprinkler and drip irrigated areas
   # (Note: compiled from FAO (2014), ICID (2012), Rohwer et al. (2007))

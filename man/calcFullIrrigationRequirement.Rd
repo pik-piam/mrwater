@@ -14,7 +14,8 @@ calcFullIrrigationRequirement(
   ref_year = NULL,
   selectyears = seq(1995, 2095, by = 5),
   iniyear = 1995,
-  iniarea = TRUE
+  iniarea = TRUE,
+  irrigationsystem = "initialization"
 )
 }
 \arguments{
@@ -34,9 +35,11 @@ calcFullIrrigationRequirement(
 
 \item{selectyears}{years to be returned}
 
-\item{iniyear}{Year of initialization for cropland area}
+\item{iniyear}{year of initialization for cropland area}
 
-\item{iniarea}{if TRUE (default): already irrigated area is subracted, if FALSE: total potential land area is used}
+\item{iniarea}{if TRUE (default): already irrigated area is subtracted, if FALSE: total potential land area is used}
+
+\item{irrigationsystem}{irrigation system used: system share as in initialization year (default) or drip, surface, sprinkler for full irrigation by selected system}
 }
 \value{
 magpie object in cellular resolution
