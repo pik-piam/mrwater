@@ -20,7 +20,6 @@ calcIrrigatableArea(
   allocationshare = NULL,
   gainthreshold = 1,
   irrigationsystem = "initialization",
-  irrigini = "Jaegermeyr_lpjcell",
   iniyear = 1995,
   landtype = "potentialcropland",
   protectscen = "WDPA",
@@ -57,8 +56,6 @@ calcIrrigatableArea(
 \item{gainthreshold}{Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)}
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
-
-\item{irrigini}{When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")}
 
 \item{iniyear}{year of initialization for cropland area initialization and irrigation systems}
 

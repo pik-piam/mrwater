@@ -8,7 +8,6 @@ calcRiverHumanUses(
   selectyears = "all",
   humanuse = "non_agriculture",
   iniyear = 1995,
-  irrigini = "Jaegermeyr_lpjcell",
   version = "LPJmL4",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
@@ -24,8 +23,6 @@ calcRiverHumanUses(
 \item{humanuse}{Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture}
 
 \item{iniyear}{Initialization year of irrigation system}
-
-\item{irrigini}{When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")}
 
 \item{version}{Switch between LPJmL4 and LPJmL5}
 

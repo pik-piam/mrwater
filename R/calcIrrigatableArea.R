@@ -15,7 +15,6 @@
 #' @param allocationshare    Share of water to be allocated to cell (only needs to be selected in case of allocationrule=="equality")
 #' @param gainthreshold      Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
 #' @param irrigationsystem   Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param irrigini           When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #' @param iniarea          if TRUE: already irrigated area is subtracted, if FALSE: total potential land area is used from potentially available irrigation land
 #' @param iniyear          year of initialization for cropland area initialization and irrigation systems
 #' @param protect_scen     land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection
@@ -33,7 +32,7 @@
 
 calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrigatable_area", iniarea, protect_scen,
                                 climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
-                                allocationrule="optimization", allocationshare=NULL, gainthreshold=1, irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995,
+                                allocationrule="optimization", allocationshare=NULL, gainthreshold=1, irrigationsystem="initialization", iniyear=1995,
                                 landtype="potentialcropland", protectscen="WDPA", proxycrops="maiz"){
 
   ### Irrigatable area = MIN (area that can be irrigated given water resources; available suitable land area)
@@ -41,13 +40,13 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
   # read in water available for withdrawal (in mio. m^3)
   avl_wat_ww <- calcOutput("WaterAllocation", version="LPJmL4", output="withdrawal", finalcells=cells,
                            selectyears=seq(1995,2100,by=5), climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-                           allocationrule=allocationrule, allocationshare=allocationshare, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, irrigini=irrigini, iniyear=iniyear, aggregate=FALSE)
+                           allocationrule=allocationrule, allocationshare=allocationshare, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, aggregate=FALSE)
   avl_wat_ww <- avl_wat_ww[,selectyears,]
   # transform from mio. m^3 to m^3
   avl_wat_ww <- avl_wat_ww*1e6
   # read in water withdrawal required for irrigation of proxy crop(s) (in m^3 per ha)
   wat_req_ww <- calcOutput("ActualIrrigWatRequirements", version="LPJmL5", irrig_requirement="withdrawal", cells=cells,
-                           selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year, irrig_system_source=irrigini, aggregate=FALSE)
+                           selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
   wat_req_ww <- wat_req_ww[,,proxycrops]
   #### normalization / (weighted) average of proxycrops (??????)
   wat_req_ww <- dimSums(wat_req_ww,dim=3)/length(getNames(wat_req_ww))
@@ -61,13 +60,13 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
   # read in water available for consumption (in mio. m^3)
   avl_wat_wc <- calcOutput("WaterAllocation", version="LPJmL4", output="consumption", finalcells=cells,
                            selectyears=seq(1995,2100,by=5), climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-                           allocationrule=allocationrule, allocationshare=allocationshare, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, irrigini=irrigini, iniyear=iniyear, aggregate=FALSE)
+                           allocationrule=allocationrule, allocationshare=allocationshare, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, aggregate=FALSE)
   avl_wat_wc <- avl_wat_wc[,selectyears,]
   # transform from mio. m^3 to m^3
   avl_wat_wc <- avl_wat_wc*1e6
   # read in water withdrawal required for irrigation of proxy crop(s) (in m^3 per ha)
   wat_req_wc <- calcOutput("ActualIrrigWatRequirements", version="LPJmL5", irrig_requirement="consumption", cells=cells,
-                           selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year, irrig_system_source=irrigini, aggregate=FALSE)
+                           selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
   wat_req_wc <- wat_req_wc[,,proxycrops]
   #### normalization / (weighted) average of proxycrops (??????)
   wat_req_wc <- dimSums(wat_req_wc,dim=3)/length(getNames(wat_req_wc))

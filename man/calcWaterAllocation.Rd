@@ -20,7 +20,6 @@ calcWaterAllocation(
   thresholdtype = TRUE,
   gainthreshold = 10,
   irrigationsystem = "initialization",
-  irrigini = "Jaegermeyr_lpjcell",
   iniyear = 1995,
   protect_scen
 )
@@ -55,8 +54,6 @@ calcWaterAllocation(
 \item{gainthreshold}{Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)}
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
-
-\item{irrigini}{When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")}
 
 \item{iniyear}{Initialization year of irrigation system}
 

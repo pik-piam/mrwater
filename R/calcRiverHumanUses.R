@@ -11,7 +11,6 @@
 #' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #' @param iniyear          Initialization year of irrigation system
-#' @param irrigini         When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -25,7 +24,7 @@
 #' \dontrun{ calcOutput("RiverHumanUses", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", iniyear=1995, irrigini="Jaegermeyr_lpjcell",
+calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", iniyear=1995,
                                version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
@@ -51,7 +50,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
-  CAU_magpie <- calcOutput("WaterUseCommittedAg", aggregate=FALSE, selectyears=selectyears, iniyear=iniyear, irrigini=paste0(unlist(str_split(irrigini, "_"))[[1]],"_lpjcell"), time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  CAU_magpie <- calcOutput("WaterUseCommittedAg", aggregate=FALSE, selectyears=selectyears, iniyear=iniyear, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   CAW_magpie <- collapseNames(dimSums(CAU_magpie[,,"withdrawal"],dim=3))
   CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3))
 
