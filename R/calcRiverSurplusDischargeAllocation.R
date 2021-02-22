@@ -49,7 +49,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non
   discharge        <- calcOutput("RiverDischargeNatAndHuman", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
 
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, cells="lpjcell", irrigationsystem=irrigationsystem, protect_scen=protect_scen, aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
+  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, irrigationsystem=irrigationsystem, protect_scen=protect_scen, aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
   required_wat_fullirrig_ww <- pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]), 0)
   required_wat_fullirrig_wc <- pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
 

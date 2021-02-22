@@ -101,7 +101,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
   ### Required inputs for Allocation Algorithm:
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, cells="lpjcell", irrigationsystem=irrigationsystem, protect_scen=protect_scen, aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
+  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, irrigationsystem=irrigationsystem, protect_scen=protect_scen, aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
   required_wat_fullirrig_ww <- collapseNames(required_wat_fullirrig[,,"withdrawal"])
   required_wat_fullirrig_wc <- collapseNames(required_wat_fullirrig[,,"consumption"])
   required_wat_fullirrig_ww <- pmax(required_wat_fullirrig_ww,0)
