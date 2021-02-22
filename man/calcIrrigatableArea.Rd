@@ -8,6 +8,8 @@ calcIrrigatableArea(
   selectyears = 1995,
   cells = "lpjcell",
   output = "irrigatable_area",
+  iniarea,
+  protect_scen,
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
   averaging_range = NULL,
@@ -32,6 +34,10 @@ calcIrrigatableArea(
 
 \item{output}{Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land, protect_area (restricts water withdrawal in protected areas)}
 
+\item{iniarea}{if TRUE: already irrigated area is subtracted, if FALSE: total potential land area is used from potentially available irrigation land}
+
+\item{protect_scen}{land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection}
+
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
 \item{time}{Time smoothing: average, spline or raw (default)}
@@ -54,7 +60,7 @@ calcIrrigatableArea(
 
 \item{irrigini}{When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")}
 
-\item{iniyear}{Initialization year of irrigation system}
+\item{iniyear}{year of initialization for cropland area initialization and irrigation systems}
 
 \item{landtype}{current cropland area (currentcropland) or potential cropland area (potentialcropland) or nonprotected (restriction of withdrawals in protected areas)}
 

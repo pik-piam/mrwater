@@ -31,26 +31,8 @@ calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2
   # pasture is not irrigated in MAgPIE
   irrig_wat <- irrig_wat[,,"pasture",invert=T]
 
-  # read in land available for agricultural use [in mio. ha]
-  land <- collapseNames(calcOutput("AvlLandSi", aggregate=FALSE, cells="lpjcell")[,,"si0"])
-
-  if (iniarea) {
-    # subtract area already reserved for irrigation by committed agricultural uses [in mio. ha]
-    crops_grown    <- calcOutput("IrrigatedArea", selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
-    crops_grown    <- collapseNames(dimSums(crops_grown, dim=3))
-    land           <- land - crops_grown
-  }
-  # negative values may occur because AvlLandSi is based on Ramankutty data and Croparea based on LUH -> set to 0
-  land[land<0] <- 0 ####should not be the case anymore!!!!!
-
-  # No irrigation in protected areas (if protection scenario is activated) [in mio. ha]
-  if (!is.null(protect_scen)) {
-    protect <- collapseNames(calcOutput("ProtectArea", aggregate=FALSE)[,,protect_scen])
-    land    <- land - protect
-  }
-
-  # correct negative land availability due to mismatch of available land and protected land
-  land[land<0] <- 0
+  # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
+  land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniyear=iniyear, iniarea=iniarea, protect_scen=protect_scen)
 
   # water requirements for full irrigation in cell per crop (in mio. m^3)
   # Note on unit transformation:
