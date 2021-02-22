@@ -7,7 +7,6 @@
 calcActualIrrigWatRequirements(
   selectyears = "all",
   iniyear = 1995,
-  crops = "magpie",
   version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "raw",
@@ -21,8 +20,6 @@ calcActualIrrigWatRequirements(
 \item{selectyears}{Years to be returned}
 
 \item{iniyear}{Initialization year (for weight by cropland)}
-
-\item{crops}{Selects "magpie" (default) or "lpjml" crops}
 
 \item{version}{Switch between LPJmL4 and LPJmL5}
 

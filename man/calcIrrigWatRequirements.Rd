@@ -6,7 +6,6 @@
 \usage{
 calcIrrigWatRequirements(
   selectyears = "all",
-  crops = "magpie",
   version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
@@ -18,8 +17,6 @@ calcIrrigWatRequirements(
 }
 \arguments{
 \item{selectyears}{Years to be returned}
-
-\item{crops}{Selects "magpie" (default) or "lpjml" crops}
 
 \item{version}{Switch between LPJmL4 and LPJmL5}
 

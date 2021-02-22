@@ -14,7 +14,6 @@ calcIrrigCellranking(
   ref_year = "y2015",
   cellrankyear = "y1995",
   cells = "lpjcell",
-  crops = "magpie",
   method = "meancellrank",
   proxycrop = c("maiz", "rapeseed", "puls_pro"),
   iniyear = 1995
@@ -38,8 +37,6 @@ calcIrrigCellranking(
 \item{cellrankyear}{year(s) for which cell rank is calculated}
 
 \item{cells}{switch between "lpjcell" (67420) and "magpiecell" (59199)}
-
-\item{crops}{switch between "magpie" and "lpjml" (default) crops}
 
 \item{method}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water}
 

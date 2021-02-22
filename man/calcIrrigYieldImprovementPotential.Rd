@@ -15,7 +15,6 @@ calcIrrigYieldImprovementPotential(
   ref_year = NULL,
   selectyears = seq(1995, 2095, by = 5),
   cells = "magpiecell",
-  crops = "lpjml",
   proxycrop = "all"
 )
 }
@@ -39,8 +38,6 @@ calcIrrigYieldImprovementPotential(
 \item{selectyears}{years to be returned by the function}
 
 \item{cells}{switch between "lpjcell" (67420) and "magpiecell" (59199)}
-
-\item{crops}{switch between "magpie" and "lpjml" (default) crops}
 
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations (default: "all")}
 }

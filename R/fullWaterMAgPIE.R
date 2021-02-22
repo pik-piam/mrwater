@@ -64,7 +64,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   setConfig(extramappings="clustermap_rev4.54+mrmagpie10_riverrouting_allocation_c200_h12.rds")
 
   #42 water demand
-  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, cells="magpiecell", crops="magpie", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
+  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, cells="magpiecell", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
              harmonize_baseline=FALSE, ref_year=NULL, irrig_requirement="consumption", irrig_system_source="Jaegermeyr_magpiecell", aggregate="cluster", round=6)
   wat_req_crops_c <- collapseNames(wat_req_crops_c)
   write.magpie(wat_req_crops_c, file_name = "C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/wat_req_crops_c.cs2")
@@ -79,7 +79,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   #### -- only temporary -- ####
 
   #42 water demand
-  calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, cells="magpiecell", crops="magpie", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
+  calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, cells="magpiecell", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
              harmonize_baseline=harmonize_baseline, ref_year=ref_year, irrig_requirement="consumption", irrig_system_source="Jaegermeyr_magpiecell", aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
 
   #43 water availability

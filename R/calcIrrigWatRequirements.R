@@ -9,7 +9,6 @@
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param harmonize_baseline FALSE (default): no harmonization of input data to this function, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline of input data to this function (just specify when harmonize_baseline=TRUE)
-#' @param crops       Selects "magpie" (default) or "lpjml" crops
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -22,8 +21,7 @@
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping
 #' @importFrom mrcommons toolCell2isoCell
 
-calcIrrigWatRequirements <- function(selectyears="all", crops="magpie",
-                                     version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL) {
+calcIrrigWatRequirements <- function(selectyears="all", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL) {
 
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit=1e+12)
@@ -88,9 +86,7 @@ calcIrrigWatRequirements <- function(selectyears="all", crops="magpie",
   names(dimnames(irrig_requirements))[3] <- "crop.system.irrig_type"
 
   # Aggregate to MAgPIE crops
-  if (crops=="magpie") {
-    irrig_requirements  <- toolAggregate(irrig_requirements, LPJ2MAG, from="LPJmL", to="MAgPIE", dim=3.1, partrel=TRUE)
-  }
+  irrig_requirements  <- toolAggregate(irrig_requirements, LPJ2MAG, from="LPJmL", to="MAgPIE", dim=3.1, partrel=TRUE)
 
   if (selectyears!="all") {
     years               <- sort(findset(selectyears,noset="original"))

@@ -14,7 +14,6 @@ calcIrrigWatValue(
   harmonize_baseline = FALSE,
   ref_year = "y2015",
   cells = "lpjcell",
-  crops = "magpie",
   iniyear = 1995
 )
 }
@@ -36,8 +35,6 @@ calcIrrigWatValue(
 \item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
 
 \item{cells}{switch between "lpjcell" (67420) and "magpiecell" (59199)}
-
-\item{crops}{switch between "magpie" and "lpjml" (default) crops}
 
 \item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank}
 }

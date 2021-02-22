@@ -31,7 +31,7 @@ calcWaterUseCommittedAg <- function(version="LPJmL5", climatetype="HadGEM2_ES:rc
   irrigation_system <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
 
   ## Read in Irrigation Water (in m^3 per hectar per year) [smoothed and harmonized]
-  irrig_water <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, crops="magpie", version=version, climatetype=climatetype, time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  irrig_water <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   # Pasture is not irrigated in MAgPIE
   irrig_water  <- irrig_water[,,"pasture",invert=T]
 

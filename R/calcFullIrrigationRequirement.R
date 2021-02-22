@@ -27,12 +27,12 @@
 calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, averaging_range=NULL, ref_year=NULL, selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrigationsystem="initialization", protect_scen) {
 
   # read in irrigation water requirements for each irrigation system [in m^3 per hectare per year] (smoothed & harmonized)
-  irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
+  irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   # pasture is not irrigated in MAgPIE
   irrig_wat <- irrig_wat[,,"pasture",invert=T]
 
   # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
-  land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniyear=iniyear, iniarea=iniarea, protect_scen=protect_scen)
+  land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniyear=iniyear, iniarea=iniarea, protect_scen=protect_scen, aggregate=FALSE)
 
   # water requirements for full irrigation in cell per crop (in mio. m^3)
   # Note on unit transformation:
