@@ -17,8 +17,8 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigWatRequirements", aggregate=FALSE) }
 #'
-#' @importFrom magpiesets findset
-#' @importFrom magclass collapseNames getYears getCells getNames new.magpie add_dimension
+#' @importFrom magpiesets findset addLocation
+#' @importFrom magclass collapseNames collapseDim getYears getCells getNames new.magpie add_dimension
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping
 #' @importFrom mrcommons toolCell2isoCell
 
@@ -96,6 +96,11 @@ calcIrrigWatRequirements <- function(selectyears="all", crops="magpie",
     years               <- sort(findset(selectyears,noset="original"))
     irrig_requirements  <- irrig_requirements[,years,]
   }
+
+  # Dimension and element names
+  irrig_requirements <- addLocation(irrig_requirements)
+  irrig_requirements <- collapseDim(irrig_requirements, dim=c("N", "region1"))
+  irrig_requirements <- collapseDim(irrig_requirements, dim="iso")
 
   # Check for NAs and negative values
   if (any(is.na(irrig_requirements))) {

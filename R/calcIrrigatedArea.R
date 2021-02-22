@@ -12,7 +12,8 @@
 #' \dontrun{ calcOutput("IrrigatedArea", aggregate=FALSE) }
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames new.magpie getCells getNames
+#' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames
+#' @importFrom magpiesets addLocation
 
 calcIrrigatedArea <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, depreciation=0.1){
 
@@ -34,6 +35,11 @@ calcIrrigatedArea <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, dep
     # depreciation of irrigated area
     tmp     <- tmp * dep_adj
   }
+
+  # Dimension and element names
+  irrig_area <- addLocation(irrig_area)
+  irrig_area <- collapseDim(irrig_area, dim=c("N", "region1"))
+  irrig_area <- collapseDim(irrig_area, dim="iso")
 
   # check for NAs and negative values
   if (any(is.na(irrig_area))) {

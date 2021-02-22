@@ -11,7 +11,8 @@
 #'
 #' @importFrom utils read.csv
 #' @importFrom madrat readSource
-#' @importFrom magclass getSets getCells
+#' @importFrom magclass getSets getCells collapseDim
+#' @importFrom magpiesets addLocation
 
 calcIrrigationSystem <- function(source) {
 
@@ -53,9 +54,11 @@ calcIrrigationSystem <- function(source) {
   # When all three shares are 0, it is assumed that 100% of irrigated land (if any exists) is surface irrigation
   x[,,"surface"][which(x[,,"surface"]==0 & x[,,"sprinkler"]==0 & x[,,"drip"]==0)] <- 1
 
-  # dimension names
-  getSets(x)[c(1,2)] <- c("iso","cell")
-  getSets(x)[4]      <- "system"
+  # Dimension and element names
+  getSets(x)[4] <- "system"
+  x <- addLocation(x)
+  x <- collapseDim(x, dim=c("N", "region1"))
+  x <- collapseDim(x, dim="iso")
 
   # Checks
   if (any(is.na(x))) {
