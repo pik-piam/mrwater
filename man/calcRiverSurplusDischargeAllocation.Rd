@@ -21,7 +21,8 @@ calcRiverSurplusDischargeAllocation(
   gainthreshold = 10,
   irrigationsystem = "initialization",
   irrigini = "Jaegermeyr_lpjcell",
-  iniyear = 1995
+  iniyear = 1995,
+  protect_scen
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ calcRiverSurplusDischargeAllocation(
 \item{irrigini}{When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")}
 
 \item{iniyear}{Initialization year of irrigation system}
+
+\item{protect_scen}{Land protection scenario}
 }
 \value{
 magpie object in cellular resolution

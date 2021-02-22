@@ -10,8 +10,7 @@
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
-#' @param irrig_system_source Source of irrigation system initialization data including information about cellular detail (e.g. Jaegermeyr_magpiecell)
-#' @param iniyear             Initialization year (for weight by cropland)
+#' @param iniyear            Initialization year (for weight by cropland)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -26,9 +25,8 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magpiesets findset
 
-calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, crops="magpie", irrig_system_source="Jaegermeyr_lpjcell",
-                                     version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="raw", averaging_range=NULL, dof=NULL,
-                                     harmonize_baseline=FALSE, ref_year=NULL) {
+calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, crops="magpie",
+                                     version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="raw", averaging_range=NULL, dof=NULL, harmonize_baseline=FALSE, ref_year=NULL) {
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
   irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", aggregate=FALSE, crops=crops, selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
@@ -37,7 +35,7 @@ calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, crop
   names(dimnames(irrig_wat_requirement))[3] <- "crop.system"
 
   # irrigation system share (share of irrigated area)
-  irrig_system_share           <- calcOutput("IrrigationSystem", source=irrig_system_source, aggregate=FALSE)
+  irrig_system_share           <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
 
   # composite mean
   mean_irrig_wat_requirement   <- dimSums(irrig_system_share * irrig_wat_requirement,dim=3.1) / dimSums(irrig_system_share, dim=3)

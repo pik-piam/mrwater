@@ -109,19 +109,6 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
     # convert from Mha to ha
     tmp <- tmp*1e6
 
-    # correct cellular dimension of land
-    if (cells=="magpiecell") {
-      land <- tmp
-    } else if (cells=="lpjcell") {
-      lpj_cells_map  <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
-      getCells(tmp)  <- paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep=".")
-      land           <- new.magpie(1:67420,getYears(tmp),getNames(tmp))
-      land[,,]       <- 0
-      land[paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep="."),,] <- tmp[,,]
-      getCells(land) <- paste(lpj_cells_map$ISO,1:67420,sep=".")
-    } else {
-      stop("Cells argument not supported. Please select lpjcell for 67420 cells or magpiecell for 59199 cells")
-    }
   } else if (landtype=="currentcropland") {
     # Current cropland: area currently under crop production (sum over both rainfed and irrigated, sum over all crops)
     land <- calcOutput("Croparea", years=selectyears, sectoral="kcr", cells=cells, physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)

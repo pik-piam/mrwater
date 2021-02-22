@@ -14,7 +14,6 @@
 #' @param method      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water
 #' @param proxycrop   proxycrop(s) selected for rank calculation
 #' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank
-#' @param irrigini    initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell") when water value is selected
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -23,7 +22,7 @@
 #' \dontrun{ calcOutput("IrrigCellranking", aggregate=FALSE) }
 
 calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                                 cellrankyear="y1995", cells="lpjcell", crops="magpie", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=1995, irrigini="Jaegermeyr_lpjcell"){
+                                 cellrankyear="y1995", cells="lpjcell", crops="magpie", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=1995) {
 
   ### Calculate global cell rank
   # Def. "meancellrank": ranking of cells or proxy crops, then: average over ranks
@@ -37,12 +36,12 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     yield_gain <- yield_gain[,,proxycrop]
 
     # cell ranking for crop (from highest yield gain (rank=1) to lowest yield gain (rank=1+x))
-    cropcellrank <- apply(-yield_gain,c(2,3),rank)
+    cropcellrank <- apply(-yield_gain, c(2,3), rank)
 
     # calculate mean over cropcellranks
-    glocellrank  <- dimSums(cropcellrank,dim=3)/length(getNames(cropcellrank))
+    glocellrank  <- dimSums(cropcellrank, dim=3) / length(getNames(cropcellrank))
     # ties are solved by first occurrence
-    glocellrank <- apply(glocellrank,2,rank,ties.method="first")
+    glocellrank <- apply(glocellrank, 2, rank, ties.method="first")
 
     # Def. "meancroprank": average over yield gain of proxycrops, then: ranking of resulting average yield gain
   } else if (method=="meancroprank") {
@@ -55,15 +54,15 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     yield_gain <- yield_gain[,,proxycrop]
 
     # normalize yield gains of proxy crops (unity-based normalization)
-    min_yield  <- as.magpie(apply(yield_gain,c(2,3),min))
-    max_yield  <- as.magpie(apply(yield_gain,c(2,3),max))
-    yield_gain <- (yield_gain-min_yield)/(max_yield-min_yield)
+    min_yield  <- as.magpie(apply(yield_gain, c(2,3), min))
+    max_yield  <- as.magpie(apply(yield_gain, c(2,3), max))
+    yield_gain <- (yield_gain - min_yield) / (max_yield - min_yield)
 
     # calculate average yield gain over normalized proxy crops
-    yield_gain <- dimSums(yield_gain,dim=3)/length(getNames(yield_gain))
+    yield_gain <- dimSums(yield_gain,dim=3) / length(getNames(yield_gain))
 
     # calculate rank (ties are solved by first occurence)
-    glocellrank <- apply(-yield_gain,c(2,3),rank,ties.method="first")
+    glocellrank <- apply(-yield_gain, c(2,3), rank, ties.method="first")
 
   } else if (method=="meanpricedcroprank") {
 
@@ -72,13 +71,13 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
                              cells=cells, crops=crops, proxycrop=proxycrop, monetary=TRUE, aggregate=FALSE)
 
-    # calculate rank (ties are solved by first occurence)
-    glocellrank <- apply(-yield_gain,c(2,3),rank,ties.method="first")
+    # calculate rank (ties are solved by first occurrence)
+    glocellrank <- apply(-yield_gain, c(2,3), rank, ties.method="first")
 
   } else if (method=="watervalue") {
 
     watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-                           cells=cells, crops=crops, iniyear=iniyear, irrigini=irrigini, aggregate=FALSE)
+                           cells=cells, crops=crops, iniyear=iniyear, aggregate=FALSE)
     watvalue <- watvalue[,,proxycrop]
 
     # calculate average water value over proxy crops
@@ -103,16 +102,16 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
 
 
     # Calculate rank (ties are solved by first occurence)
-    glocellrank <- apply(-yield_gain_max,c(2,3),rank,ties.method="first")
+    glocellrank <- apply(-yield_gain_max, c(2,3), rank, ties.method="first")
 
   } else {
     stop("Please select a method for rank calculation")
   }
 
-  glocellrank <- as.magpie(glocellrank,spatial=1)
+  glocellrank <- as.magpie(glocellrank, spatial=1)
 
   # Check for NAs
-  if(any(is.na(glocellrank))){
+  if (any(is.na(glocellrank))) {
     stop("Function YieldImprovementPotential produced NAs")
   }
 

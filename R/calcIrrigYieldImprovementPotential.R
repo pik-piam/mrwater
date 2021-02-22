@@ -1,4 +1,4 @@
-#' @title calcIrrigYieldImprovementPotential
+#' @title       calcIrrigYieldImprovementPotential
 #' @description This function calculates the yield improvement potential of irrigation for different crops
 #'
 #' @param climatetype switch between different climate scenarios (default: "CRU_4") of calcYields function
@@ -20,9 +20,10 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigYieldImprovementPotential", aggregate=FALSE) }
 #'
-#' @import madrat
-#' @import magclass
+#' @importFrom madrat calcOutput toolGetMapping
+#' @importFrom magclass collapseNames
 #' @import mrmagpie
+#' @import mrcommons
 
 calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, monetary=FALSE, iniyear=1995,
                                           harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), cells="magpiecell", crops="lpjml", proxycrop="all"){
@@ -32,7 +33,7 @@ calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co
                        time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
 
   # yield gap (irrigated vs. rainfed) [in tons/ha]
-  tmp    <- collapseNames(yields[,,"irrigated"])-collapseNames(yields[,,"rainfed"])
+  tmp    <- collapseNames(yields[,,"irrigated"]) - collapseNames(yields[,,"rainfed"])
   # (Note: irrigation may lead to shift in growing period -> tmp can have negative values; also: under N-stress, irrigation may lead to lower yields, the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
 
   # cellular dimension
@@ -41,19 +42,19 @@ calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co
   } else if (cells=="lpjcell") {
     lpj_cells_map  <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
     getCells(tmp)  <- paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep=".")
-    yield_gain     <- new.magpie(1:67420,getYears(tmp),getNames(tmp))
+    yield_gain     <- new.magpie(1:67420, getYears(tmp), getNames(tmp))
     yield_gain[,,] <- 0
     yield_gain[paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep="."),,] <- tmp[,,]
-    getCells(yield_gain) <- paste(lpj_cells_map$ISO,1:67420,sep=".")
+    getCells(yield_gain) <- paste(lpj_cells_map$ISO, 1:67420, sep=".")
   } else {
     stop("Cells argument not supported. Please select lpjcell for 67420 cells or magpiecell for 59199 cells")
   }
 
-  if (monetary){
+  if (monetary) {
     # Read in crop output price in initialization (USD05/tDM)
     p <- calcOutput("IniFoodPrice", datasource="FAO", years=NULL, aggregate=FALSE, year=iniyear)
 
-    if (crops=="lpjml"){
+    if (crops=="lpjml") {
       # map prices to LPJmL crops
       LPJ2MAG <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
       LPJ2MAG <- data.frame(magpiecrops=LPJ2MAG$MAgPIE, lpjmlcrops=LPJ2MAG$LPJmL, lpjml5crops=LPJ2MAG$LPJmL5)
@@ -85,12 +86,12 @@ calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co
     # select proxy crops
     yield_gain  <- yield_gain[,,proxycrop]
     # average over proxy crops
-    yield_gain  <- dimSums(yield_gain,dim=3)/length(getNames(yield_gain))
+    yield_gain  <- dimSums(yield_gain,dim=3) / length(getNames(yield_gain))
     description <- "Average yield improvement potential for selection of crop types"
   }
 
   # Check for NAs
-  if(any(is.na(yield_gain))){
+  if (any(is.na(yield_gain))) {
     stop("Function YieldImprovementPotential produced NAs")
   }
 

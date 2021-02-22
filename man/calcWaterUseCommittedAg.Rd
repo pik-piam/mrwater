@@ -13,8 +13,7 @@ calcWaterUseCommittedAg(
   averaging_range = NULL,
   harmonize_baseline = "CRU_4",
   ref_year = "y2015",
-  iniyear = 1995,
-  irrigini = "Jaegermeyr_lpjcell"
+  iniyear = 1995
 )
 }
 \arguments{
@@ -35,8 +34,6 @@ calcWaterUseCommittedAg(
 \item{ref_year}{Reference year for harmonization baseline of input data to this function (just specify when harmonize_baseline=TRUE)}
 
 \item{iniyear}{Year of initialization for cropland area}
-
-\item{irrigini}{Initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")}
 }
 \value{
 magpie object in cellular resolution

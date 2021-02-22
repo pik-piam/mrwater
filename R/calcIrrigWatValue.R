@@ -1,5 +1,5 @@
 #' @title       calcIrrigWatValue
-#' @description This function calculates a the value of irrigation water (added value of water to the production process) based on yield gain, crop prices and irrigation water requirements
+#' @description This function calculates the value of irrigation water (added value of water to the production process) based on yield gain, crop prices and irrigation water requirements
 #'
 #' @param selectyears years to be returned
 #' @param version     switch between LPJmL version for yields and irrigation water requirements
@@ -12,7 +12,6 @@
 #' @param cells       switch between "lpjcell" (67420) and "magpiecell" (59199)
 #' @param crops       switch between "magpie" and "lpjml" (default) crops
 #' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank
-#' @param irrigini    initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell") when water value is selected
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -21,7 +20,7 @@
 #' \dontrun{ calcOutput("IrrigWatValue", aggregate=FALSE) }
 
 calcIrrigWatValue <- function(selectyears=c(1995,2100,5), version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                              cells="lpjcell", crops="magpie", iniyear=1995, irrigini="Jaegermeyr_lpjcell"){
+                              cells="lpjcell", crops="magpie", iniyear=1995) {
   ## Note: Methodology for calculating value of water following D'Odorico et al. (2020)
 
   # Read in potential yield gain per cell (USD05 per ha)
@@ -39,7 +38,7 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), version="LPJmL5", clim
   irrig_withdrawal <- irrig_withdrawal[,,intersect(gsub("[.].*","",getNames(irrig_withdrawal)), getNames(yield_gain))]
 
   # Read in irrigation system area initialization
-  irrigation_system <- calcOutput("IrrigationSystem", source=irrigini, aggregate=FALSE)
+  irrigation_system <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
 
   # Calculate irrigation water requirements
   IWR        <- dimSums((irrigation_system[,,]*irrig_withdrawal[,,]), dim=3.1)

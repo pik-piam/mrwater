@@ -15,8 +15,7 @@ calcIrrigWatValue(
   ref_year = "y2015",
   cells = "lpjcell",
   crops = "magpie",
-  iniyear = 1995,
-  irrigini = "Jaegermeyr_lpjcell"
+  iniyear = 1995
 )
 }
 \arguments{
@@ -41,14 +40,12 @@ calcIrrigWatValue(
 \item{crops}{switch between "magpie" and "lpjml" (default) crops}
 
 \item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank}
-
-\item{irrigini}{initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell") when water value is selected}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
-This function calculates a the value of irrigation water (added value of water to the production process) based on yield gain, crop prices and irrigation water requirements
+This function calculates the value of irrigation water (added value of water to the production process) based on yield gain, crop prices and irrigation water requirements
 }
 \examples{
 \dontrun{ calcOutput("IrrigWatValue", aggregate=FALSE) }

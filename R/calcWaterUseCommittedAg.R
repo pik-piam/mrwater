@@ -10,7 +10,6 @@
 #' @param harmonize_baseline FALSE (default): no harmonization of input data to this function, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline of input data to this function (just specify when harmonize_baseline=TRUE)
 #' @param iniyear  Year of initialization for cropland area
-#' @param irrigini Initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #'
 #' @importFrom magclass collapseNames dimSums getNames mbind
 #' @importFrom madrat calcOutput
@@ -23,25 +22,23 @@
 #'
 
 calcWaterUseCommittedAg <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", selectyears=seq(1995,2095,by=5),
-                                    time="spline", dof=4, averaging_range=NULL, harmonize_baseline="CRU_4", ref_year="y2015", iniyear=1995, irrigini="Jaegermeyr_lpjcell"){
+                                    time="spline", dof=4, averaging_range=NULL, harmonize_baseline="CRU_4", ref_year="y2015", iniyear=1995) {
 
   ##############################
   ######## Read in data ########
   ##############################
   ## Irrigation system area initialization
-  irrigation_system <- calcOutput("IrrigationSystem", source=irrigini, aggregate=FALSE)
+  irrigation_system <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
 
-  ## Read in Irrigation Water Withdrawals (in m^3 per hectar per year) [smoothed and harmonized]
-  irrig_withdrawal  <- collapseNames(calcOutput("IrrigWatRequirements", aggregate=FALSE, version=version, selectyears=selectyears,
-                                                climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof)[,,"withdrawal"])
+  ## Read in Irrigation Water (in m^3 per hectar per year) [smoothed and harmonized]
+  irrig_water <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, crops="magpie", version=version, climatetype=climatetype, time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   # Pasture is not irrigated in MAgPIE
-  irrig_withdrawal  <- irrig_withdrawal[,,"pasture",invert=T]
+  irrig_water  <- irrig_water[,,"pasture",invert=T]
 
-  ## Read in Irrigation Water Consumption (in m^3 per hectar per year) [smoothed and harmonized]
-  irrig_consumption <- collapseNames(calcOutput("IrrigWatRequirements", aggregate=FALSE, version=version, selectyears=selectyears,
-                                                climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof)[,,"consumption"])
-  # Pasture is not irrigated in MAgPIE
-  irrig_consumption <- irrig_consumption[,,"pasture",invert=T]
+  # Withdrawal
+  irrig_withdrawal  <- collapseNames(irrig_water[,,"withdrawal"])
+  # Consumption
+  irrig_consumption  <- collapseNames(irrig_water[,,"consumption"])
 
   ## Read in cropland area (by crop) from crop area initialization (in mio. ha)
   crops_grown       <- calcOutput("IrrigatedArea", selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)

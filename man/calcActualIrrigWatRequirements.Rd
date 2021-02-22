@@ -8,7 +8,6 @@ calcActualIrrigWatRequirements(
   selectyears = "all",
   iniyear = 1995,
   crops = "magpie",
-  irrig_system_source = "Jaegermeyr_lpjcell",
   version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "raw",
@@ -24,8 +23,6 @@ calcActualIrrigWatRequirements(
 \item{iniyear}{Initialization year (for weight by cropland)}
 
 \item{crops}{Selects "magpie" (default) or "lpjml" crops}
-
-\item{irrig_system_source}{Source of irrigation system initialization data including information about cellular detail (e.g. Jaegermeyr_magpiecell)}
 
 \item{version}{Switch between LPJmL4 and LPJmL5}
 

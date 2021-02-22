@@ -1,14 +1,16 @@
-#' @title readIrrigationSystem
+#' @title       readIrrigationSystem
 #' @description Read in irrigation system type for initialization
+#'
 #' @param subtype Data source to be used: Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or LPJmL (dominant irrigation system per country) and number of cells (lpjcell or magpiecell) separated by _
+#'
 #' @return MAgPIE object of at country-level
 #' @author Felicitas Beier
 #'
 #' @examples
 #' \dontrun{ readSource("IrrigationSystem", convert="onlycorrect") }
 #'
-#' @importFrom madrat toolCountry2isocode toolCountryFill toolGetMapping
-#' @import magclass
+#' @importFrom madrat toolCountry2isocode toolCountryFill toolGetMapping toolConditionalReplace
+#' @importFrom magclass getCells
 #' @importFrom mrcommons toolCell2isoCell
 
 readIrrigationSystem <- function(subtype="Jaegermeyr_magpiecell"){

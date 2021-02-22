@@ -17,6 +17,7 @@
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param irrigini         When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")
 #' @param iniyear          Initialization year of irrigation system
+#' @param protect_scen     Land protection scenario
 #' @param finalcells       Number of cells to be returned by the function (lpjcell: 67420, magpiecell: 59199)
 #'
 #' @import magclass
@@ -36,7 +37,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
                                 version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
                                 harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
-                                irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995){
+                                irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995, protect_scen) {
 
   #############################
   ####### Read in Data ########
@@ -101,7 +102,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
   ### Required inputs for Allocation Algorithm:
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, cells="lpjcell", irrigationsystem=irrigationsystem, aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
+  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, cells="lpjcell", irrigationsystem=irrigationsystem, protect_scen=protect_scen, aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
   required_wat_fullirrig_ww <- collapseNames(required_wat_fullirrig[,,"withdrawal"])
   required_wat_fullirrig_wc <- collapseNames(required_wat_fullirrig[,,"consumption"])
   required_wat_fullirrig_ww <- pmax(required_wat_fullirrig_ww,0)

@@ -15,7 +15,8 @@ calcFullIrrigationRequirement(
   selectyears = seq(1995, 2095, by = 5),
   iniyear = 1995,
   iniarea = TRUE,
-  irrigationsystem = "initialization"
+  irrigationsystem = "initialization",
+  protect_scen
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ calcFullIrrigationRequirement(
 \item{iniarea}{if TRUE (default): already irrigated area is subtracted, if FALSE: total potential land area is used}
 
 \item{irrigationsystem}{irrigation system used: system share as in initialization year (default) or drip, surface, sprinkler for full irrigation by selected system}
+
+\item{protect_scen}{land protection scenario: NULL (no irrigation limitation in protected areas), HalfEarth,}
 }
 \value{
 magpie object in cellular resolution

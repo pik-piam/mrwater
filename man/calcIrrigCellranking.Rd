@@ -17,8 +17,7 @@ calcIrrigCellranking(
   crops = "magpie",
   method = "meancellrank",
   proxycrop = c("maiz", "rapeseed", "puls_pro"),
-  iniyear = 1995,
-  irrigini = "Jaegermeyr_lpjcell"
+  iniyear = 1995
 )
 }
 \arguments{
@@ -47,8 +46,6 @@ calcIrrigCellranking(
 \item{proxycrop}{proxycrop(s) selected for rank calculation}
 
 \item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank}
-
-\item{irrigini}{initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell") when water value is selected}
 }
 \value{
 magpie object in cellular resolution
