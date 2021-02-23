@@ -45,6 +45,10 @@ calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co
     yield_gain[,,] <- 0
     yield_gain[paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep="."),,] <- tmp[,,]
     getCells(yield_gain) <- paste(lpj_cells_map$ISO, 1:67420, sep=".")
+
+    yield_gain <- addLocation(yield_gain)
+    yield_gain <- collapseDim(yield_gain, dim=c("N", "region1"))
+    yield_gain <- collapseDim(yield_gain, dim="iso")
   } else {
     stop("Cells argument not supported. Please select lpjcell for 67420 cells or magpiecell for 59199 cells")
   }
