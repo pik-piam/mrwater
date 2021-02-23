@@ -228,11 +228,11 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
                   frac_NAg_fulfilled[rs$upstreamcells[[c]]] <- 0
                   discharge[c] <- avl_wat_act[c]+upstream_cons
                 }
+              } else {
+                # available water not sufficient & no upstream cells: no withdrawals take place
+                frac_NAg_fulfilled[c] <- 0
+                discharge[c]          <- avl_wat_act[c]
               }
-
-              # available water not sufficient & no upstream cells: no withdrawals take place
-              frac_NAg_fulfilled[c] <- 0
-              discharge[c]          <- avl_wat_act[c]
 
               # available water in cell is sufficient to fulfill requirements
               # -> further withdrawals are possible
@@ -278,6 +278,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
             # available water in cell not sufficient to fulfill requirements
             # -> no more water can be withdrawn
             if (avl_wat_act[c]<required_wat_min[c]){
+
               # if cell has upstreamcells: upstreamcells must release missing water (cannot be consumed upstream)
               # -> reduce committed agricultural water consumption in upstream cells
               # -> locally: cannot withdraw
@@ -293,11 +294,11 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
                   frac_CAg_fulfilled[rs$upstreamcells[[c]]] <- 0
                   discharge[c] <- avl_wat_act[c]+upstream_cons - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
                 }
+              } else {
+                # available water not sufficient & no upstream cells: no withdrawals take place
+                frac_CAg_fulfilled[c] <- 0
+                discharge[c]          <- avl_wat_act[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
               }
-
-              # available water not sufficient & no upstream cells: no withdrawals take place
-              frac_CAg_fulfilled[c] <- 0
-              discharge[c]          <- avl_wat_act[c] - NAg_wc[c,y,scen]*frac_NAg_fulfilled[c]
 
               # available water in cell is sufficient to fulfill requirements
               # -> further withdrawal possible

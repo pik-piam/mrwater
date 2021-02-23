@@ -161,7 +161,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
 
       # Discharge in current cell for case where sufficient water available for requirements
       # (Subtract local water consumption in current cell (and previous if applicable)
-      discharge[c,,][sufficient_water & withdrawals] <- (avl_wat_act[c,,,drop=F] - currHuman_wc[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[sufficient_water & withdrawals]
+      discharge[c,,][sufficient_water] <- (avl_wat_act[c,,,drop=F] - currHuman_wc[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[sufficient_water]
 
       #### (2) Available Water in cell is not sufficient to fulfill previously determined requirements ####
       ####     (avl_wat_act[c,,] < IO_required_wat_min[c,,])                                           ####
@@ -173,9 +173,6 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
       # previously determined requirements
       currHuman_wc[c,,][!sufficient_water] <- 0
       currHuman_ww[c,,][!sufficient_water] <- 0
-      # Discharge when water is not sufficient to fulfill previously (priority)
-      # requirements and there are no upstream cells
-      discharge[c,,][!sufficient_water]  <- (avl_wat_act[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[!sufficient_water]
 
       # Update upstream cells' current consumption:
       if (length(rs$upstreamcells[[c]]) > 0) {
@@ -220,6 +217,10 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
         # and missing water water requirements cannot be fulfilled by upstream cells
         # (since there is not upstream consumption, this water is additionally available in the current cell)
         discharge[c,,][!sufficient_water & !sufficient_upstream] <- (avl_wat_act[c,,,drop=F] + upstream_cons[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[!sufficient_water & !sufficient_upstream]
+      } else {
+        # Discharge when water is not sufficient to fulfill previously (priority)
+        # requirements and there are no upstream cells
+        discharge[c,,][!sufficient_water]  <- (avl_wat_act[c,,,drop=F] - prevHuman_wc[c,,,drop=F])[!sufficient_water]
       }
 
       # Inflow to nextcell (if there is a downstreamcell)
