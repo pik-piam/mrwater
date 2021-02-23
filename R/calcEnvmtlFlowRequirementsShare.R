@@ -75,7 +75,7 @@ calcEnvmtlFlowRequirementsShare <- function(version="LPJmL4", EFRyears=c(1985:20
 
   # Correct dimension and names (NOTE: only until fully switched to standard of coordinate names)
   EFR <- addLocation(EFR)
-  EFR <- collapseDim(EFR, dim=c("N", "region1"))
+  EFR <- collapseDim(EFR, dim=c("N", "region"))
   EFR <- collapseDim(EFR, dim="iso")
 
   # Check for NAs

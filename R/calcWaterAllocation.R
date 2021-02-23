@@ -57,12 +57,14 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
   yearly_runoff <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="runoff_lpjcell", aggregate=FALSE,
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
+  getCells(yearly_runoff) <- rs$coordinates
   yearly_runoff <- as.array(collapseNames(yearly_runoff))
   yearly_runoff <- yearly_runoff[,,1]
 
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
   lake_evap     <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="evap_lake_lpjcell", aggregate=FALSE,
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
+  getCells(lake_evap) <- rs$coordinates
   lake_evap     <- as.array(collapseNames(lake_evap))
   lake_evap     <- lake_evap[,,1]
   #### LAKE EVAP PLACEHOLDER
@@ -72,6 +74,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
   input_lake    <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="input_lake_lpjcell", aggregate=FALSE,
                                harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
+  getCells(input_lake) <- rs$coordinates
   input_lake    <- as.array(collapseNames(input_lake))
   input_lake    <- input_lake[,,1]
   #### LAKE EVAP PLACEHOLDER
@@ -85,7 +88,6 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
   wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   wat_nonag <- wat_nonag[rs$coordinates,,]
-  getCells(wat_nonag) <- rs$cells
   NAg_ww  <- as.array(collapseNames(wat_nonag[,,"withdrawal"]))
   NAg_wc  <- as.array(collapseNames(wat_nonag[,,"consumption"]))
 
@@ -144,8 +146,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
                                LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                                EFRyears=c(1980:2010))
     } else if (EFP=="off"){
-      EFR_magpie_frac <- new.magpie(1:NCELLS,fill=0)
-      getCells(EFR_magpie_frac) <- paste(lpj_cells_map$ISO,1:67420,sep=".")
+      EFR_magpie_frac <- new.magpie(1:NCELLS, fill=0)
+      getCells(EFR_magpie_frac) <- rs$coordinates
     }
     EFR_magpie_frac <- as.array(collapseNames(EFR_magpie_frac))
     EFR_magpie_frac <- EFR_magpie_frac[,1,1]

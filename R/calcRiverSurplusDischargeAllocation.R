@@ -2,8 +2,7 @@
 #' @description This function distributes surplus basin discharge after the previous river routings following certain management assumptions
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param subtype     Subtype to be returned: discharge or required_wat_min or frac_fulfilled
-#' @param humanuse    Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture
+#' @param output output to be reported
 #' @param version     Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
@@ -17,7 +16,7 @@
 #' @param gainthreshold   Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear          Initialization year of irrigation system
-#' @param protect_scen     Land protection scenario
+#' @param protect_scen     land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -30,7 +29,7 @@
 #' \dontrun{ calcOutput("RiverSurplusDischargeAllocation", aggregate = FALSE) }
 #'
 
-calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
+calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
                                   allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
                                   irrigationsystem="initialization", iniyear=1995, protect_scen) {
@@ -79,7 +78,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non
 
   for (y in getYears(meancellrank)) {
 
-    frac_fullirrig <- array(data=0,dim=67420)
+    frac_fullirrig <- array(data=0, dim=67420)
 
     # Allocate water for full irrigation to cell with highest yield improvement through irrigation
     if (allocationrule=="optimization") {
@@ -146,16 +145,28 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", humanuse="non
       stop("Please choose allocation rule for river basin discharge allocation algorithm")
     }
 
-    discharge <- as.magpie(discharge, spatial=1)
+    if (output=="discharge") {
+      # Main output for MAgPIE: water available for agricultural consumption
+      out <- discharge
+      dataname <- "discharge"
+      description="Cellular discharge after accounting for known human uses along the river"
+    } else if (output=="frac_fullirrig") {
+      # Main output for MAgPIE: water available for agricultural withdrawal
+      out <- frac_fullirrig
+      dataname <- "frac_fullirrig"
+      description="Fraction of full irrigation requirements that can be fulfilled"
+    } else {
+      stop("specify outputtype")
+    }
 
-    out <- setNames(setYears(as.magpie(discharge,spatial=1),y), "discharge")
-    out <- mbind(tmp, discharge)
+    out <- setNames(setYears(as.magpie(out, spatial=1), y), nm = dataname)
+    out <- mbind(tmp, out)
   }
 
   return(list(
     x=out,
     weight=NULL,
     unit="mio. m^3",
-    description="Cellular discharge after accounting for known human uses along the river",
+    description=description,
     isocountries=FALSE))
 }
