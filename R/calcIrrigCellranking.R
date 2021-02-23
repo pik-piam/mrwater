@@ -109,6 +109,11 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
 
   glocellrank <- as.magpie(glocellrank, spatial=1)
 
+  # Correct dimension and names (NOTE: only until fully switched to standard of coordinate names)
+  glocellrank <- addLocation(glocellrank)
+  glocellrank <- collapseDim(glocellrank, dim=c("N", "region1"))
+  glocellrank <- collapseDim(glocellrank, dim="iso")
+
   # Check for NAs
   if (any(is.na(glocellrank))) {
     stop("Function YieldImprovementPotential produced NAs")
