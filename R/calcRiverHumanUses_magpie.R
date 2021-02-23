@@ -46,10 +46,6 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
   ### Required inputs for River Routing:
   I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
 
-  cfg <- list(selectyears=selectyears, climatetype=climatetype,
-              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-              time=time, dof=dof, averaging_range=averaging_range)
-
   ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
@@ -60,14 +56,12 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
-  CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,iniyear=iniyear,time=time,dof=dof,averaging_range=averaging_range,harmonize_baseline=harmonize_baseline,ref_year=ref_year,aggregate=FALSE)
+  CAU_magpie <- calcOutput("WaterUseCommittedAg", aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   CAW_magpie <- collapseNames(dimSums(CAU_magpie[,,"withdrawal"],dim=3))
   CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3))
 
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, version="LPJmL4", aggregate=FALSE,
-                                            climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
-                                            harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
+  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", version="LPJmL4", selectyears=selectyears, aggregate=FALSE, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
 
   ## Transform object dimensions
   .transformObject <- function(x) {
@@ -224,9 +218,9 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
 
       ## If there are current human water withdrawals (currHuman_ww[c,,] > 0)
       # Water withdrawal constraint: All withdrawals that can be fulfilled given available water are served
-      frac_wc_constraint[c,,] <- (IO_required_wat_min[c,,] - avl_wat_act[c,,]) / upstream_cons[c,,]
-      currHuman_wc_A[rs$upstreamcells[[c]],,] <- insufficient_water[c,,] * sufficient_upstream[c,,] * (currHuman_wc[rs$upstreamcells[[c]],,] * (1 - frac_wc_constraint[c,,]))
-      currHuman_ww_A[rs$upstreamcells[[c]],,] <- insufficient_water[c,,] * sufficient_upstream[c,,] * (currHuman_ww[rs$upstreamcells[[c]],,] * (1 - frac_wc_constraint[c,,]))
+      frac_ww_constraint[c,,] <- (IO_required_wat_min[c,,] - avl_wat_act[c,,]) / upstream_cons[c,,]
+      currHuman_wc_A[rs$upstreamcells[[c]],,] <- insufficient_water[c,,] * sufficient_upstream[c,,] * (currHuman_wc[rs$upstreamcells[[c]],,] * (1 - frac_ww_constraint[c,,]))
+      currHuman_ww_A[rs$upstreamcells[[c]],,] <- insufficient_water[c,,] * sufficient_upstream[c,,] * (currHuman_ww[rs$upstreamcells[[c]],,] * (1 - frac_ww_constraint[c,,]))
 
       # Discharge in current cell for case where sufficient water available for requirements (2)
       # (Subtract local water consumption in current cell (and previous if applicable)

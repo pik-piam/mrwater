@@ -73,6 +73,11 @@ calcEnvmtlFlowRequirementsShare <- function(version="LPJmL4", EFRyears=c(1985:20
   ### Transform to magpie object
   EFR <- as.magpie(EFR, spatial=1)
 
+  # Correct dimension and names (NOTE: only until fully switched to standard of coordinate names)
+  EFR <- addLocation(EFR)
+  EFR <- collapseDim(EFR, dim=c("N", "region1"))
+  EFR <- collapseDim(EFR, dim="iso")
+
   # Check for NAs
   if (any(is.na(EFR))) {
     stop("produced NA EFR")

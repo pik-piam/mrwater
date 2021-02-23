@@ -76,6 +76,11 @@ calcRiverNaturalFlows <- function(selectyears="all",
   out[,,"discharge_nat"] <- as.magpie(discharge_nat, spatial=1, temporal=2)
   out[,,"lake_evap_nat"] <- as.magpie(lake_evap_new, spatial=1, temporal=2)
 
+  # Correct dimension and names (NOTE: only until fully switched to standard of coordinate names)
+  out <- addLocation(out)
+  out <- collapseDim(out, dim=c("N", "region1"))
+  out <- collapseDim(out, dim="iso")
+
 return(list(
   x=out,
   weight=NULL,

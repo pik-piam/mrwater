@@ -45,21 +45,20 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
   wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   wat_nonag <- wat_nonag[rs$coordinates,,]
-  getCells(wat_nonag) <- rs$cells
   I_NAg_ww  <- collapseNames(wat_nonag[,,"withdrawal"])
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
   CAU_magpie <- calcOutput("WaterUseCommittedAg", aggregate=FALSE, selectyears=selectyears, iniyear=iniyear, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
-  CAW_magpie <- collapseNames(dimSums(CAU_magpie[,,"withdrawal"],dim=3))
-  CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3))
+  CAW_magpie <- collapseNames(dimSums(CAU_magpie[,,"withdrawal"],  dim=3))
+  CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"], dim=3))
 
   ## Water inputs
   # Lake evaporation as calculated by natural flow river routing
   lake_evap_new   <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
 
   # Runoff (on land and water)
-  I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
 
   ## Transform object dimensions
   .transformObject <- function(x) {

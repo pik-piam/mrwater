@@ -43,6 +43,11 @@ calcYearlyRunoff <- function(selectyears="all", version="LPJmL4", climatetype="H
   # Calculate Runoff (on land and water)
   out <- yearly_runoff + input_lake
 
+  # Correct dimension and names (NOTE: only until fully switched to standard of coordinate names)
+  out <- addLocation(out)
+  out <- collapseDim(out, dim=c("N", "region1"))
+  out <- collapseDim(out, dim="iso")
+
   return(list(
     x=out,
     weight=NULL,
