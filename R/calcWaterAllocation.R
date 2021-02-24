@@ -207,6 +207,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
           cells <- which(rs$calcorder==o)
 
           for (c in cells){
+
             # available water in cell
             avl_wat_act[c]  <- inflow[c]+yearly_runoff[c,y]-lake_evap_new[c]
 
