@@ -13,12 +13,13 @@
 #' \dontrun{ calcOutput("AreaPotIrrig", aggregate=FALSE) }
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames
+#' @importFrom magclass collapseNames getCells getYears getNames
 
 calcAreaPotIrrig <- function(selectyears, iniyear, iniarea, protect_scen) {
 
   # read in suitable land [in mio. ha]
   land <- collapseNames(calcOutput("AvlLandSi", aggregate=FALSE, cells="lpjcell")[,,"si0"])
+  ### increase avlLandSi according to min(LUH_cropland) (in calcAvlLandSi); an Stelle wo multipliziert si0>=croplandarea_LUH
 
   if (iniarea) {
     # subtract area already reserved for irrigation by committed agricultural uses [in mio. ha]
@@ -26,13 +27,18 @@ calcAreaPotIrrig <- function(selectyears, iniyear, iniarea, protect_scen) {
     crops_grown    <- collapseNames(dimSums(crops_grown, dim=3))
     land           <- land - crops_grown
   }
-  # negative values may occur because AvlLandSi is based on Ramankutty data and Croparea based on LUH -> set to 0
-  land[land<0] <- 0 ####should not be the case anymore!!!!!
+  # Total harvested areas retrieved by calcCroparea can be lower or higher than arable land because of multicropping or fallow land
+  land[land<0] <- 0
 
   # No irrigation in protected areas (if protection scenario is activated) [in mio. ha]
   if (!is.null(protect_scen)) {
-    protect <- collapseNames(calcOutput("ProtectArea", aggregate=FALSE)[,,protect_scen])
+    tmp <- collapseNames(calcOutput("ProtectArea", aggregate=FALSE)[,,protect_scen])
+    tmp <- addLocation(tmp)
+    ### expand to 67k cells!
+    protect <- new.magpie(cells_and_regions = getCells(land), years = getYears(tmp), names = getNames(tmp), fill = 0)
+    protect[getCells(tmp),,] <- tmp
     land    <- land - protect
+    # gesamtfläche der Zelle (landarea!!); davon protected area; wenn weniger cropland übrig als genutzt: reduziert
   }
 
   # correct negative land availability due to mismatch of available land and protected land

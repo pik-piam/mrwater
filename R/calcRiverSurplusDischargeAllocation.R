@@ -17,6 +17,7 @@
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear          Initialization year of irrigation system
 #' @param protect_scen     land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection
+#' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -32,7 +33,7 @@
 calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
                                   allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
-                                  irrigationsystem="initialization", iniyear=1995, protect_scen) {
+                                  irrigationsystem="initialization", iniyear=1995, protect_scen, proxycrop) {
 
   #######################################
   ###### Read in Required Inputs ########
@@ -47,13 +48,13 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
   discharge        <- calcOutput("RiverDischargeNatAndHuman", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
 
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, irrigationsystem=irrigationsystem, protect_scen=protect_scen, aggregate=FALSE)[,,c("maiz","rapeseed","puls_pro")]
+  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, irrigationsystem=irrigationsystem, protect_scen=protect_scen, proxycrop=proxycrop, aggregate=FALSE)
   required_wat_fullirrig_ww <- pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]), 0)
   required_wat_fullirrig_wc <- pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
 
   # average required water for full irrigation across selected proxy crops
-  required_wat_fullirrig_ww <- dimSums(required_wat_fullirrig_ww, dim=3) / length(getNames(required_wat_fullirrig_ww))
-  required_wat_fullirrig_wc <- dimSums(required_wat_fullirrig_wc, dim=3) / length(getNames(required_wat_fullirrig_wc))
+ # required_wat_fullirrig_ww <- dimSums(required_wat_fullirrig_ww, dim=3) / length(getNames(required_wat_fullirrig_ww))
+#  required_wat_fullirrig_wc <- dimSums(required_wat_fullirrig_wc, dim=3) / length(getNames(required_wat_fullirrig_wc))
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   meancellrank <- calcOutput("IrrigCellranking", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",

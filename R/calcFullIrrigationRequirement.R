@@ -12,7 +12,8 @@
 #' @param iniarea          if TRUE (default): already irrigated area is subtracted, if FALSE: total potential land area is used
 #' @param iniyear          year of initialization for cropland area
 #' @param irrigationsystem irrigation system used: system share as in initialization year (default) or drip, surface, sprinkler for full irrigation by selected system
-#' @param protect_scen     land protection scenario: NULL (no irrigation limitation in protected areas), HalfEarth,
+#' @param protect_scen     land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection
+#' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -24,7 +25,7 @@
 #' @importFrom magclass collapseNames getCells getSets getYears getNames new.magpie dimSums
 #' @importFrom mrcommons toolCell2isoCell
 
-calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, averaging_range=NULL, ref_year=NULL, selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrigationsystem="initialization", protect_scen) {
+calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, averaging_range=NULL, ref_year=NULL, selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrigationsystem="initialization", protect_scen, proxycrop) {
 
   # read in irrigation water requirements for each irrigation system [in m^3 per hectare per year] (smoothed & harmonized)
   irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
@@ -33,6 +34,26 @@ calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2
 
   # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
   land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniyear=iniyear, iniarea=iniarea, protect_scen=protect_scen, aggregate=FALSE)
+
+  # share of corp area by crop type
+  if (proxycrop=="historical") {
+    # historical crop mix
+    # read in total (irrigated + rainfed) croparea
+    croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)
+    rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater")) #### Note: only until calcCroparea is adjusted to 67420 cells
+    getCells(croparea) <- rs$coordinates                                              #### Note: only until calcCroparea is adjusted to 67420 cells
+    # share of crop types in total cropland
+    croparea_shr <- croparea / dimSums(croparea, dim=3)
+    # correct NAs: where no land available -> crop share 0
+    croparea_shr[dimSums(croparea, dim=3)==0] <- 0
+  } else {
+    # equal crop area share for each proxycrop
+    croparea_shr              <- new.magpie(cells_and_regions = getCells(land), years = NULL, names = proxycrop)
+    croparea_shr[,,proxycrop] <- 1 / length(proxycrop)
+  }
+
+  # land area per crop
+  land <- land * croparea_shr
 
   # water requirements for full irrigation in cell per crop (in mio. m^3)
   # Note on unit transformation:

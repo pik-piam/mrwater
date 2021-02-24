@@ -21,7 +21,8 @@ calcWaterAllocation(
   gainthreshold = 10,
   irrigationsystem = "initialization",
   iniyear = 1995,
-  protect_scen
+  protect_scen,
+  proxycrop
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ calcWaterAllocation(
 \item{iniyear}{Initialization year of irrigation system}
 
 \item{protect_scen}{Land protection scenario}
+
+\item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
 }
 \value{
 magpie object in cellular resolution

@@ -22,6 +22,9 @@ calcIrrigatedArea <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, dep
   # Retrieve irrigated area (per crop)
   tmp <- collapseNames(tmp[,,"irrigated"])
 
+  # Total harvested areas retrieved by calcCroparea can be lower or higher than arable land because of multicropping or fallow land
+  # Correct irrigated area to match total arable land???????
+
   # Empty object to be filled with area reserved for irrigation in current and future time steps
   irrig_area <- new.magpie(getCells(tmp), selectyears, getNames(tmp))
 

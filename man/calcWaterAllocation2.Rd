@@ -21,7 +21,8 @@ calcWaterAllocation2(
   gainthreshold = 10,
   irrigationsystem = "initialization",
   irrigini = "Jaegermeyr_lpjcell",
-  iniyear = 1995
+  iniyear = 1995,
+  proxycrop
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ calcWaterAllocation2(
 \item{irrigini}{When "initialization" selected for irrigation system: choose initialization data set for irrigation system initialization ("Jaegermeyr_lpjcell", "LPJmL_lpjcell")}
 
 \item{iniyear}{Initialization year of irrigation system}
+
+\item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
 }
 \value{
 magpie object in cellular resolution
