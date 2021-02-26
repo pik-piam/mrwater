@@ -352,27 +352,34 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
         # Allocate water for full irrigation to cell with highest yield improvement through irrigation
         if (allocationrule=="optimization") {
 
-          for (c in (1:max(meancellrank[,y],na.rm=T))){
-            # available water for additional irrigation withdrawals
-            avl_wat_ww <- max(discharge[c]-required_wat_min_allocation[c],0)
+          for (o in (1:max(meancellrank[,y],na.rm=T))){
 
-            # withdrawal constraint
-            if (required_wat_fullirrig_ww[c,y]>0) {
-              # how much withdrawals can be fulfilled by available water
-              frac_fullirrig[c] <- min(avl_wat_ww/required_wat_fullirrig_ww[c,y],1)
+            rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
+            c        <- rs$cells[meancellrank[,y,,drop=F]==o]
 
-              # consumption constraint
-              if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
-                # available water for additional irrigation consumption (considering downstream availability)
-                avl_wat_wc          <- max(min(discharge[rs$downstreamcells[[c]]] - required_wat_min_allocation[rs$downstreamcells[[c]]]),0)
-                # how much consumption can be fulfilled by available water
-                frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
+            if (irrig_yieldgainpotential[c,y] > gainthreshold) {
+
+              # available water for additional irrigation withdrawals
+              avl_wat_ww <- max(discharge[c]-required_wat_min_allocation[c],0)
+
+              # withdrawal constraint
+              if (required_wat_fullirrig_ww[c,y]>0) {
+                # how much withdrawals can be fulfilled by available water
+                frac_fullirrig[c] <- min(avl_wat_ww/required_wat_fullirrig_ww[c,y],1)
+
+                # consumption constraint
+                if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
+                  # available water for additional irrigation consumption (considering downstream availability)
+                  avl_wat_wc          <- max(min(discharge[rs$downstreamcells[[c]]] - required_wat_min_allocation[rs$downstreamcells[[c]]]),0)
+                  # how much consumption can be fulfilled by available water
+                  frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
+                }
+
+                # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
+                discharge[c(rs$downstreamcells[[c]],c)] <- discharge[c(rs$downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
+                # update minimum water required in cell:
+                required_wat_min_allocation[c] <- required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
               }
-
-              # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-              discharge[c(rs$downstreamcells[[c]],c)] <- discharge[c(rs$downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
-              # update minimum water required in cell:
-              required_wat_min_allocation[c] <- required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
             }
           }
           ### REPORTING: discharge after optimization

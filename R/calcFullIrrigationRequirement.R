@@ -41,7 +41,7 @@ calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2
     # read in total (irrigated + rainfed) croparea
     croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)
     rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater")) #### Note: only until calcCroparea is adjusted to 67420 cells
-    getCells(croparea) <- rs$coordinates                                              #### Note: only until calcCroparea is adjusted to 67420 cells
+    getCells(croparea) <- rs$coordinates                                                  #### Note: only until calcCroparea is adjusted to 67420 cells
     # share of crop types in total cropland
     croparea_shr <- croparea / dimSums(croparea, dim=3)
     # correct NAs: where no land available -> crop share 0
@@ -55,12 +55,15 @@ calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2
   # land area per crop
   land <- land * croparea_shr
 
-  # water requirements for full irrigation in cell per crop (in mio. m^3)
+  # water requirements for full irrigation in cell per crop accounting for cropshare (in mio. m^3)
   # Note on unit transformation:
   # land (mio ha -> ha): multiply with 1e6,
   # irrigation water requirements (m^3 per ha -> mio. m^3 per ha): divide by 1e6
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
   irrig_wat <- irrig_wat * land
+
+  # sum over crops
+  irrig_wat <- dimSums(irrig_wat, dim="crop")
 
   # calculate irrigation water requirements per crop [in mio. m^3 per year] given irrigation system share in use
   if (irrigationsystem=="initialization") {

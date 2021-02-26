@@ -11,7 +11,7 @@
 #' @param harmonize_baseline harmonization in calcYields function: FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
 #' @param ref_year           reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #' @param cells       switch between "lpjcell" (67420) and "magpiecell" (59199)
-#' @param proxycrop   proxycrop(s) selected for crop mix specific calculations (default: "all")
+#' @param proxycrop   proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -20,12 +20,11 @@
 #' \dontrun{ calcOutput("IrrigYieldImprovementPotential", aggregate=FALSE) }
 #'
 #' @importFrom madrat calcOutput toolGetMapping
-#' @importFrom magclass collapseNames
-#' @import mrmagpie
-#' @import mrcommons
+#' @importFrom magclass collapseNames new.magpie getYears getNames collapseDim
+#' @importFrom magpiesets addLocation
 
 calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, monetary=FALSE, iniyear=1995,
-                                          harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), cells="magpiecell", proxycrop="all"){
+                                          harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), cells="magpiecell", proxycrop) {
 
   # read in yields [in tons/ha]
   yields <- calcOutput("Yields", lpjml=c(natveg="LPJml4", crop="LPJmL5"), climatetype=climatetype, selectyears=selectyears,
@@ -65,14 +64,14 @@ calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co
   }
 
   # Selected crops
-  if (proxycrop=="all") {
-    description <- "Yield improvement potential by irrigation for different crop types"
-  } else {
+  if (!is.null(proxycrop)) {
     # select proxy crops
     yield_gain  <- yield_gain[,,proxycrop]
     # average over proxy crops
     yield_gain  <- dimSums(yield_gain,dim=3) / length(getNames(yield_gain))
     description <- "Average yield improvement potential for selection of crop types"
+  } else {
+    description <- "Yield improvement potential by irrigation for different crop types"
   }
 
   # Check for NAs

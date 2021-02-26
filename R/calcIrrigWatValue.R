@@ -25,7 +25,7 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), version="LPJmL5", clim
   # Read in potential yield gain per cell (USD05 per ha)
   yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears,
                            harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                           cells=cells, proxycrop="all", monetary=TRUE, aggregate=FALSE)
+                           cells=cells, proxycrop=NULL, monetary=TRUE, aggregate=FALSE)
 
   # Set negative yield_gains to 0 (Negative yield gains (i.e. fewer yields through irrigation) would result in water value of 0)
   yield_gain[yield_gain<0] <- 0
@@ -49,7 +49,7 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), version="LPJmL5", clim
   watvalue <- yield_gain / IWR
 
   # Check for NAs
-  if(any(is.na(watvalue))){
+  if (any(is.na(watvalue))) {
     stop("Function YieldImprovementPotential produced NAs")
   }
 

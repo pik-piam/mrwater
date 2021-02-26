@@ -30,7 +30,7 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     ## Read in potential yield gain per cell (tons per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                             cells=cells, proxycrop="all", monetary=FALSE, aggregate=FALSE)
+                             cells=cells, proxycrop=NULL, monetary=FALSE, aggregate=FALSE)
     # select proxy crops
     yield_gain <- yield_gain[,,proxycrop]
 
@@ -48,7 +48,7 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     ## Read in potential yield gain per cell (tons per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                             cells=cells, proxycrop="all", monetary=FALSE, aggregate=FALSE)
+                             cells=cells, proxycrop=NULL, monetary=FALSE, aggregate=FALSE)
     # select proxy crops
     yield_gain <- yield_gain[,,proxycrop]
 
@@ -90,7 +90,7 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
     ## Read in average potential yield gain per cell for all crops (USD05 per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                             cells=cells, proxycrop="all", monetary=TRUE, aggregate=FALSE)
+                             cells=cells, proxycrop=NULL, monetary=TRUE, aggregate=FALSE)
 
     # Maximum monetary yield gain in the location (across all crops)
     yield_gain_max <- pmax(yield_gain[,,"tece"], yield_gain[,,"maiz"], yield_gain[,,"trce"], yield_gain[,,"soybean"],
@@ -108,11 +108,6 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
   }
 
   glocellrank <- as.magpie(glocellrank, spatial=1)
-
-  # Correct dimension and names (NOTE: only until fully switched to standard of coordinate names)
-  glocellrank <- addLocation(glocellrank)
-  glocellrank <- collapseDim(glocellrank, dim=c("N", "region1"))
-  glocellrank <- collapseDim(glocellrank, dim="iso")
 
   # Check for NAs
   if (any(is.na(glocellrank))) {

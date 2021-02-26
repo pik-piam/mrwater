@@ -15,7 +15,7 @@ calcIrrigYieldImprovementPotential(
   ref_year = NULL,
   selectyears = seq(1995, 2095, by = 5),
   cells = "magpiecell",
-  proxycrop = "all"
+  proxycrop
 )
 }
 \arguments{
@@ -39,7 +39,7 @@ calcIrrigYieldImprovementPotential(
 
 \item{cells}{switch between "lpjcell" (67420) and "magpiecell" (59199)}
 
-\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations (default: "all")}
+\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
 }
 \value{
 magpie object in cellular resolution
