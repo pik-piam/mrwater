@@ -355,7 +355,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
           for (o in (1:max(meancellrank[,y],na.rm=T))){
 
             rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
-            c        <- rs$cells[meancellrank[,y,,drop=F]==o]
+            c        <- rs$cells[meancellrank[,y]==o]
 
             if (irrig_yieldgainpotential[c,y] > gainthreshold) {
 
