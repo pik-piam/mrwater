@@ -60,6 +60,7 @@ calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2
   # land (mio ha -> ha): multiply with 1e6,
   # irrigation water requirements (m^3 per ha -> mio. m^3 per ha): divide by 1e6
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
+  irrig_wat <- irrig_wat[,,getNames(croparea_shr)]
   irrig_wat <- irrig_wat * land
 
   # sum over crops
