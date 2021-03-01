@@ -46,6 +46,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   ### Read in river structure
   # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
+  # cells as numeric for surplus discharge allocation algorithm
+  rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
   # Number of cells to be used for calculation
   NCELLS <- 67420
@@ -354,8 +356,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
           for (o in (1:max(meancellrank[,y],na.rm=T))){
 
-            rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
-            c        <- rs$cells[meancellrank[,y]==o]
+            c <- rs$cells[meancellrank[,y]==o]
 
             if (irrig_yieldgainpotential[c,y] > gainthreshold) {
 

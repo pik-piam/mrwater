@@ -15,7 +15,6 @@ calcRiverSurplusDischargeAllocation(
   harmonize_baseline = "CRU_4",
   ref_year = "y2015",
   allocationrule = "optimization",
-  allocationshare = NULL,
   thresholdtype = TRUE,
   gainthreshold = 10,
   irrigationsystem = "initialization",
@@ -44,8 +43,6 @@ calcRiverSurplusDischargeAllocation(
 \item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
-
-\item{allocationshare}{Share of water to be allocated to cell (only needs to be selected in case of allocationrule=="equality")}
 
 \item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 

@@ -11,7 +11,6 @@
 #' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #' @param allocationrule  Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
-#' @param allocationshare Share of water to be allocated to cell (only needs to be selected in case of allocationrule=="equality")
 #' @param thresholdtype   Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param gainthreshold   Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
@@ -32,7 +31,7 @@
 
 calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
                                   version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
-                                  allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
+                                  allocationrule="optimization", thresholdtype=TRUE, gainthreshold=10,
                                   irrigationsystem="initialization", iniyear=1995, protect_scen, proxycrop) {
 
   #######################################
@@ -83,7 +82,9 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
   ################################################
   ####### River basin discharge allocation #######
   ################################################
-  tmp <- NULL
+  tmp      <- NULL
+  # numeric cell numbers in order of rs object
+  rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
   for (y in getYears(meancellrank)) {
 
@@ -93,8 +94,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
       for (o in (1:max(meancellrank[,y], na.rm=T))) {
 
         # Cells that have (next) highest rank
-        rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
-        c        <- rs$cells[meancellrank[,y]==o]
+        c  <- rs$cells[meancellrank[,y]==o]
 
         # vector of downstreamcells of c
         down <- unlist(rs$downstreamcells[[c]])
