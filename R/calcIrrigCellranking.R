@@ -86,7 +86,9 @@ calcIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spli
 
   } else if (method=="mostprofitable") {
 
-    ## Read in average potential yield gain per cell for all crops (USD05 per ha)
+    #### NOT FULLY FUNCTIONAL YET
+
+    # Read in average potential yield gain per cell for all crops (USD05 per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
                              cells=cells, proxycrop=NULL, monetary=TRUE, aggregate=FALSE)
@@ -99,7 +101,9 @@ calcIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spli
     getNames(yield_gain_max) <- NULL
 
 
-    # Calculate rank (ties are solved by first occurence)
+    #####!!!!!????? QUESTION: How to ensure that most profitable is then also selected in FullIrrigationRequirements etc.
+
+    # Calculate rank (ties are solved by first occurrence)
     glocellrank <- apply(-yield_gain_max, c(2,3), rank, ties.method="first")
 
   } else {

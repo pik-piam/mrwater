@@ -14,7 +14,6 @@ calcIrrigYieldImprovementPotential(
   harmonize_baseline = FALSE,
   ref_year = NULL,
   selectyears = seq(1995, 2095, by = 5),
-  cells = "magpiecell",
   proxycrop
 )
 }
@@ -36,8 +35,6 @@ calcIrrigYieldImprovementPotential(
 \item{ref_year}{reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 
 \item{selectyears}{years to be returned by the function}
-
-\item{cells}{switch between "lpjcell" (67420) and "magpiecell" (59199)}
 
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
 }

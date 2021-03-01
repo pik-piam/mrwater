@@ -41,12 +41,12 @@ calcFullIrrigationRequirement <- function(climatetype="HadGEM2_ES:rcp2p6:co2", h
     croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)
     rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater")) #### Note: only until calcCroparea is adjusted to 67420 cells
     getCells(croparea) <- rs$coordinates                                                  #### Note: only until calcCroparea is adjusted to 67420 cells
-    # share of crop types in total cropland
+    # historical share of crop types in total cropland per cell
     croparea_shr <- croparea / dimSums(croparea, dim=3)
     # correct NAs: where no land available -> crop share 0
     croparea_shr[dimSums(croparea, dim=3)==0] <- 0
   } else {
-    # equal crop area share for each proxycrop
+    # equal crop area share for each proxycrop assumed
     croparea_shr              <- new.magpie(cells_and_regions = getCells(land), years = NULL, names = proxycrop)
     croparea_shr[,,proxycrop] <- 1 / length(proxycrop)
   }
@@ -68,7 +68,7 @@ calcFullIrrigationRequirement <- function(climatetype="HadGEM2_ES:rcp2p6:co2", h
   # calculate irrigation water requirements per crop [in mio. m^3 per year] given irrigation system share in use
   if (irrigationsystem=="initialization") {
     # read in irrigation system area initialization [share of AEI by system] and expand to all years
-    tmp <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
+    tmp                   <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
     irrigation_system     <- new.magpie(getCells(irrig_wat), getYears(irrig_wat), getNames(tmp))
     irrigation_system[,,] <- tmp
 

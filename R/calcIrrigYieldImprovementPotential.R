@@ -10,7 +10,6 @@
 #' @param iniyear         year to be used when monetary activated
 #' @param harmonize_baseline harmonization in calcYields function: FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
 #' @param ref_year           reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
-#' @param cells       switch between "lpjcell" (67420) and "magpiecell" (59199)
 #' @param proxycrop   proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #'
 #' @return magpie object in cellular resolution
@@ -24,7 +23,7 @@
 #' @importFrom magpiesets addLocation
 
 calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, monetary=FALSE, iniyear=1995,
-                                          harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), cells="magpiecell", proxycrop) {
+                                          harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), proxycrop) {
 
   # read in yields [in tons/ha]
   yields <- calcOutput("Yields", lpjml=c(natveg="LPJml4", crop="LPJmL5"), climatetype=climatetype, selectyears=selectyears,
@@ -35,9 +34,7 @@ calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co
   # (Note: irrigation may lead to shift in growing period -> tmp can have negative values; also: under N-stress, irrigation may lead to lower yields, the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
 
   # cellular dimension
-  if (cells=="magpiecell") {
-    yield_gain <- tmp
-  } else if (cells=="lpjcell") {
+  #### transform to object of 67420 cells (until 67k cells fully implemented) ####
     lpj_cells_map  <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
     getCells(tmp)  <- paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep=".")
     yield_gain     <- new.magpie(1:67420, getYears(tmp), getNames(tmp))
@@ -48,9 +45,7 @@ calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co
     yield_gain <- addLocation(yield_gain)
     yield_gain <- collapseDim(yield_gain, dim=c("N", "region1"))
     yield_gain <- collapseDim(yield_gain, dim="iso")
-  } else {
-    stop("Cells argument not supported. Please select lpjcell for 67420 cells or magpiecell for 59199 cells")
-  }
+  #### transform to object of 67420 cells (until 67k cells fully implemented) ####
 
   if (monetary) {
     # Read in crop output price in initialization (USD05/tDM)
@@ -65,13 +60,42 @@ calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co
 
   # Selected crops
   if (!is.null(proxycrop)) {
-    # select proxy crops
-    yield_gain  <- yield_gain[,,proxycrop]
-    # average over proxy crops
-    yield_gain  <- dimSums(yield_gain,dim=3) / length(getNames(yield_gain))
-    description <- "Average yield improvement potential for selection of crop types"
+
+    # share of corp area by crop type
+    if (proxycrop=="historical") {
+      # historical crop mix
+      # read in total (irrigated + rainfed) croparea
+      croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)
+
+      ### Note: Yield gain only given for 14 crops (begr, betr, cottn_pro, foddr, oilpalm missing)
+      # Reduce crops in croparea_shr
+      croparea <- croparea[,,getNames(yield_gain)]
+
+      #### adjust number of cells (only until calcCroparea is adjusted to read in 67420 cells) ####
+      rs                 <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
+      getCells(croparea) <- rs$coordinates
+      #### adjust number of cells (only until calcCroparea is adjusted to read in 67420 cells) ####
+      # historical share of crop types in total cropland per cell
+      croparea_shr <- croparea / dimSums(croparea, dim=3)
+      # correct NAs: where no land available -> crop share 0
+      croparea_shr[dimSums(croparea, dim=3)==0] <- 0
+
+      # average yield gain over histrical crops weighted with their croparea share
+      yield_gain <- dimSums(croparea_shr * yield_gain, dim=3)
+
+      description <- "Average yield improvement potential for crop types weighted with historical croparea share"
+
+    } else {
+      # equal crop area share for each proxycrop assumed
+      # select proxy crops
+      yield_gain  <- yield_gain[,,proxycrop]
+      # average over proxy crops
+      yield_gain  <- dimSums(yield_gain, dim=3) / length(getNames(yield_gain))
+      description <- "Average yield improvement potential for selection of crop types"
+    }
+
   } else {
-    description <- "Yield improvement potential by irrigation for different crop types"
+    description <- "Yield improvement potential by irrigation for all different crop types"
   }
 
   # Check for NAs
