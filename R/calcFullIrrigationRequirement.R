@@ -33,7 +33,7 @@ calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2
   irrig_wat <- irrig_wat[,,"pasture",invert=T]
 
   # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
-  land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniyear=iniyear, iniarea=iniarea, protect_scen=protect_scen, aggregate=FALSE)
+  land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniareayear=iniyear, protect_scen=protect_scen, aggregate=FALSE)
 
   # share of corp area by crop type
   if (proxycrop=="historical") {
