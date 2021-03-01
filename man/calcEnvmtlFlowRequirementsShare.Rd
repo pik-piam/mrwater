@@ -5,7 +5,7 @@
 \title{calcEnvmtlFlowRequirementsShare}
 \usage{
 calcEnvmtlFlowRequirementsShare(
-  version = "LPJmL4",
+  lpjml = c(natveg = "LPJmL4", crop = "LPJmL5"),
   EFRyears = c(1985:2015),
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   LFR_val = 0.1,
@@ -16,7 +16,7 @@ calcEnvmtlFlowRequirementsShare(
 )
 }
 \arguments{
-\item{version}{Switch between LPJmL4 and LPJmL5}
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!}
 
 \item{EFRyears}{Long-term reference time frame for EFR calculation}
 

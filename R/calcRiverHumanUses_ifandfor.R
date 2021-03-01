@@ -4,7 +4,6 @@
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param subtype     Subtype to be returned: discharge or required_wat_min or frac_fulfilled
 #' @param humanuse    Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture
-#' @param version     Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -25,7 +24,7 @@
 #'
 
 calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
-                                  version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
+                                        climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
   # # # # # # # # # # #
@@ -42,7 +41,7 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   ### Required inputs for River Routing:
-  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
 
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
@@ -53,7 +52,7 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, version=version, aggregate=FALSE,
+  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, aggregate=FALSE,
                                                       climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
                                                       harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
 
@@ -78,7 +77,7 @@ calcRiverHumanUses_ifandfor <- function(selectyears="all", humanuse="non_agricul
 
   for (EFP in c("on", "off")) {
 
-    required_wat_min <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, version="LPJmL4", climatetype=climatetype, aggregate=FALSE,
+    required_wat_min <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, aggregate=FALSE,
                                    harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range,
                                    LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                                       EFRyears=c(1980:2010))

@@ -1,14 +1,14 @@
-#' @title calcEnvmtlFlowRequirementsShare
+#' @title       calcEnvmtlFlowRequirementsShare
 #' @description This function calculates environmental flow requirements (EFR) (as share of discharge) based on LPJmL monthly discharge following Smakthin et al. (2004)
 #'
-#' @param version     Switch between LPJmL4 and LPJmL5
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param LFR_val        Strictness of environmental flow requirements
 #' @param HFR_LFR_less10 High flow requirements (share of total water for cells) with LFR<10percent of total water
 #' @param HFR_LFR_10_20  High flow requirements (share of total water for cells) with 10percent < LFR < 20percent of total water
 #' @param HFR_LFR_20_30  High flow requirements (share of total water for cells) with 20percent < LFR < 30percent of total water
 #' @param HFR_LFR_more30 High flow requirements (share of total water for cells) with LFR>30percent of total water
-#' @param EFRyears Long-term reference time frame for EFR calculation
+#' @param EFRyears       Long-term reference time frame for EFR calculation
 #'
 #' @importFrom magclass collapseNames new.magpie getYears
 #' @importFrom madrat calcOutput
@@ -21,14 +21,14 @@
 #' \dontrun{ calcOutput("EnvmtlFlowRequirementsShare", aggregate=FALSE) }
 #'
 
-calcEnvmtlFlowRequirementsShare <- function(version="LPJmL4", EFRyears=c(1985:2015), climatetype="HadGEM2_ES:rcp2p6:co2",
+calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4", crop="LPJmL5"), EFRyears=c(1985:2015), climatetype="HadGEM2_ES:rcp2p6:co2",
                                        LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00) {
 
   # Long-term reference period for EFR calculation
   EFRyears <- paste0("y",EFRyears)
 
   ### Monthly Discharge from LPJmL
-  monthly_discharge_magpie <- calcOutput("LPJmL", selectyears=EFRyears, version=version, climatetype=climatetype, subtype="mdischarge_lpjcell", aggregate=FALSE,
+  monthly_discharge_magpie <- calcOutput("LPJmL", selectyears=EFRyears, version=lpjml["natveg"], climatetype=climatetype, subtype="mdischarge_lpjcell", aggregate=FALSE,
                                          harmonize_baseline=FALSE, ref_year=NULL, time="raw", averaging_range=NULL, dof=NULL)
 
   # Extract years

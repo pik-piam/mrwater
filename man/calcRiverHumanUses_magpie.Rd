@@ -9,7 +9,6 @@ calcRiverHumanUses_magpie(
   humanuse = "non_agriculture",
   subtype = "discharge",
   iniyear = 1995,
-  version = "LPJmL4",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
   averaging_range = NULL,
@@ -26,8 +25,6 @@ calcRiverHumanUses_magpie(
 \item{subtype}{Subtype to be returned: discharge or required_wat_min or frac_fulfilled}
 
 \item{iniyear}{Initialization year of irrigation system}
-
-\item{version}{Switch between LPJmL4 and LPJmL5}
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 

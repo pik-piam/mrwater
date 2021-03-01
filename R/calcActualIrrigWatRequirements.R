@@ -2,7 +2,6 @@
 #' @description This function calculates actual irrigation water requirements per cell given a certain irrigation system
 #'
 #' @param selectyears Years to be returned
-#' @param version     Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -24,10 +23,10 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magpiesets findset
 
-calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="raw", averaging_range=NULL, dof=NULL, harmonize_baseline=FALSE, ref_year=NULL) {
+calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, climatetype="HadGEM2_ES:rcp2p6:co2", time="raw", averaging_range=NULL, dof=NULL, harmonize_baseline=FALSE, ref_year=NULL) {
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
-  irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   irrig_wat_requirement        <- irrig_wat_requirement[,,"pasture",invert=T]
   names(dimnames(irrig_wat_requirement))[1] <- "iso.cell"
   names(dimnames(irrig_wat_requirement))[3] <- "crop.system"

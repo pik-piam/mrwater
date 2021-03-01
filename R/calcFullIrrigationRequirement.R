@@ -2,7 +2,6 @@
 #' @description This function calculates the water requirements for full irrigation per cell per crop given potentially available land
 #'
 #' @param selectyears years to be returned
-#' @param version     switch between LPJmL4 and LPJmL5
 #' @param climatetype switch between different climate scenarios (default: "CRU_4")
 #' @param time            time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -25,10 +24,10 @@
 #' @importFrom magclass collapseNames getCells getSets getYears getNames new.magpie dimSums
 #' @importFrom mrcommons toolCell2isoCell
 
-calcFullIrrigationRequirement <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, averaging_range=NULL, ref_year=NULL, selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrigationsystem="initialization", protect_scen, proxycrop) {
+calcFullIrrigationRequirement <- function(climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, averaging_range=NULL, ref_year=NULL, selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrigationsystem="initialization", protect_scen, proxycrop) {
 
   # read in irrigation water requirements for each irrigation system [in m^3 per hectare per year] (smoothed & harmonized)
-  irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   # pasture is not irrigated in MAgPIE
   irrig_wat <- irrig_wat[,,"pasture",invert=T]
 

@@ -1,7 +1,6 @@
 #' @title       calcEnvmtlFlowRequirements
 #' @description This function calculates environmental flow requirements (EFR) for MAgPIE based on EFR share calculated from LPJmL monthly discharge following Smakthin et al. (2004)
 #'
-#' @param version     Switch between LPJmL4 and LPJmL5
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param LFR_val        Strictness of environmental flow requirements
@@ -26,16 +25,16 @@
 #' \dontrun{ calcOutput("EnvmtlFlowRequirements", aggregate=FALSE) }
 #'
 
-calcEnvmtlFlowRequirements <- function(version="LPJmL4", selectyears="all", EFRyears=c(1985:2015),
+calcEnvmtlFlowRequirements <- function(selectyears="all", EFRyears=c(1985:2015),
                                        climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
                                        LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00) {
   # Read in EFR share
-  EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", version=version, climatetype=climatetype, aggregate=FALSE,
+  EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", climatetype=climatetype, aggregate=FALSE,
                                   LFR_val=LFR_val, HFR_LFR_less10=HFR_LFR_less10, HFR_LFR_10_20=HFR_LFR_10_20, HFR_LFR_20_30=HFR_LFR_20_30, HFR_LFR_more30=HFR_LFR_more30,
                                   EFRyears=EFRyears)
 
   # Read in natural discharge (in mio. m^3 / yr)
-  discharge_nat   <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, version=version, aggregate=FALSE,
+  discharge_nat   <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, aggregate=FALSE,
                                              climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof,
                                              harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"discharge_nat"])
 

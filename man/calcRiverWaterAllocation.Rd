@@ -6,7 +6,6 @@
 \usage{
 calcRiverWaterAllocation(
   selectyears,
-  version,
   climatetype,
   time,
   averaging_range,
@@ -24,8 +23,6 @@ calcRiverWaterAllocation(
 }
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
-
-\item{version}{Switch between LPJmL4 and LPJmL5}
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 

@@ -7,7 +7,6 @@
 calcActualIrrigWatRequirements(
   selectyears = "all",
   iniyear = 1995,
-  version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "raw",
   averaging_range = NULL,
@@ -20,8 +19,6 @@ calcActualIrrigWatRequirements(
 \item{selectyears}{Years to be returned}
 
 \item{iniyear}{Initialization year (for weight by cropland)}
-
-\item{version}{Switch between LPJmL4 and LPJmL5}
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 

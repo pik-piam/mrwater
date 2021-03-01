@@ -1,7 +1,7 @@
 #' @title calcWaterAllocation
 #' @description This function calculates water availability for MAgPIE retrieved from LPJmL using a river routing and allocation algorithm for distribution of discharge within the river basin
 #'
-#' @param version     Switch between LPJmL4 and LPJmL5
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -34,7 +34,7 @@
 #'
 
 calcWaterAllocation <- function(selectyears="all", output="consumption", finalcells="magpiecell",
-                                version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
+                                lpjml=c(natveg="LPJmL4", crop="LPJmL5"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
                                 harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
                                 irrigationsystem="initialization", iniyear=1995, protect_scen, proxycrop) {
@@ -58,14 +58,14 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
   ### Required inputs for River Routing:
   # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  yearly_runoff <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="runoff_lpjcell", aggregate=FALSE,
+  yearly_runoff <- calcOutput("LPJmL", version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, subtype="runoff_lpjcell", aggregate=FALSE,
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
   getCells(yearly_runoff) <- rs$coordinates
   yearly_runoff <- as.array(collapseNames(yearly_runoff))
   yearly_runoff <- yearly_runoff[,,1]
 
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
-  lake_evap     <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="evap_lake_lpjcell", aggregate=FALSE,
+  lake_evap     <- calcOutput("LPJmL", version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, subtype="evap_lake_lpjcell", aggregate=FALSE,
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
   getCells(lake_evap) <- rs$coordinates
   lake_evap     <- as.array(collapseNames(lake_evap))
@@ -75,7 +75,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   # lake_evap[]   <- 0
 
   # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
-  input_lake    <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="input_lake_lpjcell", aggregate=FALSE,
+  input_lake    <- calcOutput("LPJmL", version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, subtype="input_lake_lpjcell", aggregate=FALSE,
                                harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
   getCells(input_lake) <- rs$coordinates
   input_lake    <- as.array(collapseNames(input_lake))
@@ -106,7 +106,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
   ### Required inputs for Allocation Algorithm:
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, irrigationsystem=irrigationsystem, protect_scen=protect_scen, proxycrop=proxycrop, aggregate=FALSE)
+  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype=climatetype, harmonize_baseline=harmonize_baseline, time=time, dof=dof, iniyear=iniyear, iniarea=TRUE, irrigationsystem=irrigationsystem, protect_scen=protect_scen, proxycrop=proxycrop, aggregate=FALSE)
   required_wat_fullirrig_ww <- collapseNames(required_wat_fullirrig[,,"withdrawal"])
   required_wat_fullirrig_wc <- collapseNames(required_wat_fullirrig[,,"consumption"])
   required_wat_fullirrig_ww <- pmax(required_wat_fullirrig_ww,0)
@@ -117,7 +117,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   required_wat_fullirrig_wc <- as.array(collapseNames(required_wat_fullirrig_wc))[,,1]
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  meancellrank <- calcOutput("IrrigCellranking", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
+  meancellrank <- calcOutput("IrrigCellranking", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
                              cellrankyear=selectyears, cells="lpjcell", method="meancroprank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=iniyear, aggregate=FALSE)
   meancellrank <- as.array(meancellrank)[,,1]
 
@@ -141,7 +141,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
     # Environmental Flow Requirements (share of mean annual discharge) [long-term average]
     if (EFP=="on"){
-      EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", version="LPJmL4", climatetype=climatetype, aggregate=FALSE,
+      EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", climatetype=climatetype, aggregate=FALSE,
                                LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                                EFRyears=c(1980:2010))
     } else if (EFP=="off"){

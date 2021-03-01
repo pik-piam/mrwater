@@ -5,7 +5,6 @@
 \title{calcWaterUseCommittedAg}
 \usage{
 calcWaterUseCommittedAg(
-  version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   selectyears = seq(1995, 2095, by = 5),
   time = "spline",
@@ -17,8 +16,6 @@ calcWaterUseCommittedAg(
 )
 }
 \arguments{
-\item{version}{Switch between LPJmL4 and LPJmL5}
-
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
 \item{selectyears}{Years to be returned}

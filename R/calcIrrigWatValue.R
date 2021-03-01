@@ -2,7 +2,6 @@
 #' @description This function calculates the value of irrigation water (added value of water to the production process) based on yield gain, crop prices and irrigation water requirements
 #'
 #' @param selectyears years to be returned
-#' @param version     switch between LPJmL version for yields and irrigation water requirements
 #' @param climatetype switch between different climate scenarios for yields and irrigation water requirements
 #' @param time            time smoothing: average, spline (default) or raw
 #' @param averaging_range just specify for time=="average": number of time steps to average
@@ -18,7 +17,7 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigWatValue", aggregate=FALSE) }
 
-calcIrrigWatValue <- function(selectyears=c(1995,2100,5), version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
+calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
                               cells="lpjcell", iniyear=1995) {
   ## Note: Methodology for calculating value of water following D'Odorico et al. (2020)
 
@@ -32,7 +31,7 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), version="LPJmL5", clim
 
   # Read in irrigation water requirement (withdrawals) (in m^3 per hectar per year) [smoothed and harmonized]
   # Note: Following D'Odorico et al. (2020), results refer to water withdrawals (because that's what one would pay for rather than for consumption)
-  irrig_withdrawal <- calcOutput("IrrigWatRequirements", aggregate=FALSE, version=version, selectyears=iniyear, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof)
+  irrig_withdrawal <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=iniyear, climatetype=climatetype, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof)
   irrig_withdrawal <- collapseNames(irrig_withdrawal[,,"withdrawal"])
   irrig_withdrawal <- irrig_withdrawal[,,intersect(gsub("[.].*","",getNames(irrig_withdrawal)), getNames(yield_gain))]
 

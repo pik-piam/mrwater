@@ -4,7 +4,6 @@
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param subtype     Subtype to be returned: discharge or required_wat_min or frac_fulfilled
 #' @param humanuse    Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture
-#' @param version     Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -27,7 +26,7 @@
 
 calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge",
                                iniyear=1995,
-                               version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
+                                climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
   # # # # # # # # # # #
@@ -44,7 +43,7 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   ### Required inputs for River Routing:
-  I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
 
   ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
@@ -61,7 +60,7 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
   CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3))
 
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", version="LPJmL4", selectyears=selectyears, aggregate=FALSE, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
+  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, aggregate=FALSE, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
 
   ## Transform object dimensions
   .transformObject <- function(x) {
@@ -108,7 +107,7 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
 
     # Minimum flow requirements determined by natural flow river routing: Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
     IO_required_wat_min         <- new.magpie(cells_and_regions = getCells(yearly_runoff), years = getYears(yearly_runoff), names = c("on", "off"), fill = 0)
-    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, version="LPJmL4", climatetype=climatetype,
+    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype,
                                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range,
                                               LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                                               EFRyears=c(1980:2010))
@@ -128,10 +127,10 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
 
     # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
     IO_required_wat_min <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", subtype="required_wat_min", aggregate=FALSE,
-                                      version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+                                      climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
     prevHuman_wc <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", subtype="currHuman_wc", aggregate=FALSE,
-                               version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+                               climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
 
     ## Current human uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]

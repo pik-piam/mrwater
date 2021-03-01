@@ -2,7 +2,6 @@
 #' @description This function calculates cellular discharge after considering known human consumption (non-agricultural and committed agricultural) along the river calculated and accounted for in previous river routings (see calcRiverNaturalFlows and calcRiverHumanUses)
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param version     Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -22,7 +21,7 @@
 #' \dontrun{ calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE) }
 #'
 
-calcRiverDischargeNatAndHuman <- function(selectyears="all", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
+calcRiverDischargeNatAndHuman <- function(selectyears="all", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
 
   #######################################
   ###### Read in Required Inputs ########
@@ -31,14 +30,14 @@ calcRiverDischargeNatAndHuman <- function(selectyears="all", version="LPJmL4", c
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   # Non-agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"currHuman_wc"])
+  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"currHuman_wc"])
   # Committed agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"currHuman_wc"])
+  CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"currHuman_wc"])
 
   # Yearly Runoff (on land and water)
-  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
+  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
 
   ## Transform object dimensions
   .transformObject <- function(x) {

@@ -2,7 +2,7 @@
 #' @description This function calculates irrigation water requirements based on LPJmL blue water consumption of plants and considering irrigation efficiencies
 #'
 #' @param selectyears Years to be returned
-#' @param version     Switch between LPJmL4 and LPJmL5
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default) of input data to this function
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -21,7 +21,7 @@
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping
 #' @importFrom mrcommons toolCell2isoCell
 
-calcIrrigWatRequirements <- function(selectyears="all", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL) {
+calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4", crop="LPJmL5"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL) {
 
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit=1e+12)
@@ -35,8 +35,8 @@ calcIrrigWatRequirements <- function(selectyears="all", version="LPJmL5", climat
   LPJ2MAG       <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
   ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr):
-  blue_water_consumption <- calcOutput("LPJmL", subtype="cwater_b_lpjcell", aggregate=FALSE, selectyears=selectyears,
-                                       version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  blue_water_consumption <- calcOutput("LPJmL", subtype="cwater_b_lpjcell", version=lpjml["natveg"], aggregate=FALSE, selectyears=selectyears,
+                                       climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   blue_water_consumption <- collapseNames(blue_water_consumption[,,"irrigated"])
   names(dimnames(blue_water_consumption))[1] <- "iso.cell"
   names(dimnames(blue_water_consumption))[3] <- "crop"

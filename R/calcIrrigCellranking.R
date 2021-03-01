@@ -1,7 +1,6 @@
 #' @title       calcIrrigCellranking
 #' @description This function calculates a cellranking for the river basin discharge allocation based on yield improvement potential through irrigation
 #'
-#' @param version     switch between LPJmL version for yields
 #' @param climatetype switch between different climate scenarios for yields
 #' @param time            time smoothing: average, spline (default) or raw
 #' @param averaging_range just specify for time=="average": number of time steps to average
@@ -20,7 +19,7 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigCellranking", aggregate=FALSE) }
 
-calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
+calcIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
                                  cellrankyear="y1995", cells="lpjcell", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=1995) {
 
   ### Calculate global cell rank
@@ -75,7 +74,7 @@ calcIrrigCellranking <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p
 
   } else if (method=="watervalue") {
 
-    watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+    watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
                            cells=cells, iniyear=iniyear, aggregate=FALSE)
     watvalue <- watvalue[,,proxycrop]
 

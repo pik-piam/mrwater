@@ -2,7 +2,6 @@
 #' @description This function is the wrapper function of the River-Routing. It returns results from river routing (potential human uses and cellular discharge)
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param version     Switch between LPJmL4 and LPJmL5
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -29,7 +28,7 @@
 #' \dontrun{ calcOutput("RiverWaterAllocation", aggregate = FALSE) }
 #'
 
-calcRiverWaterAllocation <- function(selectyears, version, climatetype, time, averaging_range, dof, harmonize_baseline, ref_year, allocationrule, allocationshare, thresholdtype, gainthreshold, irrigationsystem, iniyear, protect_scen) {
+calcRiverWaterAllocation <- function(selectyears, climatetype, time, averaging_range, dof, harmonize_baseline, ref_year, allocationrule, allocationshare, thresholdtype, gainthreshold, irrigationsystem, iniyear, protect_scen) {
 
   #######################################
   ###### Read in Required Inputs ########
@@ -44,11 +43,11 @@ calcRiverWaterAllocation <- function(selectyears, version, climatetype, time, av
 
   discharge <- calcOutput("RiverSurplusDischargeAllocation", aggregate=FALSE, output="discharge", selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year, allocationrule=allocationrule, allocationshare=allocationshare, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, protect_scen=protect_scen)
 
-  NAg    <- calcOutput("calcRiverHumanUses", aggregate=FALSE, selectyears=selectyears, humanuse="non_agriculture", iniyear=iniyear, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  NAg    <- calcOutput("calcRiverHumanUses", aggregate=FALSE, selectyears=selectyears, humanuse="non_agriculture", iniyear=iniyear, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   NAg_ww <- collapseNames(NAg[,,"withdrawal"])
   NAg_wc <- collapseNames(NAg[,,"consumption"])
 
-  CAg    <- calcOutput("calcRiverHumanUses", aggregate=FALSE, selectyears=selectyears, humanuse="committed_agriculture", iniyear=iniyear, version=version, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  CAg    <- calcOutput("calcRiverHumanUses", aggregate=FALSE, selectyears=selectyears, humanuse="committed_agriculture", iniyear=iniyear, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   CAg_ww <- collapseNames(CAg[,,"withdrawal"])
   CAg_wc <- collapseNames(CAg[,,"consumption"])
 

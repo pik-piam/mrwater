@@ -2,7 +2,7 @@
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param version     Switch between LPJmL4 and LPJmL5
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -21,8 +21,8 @@
 #' \dontrun{ calcOutput("RiverNaturalFlows_magpie", aggregate = FALSE) }
 #'
 
-calcRiverNaturalFlows_magpie <- function(selectyears="all",
-                                  version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
+calcRiverNaturalFlows_magpie <- function(selectyears="all", lpjml=c(natveg="LPJmL4", crop="LPJmL5"),
+                                         climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
   # # # # # # # # # # #
   # # # READ IN DATA # #
   # # # # # # # # # # #
@@ -37,10 +37,10 @@ calcRiverNaturalFlows_magpie <- function(selectyears="all",
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
-  lake_evap     <- collapseNames(calcOutput("LPJmL",        aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  lake_evap     <- collapseNames(calcOutput("LPJmL",        aggregate=FALSE, version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
 
   # Runoff (on land and water)
-  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, version=version, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
 
   ############################################
   ###### River Routing: Natural Flows ########

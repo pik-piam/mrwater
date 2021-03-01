@@ -1,7 +1,7 @@
 #' @title calcWaterAllocation2
 #' @description This function calculates water availability for MAgPIE retrieved from LPJmL using a river routing and allocation algorithm for distribution of discharge within the river basin
 #'
-#' @param version     Switch between LPJmL4 and LPJmL5
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -34,7 +34,7 @@
 #'
 
 calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalcells="magpiecell",
-                                version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
+                                lpjml=c(natveg="LPJmL4", crop="LPJmL5"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
                                 harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
                                 irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995, proxycrop){
@@ -60,14 +60,14 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
 
   ### Required inputs for River Routing:
   # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  yearly_runoff <- calcOutput("LPJmL", version="LPJmL4", selectyears=selectyears, climatetype=climatetype, subtype="runoff_lpjcell", aggregate=FALSE,
+  yearly_runoff <- calcOutput("LPJmL", version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, subtype="runoff_lpjcell", aggregate=FALSE,
                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
   yearly_runoff <- as.array(collapseNames(yearly_runoff))
   yearly_runoff <- yearly_runoff[,,1]
   years <- getYears(yearly_runoff)
 
   # Read in natural discharge and lake evaporation from Natural River Flow Routing
-  natural_flows <- calcOutput("RiverNaturalFlows", version="LPJmL4", selectyears=selectyears, aggregate=FALSE,
+  natural_flows <- calcOutput("RiverNaturalFlows", selectyears=selectyears, aggregate=FALSE,
                               climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   discharge_nat <- as.array(collapseNames(natural_flows[,,"discharge_nat"]))[,,1]
   lake_evap_new <- as.array(collapseNames(natural_flows[,,"lake_evap_nat"]))[,,1]
@@ -91,9 +91,9 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
 
   ### Required inputs for Allocation Algorithm:
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig_ww <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, proxycrop="historical", aggregate=FALSE)
+  required_wat_fullirrig_ww <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, proxycrop="historical", aggregate=FALSE)
   required_wat_fullirrig_ww <- pmax(required_wat_fullirrig_ww,0)
-  required_wat_fullirrig_wc <- calcOutput("FullIrrigationRequirement", version="LPJmL5", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, proxycrop="historical", aggregate=FALSE)
+  required_wat_fullirrig_wc <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, proxycrop="historical", aggregate=FALSE)
   required_wat_fullirrig_wc <- pmax(required_wat_fullirrig_wc,0)
 
   # Full irrigation water requirement depending on irrigation system in use
@@ -122,7 +122,7 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   required_wat_fullirrig_wc <- as.array(collapseNames(required_wat_fullirrig_wc))[,,1]
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  meancellrank <- calcOutput("IrrigCellranking", version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
+  meancellrank <- calcOutput("IrrigCellranking", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
                              cellrankyear=selectyears, cells="lpjcell", method="meancroprank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=iniyear, aggregate=FALSE)
   meancellrank <- as.array(meancellrank)[,,1]
 
@@ -145,7 +145,7 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   for (EFP in c("on", "off")) {
 
     # Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
-    EFR_magpie <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, version="LPJmL4", climatetype=climatetype, aggregate=FALSE,
+    EFR_magpie <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, aggregate=FALSE,
                              LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range,
                              EFRyears=c(1980:2010))

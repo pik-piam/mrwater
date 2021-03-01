@@ -6,7 +6,6 @@
 \usage{
 calcIrrigWatValue(
   selectyears = c(1995, 2100, 5),
-  version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
   averaging_range = NULL,
@@ -19,8 +18,6 @@ calcIrrigWatValue(
 }
 \arguments{
 \item{selectyears}{years to be returned}
-
-\item{version}{switch between LPJmL version for yields and irrigation water requirements}
 
 \item{climatetype}{switch between different climate scenarios for yields and irrigation water requirements}
 

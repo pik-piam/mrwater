@@ -6,7 +6,7 @@
 \usage{
 calcIrrigWatRequirements(
   selectyears = "all",
-  version = "LPJmL5",
+  lpjml = c(natveg = "LPJmL4", crop = "LPJmL5"),
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
   averaging_range = NULL,
@@ -18,7 +18,7 @@ calcIrrigWatRequirements(
 \arguments{
 \item{selectyears}{Years to be returned}
 
-\item{version}{Switch between LPJmL4 and LPJmL5}
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!}
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 

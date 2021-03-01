@@ -5,7 +5,6 @@
 \title{calcFullIrrigationRequirement}
 \usage{
 calcFullIrrigationRequirement(
-  version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   harmonize_baseline = FALSE,
   time = "spline",
@@ -21,8 +20,6 @@ calcFullIrrigationRequirement(
 )
 }
 \arguments{
-\item{version}{switch between LPJmL4 and LPJmL5}
-
 \item{climatetype}{switch between different climate scenarios (default: "CRU_4")}
 
 \item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}

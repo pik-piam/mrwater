@@ -1,7 +1,6 @@
 #' @title       calcWaterUseCommittedAg
 #' @description This function calculates committed agricultural water uses that are used in the river routing algorithm for distributing available water across the basin
 #'
-#' @param version     Switch between LPJmL4 and LPJmL5
 #' @param selectyears Years to be returned
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average or spline (default)
@@ -21,7 +20,7 @@
 #' \dontrun{ calcOutput("WaterUseCommittedAg", aggregate = FALSE) }
 #'
 
-calcWaterUseCommittedAg <- function(version="LPJmL5", climatetype="HadGEM2_ES:rcp2p6:co2", selectyears=seq(1995,2095,by=5),
+calcWaterUseCommittedAg <- function(climatetype="HadGEM2_ES:rcp2p6:co2", selectyears=seq(1995,2095,by=5),
                                     time="spline", dof=4, averaging_range=NULL, harmonize_baseline="CRU_4", ref_year="y2015", iniyear=1995) {
 
   ##############################
@@ -31,7 +30,7 @@ calcWaterUseCommittedAg <- function(version="LPJmL5", climatetype="HadGEM2_ES:rc
   irrigation_system <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
 
   ## Read in Irrigation Water (in m^3 per hectar per year) [smoothed and harmonized]
-  irrig_water <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, version=version, climatetype=climatetype, time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  irrig_water <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   # Pasture is not irrigated in MAgPIE
   irrig_water  <- irrig_water[,,"pasture",invert=T]
 

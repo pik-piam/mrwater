@@ -5,7 +5,6 @@
 \title{calcIrrigCellranking}
 \usage{
 calcIrrigCellranking(
-  version = "LPJmL5",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
   averaging_range = NULL,
@@ -20,8 +19,6 @@ calcIrrigCellranking(
 )
 }
 \arguments{
-\item{version}{switch between LPJmL version for yields}
-
 \item{climatetype}{switch between different climate scenarios for yields}
 
 \item{time}{time smoothing: average, spline (default) or raw}

@@ -7,7 +7,6 @@
 calcRiverSurplusDischargeAllocation(
   selectyears = "all",
   output,
-  version = "LPJmL4",
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
   averaging_range = NULL,
@@ -27,8 +26,6 @@ calcRiverSurplusDischargeAllocation(
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
 \item{output}{output to be reported}
-
-\item{version}{Switch between LPJmL4 and LPJmL5}
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 

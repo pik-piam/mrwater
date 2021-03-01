@@ -5,7 +5,6 @@
 \title{calcEnvmtlFlowRequirements}
 \usage{
 calcEnvmtlFlowRequirements(
-  version = "LPJmL4",
   selectyears = "all",
   EFRyears = c(1985:2015),
   climatetype = "HadGEM2_ES:rcp2p6:co2",
@@ -22,8 +21,6 @@ calcEnvmtlFlowRequirements(
 )
 }
 \arguments{
-\item{version}{Switch between LPJmL4 and LPJmL5}
-
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
 \item{EFRyears}{Long-term reference time frame for EFR calculation}

@@ -2,7 +2,7 @@
 #' @description This function calculates yearly runoff from runoff on land and water provided by LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param version     Switch between LPJmL4 and LPJmL5
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
@@ -20,7 +20,7 @@
 #' \dontrun{ calcOutput("YearlyRunoff", aggregate = FALSE) }
 #'
 
-calcYearlyRunoff <- function(selectyears="all", version="LPJmL4", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
+calcYearlyRunoff <- function(selectyears="all", lpjml=c(natveg="LPJmL4", crop="LPJmL5"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
 
   ### Internal function: read in LPJmL data
   .getLPJmLData <- function(subtype, cfg) {
@@ -32,7 +32,7 @@ calcYearlyRunoff <- function(selectyears="all", version="LPJmL4", climatetype="H
 
   ### Required inputs for River Routing:
   ## LPJmL water data
-  cfg <- list(selectyears=selectyears, version=version, climatetype=climatetype,
+  cfg <- list(selectyears=selectyears, version=lpjml["natveg"], climatetype=climatetype,
               harmonize_baseline=harmonize_baseline, ref_year=ref_year,
               time=time, dof=dof, averaging_range=averaging_range)
   # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
