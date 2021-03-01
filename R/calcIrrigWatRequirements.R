@@ -35,7 +35,7 @@ calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4",
   LPJ2MAG       <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
   ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr):
-  blue_water_consumption <- calcOutput("LPJmL", subtype="cwater_b_lpjcell", version=lpjml["natveg"], aggregate=FALSE, selectyears=selectyears,
+  blue_water_consumption <- calcOutput("LPJmL", subtype="cwater_b_lpjcell", version=lpjml["crop"], aggregate=FALSE, selectyears=selectyears,
                                        climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   blue_water_consumption <- collapseNames(blue_water_consumption[,,"irrigated"])
   names(dimnames(blue_water_consumption))[1] <- "iso.cell"
