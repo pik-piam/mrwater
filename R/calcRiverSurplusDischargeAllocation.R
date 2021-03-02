@@ -18,7 +18,7 @@
 #' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s)
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
+#' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears dimSums
 #' @importFrom stringr str_split
 #'
 #' @return magpie object in cellular resolution
@@ -176,23 +176,20 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
     } else {
       stop("Please choose allocation rule for river basin discharge allocation algorithm")
     }
+  }
 
-    if (output=="discharge") {
-      # Main output for MAgPIE: water available for agricultural consumption
-      tmp <- discharge[,y,]
-      dataname <- "discharge"
-      description="Cellular discharge after accounting for known human uses along the river"
-    } else if (output=="frac_fullirrig") {
-      # Main output for MAgPIE: water available for agricultural withdrawal
-      tmp <- frac_fullirrig[,y,]
-      dataname <- "frac_fullirrig"
-      description="Fraction of full irrigation requirements that can be fulfilled"
-    } else {
-      stop("specify outputtype")
-    }
-
-    tmp <- setYears(as.magpie(tmp, spatial=1), y)
-    out <- mbind(out, tmp)
+  if (output=="discharge") {
+    # Main output for MAgPIE: water available for agricultural consumption
+    out <- as.magpie(discharge, spatial=1)
+    dataname <- "discharge"
+    description="Cellular discharge after accounting for known human uses along the river"
+  } else if (output=="frac_fullirrig") {
+    # Main output for MAgPIE: water available for agricultural withdrawal
+    out <- as.magpie(frac_fullirrig, spatial=1)
+    dataname <- "frac_fullirrig"
+    description="Fraction of full irrigation requirements that can be fulfilled"
+  } else {
+    stop("specify outputtype")
   }
 
   return(list(
