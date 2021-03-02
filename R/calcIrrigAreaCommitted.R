@@ -1,4 +1,4 @@
-#' @title       calcCommittedIrrigArea
+#' @title       calcIrrigAreaCommitted
 #' @description calculates area reserved for irrigation based on area irrigated in initialization year and depreciation parameter
 #'
 #' @param iniyear      initialization year
@@ -9,13 +9,13 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("CommittedIrrigArea", aggregate=FALSE) }
+#' \dontrun{ calcOutput("IrrigAreaCommitted", aggregate=FALSE) }
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames
 #' @importFrom magpiesets addLocation
 
-calcCommittedIrrigArea <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, depreciation=0.1){
+calcIrrigAreaCommitted <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, depreciation=0.1){
 
   # Read in data: crop- and water supply type specific crop area (in Mha) in initialization year:
   tmp <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)

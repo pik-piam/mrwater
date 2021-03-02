@@ -40,7 +40,7 @@ calcWaterUseCommittedAg <- function(climatetype="HadGEM2_ES:rcp2p6:co2", selecty
   irrig_consumption  <- collapseNames(irrig_water[,,"consumption"])
 
   ## Read in cropland area (by crop) from crop area initialization (in mio. ha)
-  crops_grown       <- calcOutput("CommittedIrrigArea", selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
+  crops_grown       <- calcOutput("IrrigAreaCommitted", selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
 
   ##############################
   ######## Calculations ########

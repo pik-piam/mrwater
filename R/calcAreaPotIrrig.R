@@ -42,7 +42,7 @@ calcAreaPotIrrig <- function(selectyears, iniareayear, protect_scen) {
   # Areas that are already irrigated (by committed agricultural uses)
   if (!is.null(iniareayear)) {
     # subtract area already reserved for irrigation by committed agricultural uses [in mio. ha] (to avoid double accounting)
-    irrig_area_com  <- calcOutput("CommittedIrrigArea", selectyears=selectyears, iniyear=iniareayear, aggregate=FALSE)
+    irrig_area_com  <- calcOutput("IrrigAreaCommitted", selectyears=selectyears, iniyear=iniareayear, aggregate=FALSE)
     irrig_area_com  <- collapseNames(dimSums(irrig_area_com, dim=3))
     land            <- land - irrig_area_com
   }
