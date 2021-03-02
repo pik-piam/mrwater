@@ -6,6 +6,7 @@
 \usage{
 calcRiverDischargeNatAndHuman(
   selectyears = "all",
+  iniyear,
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
   averaging_range = NULL,
@@ -16,6 +17,8 @@ calcRiverDischargeNatAndHuman(
 }
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
+
+\item{iniyear}{Initialization year of irrigation system}
 
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 

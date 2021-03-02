@@ -8,6 +8,7 @@
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
 #' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
+#' @param iniyear          Initialization year of irrigation system
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -21,7 +22,7 @@
 #' \dontrun{ calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE) }
 #'
 
-calcRiverDischargeNatAndHuman <- function(selectyears="all", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
+calcRiverDischargeNatAndHuman <- function(selectyears="all", iniyear, climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
 
   #######################################
   ###### Read in Required Inputs ########
@@ -30,9 +31,9 @@ calcRiverDischargeNatAndHuman <- function(selectyears="all", climatetype="HadGEM
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   # Non-agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"currHuman_wc"])
+  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"currHuman_wc"])
   # Committed agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"currHuman_wc"])
+  CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"currHuman_wc"])
 
   # Yearly Runoff (on land and water)
   yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
@@ -84,6 +85,13 @@ calcRiverDischargeNatAndHuman <- function(selectyears="all", climatetype="HadGEM
   }
 
   out <- as.magpie(O_discharge, spatial=1)
+
+  # Correct negatives (due to rounding imprecision)
+
+  # Check for NAs
+  if (any(is.na(out))) {
+    stop("produced NA discharge")
+  }
 
   return(list(
     x=out,

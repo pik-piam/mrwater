@@ -51,8 +51,8 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
   required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  meancellrank                <- calcOutput("IrrigCellranking", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                                           cellrankyear=selectyears, method="meancroprank", proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
+  meancellrank                <- calcOutput("IrrigCellranking", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+                                           cellrankyear=selectyears, method="meanpricedcroprank", proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
 
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential    <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
@@ -68,7 +68,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
     return(out)
   }
 
-  discharge                   <- as.array(discharge)
+  IO_discharge                <- as.array(discharge)
   required_wat_min_allocation <- as.array(required_wat_min_allocation)
   required_wat_fullirrig_ww   <- as.array(.transformObject(required_wat_fullirrig_ww))
   required_wat_fullirrig_wc   <- as.array(.transformObject(required_wat_fullirrig_wc))
@@ -106,7 +106,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
         irriggain <- (irrig_yieldgainpotential[c,y,,drop=F] > gainthreshold)
 
         # available water for additional irrigation withdrawals
-        avl_wat_ww[c,y,][irriggain[,,,drop=F]] <- pmax(discharge[c,y,,drop=F] - required_wat_min_allocation[c,y,,drop=F], 0)[irriggain[,,,drop=F]]
+        avl_wat_ww[c,y,][irriggain[,,,drop=F]] <- pmax(IO_discharge[c,y,,drop=F] - required_wat_min_allocation[c,y,,drop=F], 0)[irriggain[,,,drop=F]]
 
         # withdrawal constraint
         ww_constraint <-  (required_wat_fullirrig_ww[c,y,,drop=F]>0 & irriggain[,,,drop=F])
@@ -119,13 +119,13 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
           wc_constraint <- (required_wat_fullirrig_wc[c,y,,drop=F]>0 & ww_constraint[,,,drop=F])
 
           # available water for additional irrigation consumption (considering downstream availability)
-          avl_wat_wc[c,y,][wc_constraint[,,,drop=F]]     <- pmax(apply((discharge[down,y,,drop=F] - required_wat_min_allocation[down,y,,drop=F]), 3, min)[wc_constraint[,,,drop=F]], 0)
+          avl_wat_wc[c,y,][wc_constraint[,,,drop=F]]     <- pmax(apply((IO_discharge[down,y,,drop=F] - required_wat_min_allocation[down,y,,drop=F]), 3, min)[wc_constraint[,,,drop=F]], 0)
           # how much consumption can be fulfilled by available water
           frac_fullirrig[c,y,][wc_constraint[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][wc_constraint[,,,drop=F]] / required_wat_fullirrig_wc[c,y,,drop=F][wc_constraint[,,,drop=F]], frac_fullirrig[c,y,,drop=F][wc_constraint[,,,drop=F]])
         }
 
         # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-        discharge[c(down,c),y,][ww_constraint[c(cc,1),,,drop=F]]    <- (discharge[c(down,c),y,,drop=F] - required_wat_fullirrig_wc[c(cc,1),y,,drop=F] * frac_fullirrig[c(cc,1),y,,drop=F])[ww_constraint[c(cc,1),,,drop=F]]
+        IO_discharge[c(down,c),y,][ww_constraint[c(cc,1),,,drop=F]] <- (IO_discharge[c(down,c),y,,drop=F] - required_wat_fullirrig_wc[c(cc,1),y,,drop=F] * frac_fullirrig[c(cc,1),y,,drop=F])[ww_constraint[c(cc,1),,,drop=F]]
         # update minimum water required in cell:
         required_wat_min_allocation[c,y,][ww_constraint[,,,drop=F]] <- (required_wat_min_allocation[c,y,,drop=F] + frac_fullirrig[c,y,,drop=F] * required_wat_fullirrig_ww[c,y,,drop=F])[ww_constraint[,,,drop=F]]
       }
@@ -149,7 +149,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
           irriggain <- (irrig_yieldgainpotential[c,y,,drop=F] > gainthreshold)
 
           # available water for additional irrigation withdrawals
-          avl_wat_ww[c,y,][irriggain[,,,drop=F]] <- pmax(discharge[c,y,,drop=F] - required_wat_min_allocation[c,y,,drop=F], 0)[irriggain[,,,drop=F]]
+          avl_wat_ww[c,y,][irriggain[,,,drop=F]] <- pmax(IO_discharge[c,y,,drop=F] - required_wat_min_allocation[c,y,,drop=F], 0)[irriggain[,,,drop=F]]
 
           # withdrawal constraint
           ww_constraint <- (required_wat_fullirrig_ww[c,y,,drop=F]>0 & irriggain[,,,drop=F])
@@ -162,13 +162,13 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
             wc_constraint <- (required_wat_fullirrig_wc[c,y,,drop=F]>0 & ww_constraint[,,,drop=F])
 
             # available water for additional irrigation consumption (considering downstream availability)
-            avl_wat_wc[c,y,][wc_constraint[,,,drop=F]]     <- pmax(apply((discharge[down,y,,drop=F] - required_wat_min_allocation[down,y,,drop=F]), 3, min)[wc_constraint[,,,drop=F]], 0)
+            avl_wat_wc[c,y,][wc_constraint[,,,drop=F]]     <- pmax(apply((IO_discharge[down,y,,drop=F] - required_wat_min_allocation[down,y,,drop=F]), 3, min)[wc_constraint[,,,drop=F]], 0)
             # how much consumption can be fulfilled by available water
             frac_fullirrig[c,y,][wc_constraint[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][wc_constraint[,,,drop=F]] / required_wat_fullirrig_wc[c,y,,drop=F][wc_constraint[,,,drop=F]], frac_fullirrig[c,y,,drop=F][wc_constraint[,,,drop=F]])
           }
 
           # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-          discharge[c(down,c),y,][ww_constraint[c(cc,1),,,drop=F]]    <- (discharge[c(down,c),y,,drop=F] - required_wat_fullirrig_wc[c(cc,1),y,,drop=F] * frac_fullirrig[c(cc,1),y,,drop=F])[ww_constraint[c(cc,1),,,drop=F]]
+          IO_discharge[c(down,c),y,][ww_constraint[c(cc,1),,,drop=F]]    <- (IO_discharge[c(down,c),y,,drop=F] - required_wat_fullirrig_wc[c(cc,1),y,,drop=F] * frac_fullirrig[c(cc,1),y,,drop=F])[ww_constraint[c(cc,1),,,drop=F]]
           # update minimum water required in cell:
           required_wat_min_allocation[c,y,][ww_constraint[,,,drop=F]] <- (required_wat_min_allocation[c,y,,drop=F] + frac_fullirrig[c,y,,drop=F] * required_wat_fullirrig_ww[c,y,,drop=F])[ww_constraint[,,,drop=F]]
         }
@@ -180,7 +180,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
 
   if (output=="discharge") {
     # Main output for MAgPIE: water available for agricultural consumption
-    out         <- as.magpie(discharge, spatial=1)
+    out         <- as.magpie(IO_discharge, spatial=1)
     description <- "Cellular discharge after accounting for known human uses along the river"
   } else if (output=="frac_fullirrig") {
     # Main output for MAgPIE: water available for agricultural withdrawal

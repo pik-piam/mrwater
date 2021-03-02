@@ -117,13 +117,13 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   required_wat_fullirrig_wc <- as.array(collapseNames(required_wat_fullirrig_wc))[,,1]
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  meancellrank <- calcOutput("IrrigCellranking", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                             cellrankyear=selectyears, method="meancroprank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=iniyear, aggregate=FALSE)
+  meancellrank <- calcOutput("IrrigCellranking", climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+                             cellrankyear=selectyears, method="meanpricedcroprank", proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
   meancellrank <- as.array(meancellrank)[,,1]
 
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                                 proxycrop=c("maiz", "rapeseed", "puls_pro"), monetary=thresholdtype, aggregate=FALSE)
+                                 proxycrop=proxycrop, monetary=thresholdtype, aggregate=FALSE)
   irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
 
   ############################################
@@ -349,6 +349,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
         required_wat_min_allocation <- required_wat_min
 
         ### REPORTING: discharge before algorithm is executed
+        required_wat_min_beforealgo <- required_wat_min
         discharge_befalgo <- discharge
 
         # Allocate water for full irrigation to cell with highest yield improvement through irrigation
@@ -565,11 +566,11 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
           wat_avl_irrig <- discharge_upstreamfirst
           dataname <- "discharge_upstreamfirst"
           description="Cellular discharge after upstreamfirst allocation algorithm executed"
-        } else if (output=="test_output_non_ag_reqwat") {
+        } else if (output=="required_wat_min_beforealgo") {
           # Discharge after upstreamfirst allocation algorithm
-          wat_avl_irrig <- test_output_non_ag_reqwat
-          dataname <- "test_output_non_ag_reqwat"
-          description="test_output_non_ag_reqwat"
+          wat_avl_irrig <- required_wat_min_beforealgo
+          dataname <- "required_wat_min_beforealgo"
+          description="required_wat_min_beforealgo"
         } else {
           stop("specify type of water availability output: withdrawal or consumption")
         }

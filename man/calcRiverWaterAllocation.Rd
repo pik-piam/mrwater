@@ -13,7 +13,6 @@ calcRiverWaterAllocation(
   harmonize_baseline,
   ref_year,
   allocationrule,
-  allocationshare,
   thresholdtype,
   gainthreshold,
   irrigationsystem,
@@ -38,8 +37,6 @@ calcRiverWaterAllocation(
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
 
-\item{allocationshare}{Share of water to be allocated to cell (only needs to be selected in case of allocationrule=="equality")}
-
 \item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
 \item{gainthreshold}{Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)}
@@ -61,5 +58,5 @@ This function is the wrapper function of the River-Routing. It returns results f
 
 }
 \author{
-Felicitas Beier, Jens Heinke
+Felicitas Beier
 }
