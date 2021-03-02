@@ -180,14 +180,12 @@ calcRiverSurplusDischargeAllocation <- function(selectyears="all", output,
 
   if (output=="discharge") {
     # Main output for MAgPIE: water available for agricultural consumption
-    out <- as.magpie(discharge, spatial=1)
-    dataname <- "discharge"
-    description="Cellular discharge after accounting for known human uses along the river"
+    out         <- as.magpie(discharge, spatial=1)
+    description <- "Cellular discharge after accounting for known human uses along the river"
   } else if (output=="frac_fullirrig") {
     # Main output for MAgPIE: water available for agricultural withdrawal
-    out <- as.magpie(frac_fullirrig, spatial=1)
-    dataname <- "frac_fullirrig"
-    description="Fraction of full irrigation requirements that can be fulfilled"
+    out         <- as.magpie(frac_fullirrig, spatial=1)
+    description <- "Fraction of full irrigation requirements that can be fulfilled"
   } else {
     stop("specify outputtype")
   }
