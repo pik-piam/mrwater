@@ -32,15 +32,15 @@ calcWaterUseCommittedAg <- function(climatetype="HadGEM2_ES:rcp2p6:co2", selecty
   ## Read in Irrigation Water (in m^3 per hectar per year) [smoothed and harmonized]
   irrig_water <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   # Pasture is not irrigated in MAgPIE
-  irrig_water  <- irrig_water[,,"pasture",invert=T]
+  irrig_water <- irrig_water[,,"pasture",invert=T]
 
   # Withdrawal
-  irrig_withdrawal  <- collapseNames(irrig_water[,,"withdrawal"])
+  irrig_withdrawal   <- collapseNames(irrig_water[,,"withdrawal"])
   # Consumption
   irrig_consumption  <- collapseNames(irrig_water[,,"consumption"])
 
   ## Read in cropland area (by crop) from crop area initialization (in mio. ha)
-  crops_grown       <- calcOutput("IrrigAreaCommitted", selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
+  crops_grown        <- calcOutput("IrrigAreaCommitted", selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
 
   ##############################
   ######## Calculations ########

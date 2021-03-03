@@ -45,7 +45,7 @@ calcYearlyRunoff <- function(selectyears="all", lpjml=c(natveg="LPJmL4", crop="L
 
   # Correct dimension and names (NOTE: only until fully switched to standard of coordinate names)
   out <- addLocation(out)
-  out <- collapseDim(out, dim=c("N", "region1"))
+  out <- collapseDim(out, dim=c("N", "region"))
   out <- collapseDim(out, dim="iso")
 
   return(list(

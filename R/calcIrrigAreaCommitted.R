@@ -3,7 +3,7 @@
 #'
 #' @param iniyear      initialization year
 #' @param selectyears  select years
-#' @param depreciation parameter defining yearly depreciation rate at which previously irrigated cropland becomes "unreserved" for irrigation
+#' @param depreciation parameter defining yearly depreciation rate at which previously cropland committed to irrigation becomes "unreserved" for irrigation (default: 0.1)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -15,7 +15,7 @@
 #' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames
 #' @importFrom magpiesets addLocation
 
-calcIrrigAreaCommitted <- function(selectyears=seq(1995,2100,by=5), iniyear=1995, depreciation=0.1){
+calcIrrigAreaCommitted <- function(selectyears, iniyear, depreciation=0.1){
 
   # Read in data: crop- and water supply type specific crop area (in Mha) in initialization year:
   tmp <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
