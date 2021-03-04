@@ -21,26 +21,18 @@ calcAreaPotIrrig <- function(selectyears, iniareayear, protect_scen) {
 
   # No irrigation in protected areas (if protection scenario is activated) [in mio. ha]
   if (!is.null(protect_scen)) {
+    # read in protected area of selected scenario
     tmp <- collapseNames(calcOutput("ProtectArea", aggregate=FALSE)[,,protect_scen])
-    tmp <- collapseDim(addLocation(tmp), dim=c("region","cell"))
     #### expand to 67k cells (temporairly until read/calcProtectArea is adjusted) ####
-    protect_area                  <- new.magpie(cells_and_regions=getCells(land), years=getYears(tmp), names=getNames(tmp), fill=0, sets=c("x.y.iso", "year", "data"))
+    tmp <- collapseDim(addLocation(tmp), dim=c("region","cell"))
+    protect_area                  <- new.magpie(cells_and_regions=getCells(collapseDim(land,dim="iso")), years=getYears(tmp), names=getNames(tmp), fill=0, sets=c("x.y.iso", "t", "data"))
     protect_area[getCells(tmp),,] <- tmp
     #### expand to 67k cells (temporairly until read/calcProtectArea is adjusted) ####
 
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-    map                     <- toolGetMappingCoord2Country()
-    getCells(tmp)           <- paste(map$coords, map$iso, sep=".")
-    names(dimnames(tmp))[1] <- "x.y.iso"
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-
     # total land area
-    #### INCLUDE READ SOURCE HERE INSTEAD!! (SEE MRCOMMONS)
-    landarea <- calcOutput("LUH2v2", landuse_types="magpie", aggregate=FALSE, cellular=TRUE, cells="lpjcell", irrigation=FALSE, years="y1995")
     landarea <- setYears(collapseNames(dimSums(readSource("LUH2v2", subtype="states", convert="onlycorrect")[,"y1995",], dim=3)), NULL)
-
     landarea <- dimSums(landarea, dim=3)
-    landarea <- collapseDim(addLocation(landarea), dim=c("N","cell"))
+
     # area available for cropland
     avl_cropland <- landarea - protect_area
     # land suitable for (sustainable) (irrigated) agriculture

@@ -72,7 +72,8 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
   EFR <- ifelse(mean_annual_discharge>0, EFR/mean_annual_discharge, 0)
 
   ### Transform to magpie object
-  EFR <- as.magpie(EFR, spatial=1)
+  EFR                     <- as.magpie(EFR, spatial=1)
+  names(dimnames(EFR))[1] <- "x.y.iso"
 
   # Check for NAs
   if (any(is.na(EFR))) {

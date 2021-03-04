@@ -4,14 +4,12 @@
 \alias{calcIrrigAreaCommitted}
 \title{calcIrrigAreaCommitted}
 \usage{
-calcIrrigAreaCommitted(selectyears, iniyear, depreciation = 0.1)
+calcIrrigAreaCommitted(selectyears, iniyear)
 }
 \arguments{
 \item{selectyears}{select years}
 
 \item{iniyear}{initialization year}
-
-\item{depreciation}{parameter defining yearly depreciation rate at which previously cropland committed to irrigation becomes "unreserved" for irrigation (default: 0.1)}
 }
 \value{
 magpie object in cellular resolution

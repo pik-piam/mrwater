@@ -3,7 +3,6 @@
 #'
 #' @param iniyear      initialization year
 #' @param selectyears  select years
-#' @param depreciation parameter defining yearly depreciation rate at which previously cropland committed to irrigation becomes "unreserved" for irrigation (default: 0.1)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -16,7 +15,10 @@
 #' @importFrom magpiesets addLocation
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcIrrigAreaCommitted <- function(selectyears, iniyear, depreciation=0.1) {
+calcIrrigAreaCommitted <- function(selectyears, iniyear) {
+
+  # Set depreciation parameter
+  depreciation <- 0.1
 
   # Read in data: crop- and water supply type specific crop area (in Mha) in initialization year:
   tmp <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
@@ -30,8 +32,7 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear, depreciation=0.1) {
   tmp <- collapseNames(tmp[,,"irrigated"])
 
   # Empty object to be filled with area reserved for irrigation in current and future time steps
-  irrig_area <- new.magpie(getCells(tmp), selectyears, getNames(tmp))
-  names(dimnames(irrig_area))[1] <- "x.y.iso"
+  irrig_area <- new.magpie(getCells(tmp), selectyears, getNames(tmp), sets=c("x.y.iso", "year", "data"))
 
   # Each year certain share (parameter: "depreciation") of irrigated cropland is lost
   for (y in (1:length(selectyears))) {
