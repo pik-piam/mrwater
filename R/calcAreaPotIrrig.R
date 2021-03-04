@@ -24,7 +24,7 @@ calcAreaPotIrrig <- function(selectyears, iniareayear, protect_scen) {
     tmp <- collapseNames(calcOutput("ProtectArea", aggregate=FALSE)[,,protect_scen])
     tmp <- collapseDim(addLocation(tmp), dim=c("region","cell"))
     #### expand to 67k cells (temporairly until read/calcProtectArea is adjusted) ####
-    protect_area                  <- new.magpie(cells_and_regions = getCells(land), years = getYears(tmp), names = getNames(tmp), fill = 0)
+    protect_area                  <- new.magpie(cells_and_regions=getCells(land), years=getYears(tmp), names=getNames(tmp), fill=0, sets=c("x.y.iso", "year", "data"))
     protect_area[getCells(tmp),,] <- tmp
     #### expand to 67k cells (temporairly until read/calcProtectArea is adjusted) ####
 
@@ -37,6 +37,8 @@ calcAreaPotIrrig <- function(selectyears, iniareayear, protect_scen) {
     # total land area
     #### INCLUDE READ SOURCE HERE INSTEAD!! (SEE MRCOMMONS)
     landarea <- calcOutput("LUH2v2", landuse_types="magpie", aggregate=FALSE, cellular=TRUE, cells="lpjcell", irrigation=FALSE, years="y1995")
+    landarea <- setYears(collapseNames(dimSums(readSource("LUH2v2", subtype="states", convert="onlycorrect")[,"y1995",], dim=3)), NULL)
+
     landarea <- dimSums(landarea, dim=3)
     landarea <- collapseDim(addLocation(landarea), dim=c("N","cell"))
     # area available for cropland

@@ -16,7 +16,6 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigWatRequirements", aggregate=FALSE) }
 #'
-#' @importFrom magpiesets findset addLocation
 #' @importFrom magclass collapseNames collapseDim getYears getCells getNames new.magpie add_dimension
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping
 #' @importFrom mrcommons toolCell2isoCell
@@ -31,7 +30,6 @@ calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4_f
   ######## Read in data ########
   ##############################
   ### Mappings
-  lpj_cells_map <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
   LPJ2MAG       <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
   ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr): [[[QUESTION: Smoothed & Harmonized? How to handle historical & harmonized?]]]
@@ -44,8 +42,7 @@ calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4_f
   ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
   #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
   ### Alternatively: use regional efficiencies from Sauer et al. (2010), Table 5,
-  field_efficiency                <- new.magpie(1:67420,years,sort(paste(systemnames, rep(cropnames,3), sep=".")), sets=c("x.y.iso", "year", "system.crop"))
-  getCells(field_efficiency)      <- paste(lpj_cells_map$ISO,1:67420,sep=".")
+  field_efficiency                <- new.magpie(getCells(blue_water_consumption), years, sort(paste(systemnames, rep(cropnames,3), sep=".")), sets=c("x.y.iso", "year", "system.crop"))
   field_efficiency[,,"drip"]      <- 0.88 # Sauer: 0.8-0.93
   field_efficiency[,,"sprinkler"] <- 0.78 # Sauer: 0.6-0.86
   field_efficiency[,,"surface"]   <- 0.52 # Sauer: 0.25-0.5
@@ -53,8 +50,7 @@ calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4_f
 
   ### Conveyance efficiency proxy [placeholder]
   #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-  conveyance_efficiency                <- new.magpie(1:67420,years,sort(paste(systemnames, rep(cropnames,3), sep=".")), sets=c("x.y.iso", "year", "system.crop"))
-  getCells(conveyance_efficiency)      <- paste(lpj_cells_map$ISO,1:67420,sep=".")
+  conveyance_efficiency                <- new.magpie(getCells(blue_water_consumption), years, sort(paste(systemnames, rep(cropnames,3), sep=".")), sets=c("x.y.iso", "year", "system.crop"))
   conveyance_efficiency[,,"drip"]      <- 0.95
   conveyance_efficiency[,,"sprinkler"] <- 0.95
   conveyance_efficiency[,,"surface"]   <- 0.7
@@ -78,24 +74,13 @@ calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4_f
   water_consumption      <- blue_water_consumption + 0.5 * conveyance_loss
 
   # Output: irrigation water requirements (consumption and withdrawals)
-  irrig_requirements <- new.magpie(cells_and_regions = getCells(water_consumption), years=getYears(water_consumption), names=getNames(water_consumption))
-  irrig_requirements <- add_dimension(irrig_requirements, dim=3.3, add="type", nm=c("consumption","withdrawal"))
+  irrig_requirements <- new.magpie(cells_and_regions=getCells(water_consumption), years=getYears(water_consumption), names=getNames(water_consumption), sets=c("x.y.iso", "year", "crop.system"))
+  irrig_requirements <- add_dimension(irrig_requirements, dim=3.3, add="irrig_type", nm=c("consumption","withdrawal"))
   irrig_requirements[,,"consumption"] <- water_consumption
   irrig_requirements[,,"withdrawal"]  <- water_withdrawal
-  names(dimnames(irrig_requirements))[3] <- "crop.system.irrig_type"
 
   # Aggregate to MAgPIE crops
   irrig_requirements  <- toolAggregate(irrig_requirements, LPJ2MAG, from="LPJmL", to="MAgPIE", dim=3.1, partrel=TRUE)
-
-  if (selectyears!="all") {
-    years               <- sort(findset(selectyears,noset="original"))
-    irrig_requirements  <- irrig_requirements[,years,]
-  }
-
-  # Dimension and element names
-  irrig_requirements <- addLocation(irrig_requirements)
-  irrig_requirements <- collapseDim(irrig_requirements, dim=c("N", "region1"))
-  irrig_requirements <- collapseDim(irrig_requirements, dim="iso")
 
   # Check for NAs and negative values
   if (any(is.na(irrig_requirements))) {
