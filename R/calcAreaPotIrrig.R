@@ -22,14 +22,20 @@ calcAreaPotIrrig <- function(selectyears, iniareayear, protect_scen) {
   # No irrigation in protected areas (if protection scenario is activated) [in mio. ha]
   if (!is.null(protect_scen)) {
     tmp <- collapseNames(calcOutput("ProtectArea", aggregate=FALSE)[,,protect_scen])
-    tmp <- addLocation(tmp)
-    tmp <- collapseDim(tmp, dim=c("region","cell"))
+    tmp <- collapseDim(addLocation(tmp), dim=c("region","cell"))
     #### expand to 67k cells (temporairly until read/calcProtectArea is adjusted) ####
     protect_area                  <- new.magpie(cells_and_regions = getCells(land), years = getYears(tmp), names = getNames(tmp), fill = 0)
     protect_area[getCells(tmp),,] <- tmp
     #### expand to 67k cells (temporairly until read/calcProtectArea is adjusted) ####
 
+    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+    map                     <- toolGetMappingCoord2Country()
+    getCells(tmp)           <- paste(map$coords, map$iso, sep=".")
+    names(dimnames(tmp))[1] <- "x.y.iso"
+    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+
     # total land area
+    #### INCLUDE READ SOURCE HERE INSTEAD!! (SEE MRCOMMONS)
     landarea <- calcOutput("LUH2v2", landuse_types="magpie", aggregate=FALSE, cellular=TRUE, cells="lpjcell", irrigation=FALSE, years="y1995")
     landarea <- dimSums(landarea, dim=3)
     landarea <- collapseDim(addLocation(landarea), dim=c("N","cell"))

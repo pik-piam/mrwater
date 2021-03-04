@@ -5,7 +5,7 @@
 \title{calcIrrigCellranking}
 \usage{
 calcIrrigCellranking(
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
+  climatetype = "GSWP3-W5E5:historical",
   time = "spline",
   averaging_range = NULL,
   dof = 4,
@@ -34,7 +34,7 @@ calcIrrigCellranking(
 
 \item{method}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water}
 
-\item{proxycrop}{proxycrop(s) selected for rank calculation}
+\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: list of proxycrops or "historical"}
 
 \item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank}
 }

@@ -20,23 +20,23 @@
 #' \dontrun{ calcOutput("WaterUseCommittedAg", aggregate = FALSE) }
 #'
 
-calcWaterUseCommittedAg <- function(climatetype="HadGEM2_ES:rcp2p6:co2", selectyears=seq(1995,2095,by=5),
+calcWaterUseCommittedAg <- function(climatetype="GSWP3-W5E5:historical", selectyears=seq(1995,2095,by=5),
                                     time="spline", dof=4, averaging_range=NULL, harmonize_baseline="CRU_4", ref_year="y2015", iniyear=1995) {
 
   ##############################
   ######## Read in data ########
   ##############################
   ## Irrigation system area initialization
-  irrigation_system <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
+  irrigation_system <- calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate=FALSE)
 
-  ## Read in Irrigation Water (in m^3 per hectar per year) [smoothed and harmonized]
+  ## Read in irrigation water requirements per crop (in m^3 per hectare per year) [smoothed and harmonized]
   irrig_water <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
   # Pasture is not irrigated in MAgPIE
   irrig_water <- irrig_water[,,"pasture",invert=T]
 
-  # Withdrawal
+  # Withdrawal requirements per crop
   irrig_withdrawal   <- collapseNames(irrig_water[,,"withdrawal"])
-  # Consumption
+  # Consumption requirements per crop
   irrig_consumption  <- collapseNames(irrig_water[,,"consumption"])
 
   ## Read in cropland area (by crop) from crop area initialization (in mio. ha)
@@ -45,17 +45,17 @@ calcWaterUseCommittedAg <- function(climatetype="HadGEM2_ES:rcp2p6:co2", selecty
   ##############################
   ######## Calculations ########
   ##############################
-  ## Committed agricultural uses (in mio. m^3 per year) [in initialization year]
+  ## Committed agricultural uses (in mio. m^3 per year)
   # withdrawal
-  CAW <- (irrigation_system[,,] * irrig_withdrawal[,,]) * crops_grown
-  CAW <- dimSums(CAW,dim=3.1)
+  CAW           <- (irrigation_system[,,] * irrig_withdrawal[,,]) * crops_grown
+  CAW           <- dimSums(CAW, dim=3.1)
   getNames(CAW) <- paste(rep("withdrawal",3), getNames(CAW), sep=".")
   # consumption
-  CAU <- (irrigation_system[,,] * irrig_consumption[,,]) * crops_grown
-  CAU <- dimSums(CAU,dim=3.1)
+  CAU           <- (irrigation_system[,,] * irrig_consumption[,,]) * crops_grown
+  CAU           <- dimSums(CAU, dim=3.1)
   getNames(CAU) <- paste(rep("consumption",3), getNames(CAU), sep=".")
   # combine
-  CAD <- mbind(CAW, CAU)
+  CAD                     <- mbind(CAW, CAU)
   names(dimnames(CAD))[1] <- "iso.cell"
   names(dimnames(CAD))[3] <- "wateruse.crop"
 

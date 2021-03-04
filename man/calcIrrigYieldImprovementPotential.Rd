@@ -5,7 +5,7 @@
 \title{calcIrrigYieldImprovementPotential}
 \usage{
 calcIrrigYieldImprovementPotential(
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
+  climatetype = "GSWP3-W5E5:historical",
   time = "spline",
   averaging_range = NULL,
   dof = 4,

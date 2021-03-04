@@ -21,31 +21,17 @@
 #' @importFrom madrat calcOutput toolGetMapping
 #' @importFrom magclass collapseNames new.magpie getYears getNames collapseDim
 #' @importFrom magpiesets addLocation
+#' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, monetary=FALSE, iniyear=1995,
+calcIrrigYieldImprovementPotential <- function(climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, monetary=FALSE, iniyear=1995,
                                           harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), proxycrop) {
 
   # read in yields [in tons/ha]
-  yields <- calcOutput("Yields", lpjml=c(natveg="LPJml4", crop="LPJmL5"), climatetype=climatetype, selectyears=selectyears,
-                       time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
+  yields <- calcOutput("Yields", lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE)
 
   # yield gap (irrigated vs. rainfed) [in tons/ha]
   tmp    <- collapseNames(yields[,,"irrigated"]) - collapseNames(yields[,,"rainfed"])
   # (Note: irrigation may lead to shift in growing period -> tmp can have negative values; also: under N-stress, irrigation may lead to lower yields, the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
-
-  # cellular dimension
-  #### transform to object of 67420 cells (until 67k cells fully implemented) ####
-    lpj_cells_map  <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
-    getCells(tmp)  <- paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep=".")
-    yield_gain     <- new.magpie(1:67420, getYears(tmp), getNames(tmp))
-    yield_gain[,,] <- 0
-    yield_gain[paste("GLO",magclassdata$cellbelongings$LPJ_input.Index,sep="."),,] <- tmp[,,]
-    getCells(yield_gain) <- paste(lpj_cells_map$ISO, 1:67420, sep=".")
-
-    yield_gain <- addLocation(yield_gain)
-    yield_gain <- collapseDim(yield_gain, dim=c("N", "region1"))
-    yield_gain <- collapseDim(yield_gain, dim="iso")
-  #### transform to object of 67420 cells (until 67k cells fully implemented) ####
 
   if (monetary) {
     # Read in crop output price in initialization (USD05/tDM)
@@ -71,10 +57,12 @@ calcIrrigYieldImprovementPotential <- function(climatetype="HadGEM2_ES:rcp2p6:co
       # Reduce crops in croparea_shr
       croparea <- croparea[,,getNames(yield_gain)]
 
-      #### adjust number of cells (only until calcCroparea is adjusted to read in 67420 cells) ####
-      rs                 <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
-      getCells(croparea) <- rs$coordinates
-      #### adjust number of cells (only until calcCroparea is adjusted to read in 67420 cells) ####
+      #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+      map                          <- toolGetMappingCoord2Country()
+      getCells(croparea)           <- paste(map$coords, map$iso, sep=".")
+      names(dimnames(croparea))[1] <- "x.y.iso"
+      #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+
       # historical share of crop types in total cropland per cell
       croparea_shr <- croparea / dimSums(croparea, dim=3)
       # correct NAs: where no land available -> crop share 0

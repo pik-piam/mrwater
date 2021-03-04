@@ -4,48 +4,12 @@
 \alias{calcEnvmtlFlowRequirements}
 \title{calcEnvmtlFlowRequirements}
 \usage{
-calcEnvmtlFlowRequirements(
-  selectyears = "all",
-  EFRyears = c(1985:2015),
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
-  time = "spline",
-  averaging_range = NULL,
-  dof = 4,
-  harmonize_baseline = "CRU_4",
-  ref_year = "y2015",
-  LFR_val = 0.1,
-  HFR_LFR_less10 = 0.2,
-  HFR_LFR_10_20 = 0.15,
-  HFR_LFR_20_30 = 0.07,
-  HFR_LFR_more30 = 0
-)
+calcEnvmtlFlowRequirements(selectyears, climatetype = "GSWP3-W5E5:historical")
 }
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
-\item{EFRyears}{Long-term reference time frame for EFR calculation}
-
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
-
-\item{time}{Time smoothing: average, spline or raw (default)}
-
-\item{averaging_range}{only specify if time=="average": number of time steps to average}
-
-\item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
-
-\item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
-
-\item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
-
-\item{LFR_val}{Strictness of environmental flow requirements}
-
-\item{HFR_LFR_less10}{High flow requirements (share of total water for cells) with LFR<10percent of total water}
-
-\item{HFR_LFR_10_20}{High flow requirements (share of total water for cells) with 10percent < LFR < 20percent of total water}
-
-\item{HFR_LFR_20_30}{High flow requirements (share of total water for cells) with 20percent < LFR < 30percent of total water}
-
-\item{HFR_LFR_more30}{High flow requirements (share of total water for cells) with LFR>30percent of total water}
 }
 \value{
 magpie object in cellular resolution

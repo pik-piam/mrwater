@@ -5,14 +5,10 @@
 \title{calcRiverNaturalFlows}
 \usage{
 calcRiverNaturalFlows(
-  selectyears = "all",
-  lpjml = c(natveg = "LPJmL4", crop = "LPJmL5"),
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
-  time = "spline",
-  averaging_range = NULL,
-  dof = 4,
-  harmonize_baseline = "CRU_4",
-  ref_year = "y2015"
+  selectyears,
+  lpjml = c(natveg = "LPJmL4_for_MAgPIE_84a69edd", crop =
+    "ggcmi_phase3_nchecks_72c185fa"),
+  climatetype
 )
 }
 \arguments{
@@ -20,17 +16,7 @@ calcRiverNaturalFlows(
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!}
 
-\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
-
-\item{time}{Time smoothing: average, spline or raw (default)}
-
-\item{averaging_range}{only specify if time=="average": number of time steps to average}
-
-\item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
-
-\item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
-
-\item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 }
 \value{
 magpie object in cellular resolution

@@ -7,7 +7,7 @@
 calcActualIrrigWatRequirements(
   selectyears = "all",
   iniyear = 1995,
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
+  climatetype = "GSWP3-W5E5:historical",
   time = "raw",
   averaging_range = NULL,
   dof = NULL,

@@ -7,7 +7,7 @@
 calcIrrigationSystem(source)
 }
 \arguments{
-\item{source}{Data source to be used: Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or LPJmL (dominant irrigation system per country) and number of cells (lpjcell or magpiecell) separated by _}
+\item{source}{Data source to be used: Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or LPJmL (dominant irrigation system per country)}
 }
 \value{
 magpie object in cellular resolution
@@ -16,7 +16,7 @@ magpie object in cellular resolution
 This function returns the irrigation system share initialization
 }
 \examples{
-\dontrun{ calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate = FALSE) }
+\dontrun{ calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate = FALSE) }
 
 }
 \author{

@@ -1,13 +1,13 @@
 #' @title       calcIrrigationSystem
 #' @description This function returns the irrigation system share initialization
 #'
-#' @param source Data source to be used: Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or LPJmL (dominant irrigation system per country) and number of cells (lpjcell or magpiecell) separated by _
+#' @param source Data source to be used: Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or LPJmL (dominant irrigation system per country)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate = FALSE) }
+#' \dontrun{ calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate = FALSE) }
 #'
 #' @importFrom utils read.csv
 #' @importFrom madrat readSource
@@ -18,7 +18,7 @@ calcIrrigationSystem <- function(source) {
 
   # Jägermeyr et al. (2015): Shares of surface, sprinkler and drip irrigated areas
   # (Note: compiled from FAO (2014), ICID (2012), Rohwer et al. (2007))
-  if (grepl("Jaegermeyr", source)) {
+  if (source=="Jaegermeyr") {
 
     # Read in source
     x           <- readSource("IrrigationSystem", convert="onlycorrect", subtype=source)
@@ -27,13 +27,13 @@ calcIrrigationSystem <- function(source) {
 
   # Irrigation functional type (IFT) from LPJmL representing the dominant irrigation system per country
   # (Note: share of 100% of dominant system assumed)
-  if (grepl("LPJmL", source)) {
+  if (source=="LPJmL") {
 
     # Read in source
     tmp <- readSource("IrrigationSystem", convert="onlycorrect", subtype=source)
 
     # Merge to obtain one magpie object containing irrigation system shares (share of irrigated area per irrigation system)
-    x   <- new.magpie(cells_and_regions=getCells(tmp),years=NULL,names=c("surface","sprinkler","drip"),fill=0)
+    x   <- new.magpie(cells_and_regions=getCells(tmp), years=NULL, names=c("surface","sprinkler","drip"), fill=0)
 
     # Surface is dominant system:
     x[,,"surface"][tmp==1]   <- 1
@@ -56,9 +56,6 @@ calcIrrigationSystem <- function(source) {
 
   # Dimension and element names
   getSets(x)[4] <- "system"
-  x <- addLocation(x)
-  x <- collapseDim(x, dim=c("N", "region1"))
-  x <- collapseDim(x, dim="iso")
 
   # Checks
   if (any(is.na(x))) {

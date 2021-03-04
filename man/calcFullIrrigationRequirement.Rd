@@ -5,7 +5,7 @@
 \title{calcFullIrrigationRequirement}
 \usage{
 calcFullIrrigationRequirement(
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
+  climatetype = "GSWP3-W5E5:historical",
   harmonize_baseline = FALSE,
   time = "spline",
   dof = 4,

@@ -23,7 +23,7 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magpiesets findset
 
-calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, climatetype="HadGEM2_ES:rcp2p6:co2", time="raw", averaging_range=NULL, dof=NULL, harmonize_baseline=FALSE, ref_year=NULL) {
+calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, climatetype="GSWP3-W5E5:historical", time="raw", averaging_range=NULL, dof=NULL, harmonize_baseline=FALSE, ref_year=NULL) {
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
   irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
@@ -32,7 +32,7 @@ calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, clim
   names(dimnames(irrig_wat_requirement))[3] <- "crop.system"
 
   # irrigation system share (share of irrigated area)
-  irrig_system_share           <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
+  irrig_system_share           <- calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate=FALSE)
 
   # composite mean
   mean_irrig_wat_requirement   <- dimSums(irrig_system_share * irrig_wat_requirement,dim=3.1) / dimSums(irrig_system_share, dim=3)
@@ -53,6 +53,11 @@ calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, clim
 
   # irrigated cropland area as weight
   irrig_area <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
+  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+  map                          <- toolGetMappingCoord2Country()
+  getCells(croparea)           <- paste(map$coords, map$iso, sep=".")
+  names(dimnames(croparea))[1] <- "x.y.iso"
+  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
   irrig_area <- collapseNames(irrig_area[,,"irrigated"])+1e-9
 
   return(list(

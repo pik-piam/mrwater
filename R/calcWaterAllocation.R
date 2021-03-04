@@ -34,7 +34,7 @@
 #'
 
 calcWaterAllocation <- function(selectyears="all", output="consumption", finalcells="magpiecell",
-                                lpjml=c(natveg="LPJmL4", crop="LPJmL5"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
+                                lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
                                 harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
                                 irrigationsystem="initialization", iniyear=1995, protect_scen, proxycrop) {
@@ -49,6 +49,15 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   # cells as numeric for surplus discharge allocation algorithm
   rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
+  # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
+  if (climatetype=="GSWP3-W5E5:historical") {
+    # Baseline is only smoothed (not harmonized)
+    stage <- "smoothed"
+  } else {
+    # Climate scenarios are harmonized to baseline
+    stage <- "harmonized2020"
+  }
+
   # Number of cells to be used for calculation
   NCELLS <- 67420
 
@@ -58,31 +67,22 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
   ### Required inputs for River Routing:
   # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  yearly_runoff <- calcOutput("LPJmL", version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, subtype="runoff_lpjcell", aggregate=FALSE,
-                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
+  yearly_runoff <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="runoff",     climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE)
   getCells(yearly_runoff) <- rs$coordinates
   yearly_runoff <- as.array(collapseNames(yearly_runoff))
   yearly_runoff <- yearly_runoff[,,1]
 
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
-  lake_evap     <- calcOutput("LPJmL", version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, subtype="evap_lake_lpjcell", aggregate=FALSE,
-                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
+  lake_evap     <- as.array(calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="lake_evap", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE))
   getCells(lake_evap) <- rs$coordinates
   lake_evap     <- as.array(collapseNames(lake_evap))
   lake_evap     <- lake_evap[,,1]
-  #### LAKE EVAP PLACEHOLDER
-  # lake_evap     <- yearly_runoff
-  # lake_evap[]   <- 0
 
   # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
-  input_lake    <- calcOutput("LPJmL", version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, subtype="input_lake_lpjcell", aggregate=FALSE,
-                               harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
+  input_lake    <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="input_lake", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE)
   getCells(input_lake) <- rs$coordinates
   input_lake    <- as.array(collapseNames(input_lake))
   input_lake    <- input_lake[,,1]
-  #### LAKE EVAP PLACEHOLDER
-  # input_lake     <- yearly_runoff
-  # input_lake[]   <- 0
 
   # runoff (on land and water)
   yearly_runoff <- yearly_runoff + input_lake

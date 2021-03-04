@@ -6,13 +6,14 @@
 \usage{
 calcIrrigWatValue(
   selectyears = c(1995, 2100, 5),
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
+  climatetype = "GSWP3-W5E5:historical",
   time = "spline",
   averaging_range = NULL,
   dof = 4,
   harmonize_baseline = FALSE,
   ref_year = "y2015",
-  iniyear = 1995
+  iniyear = 1995,
+  proxycrop
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ calcIrrigWatValue(
 \item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
 
 \item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank}
+
+\item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s) or NULL for all crops}
 }
 \value{
 magpie object in cellular resolution

@@ -10,7 +10,7 @@ calcIrrigatableArea(
   output = "irrigatable_area",
   iniarea,
   protect_scen,
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
+  climatetype = "GSWP3-W5E5:historical",
   time = "spline",
   averaging_range = NULL,
   dof = 4,
@@ -23,7 +23,7 @@ calcIrrigatableArea(
   iniyear = 1995,
   landtype = "potentialcropland",
   protectscen = "WDPA",
-  proxycrops = "maiz"
+  proxycrop = "maiz"
 )
 }
 \arguments{
@@ -63,7 +63,7 @@ calcIrrigatableArea(
 
 \item{protectscen}{protection scenario for protected areas ("WDPA", "HalfEarth", )}
 
-\item{proxycrops}{Proxycrops for water requirements}
+\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
 }
 \value{
 magpie object in cellular resolution

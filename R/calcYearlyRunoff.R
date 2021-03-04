@@ -3,12 +3,7 @@
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
-#' @param climatetype Switch between different climate scenarios (default: "CRU_4")
-#' @param time            Time smoothing: average, spline or raw (default)
-#' @param averaging_range only specify if time=="average": number of time steps to average
-#' @param dof             only specify if time=="spline": degrees of freedom needed for spline
-#' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
-#' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
+#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames
@@ -20,33 +15,26 @@
 #' \dontrun{ calcOutput("YearlyRunoff", aggregate = FALSE) }
 #'
 
-calcYearlyRunoff <- function(selectyears="all", lpjml=c(natveg="LPJmL4", crop="LPJmL5"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
+calcYearlyRunoff <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype) {
 
-  ### Internal function: read in LPJmL data
-  .getLPJmLData <- function(subtype, cfg) {
-    x <- collapseNames(calcOutput("LPJmL", version=cfg$version, selectyears=cfg$selectyears,
-                                  climatetype=cfg$climatetype, harmonize_baseline=cfg$harmonize_baseline, ref_year=cfg$ref_year, time=cfg$time, dof=cfg$dof, averaging_range=cfg$averaging_range,
-                                  subtype=subtype, aggregate=FALSE))
-    return(x)
+  # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
+  if (climatetype=="GSWP3-W5E5:historical") {
+    # Baseline is only smoothed (not harmonized)
+    stage <- "smoothed"
+  } else {
+    # Climate scenarios are harmonized to baseline
+    stage <- "harmonized2020"
   }
 
-  ### Required inputs for River Routing:
-  ## LPJmL water data
-  cfg <- list(selectyears=selectyears, version=lpjml["natveg"], climatetype=climatetype,
-              harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-              time=time, dof=dof, averaging_range=averaging_range)
+  ## Required inputs for River Routing:
   # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  yearly_runoff <- .getLPJmLData("runoff_lpjcell",     cfg)
+  yearly_runoff <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="runoff",     climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE)
+
   # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
-  input_lake    <- .getLPJmLData("input_lake_lpjcell", cfg)
+  input_lake    <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="input_lake", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE)
 
-  # Calculate Runoff (on land and water)
+  ## Calculate Runoff (on land and water)
   out <- yearly_runoff + input_lake
-
-  # Correct dimension and names (NOTE: only until fully switched to standard of coordinate names)
-  out <- addLocation(out)
-  out <- collapseDim(out, dim=c("N", "region"))
-  out <- collapseDim(out, dim="iso")
 
   return(list(
     x=out,

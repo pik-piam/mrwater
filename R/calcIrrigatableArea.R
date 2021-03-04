@@ -18,7 +18,7 @@
 #' @param iniarea          if TRUE: already irrigated area is subtracted, if FALSE: total potential land area is used from potentially available irrigation land
 #' @param iniyear          year of initialization for cropland area initialization and irrigation systems
 #' @param protect_scen     land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection
-#' @param proxycrops         Proxycrops for water requirements
+#' @param proxycrop   proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #' @param output             Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land, protect_area (restricts water withdrawal in protected areas)
 #'
 #' @return magpie object in cellular resolution
@@ -31,9 +31,9 @@
 #' @import magpiesets
 
 calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrigatable_area", iniarea, protect_scen,
-                                climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
+                                climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
                                 allocationrule="optimization", allocationshare=NULL, gainthreshold=1, irrigationsystem="initialization", iniyear=1995,
-                                landtype="potentialcropland", protectscen="WDPA", proxycrops="maiz"){
+                                landtype="potentialcropland", protectscen="WDPA", proxycrop="maiz"){
 
   ### Irrigatable area = MIN (area that can be irrigated given water resources; available suitable land area)
   ## Area that can be irrigated given water available for withdrawals (in ha)
@@ -47,8 +47,8 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
   # read in water withdrawal required for irrigation of proxy crop(s) (in m^3 per ha)
   wat_req_ww <- calcOutput("ActualIrrigWatRequirements", irrig_requirement="withdrawal",
                            selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
-  wat_req_ww <- wat_req_ww[,,proxycrops]
-  #### normalization / (weighted) average of proxycrops (??????)
+  wat_req_ww <- wat_req_ww[,,proxycrop]
+  #### normalization / (weighted) average of proxycrop (??????)
   wat_req_ww <- dimSums(wat_req_ww,dim=3)/length(getNames(wat_req_ww))
 
   # calculate area that could be irrigated given water available for withdrawal (ha)
@@ -67,8 +67,8 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
   # read in water withdrawal required for irrigation of proxy crop(s) (in m^3 per ha)
   wat_req_wc <- calcOutput("ActualIrrigWatRequirements", irrig_requirement="consumption",
                            selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year, aggregate=FALSE)
-  wat_req_wc <- wat_req_wc[,,proxycrops]
-  #### normalization / (weighted) average of proxycrops (??????)
+  wat_req_wc <- wat_req_wc[,,proxycrop]
+  #### normalization / (weighted) average of proxycrop (??????)
   wat_req_wc <- dimSums(wat_req_wc,dim=3)/length(getNames(wat_req_wc))
 
   # calculate area that could be irrigated given water available for withdrawal (ha)

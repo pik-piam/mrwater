@@ -5,7 +5,7 @@
 \title{calcWaterUseCommittedAg}
 \usage{
 calcWaterUseCommittedAg(
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
+  climatetype = "GSWP3-W5E5:historical",
   selectyears = seq(1995, 2095, by = 5),
   time = "spline",
   dof = 4,

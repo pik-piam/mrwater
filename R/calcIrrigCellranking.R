@@ -9,7 +9,7 @@
 #' @param ref_year           just specify for harmonize_baseline != FALSE : Reference year
 #' @param cellrankyear year(s) for which cell rank is calculated
 #' @param method      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water
-#' @param proxycrop   proxycrop(s) selected for rank calculation
+#' @param proxycrop   proxycrop(s) selected for crop mix specific calculations: list of proxycrops or "historical"
 #' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank
 #'
 #' @return magpie object in cellular resolution
@@ -18,12 +18,11 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigCellranking", aggregate=FALSE) }
 
-calcIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
+calcIrrigCellranking <- function(climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
                                  cellrankyear="y1995", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=1995) {
 
-  ### Calculate global cell rank
-  # Def. "meancellrank": ranking of cells or proxy crops, then: average over ranks
   if (method=="meancellrank") {
+    # Def. "meancellrank": ranking of cells or proxy crops, then: average over ranks
 
     ## Read in potential yield gain per cell (tons per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
@@ -40,8 +39,8 @@ calcIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spli
     # ties are solved by first occurrence
     glocellrank <- apply(glocellrank, 2, rank, ties.method="first")
 
-    # Def. "meancroprank": average over yield gain of proxycrops, then: ranking of resulting average yield gain
   } else if (method=="meancroprank") {
+    # Def. "meancroprank": average over yield gain of proxycrops, then: ranking of resulting average yield gain
 
     ## Read in potential yield gain per cell (tons per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
@@ -62,6 +61,7 @@ calcIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spli
     glocellrank <- apply(-yield_gain, c(2,3), rank, ties.method="first")
 
   } else if (method=="meanpricedcroprank") {
+    # Def.: average potential yield gain in USD05 (yield gain * food price)
 
     ## Read in average potential yield gain per cell (USD05 per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,
@@ -72,20 +72,18 @@ calcIrrigCellranking <- function(climatetype="HadGEM2_ES:rcp2p6:co2", time="spli
     glocellrank <- apply(-yield_gain, c(2,3), rank, ties.method="first")
 
   } else if (method=="watervalue") {
+    # Def.: water value following D'Odorico et al. (2020) = yield gain / irrigation water requirements
 
+    # Read in average water value per cell (USD05 per m^3)
     watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
-                           iniyear=iniyear, aggregate=FALSE)
-    watvalue <- watvalue[,,proxycrop]
-
-    # calculate average water value over proxy crops
-    watvalue <- dimSums(watvalue,dim=3)/length(getNames(watvalue))
+                           iniyear=iniyear, proxycrop=proxycrop, aggregate=FALSE)
 
     # calculate rank (ties are solved by first occurence)
     glocellrank <- apply(-watvalue,c(2,3),rank,ties.method="first")
 
   } else if (method=="mostprofitable") {
 
-    #### NOT FULLY FUNCTIONAL YET
+    #### NOT FULLY FUNCTIONAL YET!!!!!!!!
 
     # Read in average potential yield gain per cell for all crops (USD05 per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear,

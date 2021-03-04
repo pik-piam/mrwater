@@ -1,8 +1,12 @@
-#' @title correctIrrigationSystem
+#' @title       correctIrrigationSystem
 #' @description Correct Irrigation System data
+#'
 #' @return List of magpie objects with results on cellular level, weight, unit and description.
+#'
 #' @param x MAgPIE object provided by the read function
+#'
 #' @author Felicitas Beier
+#'
 #' @seealso
 #'   \code{\link{readIrrigationSystem}}
 #' @examples
@@ -11,6 +15,6 @@
 #' }
 #'
 
-correctIrrigationSystem <- function(x){
+correctIrrigationSystem <- function(x) {
   return(x)
 }

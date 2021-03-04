@@ -9,15 +9,20 @@
 #' @param harmonize_baseline FALSE (default) no harmonization, harmonization: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
 #' @param ref_year           just specify for harmonize_baseline != FALSE : Reference year
 #' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank
+#' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s) or NULL for all crops
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
+#' @importFrom madrat calcOutput
+#' @importFrom magclass collapseNames getNames dimSums getYears getCells
+#' @importFrom mrcommons toolGetMappingCoord2Country
+#'
 #' @examples
 #' \dontrun{ calcOutput("IrrigWatValue", aggregate=FALSE) }
 
-calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                              iniyear=1995) {
+calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
+                              iniyear=1995, proxycrop) {
   ## Note: Methodology for calculating value of water following D'Odorico et al. (2020)
 
   # Read in potential yield gain per cell (USD05 per ha)
@@ -35,7 +40,7 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="HadGEM2_E
   irrig_withdrawal <- irrig_withdrawal[,,intersect(gsub("[.].*","",getNames(irrig_withdrawal)), getNames(yield_gain))]
 
   # Read in irrigation system area initialization
-  irrigation_system <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
+  irrigation_system <- calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate=FALSE)
 
   # Calculate irrigation water requirements
   IWR        <- dimSums((irrigation_system[,,]*irrig_withdrawal[,,]), dim=3.1)
@@ -46,6 +51,49 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="HadGEM2_E
   watvalue <- new.magpie(getCells(yield_gain), getYears(yield_gain), getNames(yield_gain), fill=0)
   watvalue <- yield_gain / IWR
 
+
+  # Selected crops
+  if (!is.null(proxycrop)) {
+
+    # share of corp area by crop type
+    if (proxycrop=="historical") {
+      # historical crop mix
+      # read in total (irrigated + rainfed) croparea
+      croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)
+
+      ### Note: Yield gain only given for 14 crops (begr, betr, cottn_pro, foddr, oilpalm missing)
+      # Reduce crops in croparea_shr
+      croparea <- croparea[,,getNames(watvalue)]
+
+      #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+      map                          <- toolGetMappingCoord2Country()
+      getCells(croparea)           <- paste(map$coords, map$iso, sep=".")
+      names(dimnames(croparea))[1] <- "x.y.iso"
+      #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+
+      # historical share of crop types in total cropland per cell
+      croparea_shr <- croparea / dimSums(croparea, dim=3)
+      # correct NAs: where no land available -> crop share 0
+      croparea_shr[dimSums(croparea, dim=3)==0] <- 0
+
+      # average water value over histrical crops weighted with their croparea share
+      watvalue <- dimSums(croparea_shr * watvalue, dim=3)
+
+      description <- "Average yield improvement potential for crop types weighted with historical croparea share"
+
+    } else {
+      # equal crop area share for each proxycrop assumed
+      watvalue    <- watvalue[,,proxycrop]
+      # calculate average water value over proxy crops
+      watvalue    <- dimSums(watvalue, dim=3) / length(getNames(watvalue))
+
+      description <- "Value of irrigation water for selection of crop types"
+    }
+
+  } else {
+    description <- "Value of irrigation water for all different crop types"
+  }
+
   # Check for NAs
   if (any(is.na(watvalue))) {
     stop("Function YieldImprovementPotential produced NAs")
@@ -55,6 +103,6 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="HadGEM2_E
     x=watvalue,
     weight=NULL,
     unit="USD05 per m^3",
-    description="Value of irrigation water",
+    description=description,
     isocountries=FALSE))
 }

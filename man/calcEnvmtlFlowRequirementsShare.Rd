@@ -5,32 +5,15 @@
 \title{calcEnvmtlFlowRequirementsShare}
 \usage{
 calcEnvmtlFlowRequirementsShare(
-  lpjml = c(natveg = "LPJmL4", crop = "LPJmL5"),
-  EFRyears = c(1985:2015),
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
-  LFR_val = 0.1,
-  HFR_LFR_less10 = 0.2,
-  HFR_LFR_10_20 = 0.15,
-  HFR_LFR_20_30 = 0.07,
-  HFR_LFR_more30 = 0
+  lpjml = c(natveg = "LPJmL4_for_MAgPIE_84a69edd", crop =
+    "ggcmi_phase3_nchecks_72c185fa"),
+  climatetype = "GSWP3-W5E5:historical"
 )
 }
 \arguments{
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!}
 
-\item{EFRyears}{Long-term reference time frame for EFR calculation}
-
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
-
-\item{LFR_val}{Strictness of environmental flow requirements}
-
-\item{HFR_LFR_less10}{High flow requirements (share of total water for cells) with LFR<10percent of total water}
-
-\item{HFR_LFR_10_20}{High flow requirements (share of total water for cells) with 10percent < LFR < 20percent of total water}
-
-\item{HFR_LFR_20_30}{High flow requirements (share of total water for cells) with 20percent < LFR < 30percent of total water}
-
-\item{HFR_LFR_more30}{High flow requirements (share of total water for cells) with LFR>30percent of total water}
 }
 \value{
 magpie object in cellular resolution representing share of discharge that is reserved for environmental flows

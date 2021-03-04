@@ -54,10 +54,10 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
 
   ## Water inputs
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new   <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
+  lake_evap_new   <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)[,,"lake_evap_nat"])
 
   # Runoff (on land and water)
-  I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype))
 
   ## Transform object dimensions
   .transformObject <- function(x) {
@@ -93,10 +93,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
 
     # Minimum flow requirements determined by natural flow river routing: Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
     IO_required_wat_min         <- new.magpie(cells_and_regions = getCells(yearly_runoff), years = getYears(yearly_runoff), names = c("on", "off"), fill = 0)
-    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, aggregate=FALSE, climatetype=climatetype,
-                                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range,
-                                              LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
-                                              EFRyears=c(1980:2010))
+    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, aggregate=FALSE)
     # Bring to correct object size
     IO_required_wat_min <- as.array(.transformObject(IO_required_wat_min))
 

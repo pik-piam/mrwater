@@ -34,10 +34,10 @@
 #'
 
 calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalcells="magpiecell",
-                                lpjml=c(natveg="LPJmL4", crop="LPJmL5"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
-                                harmonize_baseline="CRU_4", ref_year="y2015",
-                                allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
-                                irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995, proxycrop){
+                                 lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
+                                 harmonize_baseline="CRU_4", ref_year="y2015",
+                                 allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
+                                 irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995, proxycrop){
 
   #############################
   ####### Read in Data ########
@@ -53,6 +53,14 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   ## calcorder:       ordering of cells for calculation from upstream to downstream
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
+  # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
+  if (climatetype=="GSWP3-W5E5:historical") {
+    # Baseline is only smoothed (not harmonized)
+    stage <- "smoothed"
+  } else {
+    # Climate scenarios are harmonized to baseline
+    stage <- "harmonized2020"
+  }
 
   ### LPJ-MAgPIE cell mapping
   magpie2lpj    <- magclassdata$cellbelongings$LPJ_input.Index
@@ -60,15 +68,13 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
 
   ### Required inputs for River Routing:
   # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
-  yearly_runoff <- calcOutput("LPJmL", version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, subtype="runoff_lpjcell", aggregate=FALSE,
-                              harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range)
+  yearly_runoff <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="runoff",     climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE)
   yearly_runoff <- as.array(collapseNames(yearly_runoff))
   yearly_runoff <- yearly_runoff[,,1]
   years <- getYears(yearly_runoff)
 
   # Read in natural discharge and lake evaporation from Natural River Flow Routing
-  natural_flows <- calcOutput("RiverNaturalFlows", selectyears=selectyears, aggregate=FALSE,
-                              climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  natural_flows <- calcOutput("RiverNaturalFlows", selectyears=selectyears, aggregate=FALSE, climatetype=climatetype)
   discharge_nat <- as.array(collapseNames(natural_flows[,,"discharge_nat"]))[,,1]
   lake_evap_new <- as.array(collapseNames(natural_flows[,,"lake_evap_nat"]))[,,1]
 
@@ -99,7 +105,7 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   # Full irrigation water requirement depending on irrigation system in use
   if (irrigationsystem=="initialization") {
     # read in irrigation system area initialization [share of AEI by system]
-    tmp               <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
+    tmp               <- calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate=FALSE)
     irrigation_system <- new.magpie(getCells(tmp), getYears(required_wat_fullirrig_ww), getNames(tmp))
     getYears(irrigation_system) <- getYears(required_wat_fullirrig_ww)
     for (y in getYears(required_wat_fullirrig_ww)) {
@@ -145,10 +151,7 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   for (EFP in c("on", "off")) {
 
     # Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
-    EFR_magpie <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, aggregate=FALSE,
-                             LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
-                             harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, dof=dof, averaging_range=averaging_range,
-                             EFRyears=c(1980:2010))
+    EFR_magpie <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, aggregate=FALSE)
 
     if (EFP=="off") {
       EFR_magpie[,,] <- 0

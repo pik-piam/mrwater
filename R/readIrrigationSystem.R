@@ -1,7 +1,7 @@
 #' @title       readIrrigationSystem
 #' @description Read in irrigation system type for initialization
 #'
-#' @param subtype Data source to be used: Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or LPJmL (dominant irrigation system per country) and number of cells (lpjcell or magpiecell) separated by _
+#' @param subtype Data source to be used: Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or LPJmL (dominant irrigation system per country)
 #'
 #' @return MAgPIE object of at country-level
 #' @author Felicitas Beier
@@ -9,18 +9,17 @@
 #' @examples
 #' \dontrun{ readSource("IrrigationSystem", convert="onlycorrect") }
 #'
-#' @importFrom madrat toolCountry2isocode toolCountryFill toolGetMapping toolConditionalReplace
+#' @importFrom madrat toolCountry2isocode toolCountryFill toolConditionalReplace
 #' @importFrom magclass getCells
-#' @importFrom mrcommons toolCell2isoCell
+#' @importFrom mrcommons toolGetMappingCoord2Country
 
-readIrrigationSystem <- function(subtype="Jaegermeyr_magpiecell"){
+readIrrigationSystem <- function(subtype="Jaegermeyr") {
 
   # Mapping
-  map <- toolGetMapping("CountryToCellMapping.csv",type="cell")
-  map <- data.frame(celliso=map$celliso, iso=map$iso)
+  map <- toolGetMappingCoord2Country()
 
   # Irrigation system share by country
-  if (grepl("Jaegermeyr", subtype)){
+  if (subtype=="Jaegermeyr") {
 
     # Read in and transform data
     x         <- read.csv("Jaegermeyr-2015-supplement_shr.csv")
@@ -38,7 +37,7 @@ readIrrigationSystem <- function(subtype="Jaegermeyr_magpiecell"){
     # Expand to cellular level
     x <- x[map$iso,,]
 
-  } else if(grepl("LPJmL", subtype)){
+  } else if (subtype=="LPJmL") {
 
     # Read in and transform data
     x         <- read.csv("LPJmL_manage_irrig_IFT.csv")
@@ -56,22 +55,13 @@ readIrrigationSystem <- function(subtype="Jaegermeyr_magpiecell"){
     x <- x[map$iso,,]
 
     # Replace NAs with 1 (surface irrigation)
-    # (Note: only affects country SJM: Svalbard and Jan Mayen)
     x <- toolConditionalReplace(x, conditions=c("is.na()","<0"), replaceby = 1)
 
   }
 
   # Object dimensions
-  if (grepl("lpjcell", subtype)) {
-    lpj_map <- toolGetMapping("LPJ_CellBelongingsToCountries.csv",type="cell")
-    tmp           <- x
-    getCells(tmp) <- paste(getCells(tmp),magclassdata$cellbelongings$LPJ_input.Index,sep=".")
-    x   <- new.magpie(cells_and_regions=paste(lpj_map$ISO,1:67420,sep="."),years=NULL,getNames(x),fill=0)
-    x[magclassdata$cellbelongings$LPJ_input.Index,,] <- tmp[,,]
-    x   <- toolCell2isoCell(x,cells="lpjcell")
-  } else if (grepl("magpiecell", subtype)) {
-    x   <- toolCell2isoCell(x,cells="magpiecell")
-  }
+  getCells(x)           <- paste(map$coords, map$iso, sep=".")
+  names(dimnames(x))[1] <- "x.y.iso"
 
   return(x)
 }

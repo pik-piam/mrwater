@@ -8,7 +8,8 @@ calcWaterAllocation2(
   selectyears = "all",
   output = "consumption",
   finalcells = "magpiecell",
-  lpjml = c(natveg = "LPJmL4", crop = "LPJmL5"),
+  lpjml = c(natveg = "LPJmL4_for_MAgPIE_84a69edd", crop =
+    "ggcmi_phase3_nchecks_72c185fa"),
   climatetype = "HadGEM2_ES:rcp2p6:co2",
   time = "spline",
   averaging_range = NULL,

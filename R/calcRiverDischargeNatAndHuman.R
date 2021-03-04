@@ -36,9 +36,9 @@ calcRiverDischargeNatAndHuman <- function(selectyears="all", iniyear, climatetyp
   CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"currHuman_wc"])
 
   # Yearly Runoff (on land and water)
-  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year))
+  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype))
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)[,,"lake_evap_nat"])
+  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)[,,"lake_evap_nat"])
 
   ## Transform object dimensions
   .transformObject <- function(x) {

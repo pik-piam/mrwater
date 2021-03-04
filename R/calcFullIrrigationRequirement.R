@@ -22,9 +22,9 @@
 #'
 #' @importFrom madrat calcOutput toolGetMapping
 #' @importFrom magclass collapseNames getCells getSets getYears getNames new.magpie dimSums
-#' @importFrom mrcommons toolCell2isoCell
+#' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
 
-calcFullIrrigationRequirement <- function(climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, averaging_range=NULL, ref_year=NULL, selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrigationsystem="initialization", protect_scen, proxycrop) {
+calcFullIrrigationRequirement <- function(climatetype="GSWP3-W5E5:historical", harmonize_baseline=FALSE, time="spline", dof=4, averaging_range=NULL, ref_year=NULL, selectyears=seq(1995,2095,by=5), iniyear=1995, iniarea=TRUE, irrigationsystem="initialization", protect_scen, proxycrop) {
 
   # read in irrigation water requirements for each irrigation system [in m^3 per hectare per year] (smoothed & harmonized)
   irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
@@ -39,8 +39,11 @@ calcFullIrrigationRequirement <- function(climatetype="HadGEM2_ES:rcp2p6:co2", h
     # historical crop mix
     # read in total (irrigated + rainfed) croparea
     croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)
-    rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater")) #### Note: only until calcCroparea is adjusted to 67420 cells
-    getCells(croparea) <- rs$coordinates                                                  #### Note: only until calcCroparea is adjusted to 67420 cells
+    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+    map                          <- toolGetMappingCoord2Country()
+    getCells(croparea)           <- paste(map$coords, map$iso, sep=".")
+    names(dimnames(croparea))[1] <- "x.y.iso"
+    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
     # historical share of crop types in total cropland per cell
     croparea_shr <- croparea / dimSums(croparea, dim=3)
     # correct NAs: where no land available -> crop share 0
@@ -68,7 +71,7 @@ calcFullIrrigationRequirement <- function(climatetype="HadGEM2_ES:rcp2p6:co2", h
   # calculate irrigation water requirements per crop [in mio. m^3 per year] given irrigation system share in use
   if (irrigationsystem=="initialization") {
     # read in irrigation system area initialization [share of AEI by system] and expand to all years
-    tmp                   <- calcOutput("IrrigationSystem", source="Jaegermeyr_lpjcell", aggregate=FALSE)
+    tmp                   <- calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate=FALSE)
     irrigation_system     <- new.magpie(getCells(irrig_wat), getYears(irrig_wat), getNames(tmp))
     irrigation_system[,,] <- tmp
 

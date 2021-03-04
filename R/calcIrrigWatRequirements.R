@@ -21,7 +21,7 @@
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping
 #' @importFrom mrcommons toolCell2isoCell
 
-calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4", crop="LPJmL5"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL) {
+calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL) {
 
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit=1e+12)
@@ -34,9 +34,8 @@ calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4",
   lpj_cells_map <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
   LPJ2MAG       <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
-  ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr):
-  blue_water_consumption <- calcOutput("LPJmL", subtype="cwater_b_lpjcell", version=lpjml["crop"], aggregate=FALSE, selectyears=selectyears,
-                                       climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr): [[[QUESTION: Smoothed & Harmonized? How to handle historical & harmonized?]]]
+  blue_water_consumption <- calcOutput("LPJmL_new", subtype="cwater_b", version=lpjml["crop"], climatetype=climatetype, stage="smoothed", aggregate=FALSE, years=selectyears)
   blue_water_consumption <- collapseNames(blue_water_consumption[,,"irrigated"])
   names(dimnames(blue_water_consumption))[1] <- "iso.cell"
   names(dimnames(blue_water_consumption))[3] <- "crop"

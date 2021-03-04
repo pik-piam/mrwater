@@ -4,11 +4,6 @@
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
 #' @param climatetype Switch between different climate scenarios (default: "CRU_4")
-#' @param time            Time smoothing: average, spline or raw (default)
-#' @param averaging_range only specify if time=="average": number of time steps to average
-#' @param dof             only specify if time=="spline": degrees of freedom needed for spline
-#' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
-#' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #'
 #' @importFrom magclass collapseNames new.magpie getCells mbind setYears setNames
 #' @importFrom madrat calcOutput
@@ -21,11 +16,8 @@
 #' \dontrun{ calcOutput("RiverNaturalFlows_magpie22", aggregate = FALSE) }
 #'
 
-calcRiverNaturalFlows22 <- function(selectyears="all", lpjml=c(natveg="LPJmL4", crop="LPJmL5"),
-                                    climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015") {
-  # # # # # # # # # # #
-  # # # READ IN DATA # #
-  # # # # # # # # # # #
+calcRiverNaturalFlows22 <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype) {
+
   ### Read in river structure
   # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
   # Information contained:
@@ -38,11 +30,20 @@ calcRiverNaturalFlows22 <- function(selectyears="all", lpjml=c(natveg="LPJmL4", 
   ## coordinates:     coordinate data of cells
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
+  ### Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
+  if (climatetype=="GSWP3-W5E5:historical") {
+    # Baseline is only smoothed (not harmonized)
+    stage <- "smoothed"
+  } else {
+    # Climate scenarios are harmonized to baseline
+    stage <- "harmonized2020"
+  }
+
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
-  lake_evap     <- as.array(collapseNames(calcOutput("LPJmL",        aggregate=FALSE, version=lpjml["natveg"], selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)))
+  lake_evap     <- as.array(calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="lake_evap", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE))
 
   # Runoff (on land and water)
-  yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)))
+  yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)))
 
   ############################################
   ###### River Routing: Natural Flows ########
