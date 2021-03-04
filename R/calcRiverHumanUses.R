@@ -232,7 +232,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
   ########################
   ### Output Variables ###
   ########################
-  out <- new.magpie(cells_and_regions = getCells(IO_required_wat_min), years=getYears(IO_required_wat_min), names=c("required_wat_min", "currHuman_ww", "currHuman_wc"))
+  out <- new.magpie(cells_and_regions = getCells(IO_required_wat_min), years=getYears(IO_required_wat_min), names=c("required_wat_min", "currHuman_ww", "currHuman_wc"), sets=c("x.y.iso", "year", "data"))
   out <- .transformObject(out)
   out[,,"required_wat_min"] <- as.magpie(IO_required_wat_min, spatial=1, temporal=2)
   out[,,"currHuman_ww"]     <- as.magpie(currHuman_ww,        spatial=1, temporal=2)

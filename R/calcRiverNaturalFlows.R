@@ -73,7 +73,7 @@ calcRiverNaturalFlows <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPIE
     }
   }
 
-  out <- new.magpie(cells_and_regions = getCells(discharge_nat), years=getYears(discharge_nat), names=c("discharge_nat", "lake_evap_nat"))
+  out <- new.magpie(cells_and_regions = getCells(discharge_nat), years=getYears(discharge_nat), names=c("discharge_nat", "lake_evap_nat"), sets=c("x.y.iso", "year", "data"))
   out[,,"discharge_nat"] <- as.magpie(discharge_nat, spatial=1, temporal=2)
   out[,,"lake_evap_nat"] <- as.magpie(lake_evap_new, spatial=1, temporal=2)
 
