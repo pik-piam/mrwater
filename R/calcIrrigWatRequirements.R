@@ -28,7 +28,7 @@ calcIrrigWatRequirements <- function(selectyears="all", lpjml=c(natveg="LPJmL4_f
   LPJ2MAG       <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
   ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr): [[[QUESTION: Smoothed & Harmonized? How to handle historical & harmonized?]]]
-  blue_water_consumption <- collapseNames(calcOutput("LPJmL_new", subtype="cwater_b", version=lpjml["crop"], climatetype=climatetype, stage="smoothed", aggregate=FALSE, years=selectyears)[,,"irrigated"])
+  blue_water_consumption <- collapseNames(calcOutput("LPJmL_new", subtype="cwater_b", version=lpjml["crop"], climatetype=climatetype, stage="smoothed", aggregate=FALSE, years=selectyears))
   names(dimnames(blue_water_consumption))[3] <- "crop"
   years       <- getYears(blue_water_consumption)
   cropnames   <- getNames(blue_water_consumption)

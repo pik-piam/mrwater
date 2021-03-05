@@ -21,7 +21,7 @@ calcIrrigationSystem <- function(source) {
   if (source=="Jaegermeyr") {
 
     # Read in source
-    x           <- readSource("IrrigationSystem", convert="onlycorrect", subtype=source)
+    x           <- readSource("IrrigationSystem", convert=FALSE, subtype=source)
     getNames(x) <- gsub("shr_AEI_","",getNames(x))
   }
 
@@ -30,7 +30,7 @@ calcIrrigationSystem <- function(source) {
   if (source=="LPJmL") {
 
     # Read in source
-    tmp <- readSource("IrrigationSystem", convert="onlycorrect", subtype=source)
+    tmp <- readSource("IrrigationSystem", convert=FALSE, subtype=source)
 
     # Merge to obtain one magpie object containing irrigation system shares (share of irrigated area per irrigation system)
     x   <- new.magpie(cells_and_regions=getCells(tmp), years=NULL, names=c("surface","sprinkler","drip"), fill=0)
@@ -55,7 +55,7 @@ calcIrrigationSystem <- function(source) {
   x[,,"surface"][which(x[,,"surface"]==0 & x[,,"sprinkler"]==0 & x[,,"drip"]==0)] <- 1
 
   # Dimension and element names
-  getSets(x)[4] <- "system"
+  getSets(x, fulldim=F)[3] <- "system"
 
   # Checks
   if (any(is.na(x))) {

@@ -6,31 +6,16 @@
 \usage{
 calcActualIrrigWatRequirements(
   selectyears = "all",
-  iniyear = 1995,
   climatetype = "GSWP3-W5E5:historical",
-  time = "raw",
-  averaging_range = NULL,
-  dof = NULL,
-  harmonize_baseline = FALSE,
-  ref_year = NULL
+  iniyear = 1995
 )
 }
 \arguments{
 \item{selectyears}{Years to be returned}
 
-\item{iniyear}{Initialization year (for weight by cropland)}
-
 \item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
 
-\item{time}{Time smoothing: average, spline or raw (default)}
-
-\item{averaging_range}{only specify if time=="average": number of time steps to average}
-
-\item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
-
-\item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
-
-\item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
+\item{iniyear}{Initialization year (for weight by cropland)}
 }
 \value{
 magpie object in cellular resolution
