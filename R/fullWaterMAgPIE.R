@@ -45,6 +45,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   # climatetype=climatetype
   harmonize_baseline="CRU_4"
   ref_year="y2015"
+  iniyear=1995
 
   #### THIS MIGHT BE NECESSARY IF I WANT MY OWN AGGREGATION (E.G. TO RIVER BASINS)
  # map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, clusterdata=clusterdata, aggregate=FALSE)
@@ -64,7 +65,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   setConfig(extramappings="clustermap_rev4.54+mrmagpie10_riverrouting_allocation_c200_h12.rds")
 
   #42 water demand
-  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", aggregate="cluster", round=6)
+  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6)
   wat_req_crops_c <- collapseNames(wat_req_crops_c)
   write.magpie(wat_req_crops_c, file_name = "C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/wat_req_crops_c.cs2")
 
@@ -78,7 +79,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   #### -- only temporary -- ####
 
   #42 water demand
-  calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
+  calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
 
   #43 water availability
   calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=harmonize_baseline, ref_year=ref_year, finalcells="magpiecell",

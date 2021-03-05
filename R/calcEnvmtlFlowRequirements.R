@@ -14,7 +14,7 @@
 #' \dontrun{ calcOutput("EnvmtlFlowRequirements", aggregate=FALSE) }
 #'
 
-calcEnvmtlFlowRequirements <- function(selectyears, climatetype="GSWP3-W5E5:historical") {
+calcEnvmtlFlowRequirements <- function(selectyears, climatetype) {
 
   # Read in share of discharge to be reserved for environment (per cell)
   EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", climatetype=climatetype, aggregate=FALSE)

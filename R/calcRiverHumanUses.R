@@ -42,8 +42,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
 
   ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
-  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
-  wat_nonag <- wat_nonag[rs$coordinates,,]
+  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", aggregate=FALSE, selectyears=selectyears, climatetype=NULL, lpjml=NULL)
   I_NAg_ww  <- collapseNames(wat_nonag[,,"withdrawal"])
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 

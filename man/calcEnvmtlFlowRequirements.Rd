@@ -4,7 +4,7 @@
 \alias{calcEnvmtlFlowRequirements}
 \title{calcEnvmtlFlowRequirements}
 \usage{
-calcEnvmtlFlowRequirements(selectyears, climatetype = "GSWP3-W5E5:historical")
+calcEnvmtlFlowRequirements(selectyears, climatetype)
 }
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}

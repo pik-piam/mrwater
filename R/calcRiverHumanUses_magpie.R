@@ -48,7 +48,7 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
   ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
-  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", aggregate=FALSE, selectyears=selectyears, climatetype=NULL, lpjml=NULL)
   wat_nonag <- wat_nonag[rs$coordinates,,]
   getCells(wat_nonag) <- rs$cells
   I_NAg_ww  <- collapseNames(wat_nonag[,,"withdrawal"])

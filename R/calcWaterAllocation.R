@@ -89,8 +89,8 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
-  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", finalcells="lpjcell", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
-  wat_nonag <- wat_nonag[rs$coordinates,,]
+  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", aggregate=FALSE, climatetype=NULL, lpjml=NULL, selectyears=selectyears)
+  getCells(wat_nonag) <- rs$cells
   NAg_ww  <- as.array(collapseNames(wat_nonag[,,"withdrawal"]))
   NAg_wc  <- as.array(collapseNames(wat_nonag[,,"consumption"]))
 
