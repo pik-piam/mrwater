@@ -1,7 +1,7 @@
 #' @title       calcIrrigCellranking
 #' @description This function calculates a cellranking for the river basin discharge allocation based on yield improvement potential through irrigation
 #'
-#' @param climatetype switch between different climate scenarios for yields
+#' @param climatetype     Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
 #' @param time            time smoothing: average, spline (default) or raw
 #' @param averaging_range just specify for time=="average": number of time steps to average
 #' @param dof             just specify for time=="spline": degrees of freedom

@@ -4,16 +4,12 @@
 \alias{calcActualIrrigWatRequirements}
 \title{calcActualIrrigWatRequirements}
 \usage{
-calcActualIrrigWatRequirements(
-  selectyears = "all",
-  climatetype = "GSWP3-W5E5:historical",
-  iniyear = 1995
-)
+calcActualIrrigWatRequirements(selectyears, climatetype, iniyear)
 }
 \arguments{
 \item{selectyears}{Years to be returned}
 
-\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{iniyear}{Initialization year (for weight by cropland)}
 }

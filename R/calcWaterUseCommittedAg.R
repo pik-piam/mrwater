@@ -2,13 +2,8 @@
 #' @description This function calculates committed agricultural water uses that are used in the river routing algorithm for distributing available water across the basin
 #'
 #' @param selectyears Years to be returned
-#' @param climatetype Switch between different climate scenarios (default: "CRU_4")
-#' @param time            Time smoothing: average or spline (default)
-#' @param averaging_range Only specify if time=="average": number of time steps to average
-#' @param dof             Only specify if time=="spline": degrees of freedom needed for spline
-#' @param harmonize_baseline FALSE (default): no harmonization of input data to this function, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
-#' @param ref_year           Reference year for harmonization baseline of input data to this function (just specify when harmonize_baseline=TRUE)
-#' @param iniyear  Year of initialization for cropland area
+#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param iniyear     Year of initialization for cropland area
 #'
 #' @importFrom magclass collapseNames dimSums getNames mbind
 #' @importFrom madrat calcOutput
@@ -20,8 +15,7 @@
 #' \dontrun{ calcOutput("WaterUseCommittedAg", aggregate = FALSE) }
 #'
 
-calcWaterUseCommittedAg <- function(climatetype="GSWP3-W5E5:historical", selectyears=seq(1995,2095,by=5),
-                                    time="spline", dof=4, averaging_range=NULL, harmonize_baseline="CRU_4", ref_year="y2015", iniyear=1995) {
+calcWaterUseCommittedAg <- function(climatetype, selectyears, iniyear) {
 
   ##############################
   ######## Read in data ########
@@ -30,7 +24,7 @@ calcWaterUseCommittedAg <- function(climatetype="GSWP3-W5E5:historical", selecty
   irrigation_system <- calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate=FALSE)
 
   ## Read in irrigation water requirements per crop (in m^3 per hectare per year) [smoothed and harmonized]
-  irrig_water <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  irrig_water <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)
   # Pasture is not irrigated in MAgPIE
   irrig_water <- irrig_water[,,"pasture",invert=T]
 
@@ -47,22 +41,19 @@ calcWaterUseCommittedAg <- function(climatetype="GSWP3-W5E5:historical", selecty
   ##############################
   ## Committed agricultural uses (in mio. m^3 per year)
   # withdrawal
-  CAW           <- (irrigation_system[,,] * irrig_withdrawal[,,]) * crops_grown
-  CAW           <- dimSums(CAW, dim=3.1)
+  CAW           <- crops_grown * dimSums(irrigation_system * irrig_withdrawal, dim="system")
   getNames(CAW) <- paste(rep("withdrawal",3), getNames(CAW), sep=".")
   # consumption
-  CAU           <- (irrigation_system[,,] * irrig_consumption[,,]) * crops_grown
-  CAU           <- dimSums(CAU, dim=3.1)
+  CAU           <- crops_grown * dimSums(irrigation_system * irrig_consumption, dim="system")
   getNames(CAU) <- paste(rep("consumption",3), getNames(CAU), sep=".")
   # combine
   CAD                     <- mbind(CAW, CAU)
-  names(dimnames(CAD))[1] <- "iso.cell"
   names(dimnames(CAD))[3] <- "wateruse.crop"
 
   return(list(
     x=CAD,
     weight=NULL,
     unit="mio. m^3 per year",
-    description="committed agricultural water demands",
+    description="committed agricultural water demands per crop",
     isocountries=FALSE))
 }

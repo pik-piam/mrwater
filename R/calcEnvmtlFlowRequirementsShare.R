@@ -2,7 +2,7 @@
 #' @description This function calculates environmental flow requirements (EFR) (as share of discharge) based on LPJmL monthly discharge following Smakthin et al. (2004)
 #'
 #' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
-#' @param climatetype Switch between different climate scenarios (default: "CRU_4")
+#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #'
 #' @importFrom magclass collapseNames new.magpie getYears
 #' @importFrom madrat calcOutput

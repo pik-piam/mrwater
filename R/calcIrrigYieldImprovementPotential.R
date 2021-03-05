@@ -1,7 +1,7 @@
 #' @title       calcIrrigYieldImprovementPotential
 #' @description This function calculates the yield improvement potential of irrigation for different crops
 #'
-#' @param climatetype switch between different climate scenarios (default: "CRU_4") of calcYields function
+#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
 #' @param selectyears years to be returned by the function
 #' @param time            time smoothing of calcYields function: average, spline (default) or raw
 #' @param averaging_range only specify if time=="average": number of time steps to average

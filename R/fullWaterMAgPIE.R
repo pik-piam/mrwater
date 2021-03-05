@@ -8,7 +8,7 @@
 #' cluster distribution among regions whereas normalized k-means is used for the clustering within a region.
 #' @param dev development suffix to distinguish development versions for the same data revision. This can be useful to distinguish
 #' parallel lines of development.
-#' @param climatetype climate change scenario to be used
+#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param clusterweight Should specific regions be resolved with more or less detail? Values > 1 mean higher share, < 1 lower share
 #' e.g. cfg$clusterweight <- c(LAM=2) means that a higher level of detail for region LAM if set to NULL all weights will be assumed to be 1.
 #' examples:
@@ -64,13 +64,12 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   setConfig(extramappings="clustermap_rev4.54+mrmagpie10_riverrouting_allocation_c200_h12.rds")
 
   #42 water demand
-  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
-             harmonize_baseline=FALSE, ref_year=NULL, irrig_requirement="consumption", irrig_system_source="Jaegermeyr_magpiecell", aggregate="cluster", round=6)
+  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", aggregate="cluster", round=6)
   wat_req_crops_c <- collapseNames(wat_req_crops_c)
   write.magpie(wat_req_crops_c, file_name = "C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/wat_req_crops_c.cs2")
 
   #43 water availability
-  avl_wat_agr_c <- calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL, finalcells="magpiecell",
+  avl_wat_agr_c <- calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL, finalcells="magpiecell",
              allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=1, irrigationsystem="initialization", iniyear=1995, aggregate="cluster", round=6)
   avl_wat_agr_c <- collapseNames(avl_wat_agr_c)
   write.magpie(avl_wat_agr_c, file_name="C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/avl_wat_agr_c.cs3")
@@ -79,11 +78,10 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   #### -- only temporary -- ####
 
   #42 water demand
-  calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
-             harmonize_baseline=harmonize_baseline, ref_year=ref_year, irrig_requirement="consumption", irrig_system_source="Jaegermeyr_magpiecell", aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
+  calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
 
   #43 water availability
-  calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=harmonize_baseline, ref_year=ref_year, finalcells="magpiecell",
+  calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=harmonize_baseline, ref_year=ref_year, finalcells="magpiecell",
                allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=1, irrigationsystem="initialization", iniyear=1995, aggregate="cluster", round=6, file=paste0("avl_wat_agr_c_",ctype,".mz"))
 
   ##### AGGREGATION ######

@@ -2,7 +2,7 @@
 #' @description This function calculates water availability for MAgPIE retrieved from LPJmL using a river routing and allocation algorithm for distribution of discharge within the river basin
 #'
 #' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
-#' @param climatetype Switch between different climate scenarios (default: "CRU_4")
+#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
@@ -95,7 +95,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   NAg_wc  <- as.array(collapseNames(wat_nonag[,,"consumption"]))
 
   # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
-  CAU_magpie <- calcOutput("WaterUseCommittedAg",selectyears=selectyears,iniyear=iniyear,time=time,dof=dof,averaging_range=averaging_range,harmonize_baseline=harmonize_baseline,ref_year=ref_year,aggregate=FALSE)
+  CAU_magpie <- calcOutput("WaterUseCommittedAg", selectyears=selectyears, climatetype=climatetype, iniyear=iniyear, aggregate=FALSE)
   CAW_magpie <- as.array(collapseNames(dimSums(CAU_magpie[,,"withdrawal"],dim=3)))
   CAC_magpie <- as.array(collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3)))
   rm(CAU_magpie)

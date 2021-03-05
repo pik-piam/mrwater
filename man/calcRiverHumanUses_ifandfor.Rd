@@ -23,7 +23,7 @@ calcRiverHumanUses_ifandfor(
 
 \item{subtype}{Subtype to be returned: discharge or required_wat_min or frac_fulfilled}
 
-\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{time}{Time smoothing: average, spline or raw (default)}
 

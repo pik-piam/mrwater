@@ -19,7 +19,7 @@ calcIrrigWatValue(
 \arguments{
 \item{selectyears}{years to be returned}
 
-\item{climatetype}{switch between different climate scenarios for yields and irrigation water requirements}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{time}{time smoothing: average, spline (default) or raw}
 

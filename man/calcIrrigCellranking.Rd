@@ -18,7 +18,7 @@ calcIrrigCellranking(
 )
 }
 \arguments{
-\item{climatetype}{switch between different climate scenarios for yields}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
 
 \item{time}{time smoothing: average, spline (default) or raw}
 

@@ -2,7 +2,7 @@
 #' @description This function calculates environmental flow requirements (EFR) for MAgPIE based on EFR share calculated from LPJmL monthly discharge following Smakthin et al. (2004)
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param climatetype Switch between different climate scenarios (default: "CRU_4")
+#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #'
 #' @importFrom magclass collapseNames as.magpie
 #' @importFrom madrat calcOutput

@@ -20,7 +20,7 @@ calcFullIrrigationRequirement(
 )
 }
 \arguments{
-\item{climatetype}{switch between different climate scenarios (default: "CRU_4")}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
 

@@ -23,7 +23,7 @@ indicating the number of resulting clusters. Available methodologies are hierarc
 (n) and combined hierarchical/normalized k-means clustering (c). In the latter hierarchical clustering is used to determine the
 cluster distribution among regions whereas normalized k-means is used for the clustering within a region.}
 
-\item{climatetype}{climate change scenario to be used}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{clusterweight}{Should specific regions be resolved with more or less detail? Values > 1 mean higher share, < 1 lower share
 e.g. cfg$clusterweight <- c(LAM=2) means that a higher level of detail for region LAM if set to NULL all weights will be assumed to be 1.

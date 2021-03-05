@@ -4,31 +4,12 @@
 \alias{calcWaterUseCommittedAg}
 \title{calcWaterUseCommittedAg}
 \usage{
-calcWaterUseCommittedAg(
-  climatetype = "GSWP3-W5E5:historical",
-  selectyears = seq(1995, 2095, by = 5),
-  time = "spline",
-  dof = 4,
-  averaging_range = NULL,
-  harmonize_baseline = "CRU_4",
-  ref_year = "y2015",
-  iniyear = 1995
-)
+calcWaterUseCommittedAg(climatetype, selectyears, iniyear)
 }
 \arguments{
-\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{selectyears}{Years to be returned}
-
-\item{time}{Time smoothing: average or spline (default)}
-
-\item{dof}{Only specify if time=="spline": degrees of freedom needed for spline}
-
-\item{averaging_range}{Only specify if time=="average": number of time steps to average}
-
-\item{harmonize_baseline}{FALSE (default): no harmonization of input data to this function, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
-
-\item{ref_year}{Reference year for harmonization baseline of input data to this function (just specify when harmonize_baseline=TRUE)}
 
 \item{iniyear}{Year of initialization for cropland area}
 }

@@ -9,7 +9,7 @@ calcEnvmtlFlowRequirements(selectyears, climatetype = "GSWP3-W5E5:historical")
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
-\item{climatetype}{Switch between different climate scenarios (default: "CRU_4")}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 }
 \value{
 magpie object in cellular resolution

@@ -18,7 +18,7 @@ calcIrrigYieldImprovementPotential(
 )
 }
 \arguments{
-\item{climatetype}{switch between different climate scenarios (default: "CRU_4") of calcYields function}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
 
 \item{time}{time smoothing of calcYields function: average, spline (default) or raw}
 

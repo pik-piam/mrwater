@@ -3,7 +3,7 @@
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param humanuse    Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture
-#' @param climatetype Switch between different climate scenarios (default: "CRU_4")
+#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param time            Time smoothing: average, spline or raw (default)
 #' @param averaging_range only specify if time=="average": number of time steps to average
 #' @param dof             only specify if time=="spline": degrees of freedom needed for spline
@@ -47,9 +47,11 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
   I_NAg_ww  <- collapseNames(wat_nonag[,,"withdrawal"])
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 
-  # Committed agricultural uses (in mio. m^3 / yr) [for initialization year]
-  CAU_magpie <- calcOutput("WaterUseCommittedAg", aggregate=FALSE, selectyears=selectyears, iniyear=iniyear, time=time, dof=dof, averaging_range=averaging_range, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  # Committed agricultural uses per crop (in mio. m^3 / yr)
+  CAU_magpie <- calcOutput("WaterUseCommittedAg", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, iniyear=iniyear)
+  # Total committed agricultural withdrawals (in mio. m^3 / yr)
   CAW_magpie <- collapseNames(dimSums(CAU_magpie[,,"withdrawal"],  dim=3))
+  # Total committed agricultural consumption (in mio. m^3 / yr)
   CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"], dim=3))
 
   ## Water inputs
