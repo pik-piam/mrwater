@@ -26,9 +26,8 @@
 calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, climatetype="GSWP3-W5E5:historical", time="raw", averaging_range=NULL, dof=NULL, harmonize_baseline=FALSE, ref_year=NULL) {
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
-  irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year)
+  irrig_wat_requirement        <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)
   irrig_wat_requirement        <- irrig_wat_requirement[,,"pasture",invert=T]
-  names(dimnames(irrig_wat_requirement))[1] <- "iso.cell"
   names(dimnames(irrig_wat_requirement))[3] <- "crop.system"
 
   # irrigation system share (share of irrigated area)
@@ -54,10 +53,11 @@ calcActualIrrigWatRequirements <- function(selectyears="all", iniyear=1995, clim
   # irrigated cropland area as weight
   irrig_area <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
   #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-  map                          <- toolGetMappingCoord2Country()
-  getCells(croparea)           <- paste(map$coords, map$iso, sep=".")
-  names(dimnames(croparea))[1] <- "x.y.iso"
+  map                            <- toolGetMappingCoord2Country()
+  getCells(irrig_area)           <- paste(map$coords, map$iso, sep=".")
+  names(dimnames(irrig_area))[1] <- "x.y.iso"
   #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+  # transform units of irrigated area (Mha to ha)
   irrig_area <- collapseNames(irrig_area[,,"irrigated"])+1e-9
 
   return(list(

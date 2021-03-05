@@ -77,7 +77,8 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
   irrig_area_wc               <- collapseNames(irrig_area_wc)
 
   ## Area available and suitable for cropland
-  avl_land <- calcOutput("AreaPotIrrig", aggregate=FALSE, selectyears=selectyears, iniareayear=iniyear, iniarea=iniarea, protect_scen=protect_scen)
+  avl_land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniareayear=iniyear, protect_scen=protect_scen, aggregate=FALSE)
+
 
   # irrigatable area (area that can be irrigated): enough local water available & enough local land available
   irrigatable_area <- pmin(avl_land, irrig_area_wc, irrig_area_ww)
