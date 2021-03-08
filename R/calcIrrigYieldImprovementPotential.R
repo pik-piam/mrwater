@@ -27,10 +27,10 @@ calcIrrigYieldImprovementPotential <- function(climatetype="GSWP3-W5E5:historica
                                           harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), proxycrop) {
 
   # read in yields [in tons/ha]
-  yields <- calcOutput("Yields", lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE)
+  yields     <- calcOutput("Yields", lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE)
 
   # yield gap (irrigated vs. rainfed) [in tons/ha]
-  tmp    <- collapseNames(yields[,,"irrigated"]) - collapseNames(yields[,,"rainfed"])
+  yield_gain <- collapseNames(yields[,,"irrigated"]) - collapseNames(yields[,,"rainfed"])
   # (Note: irrigation may lead to shift in growing period -> tmp can have negative values; also: under N-stress, irrigation may lead to lower yields, the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
 
   if (monetary) {
@@ -69,7 +69,7 @@ calcIrrigYieldImprovementPotential <- function(climatetype="GSWP3-W5E5:historica
       croparea_shr[dimSums(croparea, dim=3)==0] <- 0
 
       # average yield gain over histrical crops weighted with their croparea share
-      yield_gain <- dimSums(croparea_shr * yield_gain, dim=3)
+      yield_gain  <- dimSums(croparea_shr * yield_gain, dim=3)
 
       description <- "Average yield improvement potential for crop types weighted with historical croparea share"
 
