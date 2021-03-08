@@ -9,12 +9,7 @@ calcRiverHumanUses_magpie(
   humanuse = "non_agriculture",
   subtype = "discharge",
   iniyear = 1995,
-  climatetype = "HadGEM2_ES:rcp2p6:co2",
-  time = "spline",
-  averaging_range = NULL,
-  dof = 4,
-  harmonize_baseline = "CRU_4",
-  ref_year = "y2015"
+  climatetype = "HadGEM2_ES:rcp2p6:co2"
 )
 }
 \arguments{
@@ -27,16 +22,6 @@ calcRiverHumanUses_magpie(
 \item{iniyear}{Initialization year of irrigation system}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
-
-\item{time}{Time smoothing: average, spline or raw (default)}
-
-\item{averaging_range}{only specify if time=="average": number of time steps to average}
-
-\item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
-
-\item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
-
-\item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 }
 \value{
 magpie object in cellular resolution

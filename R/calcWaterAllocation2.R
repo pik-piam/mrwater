@@ -3,11 +3,6 @@
 #'
 #' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param time            Time smoothing: average, spline or raw (default)
-#' @param averaging_range only specify if time=="average": number of time steps to average
-#' @param dof             only specify if time=="spline": degrees of freedom needed for spline
-#' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
-#' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #' @param selectyears Years to be returned
 #' @param output      Water availability output to be returned: withdrawal or consumption
 #' @param allocationrule  Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
@@ -34,8 +29,7 @@
 #'
 
 calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalcells="magpiecell",
-                                 lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4,
-                                 harmonize_baseline="CRU_4", ref_year="y2015",
+                                 lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype="HadGEM2_ES:rcp2p6:co2",
                                  allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
                                  irrigationsystem="initialization", irrigini="Jaegermeyr_lpjcell", iniyear=1995, proxycrop){
 
@@ -96,9 +90,9 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
 
   ### Required inputs for Allocation Algorithm:
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig_ww <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, proxycrop="historical", aggregate=FALSE)
+  required_wat_fullirrig_ww <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype=climatetype, iniyear=1995, iniarea=TRUE, proxycrop="historical", aggregate=FALSE)
   required_wat_fullirrig_ww <- pmax(required_wat_fullirrig_ww,0)
-  required_wat_fullirrig_wc <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype="HadGEM2_ES:rcp2p6:co2", harmonize_baseline=FALSE, time="spline", dof=4, iniyear=1995, iniarea=TRUE, proxycrop="historical", aggregate=FALSE)
+  required_wat_fullirrig_wc <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype=climatetype, iniyear=1995, iniarea=TRUE, proxycrop="historical", aggregate=FALSE)
   required_wat_fullirrig_wc <- pmax(required_wat_fullirrig_wc,0)
 
   # Full irrigation water requirement depending on irrigation system in use
@@ -127,13 +121,11 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   required_wat_fullirrig_wc <- as.array(collapseNames(required_wat_fullirrig_wc))[,,1]
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  meancellrank <- calcOutput("IrrigCellranking", climatetype="HadGEM2_ES:rcp2p6:co2", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                             cellrankyear=selectyears, method="meancroprank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=iniyear, aggregate=FALSE)
+  meancellrank <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method="meancroprank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=iniyear, aggregate=FALSE)
   meancellrank <- as.array(meancellrank)[,,1]
 
   # Yield gain potential through irrigation of proxy crops
-  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                                proxycrop=c("maiz", "rapeseed", "puls_pro"), monetary=thresholdtype, aggregate=FALSE)
+  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, proxycrop=c("maiz", "rapeseed", "puls_pro"), monetary=thresholdtype, iniyear=iniyear, aggregate=FALSE)
   irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
 
   ############################################

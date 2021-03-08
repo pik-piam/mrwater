@@ -6,11 +6,6 @@
 #' @param landtype     current cropland area (currentcropland) or potential cropland area (potentialcropland) or nonprotected (restriction of withdrawals in protected areas)
 #' @param protectscen  protection scenario for protected areas ("WDPA", "HalfEarth", )
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param time               Time smoothing: average, spline or raw (default)
-#' @param averaging_range    only specify if time=="average": number of time steps to average
-#' @param dof                only specify if time=="spline": degrees of freedom needed for spline
-#' @param harmonize_baseline FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)
-#' @param ref_year           Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #' @param allocationrule     Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
 #' @param allocationshare    Share of water to be allocated to cell (only needs to be selected in case of allocationrule=="equality")
 #' @param gainthreshold      Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
@@ -30,8 +25,7 @@
 #' @import magclass
 #' @import magpiesets
 
-calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrigatable_area", iniarea, protect_scen,
-                                climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline="CRU_4", ref_year="y2015",
+calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrigatable_area", iniarea, protect_scen, climatetype="GSWP3-W5E5:historical",
                                 allocationrule="optimization", allocationshare=NULL, gainthreshold=1, irrigationsystem="initialization", iniyear=1995,
                                 landtype="potentialcropland", protectscen="WDPA", proxycrop="maiz"){
 
@@ -39,7 +33,7 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
   ## Area that can be irrigated given water available for withdrawals (in ha)
   # read in water available for withdrawal (in mio. m^3)
   avl_wat_ww <- calcOutput("WaterAllocation", output="withdrawal", finalcells=cells,
-                           selectyears=seq(1995,2100,by=5), climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+                           selectyears=seq(1995,2100,by=5), climatetype=climatetype,
                            allocationrule=allocationrule, allocationshare=allocationshare, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, aggregate=FALSE)
   avl_wat_ww <- avl_wat_ww[,selectyears,]
   # transform from mio. m^3 to m^3
@@ -58,7 +52,7 @@ calcIrrigatableArea <- function(selectyears=1995, cells="lpjcell", output="irrig
   ## Area that can be irrigated given water available for consumption (in ha)
   # read in water available for consumption (in mio. m^3)
   avl_wat_wc <- calcOutput("WaterAllocation", output="consumption", finalcells=cells,
-                           selectyears=seq(1995,2100,by=5), climatetype=climatetype, time=time, averaging_range=averaging_range, dof=dof, harmonize_baseline=harmonize_baseline, ref_year=ref_year,
+                           selectyears=seq(1995,2100,by=5), climatetype=climatetype,
                            allocationrule=allocationrule, allocationshare=allocationshare, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, aggregate=FALSE)
   avl_wat_wc <- avl_wat_wc[,selectyears,]
   # transform from mio. m^3 to m^3

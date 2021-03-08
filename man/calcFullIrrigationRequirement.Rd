@@ -5,32 +5,17 @@
 \title{calcFullIrrigationRequirement}
 \usage{
 calcFullIrrigationRequirement(
-  climatetype = "GSWP3-W5E5:historical",
-  harmonize_baseline = FALSE,
-  time = "spline",
-  dof = 4,
-  averaging_range = NULL,
-  ref_year = NULL,
-  selectyears = seq(1995, 2095, by = 5),
-  iniyear = 1995,
-  iniarea = TRUE,
-  irrigationsystem = "initialization",
+  climatetype,
+  selectyears,
+  iniyear,
+  iniarea,
+  irrigationsystem,
   protect_scen,
   proxycrop
 )
 }
 \arguments{
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
-
-\item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
-
-\item{time}{time smoothing: average, spline or raw (default)}
-
-\item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
-
-\item{averaging_range}{only specify if time=="average": number of time steps to average}
-
-\item{ref_year}{reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 
 \item{selectyears}{years to be returned}
 

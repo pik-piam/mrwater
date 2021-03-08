@@ -7,11 +7,6 @@
 calcIrrigWatValue(
   selectyears = c(1995, 2100, 5),
   climatetype = "GSWP3-W5E5:historical",
-  time = "spline",
-  averaging_range = NULL,
-  dof = 4,
-  harmonize_baseline = FALSE,
-  ref_year = "y2015",
   iniyear = 1995,
   proxycrop
 )
@@ -21,17 +16,7 @@ calcIrrigWatValue(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{time}{time smoothing: average, spline (default) or raw}
-
-\item{averaging_range}{just specify for time=="average": number of time steps to average}
-
-\item{dof}{just specify for time=="spline": degrees of freedom}
-
-\item{harmonize_baseline}{FALSE (default) no harmonization, harmonization: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)}
-
-\item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
-
-\item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank}
+\item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices}
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s) or NULL for all crops}
 }

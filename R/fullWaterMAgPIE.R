@@ -43,8 +43,6 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   #
   # ### test settings (will be loaded from config in fina version)
   # climatetype=climatetype
-  harmonize_baseline="CRU_4"
-  ref_year="y2015"
   iniyear=1995
 
   #### THIS MIGHT BE NECESSARY IF I WANT MY OWN AGGREGATION (E.G. TO RIVER BASINS)
@@ -70,7 +68,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   write.magpie(wat_req_crops_c, file_name = "C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/wat_req_crops_c.cs2")
 
   #43 water availability
-  avl_wat_agr_c <- calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year=NULL, finalcells="magpiecell",
+  avl_wat_agr_c <- calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="GSWP3-W5E5:historical", finalcells="magpiecell",
              allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=1, irrigationsystem="initialization", iniyear=1995, aggregate="cluster", round=6)
   avl_wat_agr_c <- collapseNames(avl_wat_agr_c)
   write.magpie(avl_wat_agr_c, file_name="C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/avl_wat_agr_c.cs3")
@@ -82,7 +80,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
 
   #43 water availability
-  calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=harmonize_baseline, ref_year=ref_year, finalcells="magpiecell",
+  calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="GSWP3-W5E5:historical", finalcells="magpiecell",
                allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=1, irrigationsystem="initialization", iniyear=1995, aggregate="cluster", round=6, file=paste0("avl_wat_agr_c_",ctype,".mz"))
 
   ##### AGGREGATION ######

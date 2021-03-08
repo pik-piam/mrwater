@@ -3,13 +3,8 @@
 #'
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
 #' @param selectyears years to be returned by the function
-#' @param time            time smoothing of calcYields function: average, spline (default) or raw
-#' @param averaging_range only specify if time=="average": number of time steps to average
-#' @param dof             only specify if time=="spline": degrees of freedom needed for spline
 #' @param monetary        yield improvement potential in tDM (FALSE, default) or priced yield improvement potential in USD05 (TRUE)
 #' @param iniyear         year to be used when monetary activated
-#' @param harmonize_baseline harmonization in calcYields function: FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
-#' @param ref_year           reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)
 #' @param proxycrop   proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #'
 #' @return magpie object in cellular resolution
@@ -23,8 +18,7 @@
 #' @importFrom magpiesets addLocation
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcIrrigYieldImprovementPotential <- function(climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, monetary=FALSE, iniyear=1995,
-                                          harmonize_baseline=FALSE, ref_year=NULL, selectyears=seq(1995, 2095,by=5), proxycrop) {
+calcIrrigYieldImprovementPotential <- function(climatetype="GSWP3-W5E5:historical", monetary=FALSE, iniyear=1995, selectyears=seq(1995, 2095,by=5), proxycrop) {
 
   # read in yields [in tons/ha]
   yields     <- calcOutput("Yields", lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE)

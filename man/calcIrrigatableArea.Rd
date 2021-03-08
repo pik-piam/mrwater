@@ -11,11 +11,6 @@ calcIrrigatableArea(
   iniarea,
   protect_scen,
   climatetype = "GSWP3-W5E5:historical",
-  time = "spline",
-  averaging_range = NULL,
-  dof = 4,
-  harmonize_baseline = "CRU_4",
-  ref_year = "y2015",
   allocationrule = "optimization",
   allocationshare = NULL,
   gainthreshold = 1,
@@ -38,16 +33,6 @@ calcIrrigatableArea(
 \item{protect_scen}{land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
-
-\item{time}{Time smoothing: average, spline or raw (default)}
-
-\item{averaging_range}{only specify if time=="average": number of time steps to average}
-
-\item{dof}{only specify if time=="spline": degrees of freedom needed for spline}
-
-\item{harmonize_baseline}{FALSE (default): no harmonization, TRUE: if a baseline is specified here data is harmonized to that baseline (from ref_year on)}
-
-\item{ref_year}{Reference year for harmonization baseline (just specify when harmonize_baseline=TRUE)}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
 

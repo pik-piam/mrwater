@@ -3,12 +3,7 @@
 #'
 #' @param selectyears years to be returned
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param time            time smoothing: average, spline (default) or raw
-#' @param averaging_range just specify for time=="average": number of time steps to average
-#' @param dof             just specify for time=="spline": degrees of freedom
-#' @param harmonize_baseline FALSE (default) no harmonization, harmonization: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)
-#' @param ref_year           just specify for harmonize_baseline != FALSE : Reference year
-#' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank
+#' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices
 #' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s) or NULL for all crops
 #'
 #' @return magpie object in cellular resolution
@@ -21,14 +16,11 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigWatValue", aggregate=FALSE) }
 
-calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="GSWP3-W5E5:historical", time="spline", averaging_range=NULL, dof=4, harmonize_baseline=FALSE, ref_year="y2015",
-                              iniyear=1995, proxycrop) {
+calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="GSWP3-W5E5:historical", iniyear=1995, proxycrop) {
   ## Note: Methodology for calculating value of water following D'Odorico et al. (2020)
 
   # Read in potential yield gain per cell (USD05 per ha)
-  yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears,
-                           harmonize_baseline=harmonize_baseline, ref_year=ref_year, time=time, averaging_range=averaging_range, dof=dof,
-                           proxycrop=NULL, monetary=TRUE, aggregate=FALSE)
+  yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, proxycrop=NULL, monetary=TRUE, iniyear=iniyear, aggregate=FALSE)
 
   # Set negative yield_gains to 0 (Negative yield gains (i.e. fewer yields through irrigation) would result in water value of 0)
   yield_gain[yield_gain<0] <- 0

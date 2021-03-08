@@ -6,11 +6,6 @@
 \usage{
 calcIrrigCellranking(
   climatetype = "GSWP3-W5E5:historical",
-  time = "spline",
-  averaging_range = NULL,
-  dof = 4,
-  harmonize_baseline = FALSE,
-  ref_year = "y2015",
   cellrankyear = "y1995",
   method = "meancellrank",
   proxycrop = c("maiz", "rapeseed", "puls_pro"),
@@ -20,23 +15,13 @@ calcIrrigCellranking(
 \arguments{
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
 
-\item{time}{time smoothing: average, spline (default) or raw}
-
-\item{averaging_range}{just specify for time=="average": number of time steps to average}
-
-\item{dof}{just specify for time=="spline": degrees of freedom}
-
-\item{harmonize_baseline}{FALSE (default) no harmonization, harmonization: if a baseline is specified here data is harmonized to that baseline (from ref_year onwards)}
-
-\item{ref_year}{just specify for harmonize_baseline != FALSE : Reference year}
-
 \item{cellrankyear}{year(s) for which cell rank is calculated}
 
 \item{method}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water}
 
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: list of proxycrops or "historical"}
 
-\item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank}
+\item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank and case of monetary=TRUE year of prices}
 }
 \value{
 magpie object in cellular resolution
