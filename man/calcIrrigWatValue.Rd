@@ -4,12 +4,7 @@
 \alias{calcIrrigWatValue}
 \title{calcIrrigWatValue}
 \usage{
-calcIrrigWatValue(
-  selectyears = c(1995, 2100, 5),
-  climatetype = "GSWP3-W5E5:historical",
-  iniyear = 1995,
-  proxycrop
-)
+calcIrrigWatValue(selectyears, climatetype, iniyear, proxycrop)
 }
 \arguments{
 \item{selectyears}{years to be returned}

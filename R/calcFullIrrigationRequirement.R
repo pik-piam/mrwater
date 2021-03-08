@@ -45,7 +45,7 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, iniyear, ini
     croparea_shr[dimSums(croparea, dim=3)==0] <- 0
   } else {
     # equal crop area share for each proxycrop assumed
-    croparea_shr              <- new.magpie(cells_and_regions = getCells(land), years = NULL, names = proxycrop)
+    croparea_shr              <- new.magpie(cells_and_regions = getCells(land), years = NULL, names = proxycrop, sets=c("x.y.iso", "t", "data"))
     croparea_shr[,,proxycrop] <- 1 / length(proxycrop)
   }
 
@@ -57,8 +57,7 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, iniyear, ini
   # land (mio ha -> ha): multiply with 1e6,
   # irrigation water requirements (m^3 per ha -> mio. m^3 per ha): divide by 1e6
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
-  irrig_wat <- irrig_wat[,,getNames(croparea_shr)]
-  irrig_wat <- irrig_wat * land
+  irrig_wat <- irrig_wat[,,getNames(croparea_shr)] * land
 
   # sum over crops
   irrig_wat <- dimSums(irrig_wat, dim="crop")
@@ -67,11 +66,11 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, iniyear, ini
   if (irrigationsystem=="initialization") {
     # read in irrigation system area initialization [share of AEI by system] and expand to all years
     tmp                   <- calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate=FALSE)
-    irrigation_system     <- new.magpie(getCells(irrig_wat), getYears(irrig_wat), getNames(tmp))
+    irrigation_system     <- new.magpie(getCells(irrig_wat), getYears(irrig_wat), getNames(tmp), sets=c("x.y.iso", "year", "system"))
     irrigation_system[,,] <- tmp
 
     # every crop irrigated by same share of initialization irrigation system
-    irrig_wat <- dimSums(irrig_wat * irrigation_system, dim="system")
+    irrig_wat <- dimSums(irrigation_system * irrig_wat, dim="system")
 
   } else {
     # whole area irrigated by one system as selected in argument "irrigationsystem"

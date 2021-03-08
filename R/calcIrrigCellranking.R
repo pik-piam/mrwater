@@ -96,7 +96,7 @@ calcIrrigCellranking <- function(climatetype="GSWP3-W5E5:historical", cellrankye
 
   # Check for NAs
   if (any(is.na(glocellrank))) {
-    stop("Function YieldImprovementPotential produced NAs")
+    stop("Function IrrigCellranking produced NAs")
   }
 
   return(list(

@@ -16,7 +16,7 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigWatValue", aggregate=FALSE) }
 
-calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="GSWP3-W5E5:historical", iniyear=1995, proxycrop) {
+calcIrrigWatValue <- function(selectyears, climatetype, iniyear, proxycrop) {
   ## Note: Methodology for calculating value of water following D'Odorico et al. (2020)
 
   # Read in potential yield gain per cell (USD05 per ha)
@@ -40,9 +40,7 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="GSWP3-W5E
   IWR[IWR<1] <- NA             ### CHOOSE APPROPRIATE THRESHOLD!
 
   # Calculate value of water
-  watvalue <- new.magpie(getCells(yield_gain), getYears(yield_gain), getNames(yield_gain), fill=0)
   watvalue <- yield_gain / IWR
-
 
   # Selected crops
   if (!is.null(proxycrop)) {
@@ -88,7 +86,7 @@ calcIrrigWatValue <- function(selectyears=c(1995,2100,5), climatetype="GSWP3-W5E
 
   # Check for NAs
   if (any(is.na(watvalue))) {
-    stop("Function YieldImprovementPotential produced NAs")
+    stop("Function IrrigWatValue produced NAs")
   }
 
   return(list(
