@@ -18,7 +18,7 @@
 #' \dontrun{ calcOutput("RiverHumanUses", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", iniyear=1995, climatetype="HadGEM2_ES:rcp2p6:co2") {
+calcRiverHumanUses <- function(selectyears, humanuse, iniyear, climatetype) {
   # # # # # # # # # # #
   # # # READ IN DATA # #
   # # # # # # # # # # #
@@ -57,7 +57,7 @@ calcRiverHumanUses <- function(selectyears="all", humanuse="non_agriculture", in
   ## Transform object dimensions
   .transformObject <- function(x) {
     # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getCells(I_yearly_runoff), years = getYears(I_yearly_runoff), names = c(paste("on",getNames(I_NAg_ww),sep="."), paste("off",getNames(I_NAg_ww),sep=".")), fill=0)
+    object0 <- new.magpie(cells_and_regions = getCells(I_yearly_runoff), years = getYears(I_yearly_runoff), names = c(paste("on",getNames(I_NAg_ww),sep="."), paste("off",getNames(I_NAg_ww),sep=".")), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
     # bring object x to dimension of object0
     out     <- object0 + x
     return(out)

@@ -4,12 +4,7 @@
 \alias{calcRiverHumanUses}
 \title{calcRiverHumanUses}
 \usage{
-calcRiverHumanUses(
-  selectyears = "all",
-  humanuse = "non_agriculture",
-  iniyear = 1995,
-  climatetype = "HadGEM2_ES:rcp2p6:co2"
-)
+calcRiverHumanUses(selectyears, humanuse, iniyear, climatetype)
 }
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}

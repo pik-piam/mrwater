@@ -38,7 +38,7 @@ calcRiverDischargeNatAndHuman <- function(selectyears, iniyear, climatetype) {
   ## Transform object dimensions
   .transformObject <- function(x) {
     # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getCells(yearly_runoff), years = getYears(yearly_runoff), names = getNames(NAg_wc), fill=0)
+    object0 <- new.magpie(cells_and_regions = getCells(yearly_runoff), years = getYears(yearly_runoff), names = getNames(NAg_wc), fill=0, sets=c("x.y.iso", "year", "data"))
     # bring object x to dimension of object0
     out     <- x + object0
     return(out)
