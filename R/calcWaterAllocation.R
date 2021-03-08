@@ -133,9 +133,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
     # Environmental Flow Requirements (share of mean annual discharge) [long-term average]
     if (EFP=="on"){
-      EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", climatetype=climatetype, aggregate=FALSE,
-                               LFR_val=0.1, HFR_LFR_less10=0.2, HFR_LFR_10_20=0.15, HFR_LFR_20_30=0.07, HFR_LFR_more30=0.00,
-                               EFRyears=c(1980:2010))
+      EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", climatetype=climatetype, aggregate=FALSE)
     } else if (EFP=="off"){
       EFR_magpie_frac <- new.magpie(1:NCELLS, fill=0)
       getCells(EFR_magpie_frac) <- rs$coordinates
