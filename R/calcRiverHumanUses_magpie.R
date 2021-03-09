@@ -116,9 +116,9 @@ calcRiverHumanUses_magpie <- function(selectyears, humanuse, subtype, iniyear, c
   } else if (humanuse=="committed_agriculture") {
 
     # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
-    IO_required_wat_min <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", subtype="required_wat_min", aggregate=FALSE, climatetype=climatetype)
+    IO_required_wat_min <- calcOutput("RiverHumanUses", iniyear=iniyear, selectyears=selectyears, humanuse="non_agriculture", subtype="required_wat_min", aggregate=FALSE, climatetype=climatetype)
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
-    prevHuman_wc <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", subtype="currHuman_wc", aggregate=FALSE, climatetype=climatetype)
+    prevHuman_wc <- calcOutput("RiverHumanUses", iniyear=iniyear, selectyears=selectyears, humanuse="non_agriculture", subtype="currHuman_wc", aggregate=FALSE, climatetype=climatetype)
 
     ## Current human uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]

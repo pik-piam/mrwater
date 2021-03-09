@@ -32,7 +32,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
-  required_wat_min_allocation <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)[,,"required_wat_min"])
+  required_wat_min_allocation <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"required_wat_min"])
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
   discharge                   <- calcOutput("RiverDischargeNatAndHuman", selectyears=selectyears, iniyear=iniyear, climatetype=climatetype, aggregate=FALSE)
