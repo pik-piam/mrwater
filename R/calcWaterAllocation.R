@@ -62,19 +62,19 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   ### Required inputs for River Routing:
   # Yearly runoff (mio. m^3 per yr) [smoothed & harmonized]
   yearly_runoff <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="runoff",     climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE)
-  getCells(yearly_runoff) <- rs$coordinates
+  #getCells(yearly_runoff) <- rs$coordinates
   yearly_runoff <- as.array(collapseNames(yearly_runoff))
   yearly_runoff <- yearly_runoff[,,1]
 
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
   lake_evap     <- as.array(calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="lake_evap", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE))
-  getCells(lake_evap) <- rs$coordinates
+  #getCells(lake_evap) <- rs$coordinates
   lake_evap     <- as.array(collapseNames(lake_evap))
   lake_evap     <- lake_evap[,,1]
 
   # Precipitation/Runoff on lakes and rivers from LPJmL (in mio. m^3 per year) [smoothed & harmonized]
   input_lake    <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="input_lake", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE)
-  getCells(input_lake) <- rs$coordinates
+  #getCells(input_lake) <- rs$coordinates
   input_lake    <- as.array(collapseNames(input_lake))
   input_lake    <- input_lake[,,1]
 
@@ -84,7 +84,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
   wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", aggregate=FALSE, climatetype=NULL, lpjml=NULL, selectyears=selectyears)
-  getCells(wat_nonag) <- rs$cells
+  #getCells(wat_nonag) <- rs$cells
   NAg_ww  <- as.array(collapseNames(wat_nonag[,,"withdrawal"]))
   NAg_wc  <- as.array(collapseNames(wat_nonag[,,"consumption"]))
 
@@ -136,7 +136,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
       EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", climatetype=climatetype, aggregate=FALSE)
     } else if (EFP=="off"){
       EFR_magpie_frac <- new.magpie(1:NCELLS, fill=0)
-      getCells(EFR_magpie_frac) <- rs$coordinates
+      #getCells(EFR_magpie_frac) <- rs$coordinates
     }
     EFR_magpie_frac <- as.array(collapseNames(EFR_magpie_frac))
     EFR_magpie_frac <- EFR_magpie_frac[,1,1]
