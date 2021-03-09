@@ -135,7 +135,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
     if (EFP=="on"){
       EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", climatetype=climatetype, aggregate=FALSE)
     } else if (EFP=="off"){
-      EFR_magpie_frac <- new.magpie(1:NCELLS, fill=0)
+      EFR_magpie_frac <- new.magpie(getCells(yearly_runoff), fill=0)
       #getCells(EFR_magpie_frac) <- rs$coordinates
     }
     EFR_magpie_frac <- as.array(collapseNames(EFR_magpie_frac))
