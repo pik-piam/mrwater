@@ -5,10 +5,10 @@
 \title{calcIrrigYieldImprovementPotential}
 \usage{
 calcIrrigYieldImprovementPotential(
-  climatetype = "GSWP3-W5E5:historical",
-  monetary = FALSE,
-  iniyear = 1995,
-  selectyears = seq(1995, 2095, by = 5),
+  climatetype,
+  monetary,
+  iniyear,
+  selectyears,
   proxycrop
 )
 }

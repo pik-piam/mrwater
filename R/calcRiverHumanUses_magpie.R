@@ -19,7 +19,7 @@
 #' \dontrun{ calcOutput("RiverHumanUses_magpie", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agriculture", subtype="discharge", iniyear=1995, climatetype="HadGEM2_ES:rcp2p6:co2") {
+calcRiverHumanUses_magpie <- function(selectyears, humanuse, subtype, iniyear, climatetype) {
   # # # # # # # # # # #
   # # # READ IN DATA # #
   # # # # # # # # # # #
@@ -53,7 +53,7 @@ calcRiverHumanUses_magpie <- function(selectyears="all", humanuse="non_agricultu
   CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"],dim=3))
 
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, aggregate=FALSE, climatetype=climatetype)[,,"lake_evap_nat"])
+  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", iniyear=iniyear, selectyears=selectyears, aggregate=FALSE, climatetype=climatetype)[,,"lake_evap_nat"])
 
   ## Transform object dimensions
   .transformObject <- function(x) {

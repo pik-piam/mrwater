@@ -13,7 +13,7 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigCellranking", aggregate=FALSE) }
 
-calcIrrigCellranking <- function(climatetype="GSWP3-W5E5:historical", cellrankyear="y1995", method="meancellrank", proxycrop=c("maiz", "rapeseed", "puls_pro"), iniyear=1995) {
+calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, iniyear) {
 
   if (method=="meancellrank") {
     # Def. "meancellrank": ranking of cells or proxy crops, then: average over ranks

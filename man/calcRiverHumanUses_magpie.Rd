@@ -4,13 +4,7 @@
 \alias{calcRiverHumanUses_magpie}
 \title{calcRiverHumanUses_magpie}
 \usage{
-calcRiverHumanUses_magpie(
-  selectyears = "all",
-  humanuse = "non_agriculture",
-  subtype = "discharge",
-  iniyear = 1995,
-  climatetype = "HadGEM2_ES:rcp2p6:co2"
-)
+calcRiverHumanUses_magpie(selectyears, humanuse, subtype, iniyear, climatetype)
 }
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}

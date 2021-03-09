@@ -103,7 +103,7 @@ calcRiverHumanUses <- function(selectyears, humanuse, iniyear, climatetype) {
 
   } else if (humanuse=="committed_agriculture") {
 
-    prevHuman_routing <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", aggregate=FALSE, climatetype=climatetype)
+    prevHuman_routing <- calcOutput("RiverHumanUses", climatetype=climatetype, selectyears=selectyears, iniyear=iniyear, humanuse="non_agriculture", aggregate=FALSE)
 
     # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
     IO_required_wat_min <- as.array(collapseNames(prevHuman_routing[,,"required_wat_min"]))

@@ -16,7 +16,7 @@
 #' \dontrun{ calcOutput("RiverNaturalFlows_magpie", aggregate = FALSE) }
 #'
 
-calcRiverNaturalFlows_magpie <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype="HadGEM2_ES:rcp2p6:co2") {
+calcRiverNaturalFlows_magpie <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype) {
   ### Read in river structure
   # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
   # Information contained:

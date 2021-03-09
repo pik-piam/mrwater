@@ -4,13 +4,7 @@
 \alias{calcIrrigCellranking}
 \title{calcIrrigCellranking}
 \usage{
-calcIrrigCellranking(
-  climatetype = "GSWP3-W5E5:historical",
-  cellrankyear = "y1995",
-  method = "meancellrank",
-  proxycrop = c("maiz", "rapeseed", "puls_pro"),
-  iniyear = 1995
-)
+calcIrrigCellranking(climatetype, cellrankyear, method, proxycrop, iniyear)
 }
 \arguments{
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}

@@ -15,7 +15,7 @@
 #' \dontrun{ calcOutput("EnvmtlFlowRequirementsShare", aggregate=FALSE) }
 #'
 
-calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype="GSWP3-W5E5:historical") {
+calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype) {
 
   #### Settings for "fair" state of aquatic ecosystem (see Smakhtin 2004 and Bonsch 2015) ####
   # Long-term reference time frame for EFR calculation:
