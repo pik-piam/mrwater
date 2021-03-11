@@ -151,12 +151,12 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
 
       if (output=="discharge") {
         # Main output for MAgPIE: water available for agricultural consumption
-        wat_avl_irrig <- O_discharge
+        wat_avl_irrig <- as.magpie(O_discharge, spatial=1)
         dataname <- "wat_avl_irrig_c"
         description="Discharge"
       } else if (output=="frac_fullirrig") {
         # Main output for MAgPIE: water available for agricultural withdrawal
-        wat_avl_irrig <- frac_fullirrig
+        wat_avl_irrig <- as.magpie(frac_fullirrig, spatial=1)
         dataname <- "wat_avl_irrig_w"
         description="Available water for irrigation withdrawals per year"
       } else {
