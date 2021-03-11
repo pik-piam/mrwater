@@ -58,19 +58,20 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
   out_tmp2 <- NULL
   out      <- NULL
 
+  meancellrank             <- as.array(meancellrank)[,,1]
+  irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
+  required_wat_fullirrig_ww   <- as.array(required_wat_fullirrig_ww)[,,1]
+  required_wat_fullirrig_wc   <- as.array(required_wat_fullirrig_wc)[,,1]
+
   for (EFP in c("on", "off")) {
     for (scen in unique(gsub(".*.\\.", "", getNames(required_wat_min_allocation)))){
       for (y in selectyears){
 
         discharge    <- as.array(discharge[,y,paste(EFP,scen,sep=".")])[,1,1]
-        meancellrank <- as.array(meancellrank)[,,1]
-        irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
-        frac_fullirrig <- array(data=0,dim=67420,dimnames=list(names(discharge)))
-        avl_wat_ww     <- array(data=0,dim=67420,dimnames=list(names(discharge)))
-        avl_wat_wc     <- array(data=0,dim=67420,dimnames=list(names(discharge)))
-        required_wat_min_allocation <- as.array(required_wat_min_allocation[,,paste(EFP,scen,sep=".")])[,,1]
-        required_wat_fullirrig_ww   <- as.array(required_wat_fullirrig_ww)[,,1]
-        required_wat_fullirrig_wc   <- as.array(required_wat_fullirrig_wc)[,,1]
+        frac_fullirrig <- array(data=0,dim=67420)
+        avl_wat_ww     <- array(data=0,dim=67420)
+        avl_wat_wc     <- array(data=0,dim=67420)
+        required_wat_min_allocation <- as.array(required_wat_min_allocation[,,paste(EFP,scen,sep=".")])[,1,1]
 
       # Allocate water for full irrigation to cell with highest yield improvement through irrigation
       if (allocationrule=="optimization") {
