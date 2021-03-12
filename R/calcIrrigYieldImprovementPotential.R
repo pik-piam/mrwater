@@ -29,7 +29,9 @@ calcIrrigYieldImprovementPotential <- function(climatetype, monetary, iniyear, s
 
   if (monetary) {
     # Read in crop output price in initialization (USD05/tDM)
-    p <- calcOutput("IniFoodPrice", datasource="FAO", years=NULL, aggregate=FALSE, year=iniyear)
+    p <- calcOutput("IniFoodPrice", datasource="FAO", products="kcr", aggregate=FALSE, years=NULL, year=iniyear)
+    # fodder price is not given (NA): set to zero (ASK BENNI!!!!!)
+    p[is.na(p)] <- 0
 
     # Calculate monetary yield gain (in USD05/ha)
     yield_gain  <- yield_gain[,,intersect(getNames(yield_gain), getNames(p))] * p[,,intersect(getNames(yield_gain), getNames(p))]
@@ -46,10 +48,6 @@ calcIrrigYieldImprovementPotential <- function(climatetype, monetary, iniyear, s
       # historical crop mix
       # read in total (irrigated + rainfed) croparea
       croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)
-
-      ### Note: Yield gain only given for 14 crops (begr, betr, cottn_pro, foddr, oilpalm missing)
-      # Reduce crops in croparea_shr
-      croparea <- croparea[,,getNames(yield_gain)]
 
       #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
       map                          <- toolGetMappingCoord2Country()

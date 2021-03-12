@@ -40,7 +40,8 @@ calcActualIrrigWatRequirements <- function(selectyears, climatetype, iniyear) {
   }
 
   # irrigated cropland area as weight
-  irrig_area <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
+  # Note physical=FALSE: harvested area (multi-cropping allowed)
+  irrig_area <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=FALSE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
   #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
   map                            <- toolGetMappingCoord2Country()
   getCells(irrig_area)           <- paste(map$coords, map$iso, sep=".")
