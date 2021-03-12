@@ -75,7 +75,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
         frac_fullirrig <- array(data=0,dim=67420)
         avl_wat_ww     <- array(data=0,dim=67420)
         avl_wat_wc     <- array(data=0,dim=67420)
-        O_required_wat_min_allocation <- as.array(required_wat_min_allocation[,,paste(EFP,scen,sep=".")])[,1,1]
+        O_required_wat_min_allocation <- as.array(required_wat_min_allocation[,y,paste(EFP,scen,sep=".")])[,1,1]
 
       # Allocate water for full irrigation to cell with highest yield improvement through irrigation
       if (allocationrule=="optimization") {

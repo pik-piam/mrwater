@@ -30,6 +30,8 @@ calcRiverSurplusDischargeAllocation_new <- function(selectyears, output, climate
   #######################################
   # River Structure
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
+  # numeric cell numbers in order of rs object
+  rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
   # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
   required_wat_min_allocation <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"required_wat_min"])
@@ -72,8 +74,6 @@ calcRiverSurplusDischargeAllocation_new <- function(selectyears, output, climate
   ####### River basin discharge allocation #######
   ################################################
   out      <- NULL
-  # numeric cell numbers in order of rs object
-  rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
   for (y in getYears(meancellrank)) {
 
