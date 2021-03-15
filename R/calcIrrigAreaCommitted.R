@@ -14,6 +14,7 @@
 #' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames
 #' @importFrom magpiesets addLocation
 #' @importFrom mrcommons toolGetMappingCoord2Country
+#' @importFrom utils tail
 
 calcIrrigAreaCommitted <- function(selectyears, iniyear) {
 
@@ -32,10 +33,10 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   tmp <- collapseNames(tmp[,,"irrigated"])
 
   # Empty object to be filled with area reserved for irrigation in current and future time steps
-  irrig_area <- new.magpie(getCells(tmp), selectyears, getNames(tmp), sets=c("x.y.iso", "year", "data"))
+  irrig_area <- new.magpie(getCells(tmp), seq(iniyear, tail(selectyears, 1), by=1), getNames(tmp), sets=c("x.y.iso", "year", "data"))
 
   # Each year certain share (parameter: "depreciation") of irrigated cropland is lost
-  for (y in (1:length(selectyears))) {
+  for (y in (iniyear:2150)) {
     # irrigated area in respective year
     irrig_area[,selectyears[y],] <- tmp
     # adjust yearly depreciation rate to time steps
@@ -44,6 +45,9 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
     # depreciation of irrigated area
     tmp     <- tmp * dep_adj
   }
+
+  # select years to be returned
+  irrig_area <- irrig_area[,selectyears,]
 
   # check for NAs and negative values
   if (any(is.na(irrig_area))) {
