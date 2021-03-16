@@ -48,11 +48,11 @@ calcRiverHumanUses <- function(selectyears, humanuse, iniyear, climatetype) {
   CAC_magpie <- collapseNames(dimSums(CAU_magpie[,,"consumption"], dim=3))
 
   ## Water inputs
-  # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new   <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)[,,"lake_evap_nat"])
-
   # Runoff (on land and water)
   I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype))
+
+  # Lake evaporation as calculated by natural flow river routing
+  lake_evap_new   <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)[,,"lake_evap_nat"])
 
   ## Transform object dimensions
   .transformObject <- function(x) {
