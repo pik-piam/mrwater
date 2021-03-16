@@ -36,14 +36,12 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   irrig_area <- new.magpie(getCells(tmp), seq(iniyear, tail(selectyears, 1), by=1), getNames(tmp), sets=c("x.y.iso", "year", "data"))
 
   # Each year certain share (parameter: "depreciation") of irrigated cropland is lost
-  for (y in (iniyear:2150)) {
+  # Note: Depreciation in yearly time-steps!
+  for (y in (iniyear:tail(selectyears, 1))) {
     # irrigated area in respective year
-    irrig_area[,selectyears[y],] <- tmp
-    # adjust yearly depreciation rate to time steps
-    timegap <- selectyears[y+1] - selectyears[y]
-    dep_adj <- (1 - depreciation)^timegap
+    irrig_area[,y,] <- tmp
     # depreciation of irrigated area
-    tmp     <- tmp * dep_adj
+    tmp     <- tmp * (1 - depreciation)
   }
 
   # select years to be returned
