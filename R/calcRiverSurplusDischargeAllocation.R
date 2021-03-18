@@ -164,6 +164,8 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
       }
 
       wat_avl_irrig <- setNames(setYears(as.magpie(wat_avl_irrig,spatial=1),y), dataname)
+      getCells(wat_avl_irrig) <- names(O_discharge)
+      getSets(wat_avl_irrig)  <- c("x.y.iso", "year", "data")
       wat_avl_irrig <- add_dimension(wat_avl_irrig, dim=3.1, add="nonag_scen", nm=scen)
       wat_avl_irrig <- add_dimension(wat_avl_irrig, dim=3.1, add="EFP", nm=EFP)
       out_tmp1      <- mbind(out_tmp1, wat_avl_irrig)

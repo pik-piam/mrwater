@@ -9,7 +9,7 @@ calcAreaPotIrrig(selectyears, iniareayear, protect_scen)
 \arguments{
 \item{selectyears}{years to be returned}
 
-\item{iniareayear}{if !NULL: already irrigated area is subtracted; if NULL: total potential land area is used; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea}
+\item{iniareayear}{if NULL: total potential croparea is used; if !NULL: already irrigated area is subtracted; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea}
 
 \item{protect_scen}{land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection}
 }

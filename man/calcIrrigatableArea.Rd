@@ -6,7 +6,6 @@
 \usage{
 calcIrrigatableArea(
   selectyears = 1995,
-  cells = "lpjcell",
   output = "irrigatable_area",
   iniarea,
   protect_scen,
@@ -23,8 +22,6 @@ calcIrrigatableArea(
 }
 \arguments{
 \item{selectyears}{years for which irrigatable area is calculated}
-
-\item{cells}{cells to be returned by the function (lpjcell or magpiecell)}
 
 \item{output}{Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land, protect_area (restricts water withdrawal in protected areas)}
 
