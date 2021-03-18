@@ -31,12 +31,13 @@ calcIrrigatableArea <- function(selectyears=1995, output="irrigatable_area", ini
   ### Irrigatable area = MIN (area that can be irrigated given water resources; available suitable land area)
   ## Area that can be irrigated given water available for withdrawals (in ha)
   # read in water available for withdrawal (in mio. m^3)
-  avl_wat_ww <-   required_wat_min_allocation <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"currHuman_ww"])
-  avl_wat_ww <- avl_wat_ww[,selectyears,]
+  required_wat_min_allocation <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
+  avl_wat_ww <- collapseNames(required_wat_min_allocation[,,"currHuman_ww"])
   # transform from mio. m^3 to m^3
   avl_wat_ww <- avl_wat_ww*1e6
   # read in water withdrawal required for irrigation of proxy crop(s) (in m^3 per ha)
-  wat_req_ww <- calcOutput("ActualIrrigWatRequirements", selectyears=selectyears, climatetype=climatetype, iniyear=iniyear, aggregate=FALSE)[,,"withdrawal"]
+  wat_req    <- calcOutput("ActualIrrigWatRequirements", selectyears=selectyears, climatetype=climatetype, iniyear=iniyear, aggregate=FALSE)
+  wat_req_ww <- collapseNames(wat_req[,,"withdrawal"])
   wat_req_ww <- wat_req_ww[,,proxycrop]
   #### normalization / (weighted) average of proxycrop (??????)
   wat_req_ww <- dimSums(wat_req_ww,dim=3)/length(getNames(wat_req_ww))
@@ -48,12 +49,11 @@ calcIrrigatableArea <- function(selectyears=1995, output="irrigatable_area", ini
 
   ## Area that can be irrigated given water available for consumption (in ha)
   # read in water available for consumption (in mio. m^3)
-  avl_wat_wc <-   required_wat_min_allocation <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"currHuman_wc"])
-  avl_wat_wc <- avl_wat_wc[,selectyears,]
+  avl_wat_wc <- collapseNames(required_wat_min_allocation[,,"currHuman_ww"])
   # transform from mio. m^3 to m^3
   avl_wat_wc <- avl_wat_wc*1e6
   # read in water withdrawal required for irrigation of proxy crop(s) (in m^3 per ha)
-  wat_req_wc <- calcOutput("ActualIrrigWatRequirements", selectyears=selectyears, climatetype=climatetype, iniyear=iniyear, aggregate=FALSE)[,,"consumption"]
+  wat_req_wc <- collapseNames(wat_req[,,"consumption"])
   wat_req_wc <- wat_req_wc[,,proxycrop]
   #### normalization / (weighted) average of proxycrop (??????)
   wat_req_wc <- dimSums(wat_req_wc,dim=3)/length(getNames(wat_req_wc))
