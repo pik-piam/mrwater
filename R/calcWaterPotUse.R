@@ -24,14 +24,13 @@
 
 calcWaterPotUse <- function(selectyears, climatetype, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, protect_scen, proxycrop) {
 
-  frac_fullirrig <- collapseNames(calcOutput("RiverSurplusDischargeAllocation", aggregate=FALSE, selectyears=selectyears, output="frac_fullirrig", climatetype=climatetype, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, protect_scen=protect_scen, proxycrop=proxycrop))
-  required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype=climatetype, iniyear=iniyear, iniareayear=iniyear, irrigationsystem=irrigationsystem, protect_scen=protect_scen, proxycrop=proxycrop, aggregate=FALSE)
-  required_wat_fullirrig_ww   <- pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]), 0)
-  required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
-  wat_avl_agr_ww <- frac_fullirrig * required_wat_fullirrig_ww
-  wat_avl_agr_wc <- frac_fullirrig * required_wat_fullirrig_wc
+  # Water potentially available for irrigation (accounting for previously committed agricultural uses)
+  frac_fullirrig         <- collapseNames(calcOutput("RiverSurplusDischargeAllocation", output="frac_fullirrig", selectyears=selectyears, climatetype=climatetype, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, protect_scen=protect_scen, proxycrop=proxycrop, aggregate=FALSE))
+  required_wat_fullirrig <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype=climatetype, iniyear=iniyear, iniareayear=iniyear, irrigationsystem=irrigationsystem, protect_scen=protect_scen, proxycrop=proxycrop, aggregate=FALSE)
+  wat_avl_agr_ww         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]),  0)
+  wat_avl_agr_wc         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
 
-  # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
+  # Water already committed to irrigation
   currHuman    <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
   currHuman_ww <- collapseNames(currHuman[,,"currHuman_ww"])
   currHuman_wc <- collapseNames(currHuman[,,"currHuman_wc"])
