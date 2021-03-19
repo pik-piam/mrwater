@@ -39,6 +39,10 @@ calcAreaPotIrrig <- function(selectyears, iniareayear, protect_scen) {
     land         <- pmin(avl_cropland, land)
   }
 
+  tmp  <- land
+  land <- new.magpie(getCells(land), selectyears, getNames(land), fill=1)
+  land <- tmp * land
+
   # Areas that are already irrigated (by committed agricultural uses)
   if (!is.null(iniareayear)) {
     # subtract area already reserved for irrigation by committed agricultural uses [in mio. ha] (to avoid double accounting)
