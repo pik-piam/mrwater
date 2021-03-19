@@ -30,7 +30,7 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, iniyear, ini
   land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniareayear=iniareayear, protect_scen=protect_scen, aggregate=FALSE)
 
   # share of corp area by crop type
-  if (length(proxycrop) == 1 && proxycrop=="historical") {
+  if (length(proxycrop)==1 && proxycrop=="historical") {
     # historical crop mix
     # read in total (irrigated + rainfed) croparea
     croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)
@@ -45,7 +45,7 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, iniyear, ini
     croparea_shr[dimSums(croparea, dim=3)==0] <- 0
   } else {
     # equal crop area share for each proxycrop assumed
-    croparea_shr              <- new.magpie(cells_and_regions = getCells(land), years = NULL, names = proxycrop, sets=c("x.y.iso", "t", "data"))
+    croparea_shr              <- new.magpie(cells_and_regions=getCells(land), years=NULL, names=proxycrop, sets=c("x.y.iso", "t", "data"))
     croparea_shr[,,proxycrop] <- 1 / length(proxycrop)
   }
 
