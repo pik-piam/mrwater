@@ -30,7 +30,7 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, iniyear, ini
   land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniareayear=iniareayear, protect_scen=protect_scen, aggregate=FALSE)
 
   # share of corp area by crop type
-  if (proxycrop=="historical") {
+  if (length(proxycrop) == 1 && proxycrop=="historical") {
     # historical crop mix
     # read in total (irrigated + rainfed) croparea
     croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE)

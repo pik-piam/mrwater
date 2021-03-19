@@ -5,35 +5,25 @@
 \title{calcIrrigatableArea}
 \usage{
 calcIrrigatableArea(
-  selectyears = 1995,
-  output = "irrigatable_area",
-  iniarea,
+  selectyears,
+  climatetype,
+  allocationrule,
+  thresholdtype,
+  gainthreshold,
+  irrigationsystem,
+  iniyear,
   protect_scen,
-  climatetype = "GSWP3-W5E5:historical",
-  allocationrule = "optimization",
-  allocationshare = NULL,
-  gainthreshold = 1,
-  irrigationsystem = "initialization",
-  iniyear = 1995,
-  landtype = "potentialcropland",
-  protectscen = "WDPA",
-  proxycrop = "maiz"
+  proxycrop
 )
 }
 \arguments{
 \item{selectyears}{years for which irrigatable area is calculated}
 
-\item{output}{Type of area to be returned: irrigatable_area (default, considers both water and land availability), irrig_area_ww or irrig_area_wc (area that can be irrigated given water available for withdrawal or consumption), avl_land, protect_area (restricts water withdrawal in protected areas)}
-
-\item{iniarea}{if TRUE: already irrigated area is subtracted, if FALSE: total potential land area is used from potentially available irrigation land}
-
-\item{protect_scen}{land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection}
-
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
 
-\item{allocationshare}{Share of water to be allocated to cell (only needs to be selected in case of allocationrule=="equality")}
+\item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
 \item{gainthreshold}{Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)}
 
@@ -41,9 +31,7 @@ calcIrrigatableArea(
 
 \item{iniyear}{year of initialization for cropland area initialization and irrigation systems}
 
-\item{landtype}{current cropland area (currentcropland) or potential cropland area (potentialcropland) or nonprotected (restriction of withdrawals in protected areas)}
-
-\item{protectscen}{protection scenario for protected areas ("WDPA", "HalfEarth", )}
+\item{protect_scen}{land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection}
 
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
 }
