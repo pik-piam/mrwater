@@ -99,7 +99,7 @@ calcRiverSurplusDischargeAllocation_new <- function(selectyears, output, climate
         avl_wat_ww[c,y,][irriggain[,,,drop=F]] <- pmax(IO_discharge[c,y,,drop=F] - required_wat_min_allocation[c,y,,drop=F], 0)[irriggain[,,,drop=F]]
 
         # withdrawal constraint
-        ww_constraint <-  (required_wat_fullirrig_ww[c,y,,drop=F]>0 & irriggain[,,,drop=F])
+        ww_constraint   <- (required_wat_fullirrig_ww[c,y,,drop=F]>0 & irriggain[,,,drop=F])
 
         # how much withdrawals can be fulfilled by available water
         frac_fullirrig[c,y,][ww_constraint[,,,drop=F]] <- pmin(avl_wat_ww[c,y,,drop=F][ww_constraint[,,,drop=F]] / required_wat_fullirrig_ww[c,y,,drop=F][ww_constraint[,,,drop=F]], 1)
@@ -115,7 +115,7 @@ calcRiverSurplusDischargeAllocation_new <- function(selectyears, output, climate
         }
 
         # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-        IO_discharge[c(down,c),y,][ww_constraint[c(cc,1),,,drop=F]] <- (IO_discharge[c(down,c),y,,drop=F] - required_wat_fullirrig_wc[c(cc,1),y,,drop=F] * frac_fullirrig[c(cc,1),y,,drop=F])[ww_constraint[c(cc,1),,,drop=F]]
+        IO_discharge[c(down,c),y,][ww_constraint[c(cc,1),,,drop=F]] <- (IO_discharge[c(down,c),y,,drop=F] - required_wat_fullirrig_wc[c(cc,c),y,,drop=F] * frac_fullirrig[c(cc,c),y,,drop=F])[ww_constraint[c(cc,1),,,drop=F]]
         # update minimum water required in cell:
         required_wat_min_allocation[c,y,][ww_constraint[,,,drop=F]] <- (required_wat_min_allocation[c,y,,drop=F] + frac_fullirrig[c,y,,drop=F] * required_wat_fullirrig_ww[c,y,,drop=F])[ww_constraint[,,,drop=F]]
       }
@@ -158,7 +158,7 @@ calcRiverSurplusDischargeAllocation_new <- function(selectyears, output, climate
           }
 
           # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-          IO_discharge[c(down,c),y,][ww_constraint[c(cc,1),,,drop=F]] <- (IO_discharge[c(down,c),y,,drop=F] - required_wat_fullirrig_wc[c(cc,1),y,,drop=F] * frac_fullirrig[c(cc,1),y,,drop=F])[ww_constraint[c(cc,1),,,drop=F]]
+          IO_discharge[c(down,c),y,][ww_constraint[c(cc,1),,,drop=F]] <- (IO_discharge[c(down,c),y,,drop=F] - required_wat_fullirrig_wc[c(cc,c),y,,drop=F] * frac_fullirrig[c(cc,c),y,,drop=F])[ww_constraint[c(cc,1),,,drop=F]]
           # update minimum water required in cell:
           required_wat_min_allocation[c,y,][ww_constraint[,,,drop=F]] <- (required_wat_min_allocation[c,y,,drop=F] + frac_fullirrig[c,y,,drop=F] * required_wat_fullirrig_ww[c,y,,drop=F])[ww_constraint[,,,drop=F]]
         }
