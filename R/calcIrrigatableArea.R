@@ -23,7 +23,7 @@
 calcIrrigatableArea <- function(selectyears, climatetype, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, protect_scen, proxycrop){
 
   ## Read in water available for irrigation
-  wat_avl <- calcOutput("WaterPotUse", selectyears=selectyears, climatetype=climatetype, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, protect_scen=protect_scen, proxycrop=proxycrop)
+  wat_avl <- calcOutput("WaterPotUse", selectyears=selectyears, climatetype=climatetype, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, protect_scen=protect_scen, proxycrop=proxycrop, aggregate=FALSE)
   wat_avl_irrig_c <- wat_avl[,,"wat_ag_wc"]
   wat_avl_irrig_w <- wat_avl[,,"wat_ag_ww"]
 
