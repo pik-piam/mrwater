@@ -39,7 +39,7 @@ calcRiverHumanUses_ifandfor <- function(selectyears, humanuse, subtype, climatet
 
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
-  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", aggregate=FALSE, selectyears=selectyears, climatetype=NULL, lpjml=NULL)
+  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", aggregate=FALSE, selectyears=selectyears, climatetype=NULL, lpjml=NULL, harmon_base_time="average")
   I_NAg_ww  <- collapseNames(wat_nonag[,,"withdrawal"])
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 

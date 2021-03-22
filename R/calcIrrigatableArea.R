@@ -24,8 +24,8 @@ calcIrrigatableArea <- function(selectyears, climatetype, allocationrule, thresh
 
   ## Read in water available for irrigation
   wat_avl <- calcOutput("WaterPotUse", selectyears=selectyears, climatetype=climatetype, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, protect_scen=protect_scen, proxycrop=proxycrop, aggregate=FALSE)
-  wat_avl_irrig_c <- wat_avl[,,"wat_ag_wc"]
-  wat_avl_irrig_w <- wat_avl[,,"wat_ag_ww"]
+  wat_avl_irrig_c <- collapseNames(wat_avl[,,"wat_ag_wc"])
+  wat_avl_irrig_w <- collapseNames(wat_avl[,,"wat_ag_ww"])
 
   wat_req    <- calcOutput("FullIrrigationRequirement", climatetype=climatetype, selectyears=selectyears, iniyear=iniyear, irrigationsystem=irrigationsystem, protect_scen=protect_scen, proxycrop=proxycrop, iniareayear=NULL, aggregate=FALSE)
   wat_req_ww <- collapseNames(wat_req[,,"withdrawal"])
@@ -34,6 +34,7 @@ calcIrrigatableArea <- function(selectyears, climatetype, allocationrule, thresh
   ## Read in area that can potentially be irrigated (including total potentially irrigatable area; defined by iniareayear=NULL)
   area_potirrig <- calcOutput("AreaPotIrrig", selectyears=selectyears, protect_scen=protect_scen, iniareayear=NULL, aggregate=FALSE)
 
+  # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
   irrigarea_ww <- pmin(wat_avl_irrig_w / wat_req_ww, 1) * area_potirrig
   irrigarea_ww[wat_req_ww==0] <- 0
   irrigarea_ww <- add_dimension(irrigarea_ww, dim=3.3, add="data", nm="irrigatable_ww")

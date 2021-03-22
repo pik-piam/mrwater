@@ -73,7 +73,7 @@ calcWaterAllocation2 <- function(selectyears="all", output="consumption", finalc
   lake_evap_new <- as.array(collapseNames(natural_flows[,,"lake_evap_nat"]))[,,1]
 
   # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", aggregate=FALSE, climatetype=NULL, lpjml=NULL, selectyears=selectyears)
+  wat_nonag <- calcOutput("WaterUseNonAg", source="WATERGAP2020", seasonality="total", aggregate=FALSE, climatetype=NULL, lpjml=NULL, selectyears=selectyears, harmon_base_time="average")
   getCells(wat_nonag) <- rs$cells
   NAg_ww  <- as.array(collapseNames(wat_nonag[,,"withdrawal"]))
   NAg_wc  <- as.array(collapseNames(wat_nonag[,,"consumption"]))
