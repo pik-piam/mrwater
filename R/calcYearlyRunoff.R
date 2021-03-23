@@ -18,7 +18,7 @@
 calcYearlyRunoff <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype) {
 
   # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
-  if (climatetype=="GSWP3-W5E5:historical") {
+  if (grepl("historical", climatetype)) {
     # Baseline is only smoothed (not harmonized)
     stage <- "smoothed"
   } else {

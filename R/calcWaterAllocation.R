@@ -44,7 +44,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
   # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
-  if (climatetype=="GSWP3-W5E5:historical") {
+  if (grepl("historical", climatetype)) {
     # Baseline is only smoothed (not harmonized)
     stage <- "smoothed"
   } else {

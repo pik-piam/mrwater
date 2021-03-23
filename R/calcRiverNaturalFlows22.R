@@ -31,7 +31,7 @@ calcRiverNaturalFlows22 <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgP
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   ### Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
-  if (climatetype=="GSWP3-W5E5:historical") {
+  if (grepl("historical", climatetype)) {
     # Baseline is only smoothed (not harmonized)
     stage <- "smoothed"
   } else {
