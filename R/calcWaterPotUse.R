@@ -35,17 +35,28 @@ calcWaterPotUse <- function(selectyears, climatetype, allocationrule, thresholdt
   currHuman_ww <- collapseNames(currHuman[,,"currHuman_ww"])
   currHuman_wc <- collapseNames(currHuman[,,"currHuman_wc"])
 
-  water_ag_ww <- currHuman_ww + wat_avl_agr_ww
-  water_ag_ww <- add_dimension(water_ag_ww, dim=3.3, add="wat_pot", nm="wat_ag_ww")
-  water_ag_wc <- currHuman_wc + wat_avl_agr_wc
-  water_ag_wc <- add_dimension(water_ag_wc, dim=3.3, add="wat_pot", nm="wat_ag_wc")
+  # Water use for non-agricultural purposes
+  non_ag <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", iniyear=iniyear, climatetype=climatetype, aggregate=FALSE)
+  non_ag_ww <- collapseNames(non_ag[,,"currHuman_ww"])
+  non_ag_wc <- collapseNames(non_ag[,,"currHuman_wc"])
 
-  out <- mbind(water_ag_ww, water_ag_wc)
+  # Function outputs
+  water_ag_ww  <- currHuman_ww + wat_avl_agr_ww
+  water_ag_wc  <- currHuman_wc + wat_avl_agr_wc
+  water_tot_ww <- water_ag_ww + non_ag_ww
+  water_tot_wc <- water_ag_wc + non_ag_wc
+
+  water_ag_ww  <- add_dimension(water_ag_ww, dim=3.3, add="wat_pot", nm="wat_ag_ww")
+  water_ag_wc  <- add_dimension(water_ag_wc, dim=3.3, add="wat_pot", nm="wat_ag_wc")
+  water_tot_ww <- add_dimension(water_tot_ww, dim=3.3, add="wat_pot", nm="water_tot_ww")
+  water_tot_wc <- add_dimension(water_tot_wc, dim=3.3, add="wat_pot", nm="water_tot_wc")
+
+  out <- mbind(water_ag_ww, water_ag_wc, water_tot_ww, water_tot_wc)
 
   return(list(
     x=out,
     weight=NULL,
     unit="mio. m^3",
-    description="potential water availability for agricultural use",
+    description="potential water availability for agricultural use or total human water use",
     isocountries=FALSE))
 }
