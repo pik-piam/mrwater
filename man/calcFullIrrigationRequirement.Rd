@@ -8,7 +8,7 @@ calcFullIrrigationRequirement(
   climatetype,
   selectyears,
   iniyear,
-  iniareayear,
+  comagyear,
   irrigationsystem,
   protect_scen,
   proxycrop
@@ -21,7 +21,7 @@ calcFullIrrigationRequirement(
 
 \item{iniyear}{year of initialization for cropland area}
 
-\item{iniareayear}{if !NULL: already irrigated area is subtracted; if NULL: total potential land area is used; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea}
+\item{comagyear}{if !NULL: already irrigated area is subtracted; if NULL: total potential land area is used; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea}
 
 \item{irrigationsystem}{irrigation system used: system share as in initialization year (default) or drip, surface, sprinkler for full irrigation by selected system}
 

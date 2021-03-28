@@ -30,8 +30,6 @@ calcIrrigYieldImprovementPotential <- function(climatetype, monetary, iniyear, s
   if (monetary) {
     # Read in crop output price in initialization (USD05/tDM)
     p <- calcOutput("IniFoodPrice", datasource="FAO", products="kcr", aggregate=FALSE, years=NULL, year=iniyear)
-    # fodder price is not given (NA): set to zero (ASK BENNI!!!!!)
-    p[is.na(p)] <- 0
 
     # Calculate monetary yield gain (in USD05/ha)
     yield_gain  <- yield_gain[,,intersect(getNames(yield_gain), getNames(p))] * p[,,intersect(getNames(yield_gain), getNames(p))]

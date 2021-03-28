@@ -4,7 +4,7 @@
 #' @param selectyears years to be returned
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear          year of initialization for cropland area
-#' @param iniareayear      if !NULL: already irrigated area is subtracted; if NULL: total potential land area is used; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea
+#' @param comagyear      if !NULL: already irrigated area is subtracted; if NULL: total potential land area is used; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea
 #' @param irrigationsystem irrigation system used: system share as in initialization year (default) or drip, surface, sprinkler for full irrigation by selected system
 #' @param protect_scen     land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection
 #' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s)
@@ -19,7 +19,7 @@
 #' @importFrom magclass collapseNames getCells getSets getYears getNames new.magpie dimSums
 #' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
 
-calcFullIrrigationRequirement <- function(climatetype, selectyears, iniyear, iniareayear, irrigationsystem, protect_scen, proxycrop) {
+calcFullIrrigationRequirement <- function(climatetype, selectyears, iniyear, comagyear, irrigationsystem, protect_scen, proxycrop) {
 
   # read in irrigation water requirements for each irrigation system [in m^3 per hectare per year] (smoothed & harmonized)
   irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)
@@ -27,7 +27,7 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, iniyear, ini
   irrig_wat <- irrig_wat[,,"pasture",invert=T]
 
   # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
-  land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniareayear=iniareayear, protect_scen=protect_scen, aggregate=FALSE)
+  land <- calcOutput("AreaPotIrrig", selectyears=selectyears, iniyear=iniyear, comagyear=comagyear, protect_scen=protect_scen, aggregate=FALSE)
 
   # share of corp area by crop type
   if (length(proxycrop)==1 && proxycrop=="historical") {
