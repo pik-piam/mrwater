@@ -24,7 +24,7 @@
 calcIrrigatableArea <- function(selectyears, climatetype, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop){
 
   # retrieve function arguments
-  iniyear <- as.list(strsplit(avlland_scen, split=":"))[[1]][2]
+  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
   ## Read in water available for irrigation
   wat_avl         <- calcOutput("WaterPotUse", selectyears=selectyears, climatetype=climatetype, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)

@@ -23,7 +23,7 @@
 calcFullIrrigationRequirement <- function(climatetype, selectyears, comagyear, irrigationsystem, avlland_scen, proxycrop) {
 
   # retrieve function arguments
-  iniyear <- as.list(strsplit(avlland_scen, split=":"))[[1]][2]
+  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
   # read in irrigation water requirements for each irrigation system [in m^3 per hectare per year] (smoothed & harmonized)
   irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)

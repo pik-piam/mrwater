@@ -21,7 +21,7 @@
 calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
 
   # retrieve function arguments
-  iniyear      <- as.list(strsplit(avlland_scen, split=":"))[[1]][2]
+  iniyear      <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
   avlland_scen <- as.list(strsplit(avlland_scen, split=":"))[[1]][1]
   protect_scen <- as.list(strsplit(avlland_scen, split="_"))[[1]][2]
 

@@ -9,7 +9,7 @@ calcAreaPotIrrig(selectyears, comagyear, avlland_scen)
 \arguments{
 \item{selectyears}{years to be returned}
 
-\item{comagyear}{if NULL: total potential croparea is used; if !NULL: already irrigated area is subtracted; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea}
+\item{comagyear}{if NULL: total potential croparea is used; if !NULL: already irrigated area is subtracted; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)}
 
 \item{avlland_scen}{land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
 combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
