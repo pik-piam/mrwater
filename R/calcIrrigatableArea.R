@@ -31,20 +31,21 @@ calcIrrigatableArea <- function(selectyears, climatetype, allocationrule, thresh
   wat_avl_irrig_c <- collapseNames(wat_avl[,,"wat_ag_wc"])
   wat_avl_irrig_w <- collapseNames(wat_avl[,,"wat_ag_ww"])
 
+  # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3 per)
   wat_req    <- calcOutput("FullIrrigationRequirement", climatetype=climatetype, selectyears=selectyears, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, comagyear=NULL, aggregate=FALSE)
   wat_req_ww <- collapseNames(wat_req[,,"withdrawal"])
   wat_req_wc <- collapseNames(wat_req[,,"consumption"])
 
-  ## Read in area that can potentially be irrigated (including total potentially irrigatable area; defined by iniareayear=NULL)
+  ## Read in area that can potentially be irrigated (including total potentially irrigatable area; defined by comagyear=NULL)
   area_potirrig <- calcOutput("AreaPotIrrig", selectyears=selectyears, avlland_scen=avlland_scen, comagyear=NULL, aggregate=FALSE)
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
   irrigarea_ww <- pmin(wat_avl_irrig_w / wat_req_ww, 1) * area_potirrig
-  irrigarea_ww[wat_req_ww==0] <- area_potirrig      #### CHECK: area_potirrig = 0 where wat_req_ww = 0
+  irrigarea_ww[wat_req_ww==0] <- 0      #### 0 or area_potirrig??? (area_potirrig = 0 where wat_req_ww = 0): FALSE. Reason: in FullIrrigationRequirements historical cropshare is considered (when 0 -> wat_req 0, but area not)
   irrigarea_ww <- add_dimension(irrigarea_ww, dim=3.3, add="data", nm="irrigatable_ww")
 
   irrigarea_wc <- pmin(wat_avl_irrig_c / wat_req_wc, 1) * area_potirrig
-  irrigarea_wc[wat_req_wc==0] <- area_potirrig
+  irrigarea_wc[wat_req_wc==0] <- 0
   irrigarea_wc <- add_dimension(irrigarea_wc, dim=3.3, add="data", nm="irrigatable_wc")
 
   irrigatable_area <- pmin(collapseNames(irrigarea_ww), collapseNames(irrigarea_wc))

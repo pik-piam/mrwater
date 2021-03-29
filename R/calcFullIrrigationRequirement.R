@@ -93,6 +93,6 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, comagyear, i
     x=irrig_wat,
     weight=NULL,
     unit="mio. m^3",
-    description="full irrigation requirements per cell per crop per irrigation system",
+    description="full irrigation requirements per cell for selected proxycrops and irrigation system",
     isocountries=FALSE))
 }
