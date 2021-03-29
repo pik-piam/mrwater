@@ -4,28 +4,22 @@
 \alias{calcAreaPotIrrig}
 \title{calcAreaPotIrrig}
 \usage{
-calcAreaPotIrrig(selectyears, iniyear, comagyear, avlland_scen, protect_scen)
+calcAreaPotIrrig(selectyears, comagyear, avlland_scen)
 }
 \arguments{
 \item{selectyears}{years to be returned}
 
-\item{iniyear}{initialization year for cropland area. Note: only applies for curr_irrig and curr_cropland scenarios of avlland_scen}
-
 \item{comagyear}{if NULL: total potential croparea is used; if !NULL: already irrigated area is subtracted; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea}
 
-\item{avlland_scen}{land availability scenario: curr_irrig (only currently irrigated cropland available for irrigated agriculture), curr_cropland (only current cropland areas available for irrigated agriculture), pot_irrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)}
-
-\item{protect_scen}{land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection. Note: Only active when avlland_scen is chosen}
+\item{avlland_scen}{land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
+combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
+protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
 This function calculates area that can potentially be used for irrigation given assumptions defined in arguments
-}
-\examples{
-\dontrun{ calcOutput("AreaPotIrrig", aggregate=FALSE) }
-
 }
 \author{
 Felicitas Beier

@@ -11,7 +11,7 @@
 #' @param gainthreshold   Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear          Initialization year of irrigation system
-#' @param protect_scen     Land protection scenario
+#' @param avlland_scen     Land protection scenario
 #' @param finalcells       Number of cells to be returned by the function (lpjcell: 67420, magpiecell: 59199)
 #' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s)
 #'
@@ -31,7 +31,7 @@
 calcWaterAllocation <- function(selectyears="all", output="consumption", finalcells="magpiecell",
                                 lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype="HadGEM2_ES:rcp2p6:co2",
                                 allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
-                                irrigationsystem="initialization", iniyear=1995, protect_scen, proxycrop) {
+                                irrigationsystem="initialization", iniyear=1995, avlland_scen, proxycrop) {
 
   #############################
   ####### Read in Data ########
@@ -96,7 +96,7 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
 
   ### Required inputs for Allocation Algorithm:
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype=climatetype, iniyear=iniyear, iniareayear=iniyear, irrigationsystem=irrigationsystem, protect_scen=protect_scen, proxycrop=proxycrop, aggregate=FALSE)
+  required_wat_fullirrig    <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype=climatetype, comagyear=iniyear, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)
   required_wat_fullirrig_ww <- collapseNames(required_wat_fullirrig[,,"withdrawal"])
   required_wat_fullirrig_wc <- collapseNames(required_wat_fullirrig[,,"consumption"])
   required_wat_fullirrig_ww <- pmax(required_wat_fullirrig_ww,0)

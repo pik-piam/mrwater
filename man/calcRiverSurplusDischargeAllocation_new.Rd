@@ -13,7 +13,7 @@ calcRiverSurplusDischargeAllocation_new(
   gainthreshold,
   irrigationsystem,
   iniyear,
-  protect_scen,
+  avlland_scen,
   proxycrop
 )
 }
@@ -34,7 +34,9 @@ calcRiverSurplusDischargeAllocation_new(
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{protect_scen}{land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection}
+\item{avlland_scen}{Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
+combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
+protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
 }

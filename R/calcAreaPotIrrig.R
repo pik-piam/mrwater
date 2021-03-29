@@ -2,29 +2,34 @@
 #' @description This function calculates area that can potentially be used for irrigation given assumptions defined in arguments
 #'
 #' @param selectyears   years to be returned
-#' @param iniyear       initialization year for cropland area. Note: only applies for curr_irrig and curr_cropland scenarios of avlland_scen
 #' @param comagyear     if NULL: total potential croparea is used; if !NULL: already irrigated area is subtracted; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea
-#' @param avlland_scen  land availability scenario: curr_irrig (only currently irrigated cropland available for irrigated agriculture), curr_cropland (only current cropland areas available for irrigated agriculture), pot_irrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-#' @param protect_scen  land protection scenario: NULL (no irrigation limitation in protected areas), WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection. Note: Only active when avlland_scen is chosen
+#' @param avlland_scen  land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
+#'                      combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
+#'                      protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("AreaPotIrrig", aggregate=FALSE) }
+#' \dontrun{ calcOutput("AreaPotIrrig", selectyears=seq(1995, 2100, by=5), comagyear=1995, avlland_scen="currCropland_HalfEarth:1995, aggregate=FALSE) }
 #'
-#' @importFrom madrat calcOutput
+#' @importFrom madrat calcOutput toolSplitSubtype
 #' @importFrom magclass collapseNames getCells getYears getNames dimSums
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcAreaPotIrrig <- function(selectyears, iniyear, comagyear, avlland_scen, protect_scen) {
+calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
 
-  if (avlland_scen == "pot_irrig") {
+  # retrieve function arguments
+  iniyear      <- as.list(strsplit(avlland_scen, split=":"))[[1]][2]
+  avlland_scen <- as.list(strsplit(avlland_scen, split=":"))[[1]][1]
+  protect_scen <- as.list(strsplit(avlland_scen, split="_"))[[1]][2]
+
+  if (grepl("potIrrig", avlland_scen)) {
     # read in suitable land [in mio. ha]
     land <- collapseNames(calcOutput("AvlLandSi", aggregate=FALSE, cells="lpjcell")[,,"si0"])
 
     # No irrigation in protected areas (if protection scenario is activated) [in mio. ha]
-    if (!is.null(protect_scen)) {
+    if (!is.na(protect_scen)) {
       # read in protected area of selected scenario
       tmp <- collapseNames(calcOutput("ProtectArea", aggregate=FALSE)[,,protect_scen])
       #### expand to 67k cells (temporarily until read/calcProtectArea is adjusted) ####
@@ -43,18 +48,13 @@ calcAreaPotIrrig <- function(selectyears, iniyear, comagyear, avlland_scen, prot
       land         <- pmin(avl_cropland, land)
     }
 
-  } else if (avlland_scen == "curr_cropland") {
+  } else if (grepl("curr", avlland_scen)) {
     # Total current cropland per cell:
-    land <- dimSums(calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE), dim=3)
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-    map                      <- toolGetMappingCoord2Country()
-    getCells(land)           <- paste(map$coords, map$iso, sep=".")
-    names(dimnames(land))[1] <- "x.y.iso"
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-
-  } else if (avlland_scen == "curr_irrig") {
+    if (avlland_scen == "currCropland") irrigation <- FALSE
     # Total irrigated cropland per cell:
-    land <- dimSums(collapseNames(calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)[,,"irrigated"]), dim=3)
+    if (avlland_scen == "currIrrig")    irrigation <- TRUE
+
+    land <- dimSums(calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=irrigation, aggregate=FALSE), dim=3)
     #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
     map                      <- toolGetMappingCoord2Country()
     getCells(land)           <- paste(map$coords, map$iso, sep=".")
@@ -83,7 +83,7 @@ calcAreaPotIrrig <- function(selectyears, iniyear, comagyear, avlland_scen, prot
 
   # Checks
   if (any(is.na(land))) {
-    stop("produced NA full irrigation requirements")
+    stop("produced NA area potentially irrigated")
   }
 
   return(list(

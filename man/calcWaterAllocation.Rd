@@ -17,7 +17,7 @@ calcWaterAllocation(
   gainthreshold = 10,
   irrigationsystem = "initialization",
   iniyear = 1995,
-  protect_scen,
+  avlland_scen,
   proxycrop
 )
 }
@@ -44,7 +44,7 @@ calcWaterAllocation(
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{protect_scen}{Land protection scenario}
+\item{avlland_scen}{Land protection scenario}
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
 }
