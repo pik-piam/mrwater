@@ -2,16 +2,17 @@
 #' @description This function calculates area that can potentially be used for irrigation given assumptions defined in arguments
 #'
 #' @param selectyears   years to be returned
-#' @param comagyear     if NULL: total potential croparea is used; if !NULL: already irrigated area is subtracted; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea
+#' @param comagyear     if NULL: total potential croparea is used; if !NULL: already irrigated area is subtracted; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)
 #' @param avlland_scen  land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
 #'                      combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
 #'                      protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
+#'                      (e.g. "potIrrig_HalfEarth:1995", currCropland:2010)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("AreaPotIrrig", selectyears=seq(1995, 2100, by=5), comagyear=1995, avlland_scen="currCropland_HalfEarth:1995, aggregate=FALSE) }
+#' \dontrun{ calcOutput("AreaPotIrrig", aggregate=FALSE) }
 #'
 #' @importFrom madrat calcOutput toolSplitSubtype
 #' @importFrom magclass collapseNames getCells getYears getNames dimSums
@@ -50,11 +51,15 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
 
   } else if (grepl("curr", avlland_scen)) {
     # Total current cropland per cell:
-    if (avlland_scen == "currCropland") irrigation <- FALSE
-    # Total irrigated cropland per cell:
-    if (avlland_scen == "currIrrig")    irrigation <- TRUE
+    if (avlland_scen == "currCropland") {
+      land <- dimSums(calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=FALSE, aggregate=FALSE), dim=3)
+    }
 
-    land <- dimSums(calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=irrigation, aggregate=FALSE), dim=3)
+    # Total irrigated cropland per cell:
+    if (avlland_scen == "currIrrig") {
+      land <- dimSums(collapseNames(calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)[,,"irrigated"]), dim=3)
+    }
+
     #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
     map                      <- toolGetMappingCoord2Country()
     getCells(land)           <- paste(map$coords, map$iso, sep=".")
@@ -62,7 +67,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
     #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
 
   } else {
-    stop("Please choose an appropriate available land scenario in avlland_scen argument: curr_irrig (only currently irrigated cropland available for irrigated agriculture), curr_cropland (only current cropland areas available for irrigated agriculture), pot_irrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)")
+    stop("Please choose an appropriate available land scenario in avlland_scen argument: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land protection activated through addition of protection scen in this argument)")
   }
 
   # Adjust dimensionality
