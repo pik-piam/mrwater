@@ -45,8 +45,11 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, comagyear, i
     #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
     # historical share of crop types in total cropland per cell
     croparea_shr <- croparea / dimSums(croparea, dim=3)
-    # correct NAs: where no land available -> crop share 0
-    croparea_shr[dimSums(croparea, dim=3)==0] <- 0
+    # correct NAs: where no current cropland available -> representative crops (maize, rapeseed, pulses) assumed as proxy
+    rep_crops   <- c("maiz", "rapeseed", "puls_pro")
+    other_crops <- setdiff(getNames(croparea), rep_crops)
+    croparea_shr[,,rep_crops][dimSums(croparea, dim=3)==0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
+    croparea_shr[,,other_crops][dimSums(croparea, dim=3)==0] <- 0
   } else {
     # equal crop area share for each proxycrop assumed
     croparea_shr              <- new.magpie(cells_and_regions=getCells(land), years=NULL, names=proxycrop, sets=c("x.y.iso", "t", "data"))

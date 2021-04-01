@@ -63,8 +63,11 @@ calcIrrigWatValue <- function(selectyears, climatetype, iniyear, proxycrop) {
 
       # historical share of crop types in total cropland per cell
       croparea_shr <- croparea / dimSums(croparea, dim=3)
-      # correct NAs: where no land available -> crop share 0
-      croparea_shr[dimSums(croparea, dim=3)==0] <- 0
+      # correct NAs: where no current cropland available -> representative crops (maize, rapeseed, pulses) assumed as proxy
+      rep_crops   <- c("maiz", "rapeseed", "puls_pro")
+      other_crops <- setdiff(getNames(croparea), rep_crops)
+      croparea_shr[,,rep_crops][dimSums(croparea, dim=3)==0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
+      croparea_shr[,,other_crops][dimSums(croparea, dim=3)==0] <- 0
 
       # average water value over histrical crops weighted with their croparea share
       watvalue <- dimSums(croparea_shr * watvalue, dim=3)
