@@ -19,25 +19,14 @@ toolAllocationAlgorithm <- function(c, y, rs, l_inout, l_in) {
   #(1) GENERALIZE: FLEXIBLE FOR YEARS AND CELLS
   #(2) Allocation of certain share in first round (e.g. 75%); then filling up in second round if water left
 
-  # Initialization of objects
-  tmp <- as.magpie(l_inout$discharge)
-
-  .transformObject <- function(x) {
-    # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getCells(tmp), years = getYears(tmp), names = getNames(tmp), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
-    # bring object x to dimension of object0
-    out     <- object0 + x
-    return(out)
-  }
-
-  IO_discharge                   <- as.array(l_inout$discharge)
-  IO_required_wat_min_allocation <- as.array(l_inout$required_wat_min_allocation)
-  IO_frac_fullirrig              <- as.array(.transformObject(l_inout$frac_fullirrig))
-  I_required_wat_fullirrig_ww    <- as.array(.transformObject(l_in$required_wat_fullirrig_ww))
-  I_required_wat_fullirrig_wc    <- as.array(.transformObject(l_in$required_wat_fullirrig_wc))
-  I_irrig_yieldgainpotential     <- as.array(.transformObject(l_in$irrig_yieldgainpotential))
-  avl_wat_ww                     <- as.array(.transformObject(0))
-  avl_wat_wc                     <- as.array(.transformObject(0))
+  IO_discharge                   <- l_inout$discharge
+  IO_required_wat_min_allocation <- l_inout$required_wat_min_allocation
+  IO_frac_fullirrig              <- l_inout$frac_fullirrig
+  I_required_wat_fullirrig_ww    <- l_in$required_wat_fullirrig_ww
+  I_required_wat_fullirrig_wc    <- l_in$required_wat_fullirrig_wc
+  I_irrig_yieldgainpotential     <- l_in$irrig_yieldgainpotential
+  avl_wat_ww                     <- l_in$avl_wat_ww
+  avl_wat_wc                     <- l_in$avl_wat_wc
 
   # Helper vectors for subsetting of objects
   # vector of downstreamcells of c
@@ -75,9 +64,9 @@ toolAllocationAlgorithm <- function(c, y, rs, l_inout, l_in) {
   IO_required_wat_min_allocation[c,y,][is_req_ww[,,,drop=F]]    <- (IO_required_wat_min_allocation[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
 
   # Function output
-  discharge                   <- as.magpie(IO_discharge, spatial=1)
-  required_wat_min_allocation <- as.magpie(IO_required_wat_min_allocation, spatial=1)
-  frac_fullirrig              <- as.magpie(IO_frac_fullirrig, spatial=1)
+  discharge                   <- IO_discharge
+  required_wat_min_allocation <- IO_required_wat_min_allocation
+  frac_fullirrig              <- IO_frac_fullirrig
 
   out <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig)
 
