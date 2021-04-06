@@ -1,64 +1,85 @@
 #' @title       toolAllocationAlgorithm
 #' @description This tool function determines river surplus discharge allocation rules for calcRiverSurplusDischargeAllocation
 #'
-#' @param c Cell number
-#' @param irrig_yieldgainpotential Yield gain potential through irrigation of proxy crops: magpie object with cellular and year dimenstion
-#' @param gainthreshold Minimum yield gain: scalar value
+#' @param c Current cell number of loop
+#' @param y Current year of loop
+#' @param rs River structure (list of river structure details and cell numbers including ordered cell number)
+#' @param l_inout list of inputs that are at the same time outputs: required_wat_min_allocation Minimum (water requirement reserved per grid cell (as magpie object of correct dimension)); discharge (Discharge to be allocated (as magpie object of correct dimension)); frac_fullirrig (fraction of fullirrigation requirements that can be fulfilled)
+#' @param l_in list of inputs: irrig_yieldgainpotential (yield gain potential through irrigation of proxy crops: magpie object with cellular and year dimension (as magpie object of correct dimension)); required_wat_fullirrig_ww (required withdrawal for full irrigation in specific cell (as magpie object of correct dimension)); required_wat_fullirrig_wc (required consumption for full irrigation in specific cell (as magpie object of correct dimension)); gainthreshold (Minimum yield gain in USD/ha (as scalar value))
 #'
-#'
-#' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears dimSums
-#' @importFrom stringr str_split
+#' @importFrom magclass getNames as.magpie getCells setYears
 #'
 #' @return magpie object in cellular resolution
-#' @author Felicitas Beier, Jens Heinke
+#' @author Felicitas Beier, Jens Heinke, Jan Philipp Dietrich
 #'
-#
-# toolAllocationAlgorithm <- function(c, irrig_yieldgainpotential) {
-#
-#   # River Structure
-#   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
-#   # cells as numeric for surplus discharge allocation algorithm
-#   rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
-#
-#   # vector of downstreamcells of c
-#   down <- unlist(rs$downstreamcells[[c]])
-#   # vector of c in length of downstreamcells of c
-#   lc   <- rep(c, length(rs$downstreamcells[[c]]))
-#   # vector of 1s in length of downstreamcells of c
-#   cc   <- rep(1:length(c), length(rs$downstreamcells[[c]]))
-#
-#   # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
-#   irriggain <- (irrig_yieldgainpotential[c,y,,drop=F] > gainthreshold)
-#
-#   # available water for additional irrigation withdrawals
-#   avl_wat_ww[c,y,][irriggain[,,,drop=F]] <- pmax(IO_discharge[c,y,,drop=F] - required_wat_min_allocation[c,y,,drop=F], 0)[irriggain[,,,drop=F]]
-#
-#   # withdrawal constraint
-#   ww_constraint   <- (required_wat_fullirrig_ww[c,y,,drop=F]>0 & irriggain[,,,drop=F])
-#
-#   # how much withdrawals can be fulfilled by available water
-#   frac_fullirrig[c,y,][ww_constraint[,,,drop=F]] <- pmin(avl_wat_ww[c,y,,drop=F][ww_constraint[,,,drop=F]] / required_wat_fullirrig_ww[c,y,,drop=F][ww_constraint[,,,drop=F]], 1)
-#
-#   if (length(down)>0) {
-#     # consumption constraint
-#     wc_constraint <- (required_wat_fullirrig_wc[c,y,,drop=F]>0 & ww_constraint[,,,drop=F])
-#
-#     # available water for additional irrigation consumption (considering downstream availability)
-#     avl_wat_wc[c,y,][wc_constraint[,,,drop=F]]     <- pmax(apply((IO_discharge[down,y,,drop=F] - required_wat_min_allocation[down,y,,drop=F]), 3, min)[wc_constraint[,,,drop=F]], 0)
-#     # how much consumption can be fulfilled by available water
-#     frac_fullirrig[c,y,][wc_constraint[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][wc_constraint[,,,drop=F]] / required_wat_fullirrig_wc[c,y,,drop=F][wc_constraint[,,,drop=F]], frac_fullirrig[c,y,,drop=F][wc_constraint[,,,drop=F]])
-#   }
-#
-#   # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-#   IO_discharge[c(down,c),y,][ww_constraint[c(cc,1),,,drop=F]] <- (IO_discharge[c(down,c),y,,drop=F] - required_wat_fullirrig_wc[c(lc,c),y,,drop=F] * frac_fullirrig[c(lc,c),y,,drop=F])[ww_constraint[c(cc,1),,,drop=F]]
-#   # update minimum water required in cell:
-#   required_wat_min_allocation[c,y,][ww_constraint[,,,drop=F]] <- (required_wat_min_allocation[c,y,,drop=F] + frac_fullirrig[c,y,,drop=F] * required_wat_fullirrig_ww[c,y,,drop=F])[ww_constraint[,,,drop=F]]
-#
-#   return(list(
-#     x=out,
-#     weight=NULL,
-#     unit="mio. m^3",
-#     description=description,
-#     isocountries=FALSE))
-# }
+
+toolAllocationAlgorithm <- function(c, y, rs, l_inout, l_in) {
+
+  ### Potential Function Improvements:
+  #(1) GENERALIZE: FLEXIBLE FOR YEARS AND CELLS
+  #(2) Allocation of certain share in first round (e.g. 75%); then filling up in second round if water left
+
+  # Initialization of objects
+  tmp <- as.magpie(l_inout$discharge)
+
+  .transformObject <- function(x) {
+    # empty magpie object structure
+    object0 <- new.magpie(cells_and_regions = getCells(tmp), years = getYears(tmp), names = getNames(tmp), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
+    # bring object x to dimension of object0
+    out     <- object0 + x
+    return(out)
+  }
+
+  IO_discharge                   <- as.array(l_inout$discharge)
+  IO_required_wat_min_allocation <- as.array(l_inout$required_wat_min_allocation)
+  IO_frac_fullirrig              <- as.array(.transformObject(l_inout$frac_fullirrig))
+  I_required_wat_fullirrig_ww    <- as.array(.transformObject(l_in$required_wat_fullirrig_ww))
+  I_required_wat_fullirrig_wc    <- as.array(.transformObject(l_in$required_wat_fullirrig_wc))
+  I_irrig_yieldgainpotential     <- as.array(.transformObject(l_in$irrig_yieldgainpotential))
+  avl_wat_ww                     <- as.array(.transformObject(0))
+  avl_wat_wc                     <- as.array(.transformObject(0))
+
+  # Helper vectors for subsetting of objects
+  # vector of downstreamcells of c
+  v_down <- unlist(rs$downstreamcells[[c]])
+  # vector of c in length of downstreamcells of c
+  v_cell <- rep(c, length(rs$downstreamcells[[c]]))
+  # vector of 1s in length of downstreamcells of c
+  v_ones <- rep(1:length(c), length(rs$downstreamcells[[c]]))
+
+  # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
+  is_gain <- (I_irrig_yieldgainpotential[c,y,,drop=F] > l_in$gainthreshold)
+
+  # available water for additional irrigation withdrawals
+  avl_wat_ww[c,y,][is_gain[,,,drop=F]] <- pmax(IO_discharge[c,y,,drop=F] - IO_required_wat_min_allocation[c,y,,drop=F], 0)[is_gain[,,,drop=F]]
+
+  # withdrawal constraint (if there is water required for withdrawal in current grid cell)
+  is_req_ww   <- (I_required_wat_fullirrig_ww[c,y,,drop=F]>0 & is_gain[,,,drop=F])
+
+  # how much withdrawals can be fulfilled by available water
+  IO_frac_fullirrig[c,y,][is_req_ww[,,,drop=F]] <- pmin(avl_wat_ww[c,y,,drop=F][is_req_ww[,,,drop=F]] / I_required_wat_fullirrig_ww[c,y,,drop=F][is_req_ww[,,,drop=F]], 1)
+
+  if (length(v_down)>0) {
+    # consumption constraint (if there is water required for consumption in current grid cell)
+    is_req_wc <- (I_required_wat_fullirrig_wc[c,y,,drop=F]>0 & is_req_ww[,,,drop=F])
+
+    # available water for additional irrigation consumption (considering downstream availability)
+    avl_wat_wc[c,y,][is_req_wc[,,,drop=F]]     <- pmax(apply((IO_discharge[v_down,y,,drop=F] - IO_required_wat_min_allocation[v_down,y,,drop=F]), 3, min)[is_req_wc[,,,drop=F]], 0)
+    # how much consumption can be fulfilled by available water
+    IO_frac_fullirrig[c,y,][is_req_wc[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][is_req_wc[,,,drop=F]] / I_required_wat_fullirrig_wc[c,y,,drop=F][is_req_wc[,,,drop=F]], IO_frac_fullirrig[c,y,,drop=F][is_req_wc[,,,drop=F]])
+  }
+
+  # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
+  IO_discharge[c(v_down,c),y,][is_req_ww[c(v_ones,1),,,drop=F]] <- (IO_discharge[c(v_down,c),y,,drop=F] - I_required_wat_fullirrig_wc[c(v_cell,c),y,,drop=F] * IO_frac_fullirrig[c(v_cell,c),y,,drop=F])[is_req_ww[c(v_ones,1),,,drop=F]]
+  # update minimum water required in cell:
+  IO_required_wat_min_allocation[c,y,][is_req_ww[,,,drop=F]]    <- (IO_required_wat_min_allocation[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
+
+  # Function output
+  discharge                   <- as.magpie(IO_discharge, spatial=1)
+  required_wat_min_allocation <- as.magpie(IO_required_wat_min_allocation, spatial=1)
+  frac_fullirrig              <- as.magpie(IO_frac_fullirrig, spatial=1)
+
+  out <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig)
+
+  return(out)
+}

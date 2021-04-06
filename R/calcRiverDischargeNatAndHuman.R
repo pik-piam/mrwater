@@ -81,8 +81,6 @@ calcRiverDischargeNatAndHuman <- function(selectyears, iniyear, climatetype) {
 
   out <- as.magpie(O_discharge, spatial=1)
 
-  # Correct negatives (due to rounding imprecision)
-
   # Check for NAs
   if (any(is.na(out))) {
     stop("produced NA discharge")
