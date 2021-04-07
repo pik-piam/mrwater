@@ -36,7 +36,5 @@ toolAllocation <- function(y, rs, l_inout, l_in, allocationrule, meancellrank) {
     }
   }
 
-  out <- l_inout
-
-  return(out)
+  return(l_inout)
 }

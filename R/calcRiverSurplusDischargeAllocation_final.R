@@ -74,11 +74,11 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   discharge                   <- as.array(discharge)
   required_wat_min_allocation <- as.array(required_wat_min_allocation)
   frac_fullirrig              <- as.array(.transformObject(frac_fullirrig))
-  required_wat_fullirrig_ww    <- as.array(.transformObject(required_wat_fullirrig_ww))
-  required_wat_fullirrig_wc    <- as.array(.transformObject(required_wat_fullirrig_wc))
-  irrig_yieldgainpotential     <- as.array(.transformObject(irrig_yieldgainpotential))
-  avl_wat_ww                     <- as.array(.transformObject(0))
-  avl_wat_wc                     <- as.array(.transformObject(0))
+  required_wat_fullirrig_ww   <- as.array(.transformObject(required_wat_fullirrig_ww))
+  required_wat_fullirrig_wc   <- as.array(.transformObject(required_wat_fullirrig_wc))
+  irrig_yieldgainpotential    <- as.array(.transformObject(irrig_yieldgainpotential))
+  avl_wat_ww                  <- as.array(.transformObject(0))
+  avl_wat_wc                  <- as.array(.transformObject(0))
 
   ################################################
   ####### River basin discharge allocation #######
@@ -95,7 +95,7 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
 
   if (output=="discharge") {
     # Main output for MAgPIE: water available for agricultural consumption
-    out         <- as.magpie(l_out$IO_discharge, spatial=1)
+    out         <- as.magpie(l_out$discharge, spatial=1)
     description <- "Cellular discharge after accounting for known human uses along the river"
   } else if (output=="frac_fullirrig") {
     # Main output for MAgPIE: water available for agricultural withdrawal
