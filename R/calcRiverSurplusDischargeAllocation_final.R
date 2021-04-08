@@ -85,7 +85,7 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   ################################################
   out     <- NULL
   # list of objects that are inputs and outputs to the allocation function
-  l_inout <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig) ### rename IO to without in tool fct
+  l_inout <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig)
   # list of objects that are inputs to the allocation function
   l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc)
 

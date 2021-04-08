@@ -56,6 +56,11 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, comagyear, i
     croparea_shr[,,proxycrop] <- 1 / length(proxycrop)
   }
 
+  # Check
+  if (any(round(dimSums(croparea_shr,dim=3))!=1)) {
+    stop("Croparea share does not sum up to 1 in calcFullIrrigationRequirement")
+  }
+
   # land area per crop
   land <- land * croparea_shr
 
@@ -84,7 +89,7 @@ calcFullIrrigationRequirement <- function(climatetype, selectyears, comagyear, i
     irrig_wat <- collapseNames(irrig_wat[,,irrigationsystem])
   }
 
-  # Adjust dimensions
+  # Adjust dimension names
   getSets(irrig_wat, fulldim=F)[1] <- "x.y.iso"
 
   # Checks
