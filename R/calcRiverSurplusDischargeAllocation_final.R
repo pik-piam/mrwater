@@ -90,7 +90,7 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc)
 
   for (y in getYears(meancellrank)) {
-    l_out <- toolAllocation(y=y, rs=rs, l_inout=l_inout, l_in=l_in, meancellrank=meancellrank, allocationrule=allocationrule)
+    l_out <- toolDischargeAllocation(y=y, rs=rs, l_inout=l_inout, l_in=l_in, meancellrank=meancellrank, allocationrule=allocationrule)
   }
 
   if (output=="discharge") {
