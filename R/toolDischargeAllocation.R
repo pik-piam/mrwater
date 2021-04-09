@@ -14,6 +14,9 @@
 
 toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocellrank) {
 
+  # Retrieve arguments
+  reducedpotential <- any(grepl("A_", getCells(glocellrank)))
+
   # Cell ordering to be applied for surplus discharge allocation rules
   if (allocationrule=="optimization") {
 
@@ -22,7 +25,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     for (o in (1:max(glocellrank[,y], na.rm=T))) { #test <- rs$cells[order(glocellrank[,y])]
 
       # Extract the cell number (depending on type of cellranking)
-      if (any(grepl("A_", getCells(glocellrank)) | grepl("B_", getCells(glocellrank)))) {
+      if (reducedpotential) {
         c <- rs$cells[rs$coordinates==paste(strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][2], sep=".")]
       } else {
         c <- rs$cells[glocellrank[,y]==o]

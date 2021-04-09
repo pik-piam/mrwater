@@ -28,6 +28,9 @@
 
 calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climatetype, rankmethod, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
 
+  # Retrieve arguments
+  fullpotential <- as.logical(strsplit(rankmethod, ":")[[1]][2])
+
   # Check
   if (!is.na(as.list(strsplit(avlland_scen, split=":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])) stop("Initialization year in calcRiverSurplusDischargeAllocation does not match: iniyear and avlland_scen should have same initialization year")
 
@@ -94,7 +97,7 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
         for (o in (1:max(glocellrank[,y],na.rm=T))){
 
           # Extract the cell number (depending on type of cellranking)
-          if (any(grepl("A_", getCells(glocellrank)) | grepl("B_", getCells(glocellrank)))) {
+          if (!fullpotential) {
             c <- rs$cells[rs$coordinates==paste(strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][2], sep=".")]
           } else {
             c <- rs$cells[glocellrank[,y]==o]
