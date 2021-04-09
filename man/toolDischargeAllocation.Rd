@@ -4,7 +4,7 @@
 \alias{toolDischargeAllocation}
 \title{toolDischargeAllocation}
 \usage{
-toolDischargeAllocation(y, rs, l_inout, l_in, allocationrule, meancellrank)
+toolDischargeAllocation(y, rs, l_inout, l_in, allocationrule, glocellrank)
 }
 \arguments{
 \item{y}{Current year of loop}
@@ -17,7 +17,7 @@ toolDischargeAllocation(y, rs, l_inout, l_in, allocationrule, meancellrank)
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
 
-\item{meancellrank}{cell ranking for different years (array). Note: only applicable when allocationrule "optimization" chosen}
+\item{glocellrank}{cell ranking for different years (array). Note: only applicable when allocationrule "optimization" chosen}
 }
 \value{
 magpie object in cellular resolution

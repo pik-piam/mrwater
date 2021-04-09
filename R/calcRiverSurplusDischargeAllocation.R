@@ -4,6 +4,7 @@
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param output output to be reported
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param rankmethod      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
 #' @param allocationrule  Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
 #' @param thresholdtype   Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param gainthreshold   Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
@@ -25,7 +26,7 @@
 #' \dontrun{ calcOutput("RiverSurplusDischargeAllocation", aggregate = FALSE) }
 #'
 
-calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
+calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype, rankmethod, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
 
   # Check
   if (!is.na(as.list(strsplit(avlland_scen, split=":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])) stop("Initialization year in calcRiverSurplusDischargeAllocation does not match: iniyear and avlland_scen should have same initialization year")
@@ -50,7 +51,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
   required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  meancellrank                <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method="meanpricedcroprank", proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
+  glocellrank                 <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
 
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential    <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, proxycrop=proxycrop, monetary=thresholdtype, iniyear=iniyear, aggregate=FALSE)
@@ -67,10 +68,15 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
   out_tmp2 <- NULL
   out      <- NULL
 
-  meancellrank             <- as.array(meancellrank)[,,1]
+  glocellrank             <- as.array(glocellrank)[,,1]
   irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
   required_wat_fullirrig_ww   <- as.array(required_wat_fullirrig_ww)[,,1]
   required_wat_fullirrig_wc   <- as.array(required_wat_fullirrig_wc)[,,1]
+
+  # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
+  allocationshare           <- 1 / (length(glocellrank[,1])/67420)
+  required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
+  required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
 
   for (EFP in c("on", "off")) {
     for (scen in unique(gsub(".*.\\.", "", getNames(required_wat_min_allocation)))){
@@ -85,9 +91,14 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
       # Allocate water for full irrigation to cell with highest yield improvement through irrigation
       if (allocationrule=="optimization") {
 
-        for (o in (1:max(meancellrank[,y],na.rm=T))){
+        for (o in (1:max(glocellrank[,y],na.rm=T))){
 
-          c <- rs$cells[meancellrank[,y]==o]
+          # Extract the cell number (depending on type of cellranking)
+          if (any(grepl("A_", getCells(glocellrank)) | grepl("B_", getCells(glocellrank)))) {
+            c <- rs$cells[rs$coordinates==paste(strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][2], sep=".")]
+          } else {
+            c <- rs$cells[glocellrank[,y]==o]
+          }
 
           if (irrig_yieldgainpotential[c,y] > gainthreshold) {
 

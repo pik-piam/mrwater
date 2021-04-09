@@ -6,21 +6,27 @@
 #' @param l_inout list of inputs that are at the same time outputs: required_wat_min_allocation Minimum (water requirement reserved per grid cell (as magpie object of correct dimension)); discharge (Discharge to be allocated (as magpie object of correct dimension)); frac_fullirrig (fraction of fullirrigation requirements that can be fulfilled)
 #' @param l_in list of inputs: irrig_yieldgainpotential (yield gain potential through irrigation of proxy crops: magpie object with cellular and year dimension (as magpie object of correct dimension)); required_wat_fullirrig_ww (required withdrawal for full irrigation in specific cell (as magpie object of correct dimension)); required_wat_fullirrig_wc (required consumption for full irrigation in specific cell (as magpie object of correct dimension)); gainthreshold (Minimum yield gain in USD/ha (as scalar value)); avl_wat_ww; avl_wat_wc
 #' @param allocationrule  Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
-#' @param meancellrank cell ranking for different years (array). Note: only applicable when allocationrule "optimization" chosen
+#' @param glocellrank cell ranking for different years (array). Note: only applicable when allocationrule "optimization" chosen
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke, Jan Philipp Dietrich
 #'
 
-toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, meancellrank) {
+toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocellrank) {
 
   # Cell ordering to be applied for surplus discharge allocation rules
   if (allocationrule=="optimization") {
 
     rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
-    for (o in (1:max(meancellrank[,y], na.rm=T))) { #test <- rs$cells[order(meancellrank[,y])]
-      c <- rs$cells[meancellrank[,y]==o]
+    for (o in (1:max(glocellrank[,y], na.rm=T))) { #test <- rs$cells[order(glocellrank[,y])]
+
+      # Extract the cell number (depending on type of cellranking)
+      if (any(grepl("A_", getCells(glocellrank)) | grepl("B_", getCells(glocellrank)))) {
+        c <- rs$cells[rs$coordinates==paste(strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][2], sep=".")]
+      } else {
+        c <- rs$cells[glocellrank[,y]==o]
+      }
 
       ### Potential Function Improvements:
       #(1) GENERALIZE: FLEXIBLE FOR YEARS AND CELLS

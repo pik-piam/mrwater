@@ -3,7 +3,7 @@
 #'
 #' @param climatetype     Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
 #' @param cellrankyear year(s) for which cell rank is calculated
-#' @param method      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water
+#' @param method      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
 #' @param proxycrop   proxycrop(s) selected for crop mix specific calculations: list of proxycrops or "historical"
 #' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank and case of monetary=TRUE year of prices
 #'
@@ -14,6 +14,9 @@
 #' \dontrun{ calcOutput("IrrigCellranking", aggregate=FALSE) }
 
 calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, iniyear) {
+
+  fullpotential <- as.logical(strsplit(method, ":")[[1]][2])
+  method        <- strsplit(method, ":")[[1]][1]
 
   if (method=="meancellrank") {
     # Def. "meancellrank": ranking of cells or proxy crops, then: average over ranks
@@ -56,6 +59,13 @@ calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, i
     ## Read in average potential yield gain per cell (USD05 per ha)
     yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear, proxycrop=proxycrop, monetary=TRUE, iniyear=iniyear, aggregate=FALSE)
 
+    if (!fullpotential) {
+      yield_gain_reduced <- 0.75 * yield_gain
+      getCells(yield_gain) <- paste0("A_",getCells(yield_gain))
+      getCells(yield_gain_reduced) <- paste0("B_",getCells(yield_gain_reduced))
+      yield_gain <- mbind(yield_gain, yield_gain_reduced)
+    }
+
     # calculate rank (ties are solved by first occurrence)
     glocellrank <- apply(-yield_gain, c(2,3), rank, ties.method="first")
 
@@ -65,7 +75,7 @@ calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, i
     # Read in average water value per cell (USD05 per m^3)
     watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, climatetype=climatetype, iniyear=iniyear, proxycrop=proxycrop, aggregate=FALSE)
 
-    # calculate rank (ties are solved by first occurence)
+    # calculate rank (ties are solved by first occurrence)
     glocellrank <- apply(-watvalue,c(2,3),rank,ties.method="first")
 
   } else if (method=="mostprofitable") {
