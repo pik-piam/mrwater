@@ -90,16 +90,16 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc)
 
   for (y in getYears(meancellrank)) {
-    l_out <- toolDischargeAllocation(y=y, rs=rs, l_inout=l_inout, l_in=l_in, meancellrank=meancellrank, allocationrule=allocationrule)
+    l_inout <- toolDischargeAllocation(y=y, rs=rs, l_inout=l_inout, l_in=l_in, meancellrank=meancellrank, allocationrule=allocationrule)
   }
 
   if (output=="discharge") {
     # Main output for MAgPIE: water available for agricultural consumption
-    out         <- as.magpie(l_out$discharge, spatial=1)
+    out         <- as.magpie(l_inout$discharge, spatial=1)
     description <- "Cellular discharge after accounting for known human uses along the river"
   } else if (output=="frac_fullirrig") {
     # Main output for MAgPIE: water available for agricultural withdrawal
-    out         <- as.magpie(l_out$frac_fullirrig, spatial=1)
+    out         <- as.magpie(l_inout$frac_fullirrig, spatial=1)
     description <- "Fraction of full irrigation requirements that can be fulfilled"
   } else {
     stop("specify outputtype")
