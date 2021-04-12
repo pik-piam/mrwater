@@ -80,6 +80,10 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   ####### River basin discharge allocation #######
   ################################################
   out     <- NULL
+  if (class(selectyears)=="numeric") {
+    selectyears <- paste0("y", selectyears)
+  }
+
   # list of objects that are inputs and outputs to the allocation function
   l_inout <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig)
   # list of objects that are inputs to the allocation function
