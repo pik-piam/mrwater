@@ -14,11 +14,21 @@
 
 toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocellrank) {
 
-  # Retrieve arguments
-  reducedpotential <- any(grepl("A_", getCells(glocellrank)))
-
   # Cell ordering to be applied for surplus discharge allocation rules
   if (allocationrule=="optimization") {
+
+    # Retrieve arguments
+    reducedpotential               <- any(grepl("A_", getCells(glocellrank)))
+    I_required_wat_fullirrig_ww    <- l_in$required_wat_fullirrig_ww
+    I_required_wat_fullirrig_wc    <- l_in$required_wat_fullirrig_wc
+    I_irrig_yieldgainpotential     <- l_in$irrig_yieldgainpotential
+    avl_wat_ww                     <- l_in$avl_wat_ww
+    avl_wat_wc                     <- l_in$avl_wat_wc
+
+    # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
+    allocationshare             <- 1 / (length(glocellrank[,1])/67420)
+    I_required_wat_fullirrig_ww <- I_required_wat_fullirrig_ww * allocationshare
+    I_required_wat_fullirrig_wc <- I_required_wat_fullirrig_wc * allocationshare
 
     rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
@@ -38,11 +48,6 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
       IO_discharge                   <- l_inout$discharge
       IO_required_wat_min_allocation <- l_inout$required_wat_min_allocation
       IO_frac_fullirrig              <- l_inout$frac_fullirrig
-      I_required_wat_fullirrig_ww    <- l_in$required_wat_fullirrig_ww
-      I_required_wat_fullirrig_wc    <- l_in$required_wat_fullirrig_wc
-      I_irrig_yieldgainpotential     <- l_in$irrig_yieldgainpotential
-      avl_wat_ww                     <- l_in$avl_wat_ww
-      avl_wat_wc                     <- l_in$avl_wat_wc
 
       # Helper vectors for subsetting of objects
       # vector of downstreamcells of c
@@ -89,6 +94,13 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     }
 
   } else if (allocationrule=="upstreamfirst") {
+
+    I_required_wat_fullirrig_ww    <- l_in$required_wat_fullirrig_ww
+    I_required_wat_fullirrig_wc    <- l_in$required_wat_fullirrig_wc
+    I_irrig_yieldgainpotential     <- l_in$irrig_yieldgainpotential
+    avl_wat_ww                     <- l_in$avl_wat_ww
+    avl_wat_wc                     <- l_in$avl_wat_wc
+
     for (o in 1:max(rs$calcorder)) {
       cells <- which(rs$calcorder==o)
 
@@ -100,11 +112,6 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
         IO_discharge                   <- l_inout$discharge
         IO_required_wat_min_allocation <- l_inout$required_wat_min_allocation
         IO_frac_fullirrig              <- l_inout$frac_fullirrig
-        I_required_wat_fullirrig_ww    <- l_in$required_wat_fullirrig_ww
-        I_required_wat_fullirrig_wc    <- l_in$required_wat_fullirrig_wc
-        I_irrig_yieldgainpotential     <- l_in$irrig_yieldgainpotential
-        avl_wat_ww                     <- l_in$avl_wat_ww
-        avl_wat_wc                     <- l_in$avl_wat_wc
 
         # Helper vectors for subsetting of objects
         # vector of downstreamcells of c

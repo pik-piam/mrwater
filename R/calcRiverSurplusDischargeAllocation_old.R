@@ -28,9 +28,6 @@
 
 calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climatetype, rankmethod, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
 
-  # Retrieve arguments
-  fullpotential <- as.logical(strsplit(rankmethod, ":")[[1]][2])
-
   # Check
   if (!is.na(as.list(strsplit(avlland_scen, split=":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])) stop("Initialization year in calcRiverSurplusDischargeAllocation does not match: iniyear and avlland_scen should have same initialization year")
 
@@ -53,9 +50,6 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
   required_wat_fullirrig_ww   <- pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]), 0)
   required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
 
-  # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  glocellrank                 <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
-
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential    <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, proxycrop=proxycrop, monetary=thresholdtype, iniyear=iniyear, aggregate=FALSE)
 
@@ -71,15 +65,9 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
   out_tmp2 <- NULL
   out      <- NULL
 
-  glocellrank             <- as.array(glocellrank)[,,1]
   irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
   required_wat_fullirrig_ww   <- as.array(required_wat_fullirrig_ww)[,,1]
   required_wat_fullirrig_wc   <- as.array(required_wat_fullirrig_wc)[,,1]
-
-  # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
-  allocationshare           <- 1 / (length(glocellrank[,1])/67420)
-  required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
-  required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
 
   for (EFP in c("on", "off")) {
     for (scen in unique(gsub(".*.\\.", "", getNames(required_wat_min_allocation)))){
@@ -93,6 +81,18 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
 
       # Allocate water for full irrigation to cell with highest yield improvement through irrigation
       if (allocationrule=="optimization") {
+
+        # Retrieve arguments
+        fullpotential <- as.logical(strsplit(rankmethod, ":")[[1]][2])
+
+        # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
+        glocellrank       <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
+        glocellrank       <- as.array(glocellrank)[,,1]
+
+        # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
+        allocationshare           <- 1 / (length(glocellrank[,1])/67420)
+        required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
+        required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
 
         for (o in (1:max(glocellrank[,y],na.rm=T))){
 

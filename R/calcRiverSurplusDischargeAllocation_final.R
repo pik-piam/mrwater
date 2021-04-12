@@ -50,16 +50,11 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   required_wat_fullirrig_ww   <- pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]), 0)
   required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
 
-  # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  glocellrank                 <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
-  glocellrank                <- as.array(glocellrank)[,,1]
-
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential    <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, proxycrop=proxycrop, monetary=thresholdtype, iniyear=iniyear, aggregate=FALSE)
 
   # Initialization of fraction of full irrigation requirements that can be fulfilled
   frac_fullirrig              <- new.magpie(cells_and_regions = getCells(discharge), years = getYears(discharge), names = getNames(discharge), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
-
 
   # Initialization of objects
   tmp <- as.magpie(discharge)
@@ -81,11 +76,6 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   avl_wat_ww                  <- as.array(.transformObject(0))
   avl_wat_wc                  <- as.array(.transformObject(0))
 
-  # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
-  allocationshare           <- 1 / (length(glocellrank[,1])/67420)
-  required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
-  required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
-
   ################################################
   ####### River basin discharge allocation #######
   ################################################
@@ -95,7 +85,11 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   # list of objects that are inputs to the allocation function
   l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc)
 
-  for (y in getYears(glocellrank)) {
+  # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
+  glocellrank     <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
+  glocellrank     <- as.array(glocellrank)[,,1]
+
+  for (y in selectyears) {
     l_inout <- toolDischargeAllocation(y=y, rs=rs, l_inout=l_inout, l_in=l_in, glocellrank=glocellrank, allocationrule=allocationrule)
   }
 
