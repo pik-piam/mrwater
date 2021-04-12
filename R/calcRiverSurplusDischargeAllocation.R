@@ -77,8 +77,8 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
     fullpotential <- as.logical(strsplit(rankmethod, ":")[[1]][2])
 
     # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-    glocellrank                 <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
-    glocellrank                 <- as.array(glocellrank)[,,1]
+    glocellrank  <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
+    glocellrank  <- as.array(glocellrank)[,,1]
 
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
     allocationshare           <- 1 / (length(glocellrank[,1])/67420)
@@ -89,7 +89,10 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
   ################################################
   ####### River basin discharge allocation #######
   ################################################
-  out      <- NULL
+  out         <- NULL
+  if (class(selectyears)=="numeric") {
+    selectyears <- paste0("y", selectyears)
+  }
 
   for (y in selectyears) {
 
