@@ -72,6 +72,20 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
   avl_wat_ww                  <- as.array(.transformObject(0))
   avl_wat_wc                  <- as.array(.transformObject(0))
 
+  if (allocationrule=="optimization") {
+    # Retrieve arguments
+    fullpotential <- as.logical(strsplit(rankmethod, ":")[[1]][2])
+
+    # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
+    glocellrank                 <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
+    glocellrank                 <- as.array(glocellrank)[,,1]
+
+    # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
+    allocationshare           <- 1 / (length(glocellrank[,1])/67420)
+    required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
+    required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
+  }
+
   ################################################
   ####### River basin discharge allocation #######
   ################################################
@@ -81,17 +95,6 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
 
     # Allocate water for full irrigation to cell with highest yield improvement through irrigation
     if (allocationrule=="optimization") {
-      # Retrieve arguments
-      fullpotential <- as.logical(strsplit(rankmethod, ":")[[1]][2])
-
-      # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-      glocellrank                 <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
-      glocellrank                 <- as.array(glocellrank)[,,1]
-
-      # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
-      allocationshare           <- 1 / (length(glocellrank[,1])/67420)
-      required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
-      required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
 
       for (o in (1:max(glocellrank[,y], na.rm=T))) {
 
