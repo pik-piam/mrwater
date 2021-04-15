@@ -5,6 +5,7 @@
 #' @param subtype     Subtype to be returned: discharge or required_wat_min or frac_fulfilled
 #' @param humanuse    Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param conservationstatus Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums add_dimension
@@ -18,7 +19,7 @@
 #' \dontrun{ calcOutput("RiverHumanUses_ifandfor", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses_ifandfor <- function(selectyears, humanuse, subtype, climatetype) {
+calcRiverHumanUses_ifandfor <- function(selectyears, humanuse, subtype, climatetype, conservationstatus) {
   # # # # # # # # # # #
   # # # READ IN DATA # #
   # # # # # # # # # # #
@@ -67,7 +68,7 @@ calcRiverHumanUses_ifandfor <- function(selectyears, humanuse, subtype, climatet
 
   for (EFP in c("on", "off")) {
 
-    required_wat_min <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, aggregate=FALSE)
+    required_wat_min <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, conservationstatus, aggregate=FALSE)
     required_wat_min <- as.array(required_wat_min)[,,1]
 
     if (EFP=="off"){

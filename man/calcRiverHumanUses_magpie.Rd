@@ -4,7 +4,14 @@
 \alias{calcRiverHumanUses_magpie}
 \title{calcRiverHumanUses_magpie}
 \usage{
-calcRiverHumanUses_magpie(selectyears, humanuse, subtype, iniyear, climatetype)
+calcRiverHumanUses_magpie(
+  selectyears,
+  humanuse,
+  subtype,
+  iniyear,
+  climatetype,
+  conservationstatus
+)
 }
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
@@ -16,6 +23,8 @@ calcRiverHumanUses_magpie(selectyears, humanuse, subtype, iniyear, climatetype)
 \item{iniyear}{Initialization year of irrigation system}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+
+\item{conservationstatus}{Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)}
 }
 \value{
 magpie object in cellular resolution

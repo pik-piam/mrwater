@@ -3,6 +3,7 @@
 #'
 #' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param conservationstatus Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)
 #'
 #' @importFrom magclass collapseNames new.magpie getYears
 #' @importFrom madrat calcOutput
@@ -15,19 +16,30 @@
 #' \dontrun{ calcOutput("EnvmtlFlowRequirementsShare", aggregate=FALSE) }
 #'
 
-calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype) {
+calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype, conservationstatus) {
 
   #### Settings for "fair" state of aquatic ecosystem (see Smakhtin 2004 and Bonsch 2015) ####
   # Long-term reference time frame for EFR calculation:
   EFRyears <- c(1985:2015)
-  # LFR: Q90
-  LFR_val  <- 0.1
+  # LFR:
+  if (conservationstatus=="fair") {
+    # "fair condition" -> Q90 (discharge, which is exceeded 90 percent of the time on average throughout a year)
+    LFR_val  <- 0.1
+  } else if (conservationstatus=="good") {
+    # "fair condition" -> Q75 (discharge, which is exceeded 75 percent of the time on average throughout a year)
+    LFR_val  <- 0.25
+  } else if (conservationstatus=="natural") {
+    # "fair condition" -> Q50 (discharge, which is exceeded 50 percent of the time on average throughout a year)
+    LFR_val  <- 0.5
+  } else {
+    stop("Please select strictness of Environmental Flow Requirements: Options of the conservationstatus argument are fair, good, or natural riverrine ecosystem condition")
+  }
+
   # HFR: high flow requirements dependent on LFRs
   HFR_LFR_less10 <- 0.2    # for LFR < 10percent of total water
   HFR_LFR_10_20  <- 0.15   # for 10percent < LFR < 20percent of total water
   HFR_LFR_20_30  <- 0.07   # for 20percent < LFR < 30percent of total water
   HFR_LFR_more30 <- 0.00   # for LFR > 30percent of total water
-  #### Settings for "fair" state of aquatic ecosystem (see Smakhtin 2004 and Bonsch 2015) ####
 
   ### Monthly Discharge from LPJmL (raw: including variation)
   monthly_discharge_magpie <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="mdischarge", climatetype=climatetype, stage="raw", years=EFRyears, aggregate=FALSE)

@@ -4,6 +4,7 @@
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear          Initialization year of irrigation system
+#' @param conservationstatus Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -17,7 +18,7 @@
 #' \dontrun{ calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE) }
 #'
 
-calcRiverDischargeNatAndHuman <- function(selectyears, iniyear, climatetype) {
+calcRiverDischargeNatAndHuman <- function(selectyears, iniyear, climatetype, conservationstatus) {
 
   #######################################
   ###### Read in Required Inputs ########
@@ -26,9 +27,9 @@ calcRiverDischargeNatAndHuman <- function(selectyears, iniyear, climatetype) {
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   # Non-agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype)[,,"currHuman_wc"])
+  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, conservationstatus=conservationstatus)[,,"currHuman_wc"])
   # Committed agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype)[,,"currHuman_wc"])
+  CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, conservationstatus=conservationstatus)[,,"currHuman_wc"])
 
   # Yearly Runoff (on land and water)
   yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype))

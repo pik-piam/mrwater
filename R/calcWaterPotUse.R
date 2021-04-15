@@ -3,6 +3,7 @@
 #'
 #' @param selectyears     Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param climatetype     Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param conservationstatus Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)
 #' @param rankmethod      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
 #' @param allocationrule  Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
 #' @param thresholdtype   Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
@@ -25,7 +26,7 @@
 #' \dontrun{ calcOutput("WaterPotUse", aggregate = FALSE) }
 #'
 
-calcWaterPotUse <- function(selectyears, climatetype, rankmethod, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
+calcWaterPotUse <- function(selectyears, climatetype, conservationstatus, rankmethod, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
 
   # Check
   if (!is.na(as.list(strsplit(avlland_scen, split=":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])) stop("Initialization year in calcWaterPotUse does not match: iniyear and avlland_scen should have same initialization year")
@@ -37,12 +38,12 @@ calcWaterPotUse <- function(selectyears, climatetype, rankmethod, allocationrule
   wat_avl_agr_wc         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
 
   # Water already committed to irrigation
-  currHuman    <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
+  currHuman    <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, conservationstatus=conservationstatus, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
   currHuman_ww <- collapseNames(currHuman[,,"currHuman_ww"])
   currHuman_wc <- collapseNames(currHuman[,,"currHuman_wc"])
 
   # Water use for non-agricultural purposes
-  non_ag <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", iniyear=iniyear, climatetype=climatetype, aggregate=FALSE)
+  non_ag <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="non_agriculture", iniyear=iniyear, climatetype=climatetype, conservationstatus=conservationstatus, aggregate=FALSE)
   non_ag_ww <- collapseNames(non_ag[,,"currHuman_ww"])
   non_ag_wc <- collapseNames(non_ag[,,"currHuman_wc"])
 
