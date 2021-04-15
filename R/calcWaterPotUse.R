@@ -32,7 +32,7 @@ calcWaterPotUse <- function(selectyears, climatetype, conservationstatus, rankme
   if (!is.na(as.list(strsplit(avlland_scen, split=":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])) stop("Initialization year in calcWaterPotUse does not match: iniyear and avlland_scen should have same initialization year")
 
   # Water potentially available for irrigation (accounting for previously committed agricultural uses)
-  frac_fullirrig         <- collapseNames(calcOutput("RiverSurplusDischargeAllocation", output="frac_fullirrig", selectyears=selectyears, climatetype=climatetype, rankmethod=rankmethod, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE))
+  frac_fullirrig         <- collapseNames(calcOutput("RiverSurplusDischargeAllocation", output="frac_fullirrig", selectyears=selectyears, climatetype=climatetype, conservationstatus=conservationstatus, rankmethod=rankmethod, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE))
   required_wat_fullirrig <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype=climatetype, comagyear=iniyear, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)
   wat_avl_agr_ww         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]),  0)
   wat_avl_agr_wc         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)

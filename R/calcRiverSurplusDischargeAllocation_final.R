@@ -44,7 +44,7 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   required_wat_min_allocation <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, conservationstatus=conservationstatus, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"required_wat_min"])
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
-  discharge                   <- calcOutput("RiverDischargeNatAndHuman", selectyears=selectyears, iniyear=iniyear, climatetype=climatetype, aggregate=FALSE)
+  discharge                   <- calcOutput("RiverDischargeNatAndHuman", selectyears=selectyears, iniyear=iniyear, climatetype=climatetype, conservationstatus=conservationstatus, aggregate=FALSE)
 
   # Required water for full irrigation per cell (in mio. m^3)
   required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, climatetype=climatetype, comagyear=iniyear, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)
