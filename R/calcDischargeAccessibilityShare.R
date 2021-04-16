@@ -26,7 +26,7 @@ calcDischargeAccessibilityShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
   monthly_discharge_lpjml <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="mdischarge", climatetype=climatetype, stage="raw", aggregate=FALSE)
 
   # Extract years
-  years             <- getYears(monthly_discharge, as.integer=TRUE)
+  years             <- getYears(monthly_discharge_lpjml, as.integer=TRUE)
   if (class(selectyears)!="numeric") {
     selectyears <- as.numeric(gsub("y", "", selectyears))
   }
