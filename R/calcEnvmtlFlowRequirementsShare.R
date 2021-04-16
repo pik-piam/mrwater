@@ -26,10 +26,10 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
     # "fair condition" -> Q90 (discharge, which is exceeded 90 percent of the time on average throughout a year)
     LFR_val  <- 0.1
   } else if (conservationstatus=="good") {
-    # "fair condition" -> Q75 (discharge, which is exceeded 75 percent of the time on average throughout a year)
+    # "good condition" -> Q75 (discharge, which is exceeded 75 percent of the time on average throughout a year)
     LFR_val  <- 0.25
   } else if (conservationstatus=="natural") {
-    # "fair condition" -> Q50 (discharge, which is exceeded 50 percent of the time on average throughout a year)
+    # "natural condition" -> Q50 (discharge, which is exceeded 50 percent of the time on average throughout a year)
     LFR_val  <- 0.5
   } else {
     stop("Please select strictness of Environmental Flow Requirements: Options of the conservationstatus argument are fair, good, or natural riverrine ecosystem condition")
@@ -76,12 +76,11 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
   HFR[LFR>=0.3*mean_annual_discharge] <- HFR_LFR_more30 * mean_annual_discharge[LFR>=0.3*mean_annual_discharge]
   HFR[mean_annual_discharge<=0]       <- 0
 
-  ### EFR
+  # EFR
   EFR <- LFR + HFR
-  # Reduce EFR to 50% of available water where it exceeds this threshold (according to Smakhtin 2004)
-  EFR <- pmin(EFR, 0.5*mean_annual_discharge)
   # EFR as fraction of mean annual discharge
   EFR <- ifelse(mean_annual_discharge>0, EFR/mean_annual_discharge, 0)
+  EFR <- ifelse(EFR>1, 1, EFR)
 
   ### Transform to magpie object
   EFR                     <- as.magpie(EFR, spatial=1)
