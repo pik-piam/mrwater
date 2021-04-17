@@ -9,7 +9,7 @@
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param variabilitythreshold Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
 #'
-#' @importFrom magclass collapseNames new.magpie getYears
+#' @importFrom magclass collapseNames getYears setYears as.magpie mbind
 #' @importFrom madrat calcOutput
 #' @importFrom stats quantile
 #'
@@ -49,8 +49,8 @@ calcDischargeAccessibilityShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
     Discharge_quant   <- apply(monthly_discharge, MARGIN=c(1), quantile, probs=variabilitythreshold)
 
     # Share of monthly discharge that is accessible for human use
-    x <- apply(pmin(monthly_discharge, Discharge_quant), MARGIN=c(1), sum) / apply(monthly_discharge, MARGIN=c(1), sum)
-    x[apply(monthly_discharge, MARGIN=c(1), sum)==0] <- 0
+    x <- apply(pmin(monthly_discharge, Discharge_quant), MARGIN=1, sum) / apply(monthly_discharge, MARGIN=1, sum)
+    x[apply(monthly_discharge, MARGIN=1, sum)==0] <- 0
     x <- setYears(as.magpie(x, spatial=1), y)
     names(dimnames(x))[1] <- "x.y.iso"
 
