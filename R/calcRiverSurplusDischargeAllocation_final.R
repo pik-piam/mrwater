@@ -43,6 +43,8 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
 
   # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
   required_wat_min_allocation <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, conservationstatus=conservationstatus, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"required_wat_min"])
+  # Already committed water withdrawals
+  com_ww <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, conservationstatus=conservationstatus, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"currHuman_ww"])
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
   discharge                   <- calcOutput("RiverDischargeNatAndHuman", selectyears=selectyears, iniyear=iniyear, climatetype=climatetype, conservationstatus=conservationstatus, aggregate=FALSE)
@@ -58,8 +60,8 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   # Initialization of fraction of full irrigation requirements that can be fulfilled
   frac_fullirrig              <- new.magpie(cells_and_regions = getCells(discharge), years = getYears(discharge), names = getNames(discharge), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
 
-  # Discharge Accessibility Share
-  access_shr <- calcOutput("DischargeAccessibilityShare", selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, aggregate=FALSE)
+  # Discharge that is inaccessible to human uses (mio m^3)
+  inaccessible_discharge      <- calcOutput("DischargeInaccessibile", selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, aggregate=FALSE)
 
   # Initialization of objects
   tmp <- as.magpie(discharge)
@@ -74,13 +76,14 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
 
   discharge                   <- as.array(discharge)
   required_wat_min_allocation <- as.array(required_wat_min_allocation)
+  com_ww                      <- as.array(com_ww)
   frac_fullirrig              <- as.array(.transformObject(frac_fullirrig))
   required_wat_fullirrig_ww   <- as.array(.transformObject(required_wat_fullirrig_ww))
   required_wat_fullirrig_wc   <- as.array(.transformObject(required_wat_fullirrig_wc))
   irrig_yieldgainpotential    <- as.array(.transformObject(irrig_yieldgainpotential))
   avl_wat_ww                  <- as.array(.transformObject(0))
   avl_wat_wc                  <- as.array(.transformObject(0))
-  access_shr                  <- as.array(.transformObject(access_shr))
+  inaccessible_discharge      <- as.array(.transformObject(inaccessible_discharge))
 
   ################################################
   ####### River basin discharge allocation #######
@@ -93,7 +96,7 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   # list of objects that are inputs and outputs to the allocation function
   l_inout <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig)
   # list of objects that are inputs to the allocation function
-  l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc, access_shr=access_shr)
+  l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc, inaccessible_discharge=inaccessible_discharge, com_ww=com_ww)
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   glocellrank     <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)

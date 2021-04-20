@@ -24,7 +24,8 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     I_irrig_yieldgainpotential     <- l_in$irrig_yieldgainpotential
     avl_wat_ww                     <- l_in$avl_wat_ww
     avl_wat_wc                     <- l_in$avl_wat_wc
-    access_shr                     <- l_in$access_shr
+    inaccessible_discharge         <- l_in$inaccessible_discharge
+    com_ww                         <- l_in$com_ww
 
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
     allocationshare             <- 1 / (length(glocellrank[,1])/67420)
@@ -62,7 +63,9 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
       is_gain <- (I_irrig_yieldgainpotential[c,y,,drop=F] > l_in$gainthreshold)
 
       # available water for additional irrigation withdrawals
-      avl_wat_ww[c,y,][is_gain[,,,drop=F]] <- pmax(IO_discharge[c,y,,drop=F]*access_shr[c,y,,drop=F] - IO_required_wat_min_allocation[c,y,,drop=F], 0)[is_gain[,,,drop=F]]
+      # (Avl. water = Discharge - Inaccessible Discharge - Previously Committed for Human Consumption)
+      # (Inaccessible Discharge is either reserved for the environment: EFRs (required_wat_min_allocation - com_ww) or inaccessible due to variability (inaccessible_discharge) needs to be reserved)
+      avl_wat_ww[c,y,][is_gain[,,,drop=F]] <- pmax(IO_discharge[c,y,,drop=F] - pmax(IO_required_wat_min_allocation[c,y,,drop=F] - com_ww[c,y,,drop=F], inaccessible_discharge[c,y,,drop=F]) - com_ww[c,y,,drop=F], 0)[is_gain[,,,drop=F]]
 
       # withdrawal constraint (if there is water required for withdrawal in current grid cell)
       is_req_ww   <- (I_required_wat_fullirrig_ww[c,y,,drop=F]>0 & is_gain[,,,drop=F])
@@ -75,7 +78,9 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
         is_req_wc <- (I_required_wat_fullirrig_wc[c,y,,drop=F]>0 & is_req_ww[,,,drop=F])
 
         # available water for additional irrigation consumption (considering downstream availability)
-        avl_wat_wc[c,y,][is_req_wc[,,,drop=F]]     <- pmax(apply((IO_discharge[v_down,y,,drop=F]*access_shr[v_down,y,,drop=F] - IO_required_wat_min_allocation[v_down,y,,drop=F]), 3, min)[is_req_wc[,,,drop=F]], 0)
+        # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
+        avl_wat_wc[c,y,][is_req_wc[,,,drop=F]]     <- pmax(apply((pmax(IO_discharge[v_down,y,,drop=F] - pmax(IO_required_wat_min_allocation[v_down,y,,drop=F] - com_ww[v_down,y,,drop=F], inaccessible_discharge[v_down,y,,drop=F]) - com_ww[v_down,y,,drop=F], 0)), MARGIN=3, min)[is_req_wc[,,,drop=F]], 0)
+
         # how much consumption can be fulfilled by available water
         IO_frac_fullirrig[c,y,][is_req_wc[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][is_req_wc[,,,drop=F]] / I_required_wat_fullirrig_wc[c,y,,drop=F][is_req_wc[,,,drop=F]], IO_frac_fullirrig[c,y,,drop=F][is_req_wc[,,,drop=F]])
       }
@@ -84,6 +89,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
       IO_discharge[c(v_down,c),y,][is_req_ww[c(v_ones,1),,,drop=F]] <- (IO_discharge[c(v_down,c),y,,drop=F] - I_required_wat_fullirrig_wc[c(v_cell,c),y,,drop=F] * IO_frac_fullirrig[c(v_cell,c),y,,drop=F])[is_req_ww[c(v_ones,1),,,drop=F]]
       # update minimum water required in cell:
       IO_required_wat_min_allocation[c,y,][is_req_ww[,,,drop=F]]    <- (IO_required_wat_min_allocation[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
+      com_ww[c,y,][is_req_ww[,,,drop=F]]                            <- (com_ww[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
 
       # Function output
       discharge                   <- IO_discharge
@@ -127,7 +133,9 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
         is_gain <- (I_irrig_yieldgainpotential[c,y,,drop=F] > l_in$gainthreshold)
 
         # available water for additional irrigation withdrawals
-        avl_wat_ww[c,y,][is_gain[,,,drop=F]] <- pmax(IO_discharge[c,y,,drop=F]*access_shr[c,y,,drop=F] - IO_required_wat_min_allocation[c,y,,drop=F], 0)[is_gain[,,,drop=F]]
+        # (Avl. water = Discharge - Inaccessible Discharge - Previously Committed for Human Consumption)
+        # (Inaccessible Discharge is either reserved for the environment: EFRs (required_wat_min_allocation - com_ww) or inaccessible due to variability (inaccessible_discharge) needs to be reserved)
+        avl_wat_ww[c,y,][is_gain[,,,drop=F]] <- pmax(IO_discharge[c,y,,drop=F] - pmax(IO_required_wat_min_allocation[c,y,,drop=F] - com_ww[c,y,,drop=F], inaccessible_discharge[c,y,,drop=F]) - com_ww[c,y,,drop=F], 0)[is_gain[,,,drop=F]]
 
         # withdrawal constraint (if there is water required for withdrawal in current grid cell)
         is_req_ww   <- (I_required_wat_fullirrig_ww[c,y,,drop=F]>0 & is_gain[,,,drop=F])
@@ -140,7 +148,9 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
           is_req_wc <- (I_required_wat_fullirrig_wc[c,y,,drop=F]>0 & is_req_ww[,,,drop=F])
 
           # available water for additional irrigation consumption (considering downstream availability)
-          avl_wat_wc[c,y,][is_req_wc[,,,drop=F]]     <- pmax(apply((IO_discharge[v_down,y,,drop=F]*access_shr[v_down,y,,drop=F] - IO_required_wat_min_allocation[v_down,y,,drop=F]), 3, min)[is_req_wc[,,,drop=F]], 0)
+          # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
+          avl_wat_wc[c,y,][is_req_wc[,,,drop=F]]     <- pmax(apply((pmax(IO_discharge[v_down,y,,drop=F] - pmax(IO_required_wat_min_allocation[v_down,y,,drop=F] - com_ww[v_down,y,,drop=F], inaccessible_discharge[v_down,y,,drop=F]) - com_ww[v_down,y,,drop=F], 0)), MARGIN=3, min)[is_req_wc[,,,drop=F]], 0)
+
           # how much consumption can be fulfilled by available water
           IO_frac_fullirrig[c,y,][is_req_wc[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][is_req_wc[,,,drop=F]] / I_required_wat_fullirrig_wc[c,y,,drop=F][is_req_wc[,,,drop=F]], IO_frac_fullirrig[c,y,,drop=F][is_req_wc[,,,drop=F]])
         }
@@ -149,6 +159,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
         IO_discharge[c(v_down,c),y,][is_req_ww[c(v_ones,1),,,drop=F]] <- (IO_discharge[c(v_down,c),y,,drop=F] - I_required_wat_fullirrig_wc[c(v_cell,c),y,,drop=F] * IO_frac_fullirrig[c(v_cell,c),y,,drop=F])[is_req_ww[c(v_ones,1),,,drop=F]]
         # update minimum water required in cell:
         IO_required_wat_min_allocation[c,y,][is_req_ww[,,,drop=F]]    <- (IO_required_wat_min_allocation[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
+        com_ww[c,y,][is_req_ww[,,,drop=F]]                            <- (com_ww[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
 
         # Function output
         discharge                   <- IO_discharge

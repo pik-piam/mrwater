@@ -44,6 +44,9 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
   # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
   required_wat_min_allocation <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, conservationstatus=conservationstatus, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"required_wat_min"])
 
+  # Already committed water withdrawals
+  input_com_ww <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, conservationstatus=conservationstatus, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"currHuman_ww"])
+
   # Discharge determined by previous river routings (in mio. m^3 / yr)
   discharge                   <- calcOutput("RiverDischargeNatAndHuman", selectyears=selectyears, iniyear=iniyear, climatetype=climatetype, conservationstatus=conservationstatus, aggregate=FALSE)
 
@@ -55,8 +58,8 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential    <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, proxycrop=proxycrop, monetary=thresholdtype, iniyear=iniyear, aggregate=FALSE)
 
-  # Discharge Accessibility Share
-  I_access_shr <- calcOutput("DischargeAccessibilityShare", selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, aggregate=FALSE)
+  # Discharge that is inaccessible to human uses (mio m^3)
+  inaccessible_discharge      <- calcOutput("DischargeInaccessibile", selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, aggregate=FALSE)
 
   if (allocationrule=="optimization") {
     # Retrieve arguments
@@ -87,13 +90,14 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
   irrig_yieldgainpotential    <- as.array(irrig_yieldgainpotential)[,,1]
   required_wat_fullirrig_ww   <- as.array(required_wat_fullirrig_ww)[,,1]
   required_wat_fullirrig_wc   <- as.array(required_wat_fullirrig_wc)[,,1]
+  inaccessible_discharge      <- as.array(inaccessible_discharge)[,,1]
 
   for (EFP in c("on", "off")) {
     for (scen in unique(gsub(".*.\\.", "", getNames(required_wat_min_allocation)))){
       for (y in selectyears){
 
         O_discharge    <- as.array(discharge[,y,paste(EFP,scen,sep=".")])[,1,1]
-        access_shr     <- as.array(I_access_shr[,y,])[,1,1]
+        com_ww         <- as.array(input_com_ww[,y,paste(EFP,scen,sep=".")])[,1,1]
         frac_fullirrig <- array(data=0,dim=67420)
         avl_wat_ww     <- array(data=0,dim=67420)
         avl_wat_wc     <- array(data=0,dim=67420)
@@ -114,7 +118,9 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
           if (irrig_yieldgainpotential[c,y] > gainthreshold) {
 
             # available water for additional irrigation withdrawals
-            avl_wat_ww <- max(O_discharge[c]*access_shr[c]-O_required_wat_min_allocation[c],0)
+            # (Avl. water = Discharge - Inaccessible Discharge - Previously Committed for Human Consumption)
+            # (Inaccessible Discharge is either reserved for the environment: EFRs (required_wat_min_allocation - com_ww) or inaccessible due to variability (inaccessible_discharge) needs to be reserved)
+            avl_wat_ww <- max(O_discharge[c] - max(required_wat_min_allocation[c] - com_ww[c], inaccessible_discharge[c,y]) - com_ww[c], 0)
 
             # withdrawal constraint
             if (required_wat_fullirrig_ww[c,y]>0) {
@@ -124,7 +130,9 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
               # consumption constraint
               if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
                 # available water for additional irrigation consumption (considering downstream availability)
-                avl_wat_wc          <- max(min(O_discharge[rs$downstreamcells[[c]]]*access_shr[rs$downstreamcells[[c]]] - O_required_wat_min_allocation[rs$downstreamcells[[c]]]),0)
+                # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
+                avl_wat_wc         <- max(apply((max(O_discharge[rs$downstreamcells[[c]]] - pmax(O_required_wat_min_allocation[rs$downstreamcells[[c]]] - com_ww[rs$downstreamcells[[c]]], inaccessible_discharge[rs$downstreamcells[[c]]]) - com_ww[rs$downstreamcells[[c]]], 0)), MARGIN=3, min), 0)
+
                 # how much consumption can be fulfilled by available water
                 frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
               }
@@ -133,6 +141,8 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
               O_discharge[c(rs$downstreamcells[[c]],c)] <- O_discharge[c(rs$downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
               # update minimum water required in cell:
               O_required_wat_min_allocation[c] <- O_required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
+              com_ww[c]                        <- com_ww[c] + frac_fullirrig[c] * required_wat_fullirrig_ww[c,y]
+
             }
           }
         }
@@ -148,7 +158,9 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
             # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
             if (irrig_yieldgainpotential[c,y] > gainthreshold) {
               # available water for additional irrigation withdrawals
-              avl_wat_ww <- max(O_discharge[c]*access_shr[c]-O_required_wat_min_allocation[c],0)
+              # (Avl. water = Discharge - Inaccessible Discharge - Previously Committed for Human Consumption)
+              # (Inaccessible Discharge is either reserved for the environment: EFRs (required_wat_min_allocation - com_ww) or inaccessible due to variability (inaccessible_discharge) needs to be reserved)
+              avl_wat_ww <- max(O_discharge[c] - max(O_required_wat_min_allocation[c] - com_ww[c], inaccessible_discharge[c,y]) - com_ww[c], 0)
 
               # withdrawal constraint
               if (required_wat_fullirrig_ww[c,y]>0) {
@@ -158,7 +170,9 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
                 # consumption constraint
                 if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
                   # available water for additional irrigation consumption (considering downstream availability)
-                  avl_wat_wc          <- max(min(O_discharge[rs$downstreamcells[[c]]]*access_shr[rs$downstreamcells[[c]]] - O_required_wat_min_allocation[rs$downstreamcells[[c]]]),0)
+                  # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
+                  avl_wat_wc         <- max(apply((max(O_discharge[rs$downstreamcells[[c]]] - pmax(O_required_wat_min_allocation[rs$downstreamcells[[c]]] - com_ww[rs$downstreamcells[[c]]], inaccessible_discharge[rs$downstreamcells[[c]]]) - com_ww[rs$downstreamcells[[c]]], 0)), MARGIN=3, min), 0)
+
                   # how much consumption can be fulfilled by available water
                   frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
                 }
@@ -167,6 +181,7 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
                 O_discharge[c(rs$downstreamcells[[c]],c)] <- O_discharge[c(rs$downstreamcells[[c]],c)] - required_wat_fullirrig_wc[c,y]*frac_fullirrig[c]
                 # update minimum water required in cell:
                 O_required_wat_min_allocation[c] <- O_required_wat_min_allocation[c] + frac_fullirrig[c]*required_wat_fullirrig_ww[c,y]
+                com_ww[c]                        <- com_ww[c] + frac_fullirrig[c] * required_wat_fullirrig_ww[c,y]
               }
             }
           }
