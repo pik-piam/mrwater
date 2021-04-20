@@ -49,22 +49,24 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
   # Transform to array (faster calculation)
   monthly_discharge_magpie <-  as.array(collapseNames(monthly_discharge_magpie))
 
-  ### Calculate LFRs
-  ## Note: LFRs correspond to the Q90-value (i.e. to the discharge that is exceeded in nine out of ten months)
-  ## (Bonsch et al. 2015). This is calculated via the 10%-quantile of monthly discharge.
-
-  # Get the monthly LFR_val quantile for all cells (across selected long-term reference time period)
-  LFR_quant <- apply(monthly_discharge_magpie, MARGIN=c(1), quantile, probs=LFR_val)
-  Q90       <- apply(monthly_discharge_magpie, MARGIN=c(1), quantile, probs=0.1)
-
-  # Yearly LFRs and Q90
-  LFR       <- LFR_quant * 12
-  Q90       <- Q90 * 12
-
   ### Mean annual discharge
   mean_annual_discharge <- apply(monthly_discharge_magpie, MARGIN=c(1), sum) / length(years)
 
-  ### Calculate HFR
+  ### Calculate LFRs
+  ## Note: LFRs correspond to the Q90/Q75/Q50-value (depending on EFR conservation status)
+  ## This is calculated via the 10%/25%/50%-quantile of monthly discharge.
+
+  # Get the monthly LFR_val quantile for all cells (across selected long-term reference time period)
+  LFR_quant <- apply(monthly_discharge_magpie, MARGIN=c(1), quantile, probs=LFR_val)
+  # Yearly LFRs
+  LFR       <- LFR_quant * 12
+  # LFR-Share: LFR as fraction of mean annual discharge
+  LFR <- ifelse(mean_annual_discharge>0, LFR/mean_annual_discharge, 0)
+
+  ### Calculate HFR-Share
+  # Yearly Q90
+  Q90       <- apply(monthly_discharge_magpie, MARGIN=c(1), quantile, probs=0.1) * 12
+
   ## Note: "For rivers with low Q90 values, high-flow events are important
   ## for river channel maintenance, wetland flooding, and riparian vegetation.
   ## HFRs of 20% of available water are therefore assigned to rivers with a
@@ -72,16 +74,15 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
   ## regime receive a lower HFR." (Bonsch et al. 2015)
   HFR <- LFR
   HFR <- NA
-  HFR[Q90<0.1*mean_annual_discharge]  <- HFR_Q90_less10 * mean_annual_discharge[Q90<0.1*mean_annual_discharge]
-  HFR[Q90>=0.1*mean_annual_discharge] <- HFR_Q90_10_20  * mean_annual_discharge[Q90>=0.1*mean_annual_discharge]
-  HFR[Q90>=0.2*mean_annual_discharge] <- HFR_Q90_20_30  * mean_annual_discharge[Q90>=0.2*mean_annual_discharge]
-  HFR[Q90>=0.3*mean_annual_discharge] <- HFR_Q90_more30 * mean_annual_discharge[Q90>=0.3*mean_annual_discharge]
-  HFR[mean_annual_discharge<=0]       <- 0
+  HFR[Q90<0.1*mean_annual_discharge]  <- HFR_Q90_less10
+  HFR[Q90>=0.1*mean_annual_discharge] <- HFR_Q90_10_20
+  HFR[Q90>=0.2*mean_annual_discharge] <- HFR_Q90_20_30
+  HFR[Q90>=0.3*mean_annual_discharge] <- HFR_Q90_more30
+  HFR[mean_annual_discharge<=0]       <- HFR_Q90_less10
 
-  # EFR
+  # EFR Share
   EFR <- LFR + HFR
-  # EFR as fraction of mean annual discharge
-  EFR <- ifelse(mean_annual_discharge>0, EFR/mean_annual_discharge, 0)
+  # EFR fraction capped to 1
   EFR <- ifelse(EFR>1, 1, EFR)
 
   ### Transform to magpie object
