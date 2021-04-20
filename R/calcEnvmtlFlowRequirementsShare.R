@@ -36,10 +36,10 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
   }
 
   # HFR: high flow requirements dependent on LFRs
-  HFR_LFR_less10 <- 0.2    # for LFR < 10percent of total water
-  HFR_LFR_10_20  <- 0.15   # for 10percent < LFR < 20percent of total water
-  HFR_LFR_20_30  <- 0.07   # for 20percent < LFR < 30percent of total water
-  HFR_LFR_more30 <- 0.00   # for LFR > 30percent of total water
+  HFR_Q90_less10 <- 0.2    # for Q90 < 10percent of total water
+  HFR_Q90_10_20  <- 0.15   # for 10percent < Q90 < 20percent of total water
+  HFR_Q90_20_30  <- 0.07   # for 20percent < Q90 < 30percent of total water
+  HFR_Q90_more30 <- 0.00   # for Q90 > 30percent of total water
 
   ### Monthly Discharge from LPJmL (raw: including variation)
   monthly_discharge_magpie <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="mdischarge", climatetype=climatetype, stage="raw", years=EFRyears, aggregate=FALSE)
@@ -55,9 +55,11 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
 
   # Get the monthly LFR_val quantile for all cells (across selected long-term reference time period)
   LFR_quant <- apply(monthly_discharge_magpie, MARGIN=c(1), quantile, probs=LFR_val)
+  Q90       <- apply(monthly_discharge_magpie, MARGIN=c(1), quantile, probs=0.1)
 
-  # Yearly LFRs
+  # Yearly LFRs and Q90
   LFR       <- LFR_quant * 12
+  Q90       <- Q90 * 12
 
   ### Mean annual discharge
   mean_annual_discharge <- apply(monthly_discharge_magpie, MARGIN=c(1), sum) / length(years)
@@ -70,10 +72,10 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
   ## regime receive a lower HFR." (Bonsch et al. 2015)
   HFR <- LFR
   HFR <- NA
-  HFR[LFR<0.1*mean_annual_discharge]  <- HFR_LFR_less10 * mean_annual_discharge[LFR<0.1*mean_annual_discharge]
-  HFR[LFR>=0.1*mean_annual_discharge] <- HFR_LFR_10_20  * mean_annual_discharge[LFR>=0.1*mean_annual_discharge]
-  HFR[LFR>=0.2*mean_annual_discharge] <- HFR_LFR_20_30  * mean_annual_discharge[LFR>=0.2*mean_annual_discharge]
-  HFR[LFR>=0.3*mean_annual_discharge] <- HFR_LFR_more30 * mean_annual_discharge[LFR>=0.3*mean_annual_discharge]
+  HFR[Q90<0.1*mean_annual_discharge]  <- HFR_Q90_less10 * mean_annual_discharge[Q90<0.1*mean_annual_discharge]
+  HFR[Q90>=0.1*mean_annual_discharge] <- HFR_Q90_10_20  * mean_annual_discharge[Q90>=0.1*mean_annual_discharge]
+  HFR[Q90>=0.2*mean_annual_discharge] <- HFR_Q90_20_30  * mean_annual_discharge[Q90>=0.2*mean_annual_discharge]
+  HFR[Q90>=0.3*mean_annual_discharge] <- HFR_Q90_more30 * mean_annual_discharge[Q90>=0.3*mean_annual_discharge]
   HFR[mean_annual_discharge<=0]       <- 0
 
   # EFR
