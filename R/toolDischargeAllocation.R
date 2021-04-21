@@ -107,7 +107,8 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     I_irrig_yieldgainpotential     <- l_in$irrig_yieldgainpotential
     avl_wat_ww                     <- l_in$avl_wat_ww
     avl_wat_wc                     <- l_in$avl_wat_wc
-    access_shr                     <- l_in$access_shr
+    inaccessible_discharge         <- l_in$inaccessible_discharge
+    com_ww                         <- l_in$com_ww
 
     for (o in 1:max(rs$calcorder)) {
       cells <- which(rs$calcorder==o)
