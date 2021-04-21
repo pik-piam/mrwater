@@ -131,7 +131,7 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
               if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
                 # available water for additional irrigation consumption (considering downstream availability)
                 # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
-                avl_wat_wc         <- max(apply((max(O_discharge[rs$downstreamcells[[c]]] - pmax(O_required_wat_min_allocation[rs$downstreamcells[[c]]] - com_ww[rs$downstreamcells[[c]]], inaccessible_discharge[rs$downstreamcells[[c]]]) - com_ww[rs$downstreamcells[[c]]], 0)), MARGIN=3, min), 0)
+                avl_wat_wc         <- max(min(O_discharge[rs$downstreamcells[[c]]] - pmax(O_required_wat_min_allocation[rs$downstreamcells[[c]]] - com_ww[rs$downstreamcells[[c]]], inaccessible_discharge[rs$downstreamcells[[c]]]) - com_ww[rs$downstreamcells[[c]]]), 0)
 
                 # how much consumption can be fulfilled by available water
                 frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
@@ -171,10 +171,10 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
                 if (required_wat_fullirrig_wc[c,y]>0 & length(rs$downstreamcells[[c]])>0) {
                   # available water for additional irrigation consumption (considering downstream availability)
                   # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
-                  avl_wat_wc         <- max(apply((max(O_discharge[rs$downstreamcells[[c]]] - pmax(O_required_wat_min_allocation[rs$downstreamcells[[c]]] - com_ww[rs$downstreamcells[[c]]], inaccessible_discharge[rs$downstreamcells[[c]]]) - com_ww[rs$downstreamcells[[c]]], 0)), MARGIN=3, min), 0)
+                  avl_wat_wc         <- max(min(O_discharge[rs$downstreamcells[[c]]] - pmax(O_required_wat_min_allocation[rs$downstreamcells[[c]]] - com_ww[rs$downstreamcells[[c]]], inaccessible_discharge[rs$downstreamcells[[c]]]) - com_ww[rs$downstreamcells[[c]]]), 0)
 
                   # how much consumption can be fulfilled by available water
-                  frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
+                  frac_fullirrig[c]  <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
                 }
 
                 # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
