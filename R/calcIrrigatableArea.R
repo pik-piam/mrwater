@@ -44,7 +44,7 @@ calcIrrigatableArea <- function(selectyears, climatetype, conservationstatus, va
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
   irrigarea_ww <- pmin(wat_avl_irrig_w / wat_req_ww, 1) * area_potirrig
-  irrigarea_ww[wat_req_ww==0] <- 0      #### 0 or area_potirrig??? (area_potirrig = 0 where wat_req_ww = 0): FALSE. Reason: in FullIrrigationRequirements historical cropshare is considered (when 0 -> wat_req 0, but area not)
+  irrigarea_ww[wat_req_ww==0] <- 0      # cells with no water requirements also get no irrigated area assigned
   irrigarea_ww <- add_dimension(irrigarea_ww, dim=3.3, add="data", nm="irrigatable_ww")
 
   irrigarea_wc <- pmin(wat_avl_irrig_c / wat_req_wc, 1) * area_potirrig

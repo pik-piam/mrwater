@@ -61,26 +61,6 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
   # Discharge that is inaccessible to human uses (mio m^3)
   inaccessible_discharge      <- calcOutput("DischargeInaccessibile", selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, aggregate=FALSE)
 
-  ### Transform Objects ###
-  ## Transform object dimensions
-  .transformObject <- function(x) {
-    # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getCells(discharge), years = getYears(discharge), names = getNames(discharge), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
-    # bring object x to dimension of object0
-    out     <- object0 + x
-    return(out)
-  }
-
-  IO_discharge                <- as.array(discharge)
-  required_wat_min_allocation <- as.array(required_wat_min_allocation)
-  required_wat_fullirrig_ww   <- as.array(.transformObject(required_wat_fullirrig_ww))
-  required_wat_fullirrig_wc   <- as.array(.transformObject(required_wat_fullirrig_wc))
-  irrig_yieldgainpotential    <- as.array(.transformObject(irrig_yieldgainpotential))
-  frac_fullirrig              <- as.array(.transformObject(0))
-  avl_wat_ww                  <- as.array(.transformObject(0))
-  avl_wat_wc                  <- as.array(.transformObject(0))
-  inaccessible_discharge      <- as.array(.transformObject(inaccessible_discharge))
-
   if (allocationrule=="optimization") {
     # Retrieve arguments
     fullpotential <- as.logical(strsplit(rankmethod, ":")[[1]][2])
@@ -94,6 +74,27 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
     required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
     required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
   }
+
+  ### Transform Objects ###
+  ## Transform object dimensions
+  .transformObject <- function(x) {
+    # empty magpie object structure
+    object0 <- new.magpie(cells_and_regions = getCells(discharge), years = getYears(discharge), names = getNames(discharge), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
+    # bring object x to dimension of object0
+    out     <- object0 + x
+    return(out)
+  }
+
+  IO_discharge                <- as.array(discharge)
+  com_ww                      <- as.array(com_ww)
+  required_wat_min_allocation <- as.array(required_wat_min_allocation)
+  required_wat_fullirrig_ww   <- as.array(.transformObject(required_wat_fullirrig_ww))
+  required_wat_fullirrig_wc   <- as.array(.transformObject(required_wat_fullirrig_wc))
+  irrig_yieldgainpotential    <- as.array(.transformObject(irrig_yieldgainpotential))
+  frac_fullirrig              <- as.array(.transformObject(0))
+  avl_wat_ww                  <- as.array(.transformObject(0))
+  avl_wat_wc                  <- as.array(.transformObject(0))
+  inaccessible_discharge      <- as.array(.transformObject(inaccessible_discharge))
 
   ################################################
   ####### River basin discharge allocation #######
