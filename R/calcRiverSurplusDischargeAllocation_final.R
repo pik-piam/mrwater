@@ -94,9 +94,9 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   }
 
   # list of objects that are inputs and outputs to the allocation function
-  l_inout <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig)
+  l_inout <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig, com_ww=com_ww)
   # list of objects that are inputs to the allocation function
-  l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc, inaccessible_discharge=inaccessible_discharge, com_ww=com_ww)
+  l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc, inaccessible_discharge=inaccessible_discharge)
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   glocellrank     <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
