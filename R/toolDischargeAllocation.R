@@ -79,7 +79,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
 
         # available water for additional irrigation consumption (considering downstream availability)
         # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
-        avl_wat_wc[c,y,][is_req_wc[,,,drop=F]] <- pmax(apply((pmax(IO_discharge[v_down,y,,drop=F] - pmax(IO_required_wat_min_allocation[v_down,y,,drop=F] - IO_com_ww[v_down,y,,drop=F], inaccessible_discharge[v_down,y,,drop=F]) - IO_com_ww[v_down,y,,drop=F], 0)), MARGIN=3, min)[is_req_wc[,,,drop=F]], 0)
+        avl_wat_wc[c,y,][is_req_wc[,,,drop=F]] <- pmax(apply(IO_discharge[v_down,y,,drop=F] - pmax(IO_required_wat_min_allocation[v_down,y,,drop=F] - IO_com_ww[v_down,y,,drop=F], inaccessible_discharge[v_down,y,,drop=F]) - IO_com_ww[v_down,y,,drop=F], MARGIN=3, min), 0)[is_req_wc[,,,drop=F]]
 
         # how much consumption can be fulfilled by available water
         IO_frac_fullirrig[c,y,][is_req_wc[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][is_req_wc[,,,drop=F]] / I_required_wat_fullirrig_wc[c,y,,drop=F][is_req_wc[,,,drop=F]], IO_frac_fullirrig[c,y,,drop=F][is_req_wc[,,,drop=F]])
@@ -144,7 +144,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
 
           # available water for additional irrigation consumption (considering downstream availability)
           # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
-          avl_wat_wc[c,y,][is_req_wc[,,,drop=F]]     <- pmax(apply((pmax(IO_discharge[v_down,y,,drop=F] - pmax(IO_required_wat_min_allocation[v_down,y,,drop=F] - IO_com_ww[v_down,y,,drop=F], inaccessible_discharge[v_down,y,,drop=F]) - IO_com_ww[v_down,y,,drop=F], 0)), MARGIN=3, min)[is_req_wc[,,,drop=F]], 0)
+          avl_wat_wc[c,y,][is_req_wc[,,,drop=F]]     <- pmax(apply(IO_discharge[v_down,y,,drop=F] - pmax(IO_required_wat_min_allocation[v_down,y,,drop=F] - IO_com_ww[v_down,y,,drop=F], inaccessible_discharge[v_down,y,,drop=F]) - IO_com_ww[v_down,y,,drop=F], MARGIN=3, min), 0)[is_req_wc[,,,drop=F]]
 
           # how much consumption can be fulfilled by available water
           IO_frac_fullirrig[c,y,][is_req_wc[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][is_req_wc[,,,drop=F]] / I_required_wat_fullirrig_wc[c,y,,drop=F][is_req_wc[,,,drop=F]], IO_frac_fullirrig[c,y,,drop=F][is_req_wc[,,,drop=F]])

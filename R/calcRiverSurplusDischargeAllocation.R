@@ -145,7 +145,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
 
           # available water for additional irrigation consumption (considering downstream availability)
           # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
-          avl_wat_wc[c,y,][wc_constraint[,,,drop=F]]     <- pmax(apply((IO_discharge[down,y,,drop=F] - pmax(required_wat_min_allocation[down,y,,drop=F] - com_ww[down,y,,drop=F], inaccessible_discharge[down,y,,drop=F]) - com_ww[down,y,,drop=F]), MARGIN=3, min)[wc_constraint[,,,drop=F]], 0)
+          avl_wat_wc[c,y,][wc_constraint[,,,drop=F]]     <- pmax(apply((IO_discharge[down,y,,drop=F] - pmax(required_wat_min_allocation[down,y,,drop=F] - com_ww[down,y,,drop=F], inaccessible_discharge[down,y,,drop=F]) - com_ww[down,y,,drop=F]), MARGIN=3, min), 0)[wc_constraint[,,,drop=F]]
 
           # how much consumption can be fulfilled by available water
           frac_fullirrig[c,y,][wc_constraint[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][wc_constraint[,,,drop=F]] / required_wat_fullirrig_wc[c,y,,drop=F][wc_constraint[,,,drop=F]], frac_fullirrig[c,y,,drop=F][wc_constraint[,,,drop=F]])
@@ -193,7 +193,7 @@ calcRiverSurplusDischargeAllocation <- function(selectyears, output, climatetype
 
             # available water for additional irrigation consumption (considering downstream availability)
             # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
-            avl_wat_wc[c,y,][wc_constraint[,,,drop=F]]     <- pmax(apply((IO_discharge[down,y,,drop=F] - pmax(required_wat_min_allocation[down,y,,drop=F] - com_ww[down,y,,drop=F], inaccessible_discharge[down,y,,drop=F]) - com_ww[down,y,,drop=F]), MARGIN=3, min)[wc_constraint[,,,drop=F]], 0)
+            avl_wat_wc[c,y,][wc_constraint[,,,drop=F]]     <- pmax(apply((IO_discharge[down,y,,drop=F] - pmax(required_wat_min_allocation[down,y,,drop=F] - com_ww[down,y,,drop=F], inaccessible_discharge[down,y,,drop=F]) - com_ww[down,y,,drop=F]), MARGIN=3, min), 0)[wc_constraint[,,,drop=F]]
 
             # how much consumption can be fulfilled by available water
             frac_fullirrig[c,y,][wc_constraint[,,,drop=F]] <- pmin(avl_wat_wc[c,y,,drop=F][wc_constraint[,,,drop=F]] / required_wat_fullirrig_wc[c,y,,drop=F][wc_constraint[,,,drop=F]], frac_fullirrig[c,y,,drop=F][wc_constraint[,,,drop=F]])

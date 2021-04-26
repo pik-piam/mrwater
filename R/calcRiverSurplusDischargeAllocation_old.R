@@ -134,7 +134,7 @@ calcRiverSurplusDischargeAllocation_old <- function(selectyears, output, climate
                 avl_wat_wc         <- max(min(O_discharge[rs$downstreamcells[[c]]] - pmax(O_required_wat_min_allocation[rs$downstreamcells[[c]]] - com_ww[rs$downstreamcells[[c]]], inaccessible_discharge[rs$downstreamcells[[c]],y]) - com_ww[rs$downstreamcells[[c]]]), 0)
 
                 # how much consumption can be fulfilled by available water
-                frac_fullirrig[c]   <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
+                frac_fullirrig[c]  <- min(avl_wat_wc/required_wat_fullirrig_wc[c,y],frac_fullirrig[c])
               }
 
               # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
