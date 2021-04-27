@@ -7,7 +7,7 @@
 calcWaterPotUse(
   selectyears,
   climatetype,
-  conservationstatus,
+  EFRmethod,
   variabilitythreshold,
   rankmethod,
   allocationrule,
@@ -24,7 +24,7 @@ calcWaterPotUse(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{conservationstatus}{Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)}
+\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
 \item{variabilitythreshold}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
 
