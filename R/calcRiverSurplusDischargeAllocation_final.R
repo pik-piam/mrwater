@@ -63,6 +63,10 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   # Discharge that is inaccessible to human uses (mio m^3)
   inaccessible_discharge      <- calcOutput("DischargeInaccessibile", selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, aggregate=FALSE)
 
+  # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
+  glocellrank     <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
+  glocellrank     <- as.array(glocellrank)[,,1]
+
   # Initialization of objects
   tmp <- as.magpie(discharge)
 
@@ -97,10 +101,6 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   l_inout <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig, com_ww=com_ww)
   # list of objects that are inputs to the allocation function
   l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc, inaccessible_discharge=inaccessible_discharge)
-
-  # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  glocellrank     <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
-  glocellrank     <- as.array(glocellrank)[,,1]
 
   for (y in selectyears) {
     l_inout <- toolDischargeAllocation(y=y, rs=rs, l_inout=l_inout, l_in=l_in, glocellrank=glocellrank, allocationrule=allocationrule)

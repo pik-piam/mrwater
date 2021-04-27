@@ -33,6 +33,11 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
 
     rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
+    IO_discharge                   <- l_inout$discharge
+    IO_required_wat_min_allocation <- l_inout$required_wat_min_allocation
+    IO_frac_fullirrig              <- l_inout$frac_fullirrig
+    IO_com_ww                      <- l_inout$com_ww
+
     for (o in (1:max(glocellrank[,y], na.rm=T))) { #test <- rs$cells[order(glocellrank[,y])]
 
       # Extract the cell number (depending on type of cellranking)
@@ -45,11 +50,6 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
       ### Potential Function Improvements:
       #(1) GENERALIZE: FLEXIBLE FOR YEARS AND CELLS
       #(2) Allocation of certain share in first round (e.g. 75%); then filling up in second round if water left
-
-      IO_discharge                   <- l_inout$discharge
-      IO_required_wat_min_allocation <- l_inout$required_wat_min_allocation
-      IO_frac_fullirrig              <- l_inout$frac_fullirrig
-      IO_com_ww                      <- l_inout$com_ww
 
       # Helper vectors for subsetting of objects
       # vector of downstreamcells of c
@@ -90,9 +90,9 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
       # update minimum water required in cell:
       IO_required_wat_min_allocation[c,y,][is_req_ww[,,,drop=F]]    <- (IO_required_wat_min_allocation[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
       IO_com_ww[c,y,][is_req_ww[,,,drop=F]]                         <- (IO_com_ww[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
-
-      l_inout <- list(discharge=IO_discharge, required_wat_min_allocation=IO_required_wat_min_allocation, frac_fullirrig=IO_frac_fullirrig, com_ww=IO_com_ww)
     }
+
+    l_inout <- list(discharge=IO_discharge, required_wat_min_allocation=IO_required_wat_min_allocation, frac_fullirrig=IO_frac_fullirrig, com_ww=IO_com_ww)
 
   } else if (allocationrule=="upstreamfirst") {
 
@@ -103,6 +103,11 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     avl_wat_wc                     <- l_in$avl_wat_wc
     inaccessible_discharge         <- l_in$inaccessible_discharge
 
+    IO_discharge                   <- l_inout$discharge
+    IO_required_wat_min_allocation <- l_inout$required_wat_min_allocation
+    IO_frac_fullirrig              <- l_inout$frac_fullirrig
+    IO_com_ww                      <- l_inout$com_ww
+
     for (o in 1:max(rs$calcorder)) {
       cells <- which(rs$calcorder==o)
 
@@ -110,11 +115,6 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
         ### Potential Function Improvements:
         #(1) GENERALIZE: FLEXIBLE FOR YEARS AND CELLS
         #(2) Allocation of certain share in first round (e.g. 75%); then filling up in second round if water left
-
-        IO_discharge                   <- l_inout$discharge
-        IO_required_wat_min_allocation <- l_inout$required_wat_min_allocation
-        IO_frac_fullirrig              <- l_inout$frac_fullirrig
-        IO_com_ww                      <- l_inout$com_ww
 
         # Helper vectors for subsetting of objects
         # vector of downstreamcells of c
@@ -155,10 +155,10 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
         # update minimum water required in cell:
         IO_required_wat_min_allocation[c,y,][is_req_ww[,,,drop=F]]    <- (IO_required_wat_min_allocation[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
         IO_com_ww[c,y,][is_req_ww[,,,drop=F]]                         <- (IO_com_ww[c,y,,drop=F] + IO_frac_fullirrig[c,y,,drop=F] * I_required_wat_fullirrig_ww[c,y,,drop=F])[is_req_ww[,,,drop=F]]
-
-        l_inout <- list(discharge=IO_discharge, required_wat_min_allocation=IO_required_wat_min_allocation, frac_fullirrig=IO_frac_fullirrig, com_ww=IO_com_ww)
-
       }
+
+      l_inout <- list(discharge=IO_discharge, required_wat_min_allocation=IO_required_wat_min_allocation, frac_fullirrig=IO_frac_fullirrig, com_ww=IO_com_ww)
+
     }
   }
 
