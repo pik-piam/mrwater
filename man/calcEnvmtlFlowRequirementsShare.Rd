@@ -8,7 +8,7 @@ calcEnvmtlFlowRequirementsShare(
   lpjml = c(natveg = "LPJmL4_for_MAgPIE_84a69edd", crop =
     "ggcmi_phase3_nchecks_72c185fa"),
   climatetype,
-  conservationstatus
+  EFRmethod
 )
 }
 \arguments{
@@ -16,7 +16,7 @@ calcEnvmtlFlowRequirementsShare(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{conservationstatus}{Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)}
+\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 }
 \value{
 magpie object in cellular resolution representing share of discharge that is reserved for environmental flows

@@ -3,7 +3,7 @@
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param conservationstatus Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)
+#' @param EFRmethod   EFR method used including selected strictness of EFRs (Smakhtin:good, VMF:fair)
 #'
 #' @importFrom magclass collapseNames as.magpie
 #' @importFrom madrat calcOutput
@@ -15,10 +15,10 @@
 #' \dontrun{ calcOutput("EnvmtlFlowRequirements", aggregate=FALSE) }
 #'
 
-calcEnvmtlFlowRequirements <- function(selectyears, climatetype, conservationstatus) {
+calcEnvmtlFlowRequirements <- function(selectyears, climatetype, EFRmethod) {
 
   # Read in share of discharge to be reserved for environment (per cell)
-  EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", climatetype=climatetype, conservationstatus=conservationstatus, aggregate=FALSE)
+  EFR_magpie_frac <- calcOutput("EnvmtlFlowRequirementsShare", climatetype=climatetype, EFRmethod=EFRmethod, aggregate=FALSE)
 
   # Read in natural discharge (in mio. m^3 / yr)
   discharge_nat   <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, climatetype=climatetype, aggregate=FALSE)[,,"discharge_nat"])

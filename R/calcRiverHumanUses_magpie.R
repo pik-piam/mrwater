@@ -5,8 +5,8 @@
 #' @param subtype     Subtype to be returned: discharge or required_wat_min or frac_fulfilled
 #' @param humanuse    Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param iniyear          Initialization year of irrigation system
-#' @param conservationstatus Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)
+#' @param iniyear     Initialization year of irrigation system
+#' @param EFRmethod   EFR method used including selected strictness of EFRs (Smakhtin:good, VMF:fair)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -20,7 +20,7 @@
 #' \dontrun{ calcOutput("RiverHumanUses_magpie", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses_magpie <- function(selectyears, humanuse, subtype, iniyear, climatetype, conservationstatus) {
+calcRiverHumanUses_magpie <- function(selectyears, humanuse, subtype, iniyear, climatetype, EFRmethod) {
   # # # # # # # # # # #
   # # # READ IN DATA # #
   # # # # # # # # # # #
@@ -101,7 +101,7 @@ calcRiverHumanUses_magpie <- function(selectyears, humanuse, subtype, iniyear, c
 
     # Minimum flow requirements determined by natural flow river routing: Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
     IO_required_wat_min         <- new.magpie(cells_and_regions = getCells(yearly_runoff), years = getYears(yearly_runoff), names = c("on", "off"), fill = 0)
-    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, conservationstatus=conservationstatus, aggregate=FALSE)
+    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, aggregate=FALSE)
     # Bring to correct object size
     IO_required_wat_min <- .transformObject(IO_required_wat_min)
 
@@ -117,9 +117,9 @@ calcRiverHumanUses_magpie <- function(selectyears, humanuse, subtype, iniyear, c
   } else if (humanuse=="committed_agriculture") {
 
     # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
-    IO_required_wat_min <- calcOutput("RiverHumanUses", iniyear=iniyear, selectyears=selectyears, humanuse="non_agriculture", subtype="required_wat_min", aggregate=FALSE, climatetype=climatetype, conservationstatus=conservationstatus)
+    IO_required_wat_min <- calcOutput("RiverHumanUses", iniyear=iniyear, selectyears=selectyears, humanuse="non_agriculture", subtype="required_wat_min", aggregate=FALSE, climatetype=climatetype, EFRmethod=EFRmethod)
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
-    prevHuman_wc <- calcOutput("RiverHumanUses", iniyear=iniyear, selectyears=selectyears, humanuse="non_agriculture", subtype="currHuman_wc", aggregate=FALSE, climatetype=climatetype, conservationstatus=conservationstatus)
+    prevHuman_wc <- calcOutput("RiverHumanUses", iniyear=iniyear, selectyears=selectyears, humanuse="non_agriculture", subtype="currHuman_wc", aggregate=FALSE, climatetype=climatetype, EFRmethod=EFRmethod)
 
     ## Current human uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]

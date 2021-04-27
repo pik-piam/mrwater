@@ -4,14 +4,14 @@
 \alias{calcEnvmtlFlowRequirements}
 \title{calcEnvmtlFlowRequirements}
 \usage{
-calcEnvmtlFlowRequirements(selectyears, climatetype, conservationstatus)
+calcEnvmtlFlowRequirements(selectyears, climatetype, EFRmethod)
 }
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{conservationstatus}{Conservation status or management objective according to Smakthin EFR method: "fair", "good", "natural". Details: The strictness of the conservation status affects the LFRs (low flow requirements, baseflow that needs to be maintained in the river)}
+\item{EFRmethod}{EFR method used including selected strictness of EFRs (Smakhtin:good, VMF:fair)}
 }
 \value{
 magpie object in cellular resolution
