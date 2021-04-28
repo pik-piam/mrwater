@@ -53,7 +53,7 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84
       stop("Please select strictness of Environmental Flow Requirements: Options of the preservationstatus argument are fair, good, or natural riverrine ecosystem condition")
     }
 
-    # HFR: high flow requirements dependent on LFRs
+    # HFR: high flow requirements dependent on Q90
     HFR_Q90_less10 <- 0.2    # for Q90 < 10percent of total water
     HFR_Q90_10_20  <- 0.15   # for 10percent < Q90 < 20percent of total water
     HFR_Q90_20_30  <- 0.07   # for 20percent < Q90 < 30percent of total water

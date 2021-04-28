@@ -15,7 +15,8 @@ calcIrrigatableArea(
   gainthreshold,
   irrigationsystem,
   avlland_scen,
-  proxycrop
+  proxycrop,
+  potential
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ combination of land availability scenario and initialization year separated by "
 protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
+
+\item{potential}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
 }
 \value{
 magpie object in cellular resolution
