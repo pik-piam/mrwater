@@ -4,7 +4,14 @@
 \alias{calcIrrigCellranking}
 \title{calcIrrigCellranking}
 \usage{
-calcIrrigCellranking(climatetype, cellrankyear, method, proxycrop, iniyear)
+calcIrrigCellranking(
+  climatetype,
+  cellrankyear,
+  method,
+  proxycrop,
+  iniyear,
+  FAOyieldcalib
+)
 }
 \arguments{
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
@@ -16,6 +23,8 @@ calcIrrigCellranking(climatetype, cellrankyear, method, proxycrop, iniyear)
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: list of proxycrops or "historical"}
 
 \item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank and case of monetary=TRUE year of prices}
+
+\item{FAOyieldcalib}{TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)}
 }
 \value{
 magpie object in cellular resolution

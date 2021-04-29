@@ -18,7 +18,8 @@ calcWaterAllocation(
   irrigationsystem = "initialization",
   iniyear = 1995,
   avlland_scen,
-  proxycrop
+  proxycrop,
+  FAOyieldcalib = FAOyieldcalib
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ calcWaterAllocation(
 \item{avlland_scen}{Land protection scenario}
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
+
+\item{FAOyieldcalib}{TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)}
 }
 \value{
 magpie object in cellular resolution

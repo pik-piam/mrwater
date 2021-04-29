@@ -14,6 +14,7 @@
 #' @param avlland_scen     Land protection scenario
 #' @param finalcells       Number of cells to be returned by the function (lpjcell: 67420, magpiecell: 59199)
 #' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s)
+#' @param FAOyieldcalib TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)
 #'
 #' @import magclass
 #' @import madrat
@@ -31,7 +32,7 @@
 calcWaterAllocation <- function(selectyears="all", output="consumption", finalcells="magpiecell",
                                 lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype="HadGEM2_ES:rcp2p6:co2",
                                 allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=10,
-                                irrigationsystem="initialization", iniyear=1995, avlland_scen, proxycrop) {
+                                irrigationsystem="initialization", iniyear=1995, avlland_scen, proxycrop, FAOyieldcalib=FAOyieldcalib) {
 
   #############################
   ####### Read in Data ########
@@ -107,11 +108,11 @@ calcWaterAllocation <- function(selectyears="all", output="consumption", finalce
   required_wat_fullirrig_wc <- as.array(collapseNames(required_wat_fullirrig_wc))[,,1]
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  meancellrank <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method="meanpricedcroprank", proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
+  meancellrank <- calcOutput("IrrigCellranking", climatetype=climatetype, cellrankyear=selectyears, method="meanpricedcroprank", FAOyieldcalib=FAOyieldcalib, proxycrop=proxycrop, iniyear=iniyear, aggregate=FALSE)
   meancellrank <- as.array(meancellrank)[,,1]
 
   # Yield gain potential through irrigation of proxy crops
-  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, proxycrop=proxycrop, monetary=thresholdtype, iniyear=iniyear, aggregate=FALSE)
+  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, proxycrop=proxycrop, monetary=thresholdtype, iniyear=iniyear, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
   irrig_yieldgainpotential <- as.array(irrig_yieldgainpotential)[,,1]
 
   ############################################

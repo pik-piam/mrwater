@@ -14,9 +14,9 @@
 #' @examples
 #' \dontrun{ calcOutput("ActualIrrigWatRequirements", aggregate=FALSE) }
 #'
-#' @importFrom magclass dimSums collapseNames
+#' @importFrom magclass dimSums collapseNames getCells getSets
 #' @importFrom madrat calcOutput
-#' @importFrom magpiesets findset
+#' @importFrom mrcommons toolGetMappingCoord2Country
 
 calcActualIrrigWatRequirements <- function(selectyears, climatetype, iniyear) {
 
@@ -28,7 +28,7 @@ calcActualIrrigWatRequirements <- function(selectyears, climatetype, iniyear) {
   irrig_system_share      <- calcOutput("IrrigationSystem", source="Jaegermeyr", aggregate=FALSE)
 
   # total irrigation water requirements per crop given irrigation system share (in m^3 per ha per yr)
-  irrig_wat_requirement          <- dimSums(irrig_system_share * irrig_wat_requirement, dim=3.1)
+  irrig_wat_requirement          <- dimSums(irrig_system_share * irrig_wat_requirement, dim="system")
   getSets(irrig_wat_requirement) <- c("x", "y", "iso", "year", "crop", "type")
 
   # Check for NAs and negative values

@@ -4,7 +4,7 @@
 \alias{calcIrrigWatValue}
 \title{calcIrrigWatValue}
 \usage{
-calcIrrigWatValue(selectyears, climatetype, iniyear, proxycrop)
+calcIrrigWatValue(selectyears, climatetype, iniyear, proxycrop, FAOyieldcalib)
 }
 \arguments{
 \item{selectyears}{years to be returned}
@@ -14,6 +14,8 @@ calcIrrigWatValue(selectyears, climatetype, iniyear, proxycrop)
 \item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices}
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s) or NULL for all crops}
+
+\item{FAOyieldcalib}{TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)}
 }
 \value{
 magpie object in cellular resolution

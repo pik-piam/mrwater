@@ -10,6 +10,7 @@ calcWaterPotUse(
   EFRmethod,
   variabilitythreshold,
   rankmethod,
+  FAOyieldcalib,
   allocationrule,
   thresholdtype,
   gainthreshold,
@@ -29,6 +30,8 @@ calcWaterPotUse(
 \item{variabilitythreshold}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
 
 \item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+
+\item{FAOyieldcalib}{TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
 

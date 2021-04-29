@@ -23,10 +23,15 @@ calcIrrigYieldImprovementPotential <- function(climatetype, monetary, iniyear, s
 
   # read in yields [in tons/ha]
   yields     <- calcOutput("Yields", lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE)
+  # only crops (pasture is not irrigated)
+  yields     <- yields[,,"pasture",invert=T]
 
   # yield gap (irrigated vs. rainfed) [in tons/ha]
   yield_gain <- collapseNames(yields[,,"irrigated"]) - collapseNames(yields[,,"rainfed"])
   # (Note: irrigation may lead to shift in growing period -> tmp can have negative values; also: under N-stress, irrigation may lead to lower yields, the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
+
+  # magpie crops
+  croplist   <- getNames(yield_gain)
 
   if (FAOyieldcalib) {
     FAOproduction <- setYears(collapseNames(calcOutput("FAOmassbalance_pre", aggregate=FALSE)[,,"production"][,iniyear,"dm"]), NULL)
@@ -38,7 +43,7 @@ calcIrrigYieldImprovementPotential <- function(climatetype, monetary, iniyear, s
     # global mean
     FAOyieldsGLO  <- dimSums(FAOyields, dim=1) / length(getCells(FAOyields))
 
-    # calibration factor
+    # calibration factor: country-specific management intensity
     Calib         <- FAOyields / FAOyieldsGLO
 
     # add crops that are missing in FAO
@@ -47,16 +52,17 @@ calcIrrigYieldImprovementPotential <- function(climatetype, monetary, iniyear, s
     Calib[,,missingcrops]     <- 0
     names(dimnames(Calib))[1] <- "iso"
 
-    croplist      <- intersect(getNames(Calib), getNames(yield_gain))
+    croplist      <- intersect(getNames(Calib), croplist)
     yield_gain    <- yield_gain[,,croplist] * Calib[intersect(unique(gsub(".*\\.", "", getCells(yield_gain))), getCells(Calib)),,croplist]
   }
 
   if (monetary) {
     # Read in crop output price in initialization (USD05/tDM)
-    p <- calcOutput("IniFoodPrice", datasource="FAO", products="kcr", aggregate=FALSE, years=NULL, year=iniyear)
+    p           <- calcOutput("IniFoodPrice", datasource="FAO", products="kcr", aggregate=FALSE, years=NULL, year=iniyear)
+    croplist    <- intersect(croplist, getNames(p))
 
     # Calculate monetary yield gain (in USD05/ha)
-    yield_gain  <- yield_gain[,,intersect(getNames(yield_gain), getNames(p))] * p[,,intersect(getNames(yield_gain), getNames(p))]
+    yield_gain  <- yield_gain[,,croplist] * p[,,croplist]
     unit        <- "USD05 per ha"
   } else {
     unit        <- "tons per ha"
@@ -86,7 +92,7 @@ calcIrrigYieldImprovementPotential <- function(climatetype, monetary, iniyear, s
       croparea_shr[,,other_crops][dimSums(croparea, dim=3)==0] <- 0
 
       # average yield gain over hisotrical crops weighted with their croparea share
-      croplist    <- intersect(getNames(yield_gain), getNames(croparea_shr))
+      croplist    <- intersect(croplist, getNames(croparea_shr))
       yield_gain  <- dimSums(croparea_shr[,,croplist] * yield_gain[,,croplist], dim=3)
 
       description <- "Average yield improvement potential for crop types weighted with historical croparea share"

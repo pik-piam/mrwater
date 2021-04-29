@@ -17,7 +17,8 @@ calcRiverSurplusDischargeAllocation(
   irrigationsystem,
   iniyear,
   avlland_scen,
-  proxycrop
+  proxycrop,
+  FAOyieldcalib
 )
 }
 \arguments{
@@ -48,6 +49,8 @@ combination of land availability scenario and initialization year separated by "
 protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
+
+\item{FAOyieldcalib}{TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)}
 }
 \value{
 magpie object in cellular resolution
