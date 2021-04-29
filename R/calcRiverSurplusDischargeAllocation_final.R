@@ -38,13 +38,13 @@ calcRiverSurplusDischargeAllocation_final <- function(selectyears, output, clima
   #######################################
   # River Structure
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
-  # numeric cell numbers in order of rs object
-  #rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
-  # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
-  required_wat_min_allocation <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"required_wat_min"])
+  # Inputs from previous river routing
+  tmp <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
+  # Minimum flow requirements: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
+  required_wat_min_allocation <- collapseNames(tmp[,,"required_wat_min"])
   # Already committed water withdrawals
-  com_ww <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)[,,"currHuman_ww"])
+  com_ww                      <- collapseNames(tmp[,,"currHuman_ww"])
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
   discharge                   <- calcOutput("RiverDischargeNatAndHuman", selectyears=selectyears, iniyear=iniyear, climatetype=climatetype, EFRmethod=EFRmethod, aggregate=FALSE)
