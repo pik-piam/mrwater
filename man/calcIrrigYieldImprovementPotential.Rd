@@ -9,7 +9,8 @@ calcIrrigYieldImprovementPotential(
   monetary,
   iniyear,
   selectyears,
-  proxycrop
+  proxycrop,
+  FAOyieldcalib
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ calcIrrigYieldImprovementPotential(
 \item{selectyears}{years to be returned by the function}
 
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
+
+\item{FAOyieldcalib}{TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)}
 }
 \value{
 magpie object in cellular resolution
