@@ -1,7 +1,8 @@
-#' @title       calcDischargeInaccessibile
+#' @title       calcDischargeInaccessible
 #' @description This function calculates the discharge that is inaccessible to humans
 #'              based on the variability of monthly flows and natural discharge.
 #'
+#' @param lpjml                LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype          Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param selectyears          Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param variabilitythreshold Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
@@ -13,16 +14,16 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("DischargeAccessibile", aggregate=FALSE) }
+#' \dontrun{ calcOutput("DischargeInaccessible", aggregate=FALSE) }
 #'
 
-calcDischargeInaccessibile <- function(selectyears, climatetype, variabilitythreshold) {
+calcDischargeInaccessible <- function(lpjml, selectyears, climatetype, variabilitythreshold) {
 
   # Discharge Accessibility Share
-  access_shr <- calcOutput("DischargeAccessibilityShare", selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, aggregate=FALSE)
+  access_shr <- calcOutput("DischargeAccessibilityShare", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, aggregate=FALSE)
 
   # Read in natural discharge (in mio. m^3 / yr)
-  discharge_nat   <- collapseNames(calcOutput("RiverNaturalFlows", selectyears=selectyears, climatetype=climatetype, aggregate=FALSE)[,,"discharge_nat"])
+  discharge_nat   <- collapseNames(calcOutput("RiverNaturalFlows", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, aggregate=FALSE)[,,"discharge_nat"])
 
   # Calculate discharge accessible to humans (mio. m^3 / yr)
   out <- (1-access_shr) * discharge_nat

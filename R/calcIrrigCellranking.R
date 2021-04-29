@@ -1,11 +1,12 @@
 #' @title       calcIrrigCellranking
 #' @description This function calculates a cellranking for the river basin discharge allocation based on yield improvement potential through irrigation
 #'
-#' @param climatetype     Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
-#' @param cellrankyear year(s) for which cell rank is calculated
-#' @param method      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
-#' @param proxycrop   proxycrop(s) selected for crop mix specific calculations: list of proxycrops or "historical"
-#' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank and case of monetary=TRUE year of prices
+#' @param lpjml         LPJmL version required for respective inputs: natveg or crop
+#' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
+#' @param cellrankyear  year(s) for which cell rank is calculated
+#' @param method        method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
+#' @param proxycrop     proxycrop(s) selected for crop mix specific calculations: list of proxycrops or "historical"
+#' @param iniyear       initialization year for price in price-weighted normalization of meanpricedcroprank and case of monetary=TRUE year of prices
 #' @param FAOyieldcalib TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)
 #'
 #' @return magpie object in cellular resolution
@@ -14,7 +15,7 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigCellranking", aggregate=FALSE) }
 
-calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, iniyear, FAOyieldcalib) {
+calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear, method, proxycrop, iniyear, FAOyieldcalib) {
 
   fullpotential <- as.logical(strsplit(method, ":")[[1]][2])
   method        <- strsplit(method, ":")[[1]][1]
@@ -23,7 +24,7 @@ calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, i
     # Def. "meancellrank": ranking of cells or proxy crops, then: average over ranks
 
     ## Read in potential yield gain per cell (tons per ha)
-    yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear, proxycrop=NULL, monetary=FALSE, iniyear=NULL, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
+    yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml=lpjml, climatetype=climatetype, selectyears=cellrankyear, proxycrop=NULL, monetary=FALSE, iniyear=NULL, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
     # select proxy crops
     yield_gain <- yield_gain[,,proxycrop]
 
@@ -46,7 +47,7 @@ calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, i
     # Def. "meancroprank": average over yield gain of proxycrops, then: ranking of resulting average yield gain
 
     ## Read in potential yield gain per cell (tons per ha)
-    yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear, FAOyieldcalib=FAOyieldcalib, proxycrop=NULL, monetary=FALSE, iniyear=NULL, aggregate=FALSE)
+    yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml=lpjml, climatetype=climatetype, selectyears=cellrankyear, FAOyieldcalib=FAOyieldcalib, proxycrop=NULL, monetary=FALSE, iniyear=NULL, aggregate=FALSE)
     # select proxy crops
     yield_gain <- yield_gain[,,proxycrop]
 
@@ -72,7 +73,7 @@ calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, i
     # Def.: average potential yield gain in USD05 (yield gain * food price)
 
     ## Read in average potential yield gain per cell (USD05 per ha)
-    yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear, proxycrop=proxycrop, FAOyieldcalib=FAOyieldcalib, monetary=TRUE, iniyear=iniyear, aggregate=FALSE)
+    yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml=lpjml, climatetype=climatetype, selectyears=cellrankyear, proxycrop=proxycrop, FAOyieldcalib=FAOyieldcalib, monetary=TRUE, iniyear=iniyear, aggregate=FALSE)
 
     if (!fullpotential) {
       yield_gain_reduced <- 0.75 * yield_gain
@@ -88,7 +89,7 @@ calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, i
     # Def.: water value following D'Odorico et al. (2020) = yield gain / irrigation water requirements
 
     # Read in average water value per cell (USD05 per m^3)
-    watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, climatetype=climatetype, iniyear=iniyear, proxycrop=proxycrop, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
+    watvalue <- calcOutput("IrrigWatValue", selectyears=cellrankyear, lpjml=lpjml, climatetype=climatetype, iniyear=iniyear, proxycrop=proxycrop, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
 
     if (!fullpotential) {
       watvalue_reduced <- 0.75 * watvalue
@@ -105,7 +106,7 @@ calcIrrigCellranking <- function(climatetype, cellrankyear, method, proxycrop, i
     #### NOT FULLY FUNCTIONAL YET!!!!!!!!
 
     # Read in average potential yield gain per cell for all crops (USD05 per ha)
-    yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=cellrankyear, proxycrop=NULL, monetary=TRUE, iniyear=iniyear, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
+    yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml=lpjml, climatetype=climatetype, selectyears=cellrankyear, proxycrop=NULL, monetary=TRUE, iniyear=iniyear, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
 
     # Maximum monetary yield gain in the location (across all crops)
     yield_gain_max <- setNames(pmax(yield_gain[,,"tece"], yield_gain[,,"maiz"], yield_gain[,,"trce"], yield_gain[,,"soybean"], yield_gain[,,"cottn_pro"],

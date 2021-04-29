@@ -1,6 +1,7 @@
 #' @title       calcIrrigWatValue
 #' @description This function calculates the value of irrigation water (added value of water to the production process) based on yield gain, crop prices and irrigation water requirements
 #'
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears years to be returned
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices
@@ -17,18 +18,18 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigWatValue", aggregate=FALSE) }
 
-calcIrrigWatValue <- function(selectyears, climatetype, iniyear, proxycrop, FAOyieldcalib) {
+calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, proxycrop, FAOyieldcalib) {
   ## Note: Methodology for calculating value of water following D'Odorico et al. (2020)
 
   # Read in potential yield gain per cell (USD05 per ha)
-  yield_gain <- calcOutput("IrrigYieldImprovementPotential", climatetype=climatetype, selectyears=selectyears, proxycrop=NULL, monetary=TRUE, iniyear=iniyear, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
+  yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml=lpjml, climatetype=climatetype, selectyears=selectyears, proxycrop=NULL, monetary=TRUE, iniyear=iniyear, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
 
   # Set negative yield_gains to 0 (Negative yield gains (i.e. fewer yields through irrigation) would result in water value of 0)
   yield_gain[yield_gain<0] <- 0
 
   # Read in irrigation water requirement (withdrawals) (in m^3 per hectar per year) [smoothed and harmonized]
   # Note: Following D'Odorico et al. (2020), results refer to water withdrawals (because that's what one would pay for rather than for consumption)
-  irrig_withdrawal <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=iniyear, climatetype=climatetype)
+  irrig_withdrawal <- calcOutput("IrrigWatRequirements", aggregate=FALSE, lpjml=lpjml, selectyears=iniyear, climatetype=climatetype)
   irrig_withdrawal <- collapseNames(irrig_withdrawal[,,"withdrawal"])
   irrig_withdrawal <- irrig_withdrawal[,,intersect(gsub("[.].*","",getNames(irrig_withdrawal)), getNames(yield_gain))]
 

@@ -4,9 +4,18 @@
 \alias{calcRiverHumanUses}
 \title{calcRiverHumanUses}
 \usage{
-calcRiverHumanUses(selectyears, humanuse, iniyear, climatetype, EFRmethod)
+calcRiverHumanUses(
+  lpjml,
+  selectyears,
+  humanuse,
+  iniyear,
+  climatetype,
+  EFRmethod
+)
 }
 \arguments{
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
 \item{humanuse}{Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture}

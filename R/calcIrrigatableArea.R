@@ -1,6 +1,7 @@
 #' @title       calcIrrigatableArea
 #' @description calculates area that can potentially be irrigated given available water and land
 #'
+#' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param EFRmethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
@@ -26,24 +27,24 @@
 #' @import magclass
 #' @import magpiesets
 
-calcIrrigatableArea <- function(selectyears, climatetype, EFRmethod, variabilitythreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE){
+calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod, variabilitythreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE){
 
   # retrieve function arguments
   iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
   ## Read in water available for irrigation
   if (potential_wat) {
-    wat_avl         <- calcOutput("WaterPotUse", selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, variabilitythreshold=variabilitythreshold, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)
+    wat_avl         <- calcOutput("WaterPotUse", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, variabilitythreshold=variabilitythreshold, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)
     wat_avl_irrig_c <- collapseNames(wat_avl[,,"wat_ag_wc"])
     wat_avl_irrig_w <- collapseNames(wat_avl[,,"wat_ag_ww"])
   } else {
-    wat_avl         <- calcOutput("RiverHumanUses", selectyears=selectyears, humanuse="committed_agriculture", iniyear=iniyear, climatetype=climatetype, EFRmethod=EFRmethod, aggregate=FALSE)
+    wat_avl         <- calcOutput("RiverHumanUses", lpjml=lpjml, selectyears=selectyears, humanuse="committed_agriculture", iniyear=iniyear, climatetype=climatetype, EFRmethod=EFRmethod, aggregate=FALSE)
     wat_avl_irrig_c <- collapseNames(wat_avl[,,"currHuman_wc"])
     wat_avl_irrig_w <- collapseNames(wat_avl[,,"currHuman_ww"])
   }
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
-  wat_req    <- calcOutput("FullIrrigationRequirement", climatetype=climatetype, selectyears=selectyears, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, comagyear=NULL, aggregate=FALSE)
+  wat_req    <- calcOutput("FullIrrigationRequirement", lpjml=lpjml, climatetype=climatetype, selectyears=selectyears, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, comagyear=NULL, aggregate=FALSE)
   wat_req_ww <- collapseNames(wat_req[,,"withdrawal"])
   wat_req_wc <- collapseNames(wat_req[,,"consumption"])
 

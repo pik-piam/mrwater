@@ -4,12 +4,7 @@
 \alias{calcRiverNaturalFlows22}
 \title{calcRiverNaturalFlows_magpie_magpie22}
 \usage{
-calcRiverNaturalFlows22(
-  selectyears,
-  lpjml = c(natveg = "LPJmL4_for_MAgPIE_84a69edd", crop =
-    "ggcmi_phase3_nchecks_72c185fa"),
-  climatetype
-)
+calcRiverNaturalFlows22(selectyears, lpjml, climatetype)
 }
 \arguments{
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}

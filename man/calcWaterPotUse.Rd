@@ -5,6 +5,7 @@
 \title{calcWaterPotUse}
 \usage{
 calcWaterPotUse(
+  lpjml,
   selectyears,
   climatetype,
   EFRmethod,
@@ -21,6 +22,8 @@ calcWaterPotUse(
 )
 }
 \arguments{
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}

@@ -15,7 +15,7 @@
 #' \dontrun{ calcOutput("YearlyRunoff", aggregate = FALSE) }
 #'
 
-calcYearlyRunoff <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype) {
+calcYearlyRunoff <- function(selectyears, lpjml, climatetype) {
 
   # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
   if (grepl("historical", climatetype)) {

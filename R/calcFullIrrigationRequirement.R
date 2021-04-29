@@ -1,14 +1,15 @@
 #' @title       calcFullIrrigationRequirement
 #' @description This function calculates the water requirements for full irrigation per cell per crop given potentially available land
 #'
-#' @param selectyears years to be returned
-#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param lpjml          LPJmL version required for respective inputs: natveg or crop
+#' @param selectyears    years to be returned
+#' @param climatetype    Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param comagyear      if !NULL: already irrigated area is subtracted; if NULL: total potential land area is used; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea
 #' @param irrigationsystem irrigation system used: system share as in initialization year (default) or drip, surface, sprinkler for full irrigation by selected system
-#' @param avlland_scen  land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-#'                      combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-#'                      protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
-#' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s)
+#' @param avlland_scen   land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
+#'                       combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
+#'                       protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
+#' @param proxycrop      historical crop mix pattern ("historical") or list of proxycrop(s)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -20,13 +21,13 @@
 #' @importFrom magclass collapseNames getCells getSets getYears getNames new.magpie dimSums
 #' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
 
-calcFullIrrigationRequirement <- function(climatetype, selectyears, comagyear, irrigationsystem, avlland_scen, proxycrop) {
+calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear, irrigationsystem, avlland_scen, proxycrop) {
 
   # retrieve function arguments
   iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
   # read in irrigation water requirements for each irrigation system [in m^3 per hectare per year] (smoothed & harmonized)
-  irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)
+  irrig_wat <- calcOutput("IrrigWatRequirements", aggregate=FALSE, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype)
   # pasture is not irrigated in MAgPIE
   irrig_wat <- irrig_wat[,,"pasture",invert=T]
 

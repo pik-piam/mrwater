@@ -5,6 +5,7 @@
 \title{calcFullIrrigationRequirement}
 \usage{
 calcFullIrrigationRequirement(
+  lpjml,
   climatetype,
   selectyears,
   comagyear,
@@ -14,6 +15,8 @@ calcFullIrrigationRequirement(
 )
 }
 \arguments{
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{selectyears}{years to be returned}

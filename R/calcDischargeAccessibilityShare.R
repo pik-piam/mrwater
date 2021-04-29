@@ -4,7 +4,7 @@
 #'              variable, it is harder to bring into productive use and therefore
 #'              water availability (for human use) is reduced.
 #'
-#' @param lpjml                LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
+#' @param lpjml                LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype          Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param variabilitythreshold Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
@@ -20,7 +20,7 @@
 #' \dontrun{ calcOutput("DischargeAccessibilityShare", aggregate=FALSE) }
 #'
 
-calcDischargeAccessibilityShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), selectyears, climatetype, variabilitythreshold) {
+calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype, variabilitythreshold) {
 
   # Monthly Discharge from LPJmL (raw: including variation)
   monthly_discharge_lpjml <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="mdischarge", climatetype=climatetype, stage="raw", aggregate=FALSE)

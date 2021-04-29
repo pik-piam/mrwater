@@ -4,9 +4,17 @@
 \alias{calcRiverDischargeNatAndHuman}
 \title{calcRiverDischargeNatAndHuman}
 \usage{
-calcRiverDischargeNatAndHuman(selectyears, iniyear, climatetype, EFRmethod)
+calcRiverDischargeNatAndHuman(
+  lpjml,
+  selectyears,
+  iniyear,
+  climatetype,
+  EFRmethod
+)
 }
 \arguments{
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
 \item{iniyear}{Initialization year of irrigation system}

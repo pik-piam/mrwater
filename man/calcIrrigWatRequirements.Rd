@@ -4,17 +4,12 @@
 \alias{calcIrrigWatRequirements}
 \title{calcIrrigWatRequirements}
 \usage{
-calcIrrigWatRequirements(
-  selectyears,
-  lpjml = c(natveg = "LPJmL4_for_MAgPIE_84a69edd", crop =
-    "ggcmi_phase3_nchecks_72c185fa"),
-  climatetype
-)
+calcIrrigWatRequirements(selectyears, lpjml, climatetype)
 }
 \arguments{
 \item{selectyears}{Years to be returned}
 
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!}
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 }

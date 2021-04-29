@@ -4,12 +4,7 @@
 \alias{calcEnvmtlFlowRequirementsShare}
 \title{calcEnvmtlFlowRequirementsShare}
 \usage{
-calcEnvmtlFlowRequirementsShare(
-  lpjml = c(natveg = "LPJmL4_for_MAgPIE_84a69edd", crop =
-    "ggcmi_phase3_nchecks_72c185fa"),
-  climatetype,
-  EFRmethod
-)
+calcEnvmtlFlowRequirementsShare(lpjml, climatetype, EFRmethod)
 }
 \arguments{
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!}

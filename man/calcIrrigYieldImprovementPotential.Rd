@@ -5,6 +5,7 @@
 \title{calcIrrigYieldImprovementPotential}
 \usage{
 calcIrrigYieldImprovementPotential(
+  lpjml,
   climatetype,
   monetary,
   iniyear,
@@ -14,6 +15,8 @@ calcIrrigYieldImprovementPotential(
 )
 }
 \arguments{
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
 
 \item{monetary}{yield improvement potential in tDM (FALSE, default) or priced yield improvement potential in USD05 (TRUE)}

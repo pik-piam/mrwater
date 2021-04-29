@@ -17,7 +17,7 @@
 #' \dontrun{ calcOutput("EnvmtlFlowRequirementsShare", aggregate=FALSE) }
 #'
 
-calcEnvmtlFlowRequirementsShare <- function(lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype, EFRmethod) {
+calcEnvmtlFlowRequirementsShare <- function(lpjml, climatetype, EFRmethod) {
 
   # Long-term reference time frame for EFR calculation:
   EFRyears <- c(1985:2015)

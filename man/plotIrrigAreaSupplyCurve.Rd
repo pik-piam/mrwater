@@ -7,6 +7,7 @@
 plotIrrigAreaSupplyCurve(
   x_axis_range,
   scenario,
+  lpjml,
   selectyears,
   climatetype,
   EFRmethod,
@@ -25,6 +26,8 @@ plotIrrigAreaSupplyCurve(
 \item{x_axis_range}{range of x-axis (gainthreshold) to be depicted on the curve}
 
 \item{scenario}{scenario to be displayed in plot}
+
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{selectyears}{years for which irrigatable area is calculated}
 

@@ -5,6 +5,7 @@
 \title{calcRiverSurplusDischargeAllocation}
 \usage{
 calcRiverSurplusDischargeAllocation(
+  lpjml,
   selectyears,
   output,
   climatetype,
@@ -22,6 +23,8 @@ calcRiverSurplusDischargeAllocation(
 )
 }
 \arguments{
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
 \item{output}{output to be reported}

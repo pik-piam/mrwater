@@ -24,8 +24,9 @@
 #' \dontrun{
 #' retrieveData("CELLULARMAGPIE", revision=12, mainfolder="pathtowhereallfilesarestored")
 #' }
-#' @importFrom madrat setConfig getConfig
+#' @importFrom madrat setConfig getConfig toolMappingFile
 #' @importFrom magpiesets findset
+#' @import mrmagpie
 
 fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_ES:rcp2p6:co2", clusterweight=NULL) {
 
@@ -45,6 +46,8 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   # climatetype=climatetype
   iniyear=1995
 
+  lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa")
+
   #### THIS MIGHT BE NECESSARY IF I WANT MY OWN AGGREGATION (E.G. TO RIVER BASINS)
  # map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, clusterdata=clusterdata, aggregate=FALSE)
   #weightID <- ifelse(is.null(clusterweight),"",paste0("_",names(clusterweight),clusterweight,collapse=""))
@@ -63,25 +66,17 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   setConfig(extramappings="clustermap_rev4.54+mrmagpie10_riverrouting_allocation_c200_h12.rds")
 
   #42 water demand
-  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6)
-  wat_req_crops_c <- collapseNames(wat_req_crops_c)
-  write.magpie(wat_req_crops_c, file_name = "C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/wat_req_crops_c.cs2")
+  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", lpjml=lpjml, selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6)
 
   #43 water availability
-  avl_wat_agr_c <- calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="GSWP3-W5E5:historical", finalcells="magpiecell",
-             allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=1, irrigationsystem="initialization", iniyear=1995, aggregate="cluster", round=6)
-  avl_wat_agr_c <- collapseNames(avl_wat_agr_c)
-  write.magpie(avl_wat_agr_c, file_name="C:/Users/beier/Documents/Tasks/MAgPIE tasks/Sim4Nexus/avl_wat_agr_c.cs3")
 
 
   #### -- only temporary -- ####
 
   #42 water demand
-  calcOutput("ActualIrrigWatRequirements", selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
+  calcOutput("ActualIrrigWatRequirements", lpjml=lpjml, selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
 
   #43 water availability
-  calcOutput("WaterAllocation", selectyears=lpj_years, output="consumption", climatetype="GSWP3-W5E5:historical", finalcells="magpiecell",
-               allocationrule="optimization", allocationshare=NULL, thresholdtype=TRUE, gainthreshold=1, irrigationsystem="initialization", iniyear=1995, aggregate="cluster", round=6, file=paste0("avl_wat_agr_c_",ctype,".mz"))
 
   ##### AGGREGATION ######
 

@@ -16,7 +16,7 @@
 #' \dontrun{ calcOutput("RiverNaturalFlows_magpie", aggregate = FALSE) }
 #'
 
-calcRiverNaturalFlows2 <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype) {
+calcRiverNaturalFlows2 <- function(selectyears, lpjml, climatetype) {
   ### Read in river structure
   # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
   # Information contained:
@@ -42,7 +42,7 @@ calcRiverNaturalFlows2 <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPI
   lake_evap     <- as.array(calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="lake_evap", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE))
 
   # Runoff (on land and water)
-  yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)))
+  yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype)))
 
   ############################################
   ###### River Routing: Natural Flows ########

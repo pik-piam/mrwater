@@ -1,10 +1,11 @@
 Package: mrwater
 Type: Package
 Title: madrat based MAgPIE Input Data Library
-Version: 0.5.82
+Version: 0.5.83
 Date: 2021-04-29
 Authors@R: c(person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = c("aut","cre")),
              person("Jens", "Heinke", email = "heinke@pik-potsdam.de", role = "aut"),
+             person("Karstens", "Kristine", email = "karstens@pik-potsdam.de", role = "aut"),
              person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = "aut"))
 Description: Provides functions for MAgPIE cellular input data generation and stand-alone water calculations.
 Depends:

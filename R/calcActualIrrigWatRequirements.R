@@ -1,6 +1,7 @@
 #' @title       calcActualIrrigWatRequirements
 #' @description This function calculates actual irrigation water requirements per cell given a certain irrigation system
 #'
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears Years to be returned
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear     Initialization year (for weight by cropland)
@@ -18,10 +19,10 @@
 #' @importFrom madrat calcOutput
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcActualIrrigWatRequirements <- function(selectyears, climatetype, iniyear) {
+calcActualIrrigWatRequirements <- function(lpjml, selectyears, climatetype, iniyear) {
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
-  irrig_wat_requirement   <- calcOutput("IrrigWatRequirements", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)
+  irrig_wat_requirement   <- calcOutput("IrrigWatRequirements", aggregate=FALSE, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype)
   irrig_wat_requirement   <- irrig_wat_requirement[,,"pasture",invert=T]
 
   # irrigation system share (share of irrigated area)

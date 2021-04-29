@@ -1,6 +1,7 @@
 #' @title       calcIrrigYieldImprovementPotential
 #' @description This function calculates the yield improvement potential of irrigation for different crops
 #'
+#' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
 #' @param selectyears   years to be returned by the function
 #' @param monetary      yield improvement potential in tDM (FALSE, default) or priced yield improvement potential in USD05 (TRUE)
@@ -19,10 +20,10 @@
 #' @importFrom magpiesets addLocation
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcIrrigYieldImprovementPotential <- function(climatetype, monetary, iniyear, selectyears, proxycrop, FAOyieldcalib) {
+calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary, iniyear, selectyears, proxycrop, FAOyieldcalib) {
 
   # read in yields [in tons/ha]
-  yields     <- calcOutput("Yields", lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE)
+  yields     <- calcOutput("Yields", lpjml=lpjml, cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE)
   # only crops (pasture is not irrigated)
   yields     <- yields[,,"pasture",invert=T]
 

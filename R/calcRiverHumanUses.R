@@ -1,6 +1,7 @@
 #' @title       calcRiverHumanUses
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param humanuse    Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
@@ -19,7 +20,7 @@
 #' \dontrun{ calcOutput("RiverHumanUses", aggregate = FALSE) }
 #'
 
-calcRiverHumanUses <- function(selectyears, humanuse, iniyear, climatetype, EFRmethod) {
+calcRiverHumanUses <- function(lpjml, selectyears, humanuse, iniyear, climatetype, EFRmethod) {
   # # # # # # # # # # #
   # # # READ IN DATA # #
   # # # # # # # # # # #
@@ -42,7 +43,7 @@ calcRiverHumanUses <- function(selectyears, humanuse, iniyear, climatetype, EFRm
   I_NAg_wc  <- collapseNames(wat_nonag[,,"consumption"])
 
   # Committed agricultural uses per crop (in mio. m^3 / yr)
-  CAU_magpie <- calcOutput("WaterUseCommittedAg", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype, iniyear=iniyear)
+  CAU_magpie <- calcOutput("WaterUseCommittedAg", aggregate=FALSE, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, iniyear=iniyear)
   # Total committed agricultural withdrawals (in mio. m^3 / yr)
   CAW_magpie <- collapseNames(dimSums(CAU_magpie[,,"withdrawal"],  dim=3))
   # Total committed agricultural consumption (in mio. m^3 / yr)
@@ -50,10 +51,10 @@ calcRiverHumanUses <- function(selectyears, humanuse, iniyear, climatetype, EFRm
 
   ## Water inputs
   # Runoff (on land and water)
-  I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype))
+  I_yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype))
 
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new   <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)[,,"lake_evap_nat"])
+  lake_evap_new   <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype)[,,"lake_evap_nat"])
 
   ## Transform object dimensions
   .transformObject <- function(x) {
@@ -89,7 +90,7 @@ calcRiverHumanUses <- function(selectyears, humanuse, iniyear, climatetype, EFRm
 
     # Minimum flow requirements determined by natural flow river routing: Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
     IO_required_wat_min         <- new.magpie(cells_and_regions = getCells(yearly_runoff), years = getYears(yearly_runoff), names = c("on", "off"), fill = 0)
-    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, aggregate=FALSE)
+    IO_required_wat_min[,,"on"] <- calcOutput("EnvmtlFlowRequirements", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, aggregate=FALSE)
     # Bring to correct object size
     IO_required_wat_min <- as.array(.transformObject(IO_required_wat_min))
 
@@ -104,7 +105,7 @@ calcRiverHumanUses <- function(selectyears, humanuse, iniyear, climatetype, EFRm
 
   } else if (humanuse=="committed_agriculture") {
 
-    prevHuman_routing <- calcOutput("RiverHumanUses", climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, humanuse="non_agriculture", aggregate=FALSE)
+    prevHuman_routing <- calcOutput("RiverHumanUses", lpjml=lpjml, climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, humanuse="non_agriculture", aggregate=FALSE)
 
     # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
     IO_required_wat_min <- as.array(collapseNames(prevHuman_routing[,,"required_wat_min"]))

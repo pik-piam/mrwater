@@ -2,7 +2,7 @@
 #' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
 #'
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param lpjml       LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #'
 #' @importFrom magclass collapseNames new.magpie getCells mbind setYears
@@ -16,7 +16,7 @@
 #' \dontrun{ calcOutput("RiverNaturalFlows_old", aggregate = FALSE) }
 #'
 
-calcRiverNaturalFlows_old <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa"), climatetype) {
+calcRiverNaturalFlows_old <- function(selectyears, lpjml, climatetype) {
 
   ### Read in river structure
   # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
@@ -43,7 +43,7 @@ calcRiverNaturalFlows_old <- function(selectyears, lpjml=c(natveg="LPJmL4_for_MA
   lake_evap     <- as.array(calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="lake_evap", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE))
 
   # Runoff (on land and water)
-  yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)))
+  yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff", aggregate=FALSE, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype)))
 
   ############################################
   ###### River Routing: Natural Flows ########

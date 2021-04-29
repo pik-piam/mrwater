@@ -1,6 +1,7 @@
 #' @title       calcRiverDischargeNatAndHuman
 #' @description This function calculates cellular discharge after considering known human consumption (non-agricultural and committed agricultural) along the river calculated and accounted for in previous river routings (see calcRiverNaturalFlows and calcRiverHumanUses)
 #'
+#' @param lpjml       LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear     Initialization year of irrigation system
@@ -9,7 +10,6 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
 #' @importFrom stringr str_split
-#' @import mrmagpie
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -18,7 +18,7 @@
 #' \dontrun{ calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE) }
 #'
 
-calcRiverDischargeNatAndHuman <- function(selectyears, iniyear, climatetype, EFRmethod) {
+calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatetype, EFRmethod) {
 
   #######################################
   ###### Read in Required Inputs ########
@@ -27,14 +27,14 @@ calcRiverDischargeNatAndHuman <- function(selectyears, iniyear, climatetype, EFR
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   # Non-agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod)[,,"currHuman_wc"])
+  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, lpjml=lpjml, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod)[,,"currHuman_wc"])
   # Committed agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod)[,,"currHuman_wc"])
+  CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, lpjml=lpjml, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod)[,,"currHuman_wc"])
 
   # Yearly Runoff (on land and water)
-  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, selectyears=selectyears, climatetype=climatetype))
+  yearly_runoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate=FALSE, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype))
   # Lake evaporation as calculated by natural flow river routing
-  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, selectyears=selectyears, climatetype=climatetype)[,,"lake_evap_nat"])
+  lake_evap_new <- collapseNames(calcOutput("RiverNaturalFlows", aggregate=FALSE, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype)[,,"lake_evap_nat"])
 
   ## Transform object dimensions
   .transformObject <- function(x) {

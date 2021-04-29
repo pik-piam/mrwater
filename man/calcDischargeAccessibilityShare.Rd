@@ -5,15 +5,14 @@
 \title{calcDischargeAccessibilityShare}
 \usage{
 calcDischargeAccessibilityShare(
-  lpjml = c(natveg = "LPJmL4_for_MAgPIE_84a69edd", crop =
-    "ggcmi_phase3_nchecks_72c185fa"),
+  lpjml,
   selectyears,
   climatetype,
   variabilitythreshold
 )
 }
 \arguments{
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!}
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
