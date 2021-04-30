@@ -27,7 +27,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     inaccessible_discharge         <- l_in$inaccessible_discharge
 
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
-    allocationshare             <- 1 / (length(glocellrank[,1])/67420)
+    allocationshare             <- 1 / (length(glocellrank[,1,1])/67420)
     I_required_wat_fullirrig_ww <- I_required_wat_fullirrig_ww * allocationshare
     I_required_wat_fullirrig_wc <- I_required_wat_fullirrig_wc * allocationshare
 
@@ -38,13 +38,13 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     IO_frac_fullirrig              <- l_inout$frac_fullirrig
     IO_com_ww                      <- l_inout$com_ww
 
-    for (o in (1:max(glocellrank[,y], na.rm=T))) { #test <- rs$cells[order(glocellrank[,y])]
+    for (o in (1:max(glocellrank[,y,], na.rm=T))) { #test <- rs$cells[order(glocellrank[,y,])]
 
       # Extract the cell number (depending on type of cellranking)
       if (reducedpotential) {
-        c <- rs$cells[rs$coordinates==paste(strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][2], sep=".")]
+        c <- rs$cells[rs$coordinates==paste(strsplit(gsub(".*_", "", names(which(glocellrank[,y,]==o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[,y,]==o))), "\\.")[[1]][2], sep=".")]
       } else {
-        c <- rs$cells[glocellrank[,y]==o]
+        c <- rs$cells[glocellrank[,y,]==o]
       }
 
       ### Potential Function Improvements:

@@ -70,10 +70,12 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
 
     # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
     glocellrank  <- calcOutput("IrrigCellranking", lpjml=lpjml, climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
-    glocellrank  <- as.array(glocellrank)[,,1]
+    if (is.null(getYears(glocellrank))) {
+      glocellrank <- setYears(glocellrank, selectyears)
+    }
 
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
-    allocationshare           <- 1 / (length(glocellrank[,1])/67420)
+    allocationshare           <- 1 / (length(glocellrank[,1,1])/67420)
     required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
     required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
   }
@@ -98,6 +100,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
   avl_wat_ww                  <- as.array(.transformObject(0))
   avl_wat_wc                  <- as.array(.transformObject(0))
   inaccessible_discharge      <- as.array(.transformObject(inaccessible_discharge))
+  glocellrank                 <- as.array(glocellrank)
 
   ################################################
   ####### River basin discharge allocation #######
@@ -112,13 +115,13 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
     # Allocate water for full irrigation to cell with highest yield improvement through irrigation
     if (allocationrule=="optimization") {
 
-      for (o in (1:max(glocellrank[,y], na.rm=T))) {
+      for (o in (1:max(glocellrank[,y,], na.rm=T))) {
 
         # Extract the cell number (depending on type of cellranking)
         if (!fullpotential) {
-          c <- rs$cells[rs$coordinates==paste(strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[,y]==o))), "\\.")[[1]][2], sep=".")]
+          c <- rs$cells[rs$coordinates==paste(strsplit(gsub(".*_", "", names(which(glocellrank[,y,]==o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[,y,]==o))), "\\.")[[1]][2], sep=".")]
         } else {
-          c <- rs$cells[glocellrank[,y]==o]
+          c <- rs$cells[glocellrank[,y,]==o]
         }
 
         # vector of downstreamcells of c
