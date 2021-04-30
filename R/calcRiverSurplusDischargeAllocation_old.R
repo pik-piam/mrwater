@@ -75,6 +75,9 @@ calcRiverSurplusDischargeAllocation_old <- function(lpjml, selectyears, output, 
     allocationshare           <- 1 / (length(glocellrank[,1,1])/67420)
     required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
     required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
+
+    # transform to array
+    glocellrank               <- as.array(glocellrank)
   }
 
   ################################################
@@ -93,7 +96,6 @@ calcRiverSurplusDischargeAllocation_old <- function(lpjml, selectyears, output, 
   required_wat_fullirrig_ww   <- as.array(required_wat_fullirrig_ww)[,,1]
   required_wat_fullirrig_wc   <- as.array(required_wat_fullirrig_wc)[,,1]
   inaccessible_discharge      <- as.array(inaccessible_discharge)[,,1]
-  glocellrank                 <- as.array(glocellrank)
 
   for (EFP in c("on", "off")) {
     for (scen in unique(gsub(".*.\\.", "", getNames(required_wat_min_allocation)))){

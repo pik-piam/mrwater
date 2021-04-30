@@ -75,6 +75,9 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
     allocationshare           <- 1 / (length(glocellrank[,1,1])/67420)
     required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
     required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
+
+    # transform to array
+    glocellrank               <- as.array(glocellrank)
   }
 
   ### Transform Objects ###
@@ -97,7 +100,6 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
   avl_wat_ww                  <- as.array(.transformObject(0))
   avl_wat_wc                  <- as.array(.transformObject(0))
   inaccessible_discharge      <- as.array(.transformObject(inaccessible_discharge))
-  glocellrank                 <- as.array(glocellrank)
 
   ################################################
   ####### River basin discharge allocation #######
