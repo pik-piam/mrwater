@@ -39,7 +39,7 @@ calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
   }
 
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
-  lake_evap     <- as.array(calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="lake_evap", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE))
+  lake_evap     <- as.array(setYears(calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="lake_evap", climatetype=climatetype, stage=stage, years=selectyears, aggregate=FALSE), selectyears))
 
   # Runoff (on land and water)
   yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, aggregate=FALSE)))

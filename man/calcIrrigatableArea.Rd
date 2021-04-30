@@ -18,7 +18,7 @@ calcIrrigatableArea(
   irrigationsystem,
   avlland_scen,
   proxycrop,
-  potential_wat = TRUE
+  potential_wat
 )
 }
 \arguments{

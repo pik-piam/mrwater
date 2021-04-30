@@ -23,7 +23,7 @@
 calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary, iniyear, selectyears, proxycrop, FAOyieldcalib) {
 
   # read in yields [in tons/ha]
-  yields     <- calcOutput("Yields", lpjml=lpjml, cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE)
+  yields     <- setYears(calcOutput("Yields", lpjml=lpjml, cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE), selectyears)
   # only crops (pasture is not irrigated)
   yields     <- yields[,,"pasture",invert=T]
 

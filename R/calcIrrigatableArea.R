@@ -27,7 +27,7 @@
 #' @import magclass
 #' @import magpiesets
 
-calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod, variabilitythreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE){
+calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod, variabilitythreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop, potential_wat){
 
   # retrieve function arguments
   iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])

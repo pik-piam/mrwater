@@ -26,7 +26,7 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml, climatetype, EFRmethod) {
   preservationstatus <- strsplit(EFRmethod, ":")[[1]][2]
 
   # Monthly Discharge from LPJmL (raw: including variation)
-  monthly_discharge     <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="mdischarge", climatetype=climatetype, stage="raw", years=EFRyears, aggregate=FALSE)
+  monthly_discharge     <- setYears(calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="mdischarge", climatetype=climatetype, stage="raw", years=EFRyears, aggregate=FALSE), EFRyears)
 
   # Transform to array (faster calculation)
   monthly_discharge     <-  as.array(collapseNames(monthly_discharge))
