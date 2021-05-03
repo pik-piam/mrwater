@@ -40,33 +40,42 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   # mag_years_past_long  <- c("y1995","y2000","y2005","y2010","y2015")
   # mag_years <- findset("time")
   # short_years <- findset("t_all")
-  lpj_years <- seq(1995, 2100,by=5)
+  lpj_years <- seq(1995, 2100, by=5)
   #
   # ### test settings (will be loaded from config in fina version)
   # climatetype=climatetype
-  iniyear=1995
+  iniyear   <- 1995
 
-  lpjml=c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa")
+  # LPJmL model version
+  lpjml     <- c(natveg="LPJmL4_for_MAgPIE_84a69edd", crop="ggcmi_phase3_nchecks_72c185fa")
+
+  # GCM
+  climatetype <- "GFDL-ESM4:ssp370"
 
   #### THIS MIGHT BE NECESSARY IF I WANT MY OWN AGGREGATION (E.G. TO RIVER BASINS)
- # map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, clusterdata=clusterdata, aggregate=FALSE)
+  # map <- calcOutput("Cluster", ctype=ctype, weight=clusterweight, clusterdata=clusterdata, aggregate=FALSE)
   #weightID <- ifelse(is.null(clusterweight),"",paste0("_",names(clusterweight),clusterweight,collapse=""))
   #clustermapname <- sub("\\.[^.]*$",".rds",paste0("clustermap_rev",rev,dev,"_",ctype,weightID,"_",getConfig("regionmapping")))
   #toolStoreMapping(map,clustermapname,type="regional",where=c("mappingfolder","outputfolder"),error.existing = FALSE)
   #setConfig(extramappings = clustermapname)
 
 
-  #41 area equipped for irrigation
+  #41 area equipped for irrigation (MOVE FROM mrmagpie TO mrwater????)
   #calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="Siebert", round=6, file=paste0("avl_irrig_", ctype, ".mz"))
   #calcOutput("AreaEquippedForIrrigation", aggregate="cluster", cellular=TRUE, source="LUH2v2",  selectyears=mag_years_past_long, round=6, file=paste0("avl_irrig_luh_t_", ctype, ".mz"))
 
-  # KEEP IN MRMAGPIE OR MOVE TO MRWATER?????
+  # 42 water demand
+  wat_req_crops_c  <- calcOutput("ActualIrrigWatRequirements", lpjml=lpjml, selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate=FALSE)
+
+
+  # 43 water availability
+  irrigatable_area <- calcOutput("IrrigatableArea", lpjml=lpjml, FAOyieldcalib=FALSE, selectyears=lpj_years, climatetype=climatetype, variabilitythreshold=1, EFRmethod="Smakhtin:good", rankmethod="meanpricedcroprank:TRUE", allocationrule="optimization", thresholdtype=TRUE, gainthreshold=500, irrigationsystem="initialization", avlland_scen="potIrrig_HalfEarth:2010", proxycrop="historical", potential_wat=TRUE, aggregate=FALSE)[,,"irrigatable"]
 
   ##### CREATE FILES FOR FIRST TEST RUN ######
-  setConfig(extramappings="clustermap_rev4.54+mrmagpie10_riverrouting_allocation_c200_h12.rds")
+  #setConfig(extramappings="clustermap_rev4.54+mrmagpie10_riverrouting_allocation_c200_h12.rds")
 
   #42 water demand
-  wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", lpjml=lpjml, selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6)
+ # wat_req_crops_c <- calcOutput("ActualIrrigWatRequirements", lpjml=lpjml, selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6)
 
   #43 water availability
 
@@ -74,7 +83,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   #### -- only temporary -- ####
 
   #42 water demand
-  calcOutput("ActualIrrigWatRequirements", lpjml=lpjml, selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
+  #calcOutput("ActualIrrigWatRequirements", lpjml=lpjml, selectyears=lpj_years, climatetype="GSWP3-W5E5:historical", iniyear=iniyear, aggregate="cluster", round=6, file=paste0("wat_req_crops_c_",ctype,".mz"))
 
   #43 water availability
 
@@ -84,8 +93,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
   writeInfo <- function(file,lpjml_data, res_high, res_out, rev) {
     functioncall <- paste(deparse(sys.call(-2)), collapse = "")
 
-    map <- toolMappingFile("regional", getConfig("regionmapping"),
-                           readcsv = TRUE)
+    map         <- toolMappingFile("regional", getConfig("regionmapping"), readcsv = TRUE)
     regionscode <- regionscode(map)
 
     info <- c('lpj2magpie settings:',
