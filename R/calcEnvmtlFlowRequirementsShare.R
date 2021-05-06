@@ -29,7 +29,7 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml, climatetype, EFRmethod) {
   monthly_discharge     <- setYears(calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="mdischarge", climatetype=climatetype, stage="raw", years=EFRyears, aggregate=FALSE), EFRyears)
 
   # Transform to array (faster calculation)
-  monthly_discharge     <-  as.array(collapseNames(monthly_discharge))
+  monthly_discharge     <- as.array(collapseNames(monthly_discharge))
 
   # Mean annual discharge
   mean_annual_discharge <- apply(monthly_discharge, MARGIN=c(1), sum) / length(EFRyears)

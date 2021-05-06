@@ -1,5 +1,5 @@
-#' @title       plotIrrigAreaSupplyCurve
-#' @description plot of irrigatable area supply curve
+#' @title       plotEconomicsOfIrrigation
+#' @description plot of irrigatable area depending on costs paid for irrigation
 #'
 #' @param x_axis_range     range of x-axis (gainthreshold) to be depicted on the curve
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
@@ -23,47 +23,49 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotIrrigAreaSupplyCurve(x_axis_range=c(0,1000), scenario="on.ssp2") }
+#' \dontrun{ plotEconomicsOfIrrigation(x_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass dimSums
+#' @importFrom magclass dimSums collapseNames
 #' @importFrom ggplot2 ggplot geom_line geom_point aes_string ggtitle xlab ylab theme_bw
+#'
+#' @export
 
-plotIrrigAreaSupplyCurve <- function(x_axis_range, scenario, lpjml, selectyears, climatetype, EFRmethod, variabilitythreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE) {
+plotEconomicsOfIrrigation <- function(x_axis_range, scenario, lpjml, selectyears, climatetype, EFRmethod, variabilitythreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE) {
 
   if (length(selectyears)>1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  irrigatable_area  <- calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"]
+  irrigatable_area  <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
   irrigatable_area  <- as.data.frame(dimSums(irrigatable_area, dim=1))
 
-  supply_curve <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, GT0=irrigatable_area$Value)
+  df <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, GT0=irrigatable_area$Value, stringsAsFactors = FALSE)
 
   if (x_axis_range[1]==0) {
     x_axis_range <- x_axis_range[-1]
   }
 
   for (gainthreshold in x_axis_range) {
-    irrigatable_area <- calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"]
+    irrigatable_area <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
     irrigatable_area <- as.data.frame(dimSums(irrigatable_area, dim=1))
 
-    tmp              <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, Value=irrigatable_area$Value)
+    tmp              <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, Value=irrigatable_area$Value, stringsAsFactors = F)
     names(tmp)[3]    <- paste0("GT",gainthreshold)
-    supply_curve     <- merge(supply_curve, tmp)
+    df     <- merge(df, tmp)
   }
 
-  supply_curve        <- data.frame(t(data.frame(Scen=paste(supply_curve$EFP, supply_curve$Scen, sep="."),supply_curve[-c(1,2)])))
-  names(supply_curve) <- supply_curve[1,]
-  supply_curve        <- supply_curve[-1,]
-  supply_curve        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(supply_curve))), supply_curve)
-  supply_curve        <- as.data.frame(lapply(supply_curve, as.numeric))
+  df        <- data.frame(t(data.frame(Scen=paste("IrrigArea", df$EFP, df$Scen, sep="."), df[-c(1,2)])))
+  names(df) <- df[1,]
+  df        <- df[-1,]
+  df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df)
+  df        <- as.data.frame(lapply(df, as.numeric))
 
-  out <- ggplot(data=supply_curve, aes_string(x="GT")) +
-                geom_line(aes_string(y=paste("on", scenario, sep=".")), color="darkblue") + geom_point(aes_string(y=paste("on", scenario, sep="."))) +
-                geom_line(aes_string(y=paste("off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(y=paste("off", scenario, sep="."))) +
+  out <- ggplot(data=df, aes_string(x="GT")) +
+                geom_line(aes_string(y=paste("IrrigArea", "on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(y=paste("IrrigArea", "on", scenario, sep="."))) +
+                geom_line(aes_string(y=paste("IrrigArea", "off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(y=paste("IrrigArea", "off", scenario, sep="."))) +
                 theme_bw() +
-                ggtitle(paste0("Irrigatable Area Supply Curve for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab("Gainthreshold (USD/ha)") + ylab("Irrigatable Area (Mha)")
+                ggtitle(paste0("Irrigatable Area for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab("Irrigatable Area (Mha)")
 
   return(out)
 }
