@@ -69,7 +69,7 @@ fullWaterMAgPIE <- function(rev=0.1, dev="", ctype="c200", climatetype="HadGEM2_
 
 
   # 43 water availability
-  irrigatable_area <- calcOutput("IrrigatableArea", lpjml=lpjml, FAOyieldcalib=FALSE, selectyears=lpj_years, climatetype=climatetype, variabilitythreshold=1, EFRmethod="Smakhtin:good", rankmethod="meanpricedcroprank:TRUE", allocationrule="optimization", thresholdtype=TRUE, gainthreshold=500, irrigationsystem="initialization", avlland_scen="potIrrig_HalfEarth:2010", proxycrop="historical", potential_wat=TRUE, aggregate=FALSE)[,,"irrigatable"]
+  irrigatable_area <- calcOutput("IrrigatableArea", lpjml=lpjml, FAOyieldcalib=FALSE, selectyears=lpj_years, climatetype=climatetype, accessibilityrule="Q:1", EFRmethod="Smakhtin:good", rankmethod="meanpricedcroprank:TRUE", allocationrule="optimization", thresholdtype=TRUE, gainthreshold=500, irrigationsystem="initialization", avlland_scen="potIrrig_HalfEarth:2010", proxycrop="historical", potential_wat=TRUE, aggregate=FALSE)[,,"irrigatable"]
 
   ##### CREATE FILES FOR FIRST TEST RUN ######
   #setConfig(extramappings="clustermap_rev4.54+mrmagpie10_riverrouting_allocation_c200_h12.rds")

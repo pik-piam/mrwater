@@ -39,11 +39,11 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, 
   iniyear      <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
   if (output=="area") {
-    x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=0, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
+    x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q:0", EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
     description <- "Irrigatable Area"
     unit        <- "Irrigatable Area (Mha)"
   } else {
-    x <- collapseNames(calcOutput("WaterPotUse",     lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=0, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,output])
+    x <- collapseNames(calcOutput("WaterPotUse",     lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q:0", EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,output])
     description <- paste0("Potential Water Use (", output, ")")
     unit        <- "Accessible Water (mio. m^3)"
   }
@@ -55,11 +55,11 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, 
     x_axis_range <- x_axis_range[-1]
   }
 
-  for (variabilitythreshold in x_axis_range) {
+  for (accessibilityrule in x_axis_range) {
     if (output=="area") {
-      x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
+      x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=paste("Q", accessibilityrule, sep=":"), EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
     } else {
-      x <- collapseNames(calcOutput("WaterPotUse",     lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,output])
+      x <- collapseNames(calcOutput("WaterPotUse",     lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=paste("Q", accessibilityrule, sep=":"), EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,output])
     }
     x <- as.data.frame(dimSums(x, dim=1))
 
@@ -78,7 +78,7 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, 
                 geom_line(aes_string(y=paste("on", scenario, sep=".")), color="darkred") + geom_point(aes_string(y=paste("on", scenario, sep="."))) +
                 geom_line(aes_string(y=paste("off", scenario, sep=".")), color="darkblue", linetype="twodash") + geom_point(aes_string(y=paste("off", scenario, sep="."))) +
                 theme_bw() +
-                ggtitle(paste0(description, " Supply Curve for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab(paste0("Accessability (Variabilitythreshold Q", variabilitythreshold,")")) + ylab(unit)
+                ggtitle(paste0(description, " Supply Curve for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab(paste0("Accessability (accessibilityrule Q", accessibilityrule,")")) + ylab(unit)
 
   return(out)
 }

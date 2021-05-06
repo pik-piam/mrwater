@@ -7,7 +7,7 @@
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param EFRmethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
-#' @param variabilitythreshold Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
+#' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
 #' @param FAOyieldcalib    TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)
 #' @param rankmethod       method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
 #' @param allocationrule   Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
@@ -31,13 +31,13 @@
 #'
 #' @export
 
-plotEconomicsOfIrrigation <- function(x_axis_range, scenario, lpjml, selectyears, climatetype, EFRmethod, variabilitythreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE) {
+plotEconomicsOfIrrigation <- function(x_axis_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE) {
 
   if (length(selectyears)>1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  irrigatable_area  <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
+  irrigatable_area  <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
   irrigatable_area  <- as.data.frame(dimSums(irrigatable_area, dim=1))
 
   df <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, GT0=irrigatable_area$Value, stringsAsFactors = FALSE)
@@ -47,7 +47,7 @@ plotEconomicsOfIrrigation <- function(x_axis_range, scenario, lpjml, selectyears
   }
 
   for (gainthreshold in x_axis_range) {
-    irrigatable_area <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
+    irrigatable_area <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
     irrigatable_area <- as.data.frame(dimSums(irrigatable_area, dim=1))
 
     tmp              <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, Value=irrigatable_area$Value, stringsAsFactors = F)

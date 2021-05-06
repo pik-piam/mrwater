@@ -6,12 +6,12 @@
 #'
 #' @param lpjml                LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype          Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param variabilitythreshold Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
+#' @param selectyears          Years to be returned (Note: does not affect years of harmonization or smoothing)
+#' @param accessibilityrule    Method used: Quantile method (Q) or coefficient of variation (CV) combined with Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5) or base value for expontential curve separated by :
 #'
 #' @importFrom magclass collapseNames getYears setYears as.magpie mbind
 #' @importFrom madrat calcOutput
-#' @importFrom stats quantile
+#' @importFrom stats quantile sd
 #'
 #' @return magpie object in cellular resolution representing share of discharge that is reserved for environmental flows
 #' @author Felicitas Beier, Jens Heinke
@@ -20,7 +20,11 @@
 #' \dontrun{ calcOutput("DischargeAccessibilityShare", aggregate=FALSE) }
 #'
 
-calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype, variabilitythreshold) {
+calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype, accessibilityrule) {
+
+  # retrieve function arguments
+  coeff  <- as.numeric(as.list(strsplit(accessibilityrule, split=":"))[[1]][2])
+  method <- as.list(strsplit(accessibilityrule, split=":"))[[1]][1]
 
   # Monthly Discharge from LPJmL (raw: including variation)
   monthly_discharge_lpjml <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="mdischarge", climatetype=climatetype, stage="raw", aggregate=FALSE)
@@ -43,14 +47,34 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype, var
     monthly_discharge <- monthly_discharge_lpjml[,longterm_period,]
 
     # Transform to array (faster calculation)
-    monthly_discharge <-  as.array(collapseNames(monthly_discharge))
+    monthly_discharge <- as.array(collapseNames(monthly_discharge))
 
-    # Get the variability discharge quantile (across selected long-term reference time period) with of selected threshold
-    Discharge_quant   <- apply(monthly_discharge, MARGIN=c(1), quantile, probs=variabilitythreshold)
+    # Variability Accessibility Method:
+    if (method=="Q") {
+      ### Quantile Variability Threshold ###
+      # Get the variability discharge quantile (across selected long-term reference time period) with selected threshold
+      Discharge_quant   <- apply(monthly_discharge, MARGIN=c(1), quantile, probs=coeff)
 
-    # Share of monthly discharge that is accessible for human use
-    x <- apply(pmin(monthly_discharge, Discharge_quant), MARGIN=1, sum) / apply(monthly_discharge, MARGIN=1, sum)
-    x[apply(monthly_discharge, MARGIN=1, sum)==0] <- 0
+      # Share of monthly discharge that is accessible for human use
+      x <- apply(pmin(monthly_discharge, Discharge_quant), MARGIN=1, sum) / apply(monthly_discharge, MARGIN=1, sum) ### only for Qs (threshold) not for 2^-CV (correction factor)
+      x[apply(monthly_discharge, MARGIN=1, sum)==0] <- 0
+
+    } else if (method=="CV") {
+      ### Variation Coefficient Method ###
+      # Mean and standard deviation of discharge
+      mean_discharge <- apply(monthly_discharge, MARGIN=1, mean)
+      std_discharge  <- apply(monthly_discharge, MARGIN=1, sd)
+
+      # Coefficient of Variation
+      CV <- std_discharge / mean_discharge
+
+      # Functional form: The higher the variability, the harder it is to access the water
+      # Accessibility coefficient (share of discharge that is accessible) decreases with variability
+      x  <- coeff^(-CV)
+    } else {
+      stop("Please select a accessibility rule defining the method of variability determination and threshold value or functional form in the accessibilityrule argument: e.g. Q:0.25, CV:2")
+    }
+
     x <- setYears(as.magpie(x, spatial=1), y)
     names(dimnames(x))[1] <- "x.y.iso"
 
@@ -59,7 +83,7 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype, var
 
   # Check for NAs
   if (any(is.na(out))) {
-    stop("produced NA Discharge Accessibility Share")
+    stop("Produced NA Discharge Accessibility Share")
   }
 
   # Check range of object

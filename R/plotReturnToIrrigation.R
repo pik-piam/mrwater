@@ -38,11 +38,11 @@ plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, select
 
   iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
-  x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=0, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
+  x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q0", EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
   x <- as.data.frame(dimSums(x, dim=1))
   tmp1A <- data.frame(EFP=x$Data1, Scen=x$Data2, Irrigarea_GT0=x$Value)
 
-  x <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=0, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,x_axis])
+  x <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q0", EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,x_axis])
   # transform from mio. m^3 to km^3:
   x <- x / 1000
   x <- as.data.frame(dimSums(x, dim=1))
@@ -52,19 +52,19 @@ plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, select
     y_axis_range <- y_axis_range[-1]
   }
 
-  for (variabilitythreshold in y_axis_range) {
+  for (accessibilityrule in y_axis_range) {
 
-    x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
+    x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=paste("Q", accessibilityrule, sep=":"), EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
     x <- as.data.frame(dimSums(x, dim=1))
     tmp1B              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value)
-    names(tmp1B)[3]    <- paste0("Q", variabilitythreshold)
+    names(tmp1B)[3]    <- paste0("Q", accessibilityrule)
     tmp1A              <- merge(tmp1A, tmp1B)
 
-    x <- collapseNames(calcOutput("WaterPotUse",     lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,x_axis])
+    x <- collapseNames(calcOutput("WaterPotUse",     lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=paste("Q", accessibilityrule, sep=":"), EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,x_axis])
     x <- x / 1000
     x <- as.data.frame(dimSums(x, dim=1))
     tmp2B              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value)
-    names(tmp2B)[3]    <- paste0("Q", variabilitythreshold)
+    names(tmp2B)[3]    <- paste0("Q", accessibilityrule)
     tmp2A              <- merge(tmp2A, tmp2B)
   }
 

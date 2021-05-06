@@ -5,7 +5,7 @@
 #' @param selectyears     Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param climatetype     Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param EFRmethod       EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
-#' @param variabilitythreshold Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
+#' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
 #' @param rankmethod      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
 #' @param FAOyieldcalib   TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)
 #' @param allocationrule  Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
@@ -29,13 +29,13 @@
 #' \dontrun{ calcOutput("WaterPotUse", aggregate = FALSE) }
 #'
 
-calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod, variabilitythreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
+calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
 
   # Check
   if (!is.na(as.list(strsplit(avlland_scen, split=":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])) stop("Initialization year in calcWaterPotUse does not match: iniyear and avlland_scen should have same initialization year")
 
   # Water potentially available for irrigation (accounting for previously committed agricultural uses)
-  frac_fullirrig         <- collapseNames(calcOutput("RiverSurplusDischargeAllocation", output="frac_fullirrig", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, variabilitythreshold=variabilitythreshold, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE))
+  frac_fullirrig         <- collapseNames(calcOutput("RiverSurplusDischargeAllocation", output="frac_fullirrig", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE))
   required_wat_fullirrig <- calcOutput("FullIrrigationRequirement", selectyears=selectyears, lpjml=lpjml, climatetype=climatetype, comagyear=iniyear, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)
   wat_avl_agr_ww         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]),  0)
   wat_avl_agr_wc         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)

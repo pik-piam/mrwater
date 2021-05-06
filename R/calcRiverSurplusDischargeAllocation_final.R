@@ -6,7 +6,7 @@
 #' @param output          output to be reported
 #' @param climatetype     Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param EFRmethod       EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
-#' @param variabilitythreshold Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
+#' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
 #' @param rankmethod      method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
 #' @param FAOyieldcalib   TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)
 #' @param allocationrule  Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
@@ -30,7 +30,7 @@
 #' \dontrun{ calcOutput("RiverSurplusDischargeAllocation_final", aggregate = FALSE) }
 #'
 
-calcRiverSurplusDischargeAllocation_final <- function(lpjml, selectyears, output, climatetype, EFRmethod, variabilitythreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
+calcRiverSurplusDischargeAllocation_final <- function(lpjml, selectyears, output, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop) {
 
   # Check
   if (!is.na(as.list(strsplit(avlland_scen, split=":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])) stop("Initialization year in calcRiverSurplusDischargeAllocation does not match: iniyear and avlland_scen should have same initialization year")
@@ -63,7 +63,7 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, selectyears, output
   frac_fullirrig              <- new.magpie(cells_and_regions = getCells(discharge), years = getYears(discharge), names = getNames(discharge), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
 
   # Discharge that is inaccessible to human uses (mio m^3)
-  inaccessible_discharge      <- calcOutput("DischargeInaccessible", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, variabilitythreshold=variabilitythreshold, aggregate=FALSE)
+  inaccessible_discharge      <- calcOutput("DischargeInaccessible", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, aggregate=FALSE)
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   glocellrank     <- calcOutput("IrrigCellranking", lpjml=lpjml, climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)

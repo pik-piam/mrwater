@@ -4,12 +4,7 @@
 \alias{calcDischargeInaccessible}
 \title{calcDischargeInaccessible}
 \usage{
-calcDischargeInaccessible(
-  lpjml,
-  selectyears,
-  climatetype,
-  variabilitythreshold
-)
+calcDischargeInaccessible(lpjml, selectyears, climatetype, accessibilityrule)
 }
 \arguments{
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
@@ -18,7 +13,7 @@ calcDischargeInaccessible(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{variabilitythreshold}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
+\item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
 }
 \value{
 magpie object in cellular resolution representing share of discharge that is reserved for environmental flows

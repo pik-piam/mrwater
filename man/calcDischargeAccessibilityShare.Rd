@@ -8,7 +8,7 @@ calcDischargeAccessibilityShare(
   lpjml,
   selectyears,
   climatetype,
-  variabilitythreshold
+  accessibilityrule
 )
 }
 \arguments{
@@ -18,7 +18,7 @@ calcDischargeAccessibilityShare(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{variabilitythreshold}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
+\item{accessibilityrule}{Method used: Quantile method (Q) or coefficient of variation (CV) combined with Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5) or base value for expontential curve separated by :}
 }
 \value{
 magpie object in cellular resolution representing share of discharge that is reserved for environmental flows
