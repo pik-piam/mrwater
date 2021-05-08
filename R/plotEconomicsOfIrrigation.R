@@ -50,15 +50,15 @@ plotEconomicsOfIrrigation <- function(x_axis_range, scenario, lpjml, selectyears
     irrigatable_area <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
     irrigatable_area <- as.data.frame(dimSums(irrigatable_area, dim=1))
 
-    tmp              <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, Value=irrigatable_area$Value, stringsAsFactors = F)
+    tmp              <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, Value=irrigatable_area$Value)
     names(tmp)[3]    <- paste0("GT",gainthreshold)
     df     <- merge(df, tmp)
   }
 
-  df        <- data.frame(t(data.frame(Scen=paste("IrrigArea", df$EFP, df$Scen, sep="."), df[-c(1,2)])))
-  names(df) <- df[1,]
+  df        <- data.frame(t(data.frame(Scen=paste("IrrigArea", df$EFP, df$Scen, sep="."), df[-c(1,2)])), stringsAsFactors = FALSE)
+  names(df) <- as.character(unlist(df[1,]))
   df        <- df[-1,]
-  df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df)
+  df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = FALSE)
   df        <- as.data.frame(lapply(df, as.numeric))
 
   out <- ggplot(data=df, aes_string(x="GT")) +

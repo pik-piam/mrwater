@@ -4,10 +4,10 @@
 #'              variable, it is harder to bring into productive use and therefore
 #'              water availability (for human use) is reduced.
 #'
-#' @param lpjml                LPJmL version required for respective inputs: natveg or crop
-#' @param climatetype          Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param selectyears          Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param accessibilityrule    Method used: Quantile method (Q) or coefficient of variation (CV) combined with Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5) or base value for expontential curve separated by :
+#' @param lpjml             LPJmL version required for respective inputs: natveg or crop
+#' @param climatetype       Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param selectyears       Years to be returned (Note: does not affect years of harmonization or smoothing)
+#' @param accessibilityrule Method used: Quantile method (Q) or coefficient of variation (CV) combined with Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5) or base value for expontential curve separated by :
 #'
 #' @importFrom magclass collapseNames getYears setYears as.magpie mbind
 #' @importFrom madrat calcOutput

@@ -52,7 +52,7 @@ plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml
     unit        <- paste0("Potential water use", x_axis,"(km^3)")
   }
   x  <- as.data.frame(dimSums(x, dim=1))
-  df <- data.frame(EFP=x$Data1, Scen=x$Data2, GT0=x$Value)
+  df <- data.frame(EFP=x$Data1, Scen=x$Data2, GT0=x$Value, stringsAsFactors = F)
 
   if (y_axis_range[1]==0) {
     y_axis_range <- y_axis_range[-1]
@@ -67,15 +67,15 @@ plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml
     }
     x <- as.data.frame(dimSums(x, dim=1))
 
-    tmp              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value)
+    tmp              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value, stringsAsFactors = F)
     names(tmp)[3]    <- paste0("GT",gainthreshold)
     df     <- merge(df, tmp)
   }
 
-  df        <- data.frame(t(data.frame(Scen=paste(df$EFP, df$Scen, sep="."),df[-c(1,2)])))
-  names(df) <- df[1,]
+  df        <- data.frame(t(data.frame(Scen=paste(df$EFP, df$Scen, sep="."),df[-c(1,2)])), stringsAsFactors = F)
+  names(df) <- as.character(unlist(df[1,]))
   df        <- df[-1,]
-  df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df)
+  df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = F)
   df        <- as.data.frame(lapply(df, as.numeric))
 
   out <- ggplot(data=df, aes_string(y="GT")) +

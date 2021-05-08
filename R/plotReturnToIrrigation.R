@@ -38,15 +38,15 @@ plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, select
 
   iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
-  x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q0", EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
-  x <- as.data.frame(dimSums(x, dim=1))
-  tmp1A <- data.frame(EFP=x$Data1, Scen=x$Data2, Irrigarea_GT0=x$Value)
+  x     <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q0", EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, aggregate=FALSE)[,,"irrigatable"])
+  x     <- as.data.frame(dimSums(x, dim=1))
+  tmp1A <- data.frame(EFP=x$Data1, Scen=x$Data2, Irrigarea_GT0=x$Value, stringsAsFactors = F)
 
-  x <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q0", EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,x_axis])
+  x     <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q0", EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)[,,x_axis])
   # transform from mio. m^3 to km^3:
-  x <- x / 1000
-  x <- as.data.frame(dimSums(x, dim=1))
-  tmp2A <- data.frame(EFP=x$Data1, Scen=x$Data2, Potwat_GT0=x$Value)
+  x     <- x / 1000
+  x     <- as.data.frame(dimSums(x, dim=1))
+  tmp2A <- data.frame(EFP=x$Data1, Scen=x$Data2, Potwat_GT0=x$Value, stringsAsFactors = F)
 
   if (y_axis_range[1]==0) {
     y_axis_range <- y_axis_range[-1]
@@ -68,16 +68,16 @@ plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, select
     tmp2A              <- merge(tmp2A, tmp2B)
   }
 
-  tmp1A        <- data.frame(t(data.frame(Scen=paste("IrrigArea", tmp1A$EFP, tmp1A$Scen, sep="."),tmp1A[-c(1,2)])))
-  names(tmp1A) <- tmp1A[1,]
+  tmp1A        <- data.frame(t(data.frame(Scen=paste("IrrigArea", tmp1A$EFP, tmp1A$Scen, sep="."),tmp1A[-c(1,2)])), stringsAsFactors = F)
+  names(tmp1A) <- as.character(unlist(tmp1A[1,]))
   tmp1A        <- tmp1A[-1,]
-  tmp1A        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(tmp1A))), tmp1A)
+  tmp1A        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(tmp1A))), tmp1A, stringsAsFactors = F)
   tmp1A        <- as.data.frame(lapply(tmp1A, as.numeric))
 
-  tmp2A        <- data.frame(t(data.frame(Scen=paste("PotWat", tmp2A$EFP, tmp2A$Scen, sep="."),tmp2A[-c(1,2)])))
-  names(tmp2A) <- tmp2A[1,]
+  tmp2A        <- data.frame(t(data.frame(Scen=paste("PotWat", tmp2A$EFP, tmp2A$Scen, sep="."),tmp2A[-c(1,2)])), stringsAsFactors = F)
+  names(tmp2A) <- as.character(unlist(tmp2A[1,]))
   tmp2A        <- tmp2A[-1,]
-  tmp2A        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(tmp2A))), tmp2A)
+  tmp2A        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(tmp2A))), tmp2A, stringsAsFactors = F)
   tmp2A        <- as.data.frame(lapply(tmp2A, as.numeric))
 
   df <- merge(tmp1A, tmp2A)
