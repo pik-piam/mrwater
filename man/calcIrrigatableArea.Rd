@@ -18,7 +18,8 @@ calcIrrigatableArea(
   irrigationsystem,
   avlland_scen,
   proxycrop,
-  potential_wat
+  potential_wat,
+  com_ag
 )
 }
 \arguments{
@@ -51,6 +52,8 @@ protection scenario separated by "_" (only relevant when potIrrig selected): WDP
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
 
 \item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
+
+\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
 }
 \value{
 magpie object in cellular resolution

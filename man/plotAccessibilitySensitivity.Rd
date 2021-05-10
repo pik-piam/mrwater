@@ -20,6 +20,7 @@ plotAccessibilitySensitivity(
   irrigationsystem,
   avlland_scen,
   proxycrop,
+  com_ag,
   potential_wat = TRUE
 )
 }
@@ -55,6 +56,8 @@ combination of land availability scenario and initialization year separated by "
 protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
+
+\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
 }

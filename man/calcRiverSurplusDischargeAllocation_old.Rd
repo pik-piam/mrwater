@@ -19,7 +19,8 @@ calcRiverSurplusDischargeAllocation_old(
   irrigationsystem,
   iniyear,
   avlland_scen,
-  proxycrop
+  proxycrop,
+  com_ag
 )
 }
 \arguments{
@@ -54,6 +55,8 @@ combination of land availability scenario and initialization year separated by "
 protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
+
+\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
 }
 \value{
 magpie object in cellular resolution
