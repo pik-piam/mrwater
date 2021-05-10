@@ -30,7 +30,7 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype, acc
   monthly_discharge_lpjml <- calcOutput("LPJmL_new", version=lpjml["natveg"], subtype="mdischarge", climatetype=climatetype, stage="raw", aggregate=FALSE)
 
   # Extract years
-  years             <- getYears(monthly_discharge_lpjml, as.integer=TRUE)
+  years         <- getYears(monthly_discharge_lpjml, as.integer=TRUE)
   if (class(selectyears)!="numeric") {
     selectyears <- as.numeric(gsub("y", "", selectyears))
   }
@@ -56,7 +56,7 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype, acc
       Discharge_quant   <- apply(monthly_discharge, MARGIN=c(1), quantile, probs=coeff)
 
       # Share of monthly discharge that is accessible for human use
-      x <- apply(pmin(monthly_discharge, Discharge_quant), MARGIN=1, sum) / apply(monthly_discharge, MARGIN=1, sum) ### only for Qs (threshold) not for 2^-CV (correction factor)
+      x <- apply(pmin(monthly_discharge, Discharge_quant), MARGIN=1, sum) / apply(monthly_discharge, MARGIN=1, sum)
       x[apply(monthly_discharge, MARGIN=1, sum)==0] <- 0
 
     } else if (method=="CV") {
@@ -66,7 +66,7 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype, acc
       std_discharge  <- apply(monthly_discharge, MARGIN=1, sd)
 
       # Coefficient of Variation
-      CV <- std_discharge / mean_discharge
+      CV <- ifelse(mean_discharge>0, std_discharge / mean_discharge, 0)
 
       # Functional form: The higher the variability, the harder it is to access the water
       # Accessibility coefficient (share of discharge that is accessible) decreases with variability
