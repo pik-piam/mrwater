@@ -30,6 +30,8 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames
 #' @importFrom ggplot2 ggplot geom_line geom_point aes_string ggtitle xlab ylab theme_bw
+#'
+#' @export
 
 plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 

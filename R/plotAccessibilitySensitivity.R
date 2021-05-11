@@ -30,6 +30,8 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames
 #' @importFrom ggplot2 ggplot geom_line geom_point aes_string ggtitle xlab ylab theme_bw
+#'
+#' @export
 
 plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, selectyears, climatetype, EFRmethod, gainthreshold, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, com_ag, potential_wat=TRUE) {
 

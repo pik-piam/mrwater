@@ -30,6 +30,8 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames
 #' @importFrom ggplot2 ggplot geom_line geom_point aes_string ggtitle xlab ylab theme_bw
+#'
+#' @export
 
 plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, selectyears, climatetype, EFRmethod, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop, com_ag, potential_wat=TRUE) {
 
@@ -85,7 +87,7 @@ plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, select
 
   out <- ggplot(data=df, aes_string(y=paste("IrrigArea", "on", scenario, sep="."))) +
                 geom_line(aes_string(x=paste("PotWat", "on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(x=paste("PotWat", "on", scenario, sep="."))) +
-                #geom_line(aes_string(x=paste("PotWat", "off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(x=paste("PotWat", "off", scenario, sep="."))) +
+                geom_line(aes_string(x=paste("PotWat", "off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(x=paste("PotWat", "off", scenario, sep="."))) +
                 theme_bw() +
                 ggtitle(paste0("Return to to Irrigation with FAO-calib=" , FAOyieldcalib, " on ", avlland_scen)) + ylab("Irrigatable Area (Mha)") + xlab("Accessible Water (km^3)")
 
