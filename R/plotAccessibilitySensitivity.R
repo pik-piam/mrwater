@@ -52,7 +52,7 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, 
   }
   x <- as.data.frame(dimSums(x, dim=1))
 
-  df <- data.frame(EFP=x$Data1, Scen=x$Data2, GT0=x$Value, stringsAsFactors = F)
+  df <- data.frame(EFP=x$Data1, Scen=x$Data2, Q0=x$Value, stringsAsFactors = F)
 
   if (x_axis_range[1]==0) {
     x_axis_range <- x_axis_range[-1]
@@ -67,17 +67,17 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, 
     x <- as.data.frame(dimSums(x, dim=1))
 
     tmp              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value, stringsAsFactors = F)
-    names(tmp)[3]    <- paste0("GT",gainthreshold)
+    names(tmp)[3]    <- paste0("Q",accessibilityrule)
     df     <- merge(df, tmp)
   }
 
   df        <- data.frame(t(data.frame(Scen=paste(df$EFP, df$Scen, sep="."),df[-c(1,2)])), stringsAsFactors = F)
   names(df) <- as.character(unlist(df[1,]))
   df        <- df[-1,]
-  df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = F)
+  df        <- data.frame(Q=as.numeric(gsub("Q", "", rownames(df))), df, stringsAsFactors = F)
   df        <- as.data.frame(lapply(df, as.numeric))
 
-  out <- ggplot(data=df, aes_string(x="GT")) +
+  out <- ggplot(data=df, aes_string(x="Q")) +
                 geom_line(aes_string(y=paste("on", scenario, sep=".")), color="darkred") + geom_point(aes_string(y=paste("on", scenario, sep="."))) +
                 geom_line(aes_string(y=paste("off", scenario, sep=".")), color="darkblue", linetype="twodash") + geom_point(aes_string(y=paste("off", scenario, sep="."))) +
                 theme_bw() +
