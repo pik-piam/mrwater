@@ -1,6 +1,7 @@
 #' @title       reportEconOfIrrig
 #' @description reports irrigatable area depending on costs paid for irrigation
 #'
+#' @param output           output to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc"
 #' @param GT_range         range of x-axis (gainthreshold) to be depicted on the curve
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
@@ -31,26 +32,46 @@
 #'
 #' @export
 
-reportEconOfIrrig <- function(GT_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+reportEconOfIrrig <- function(output, GT_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 
   if (length(selectyears)>1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  irrigatable_area  <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
-  irrigatable_area  <- as.data.frame(dimSums(irrigatable_area, dim=1))
+  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
-  df <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, GT0=irrigatable_area$Value, stringsAsFactors = FALSE)
+  if (output=="area") {
+    x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
+    d <- "Irrigatable Area"
+    u <- "Irrigatable Area (Mha)"
+  } else {
+    x <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,output])
+    # transform from mio. m^3 to km^3:
+    # (1 km^3 = 1e+09 m^3)
+    # (1 mio. = 1e+06)
+    x <- x / 1000
+    d <- paste0("Water Use Potential")
+    u <- paste0("Potential water use", output, "(km^3)")
+  }
+  x  <- as.data.frame(dimSums(x, dim=1))
+
+  df <- data.frame(EFP=x$Data1, Scen=x$Data2, GT0=x$Value, stringsAsFactors = FALSE)
 
   if (GT_range[1]==0) {
     GT_range <- GT_range[-1]
   }
 
   for (gainthreshold in GT_range) {
-    irrigatable_area <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
-    irrigatable_area <- as.data.frame(dimSums(irrigatable_area, dim=1))
 
-    tmp              <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, Value=irrigatable_area$Value)
+    if (output=="area") {
+      x  <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
+    } else {
+      x <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,output])
+      x <- x / 1000
+    }
+    x <- as.data.frame(dimSums(x, dim=1))
+
+    tmp              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value)
     names(tmp)[3]    <- paste0("GT",gainthreshold)
     df     <- merge(df, tmp)
   }
@@ -61,5 +82,5 @@ reportEconOfIrrig <- function(GT_range, scenario, lpjml, selectyears, climatetyp
   df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = FALSE)
   df        <- as.data.frame(lapply(df, as.numeric))
 
-  return(df)
+  return(list(data=df, description=d, unit=u))
 }

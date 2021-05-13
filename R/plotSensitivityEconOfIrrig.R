@@ -1,6 +1,7 @@
 #' @title       plotSensitivityEconOfIrrig
 #' @description plot of irrigatable area depending on costs paid for irrigation for different water accessibility
 #'
+#' @param output           output to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc"
 #' @param x_axis_range     range of x-axis (gainthreshold) to be depicted on the curve
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
@@ -30,42 +31,53 @@
 #'
 #' @export
 
-plotSensitivityEconOfIrrig <- function(x_axis_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+plotSensitivityEconOfIrrig <- function(x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 
-  Q100  <- reportEconOfIrrig(GT_range=x_axis_range, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  Q100  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:1", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  Q075  <- reportEconOfIrrig(GT_range=x_axis_range, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  names(Q100) <- gsub("IrrigArea", "IrrigArea_Q:1", names(Q100))
+
+  Q075  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0.75", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  Q050  <- reportEconOfIrrig(GT_range=x_axis_range, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  names(Q075) <- gsub("IrrigArea", "IrrigArea_Q:0.75", names(Q075))
+
+  Q050  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0.5", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  Q025  <- reportEconOfIrrig(GT_range=x_axis_range, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  names(Q050) <- gsub("IrrigArea", "IrrigArea_Q:0.5", names(Q050))
+
+  Q025  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0.25", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  Q010  <- reportEconOfIrrig(GT_range=x_axis_range, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
-                             EFRmethod=EFRmethod, accessibilityrule="Q:0.1", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
-                             allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
-                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  Q000  <- reportEconOfIrrig(GT_range=x_axis_range, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  names(Q025) <- gsub("IrrigArea", "IrrigArea_Q:0.25", names(Q025))
+
+  Q000  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  CV2   <- reportEconOfIrrig(GT_range=x_axis_range, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  names(Q000) <- gsub("IrrigArea", "IrrigArea_Q:0", names(Q000))
+
+  CV2   <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="CV:2", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
+  names(CV2) <- gsub("IrrigArea", "IrrigArea_CV:2", names(CV2))
 
-  df    <- merge(CV2, Q000, Q010, Q025, Q050, Q075, Q100)
+  df    <- merge(CV2, Q000, Q025, Q050, Q075, Q100)
 
   out   <- ggplot(data=df, aes_string(x="GT")) +
-           geom_line(aes_string(y=paste("IrrigArea", "on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(y=paste("IrrigArea", "on", scenario, sep="."))) +
-           geom_line(aes_string(y=paste("IrrigArea", "off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(y=paste("IrrigArea", "off", scenario, sep="."))) +
+           geom_line(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep=".")),  color="#000000") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
+           geom_line(aes_string(y=paste("IrrigArea_Q:0.75", "on", scenario, sep=".")),  color="#E69F00") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
+           geom_line(aes_string(y=paste("IrrigArea_Q:0.5", "on", scenario, sep=".")),  color="#56B4E9") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
+           geom_line(aes_string(y=paste("IrrigArea_Q:0.25", "on", scenario, sep=".")),  color="#009E73") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
+           geom_line(aes_string(y=paste("IrrigArea_Q:0", "on", scenario, sep=".")),  color="#0072B2") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
+           geom_line(aes_string(y=paste("IrrigArea_CV:2", "on", scenario, sep=".")),  color="#D55E00") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
            theme_bw() +
            ggtitle(paste0("Irrigatable Area for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab("Irrigatable Area (Mha)")
 

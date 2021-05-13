@@ -35,51 +35,11 @@
 
 plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 
-  if (length(selectyears)>1) {
-    stop("Please select one year only for Potential Irrigatable Area Supply Curve")
-  }
-
-  iniyear       <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
-
-  if (x_axis=="area") {
-    x  <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
-    description <- "Irrigatable Area"
-    unit        <- "Irrigatable Area (Mha)"
-  } else {
-    x <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,x_axis])
-    # transform from mio. m^3 to km^3:
-    # (1 km^3 = 1e+09 m^3)
-    # (1 mio. = 1e+06)
-    x <- x / 1000
-    description <- paste0("Water Use Potential")
-    unit        <- paste0("Potential water use", x_axis,"(km^3)")
-  }
-  x  <- as.data.frame(dimSums(x, dim=1))
-  df <- data.frame(EFP=x$Data1, Scen=x$Data2, GT0=x$Value, stringsAsFactors = F)
-
-  if (y_axis_range[1]==0) {
-    y_axis_range <- y_axis_range[-1]
-  }
-
-  for (gainthreshold in y_axis_range) {
-    if (x_axis=="area") {
-      x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
-    } else {
-      x <- collapseNames(calcOutput("WaterPotUse",     lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,x_axis])
-      x <- x / 1000
-    }
-    x <- as.data.frame(dimSums(x, dim=1))
-
-    tmp              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value, stringsAsFactors = F)
-    names(tmp)[3]    <- paste0("GT",gainthreshold)
-    df     <- merge(df, tmp)
-  }
-
-  df        <- data.frame(t(data.frame(Scen=paste(df$EFP, df$Scen, sep="."),df[-c(1,2)])), stringsAsFactors = F)
-  names(df) <- as.character(unlist(df[1,]))
-  df        <- df[-1,]
-  df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = F)
-  df        <- as.data.frame(lapply(df, as.numeric))
+  inputdata   <- reportEconOfIrrig(GT_range=y_axis_range, output=x_axis, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
+                           allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
+  df          <- inputdata$data
+  description <- inputdata$description
+  unit        <- inputdata$unit
 
   out <- ggplot(data=df, aes_string(y="GT")) +
                 geom_line(aes_string(x=paste("on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(x=paste("on", scenario, sep="."))) +

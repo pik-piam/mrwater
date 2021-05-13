@@ -1,6 +1,7 @@
 #' @title       plotEconOfIrrig
 #' @description plot of irrigatable area depending on costs paid for irrigation
 #'
+#' @param output           output to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc"
 #' @param x_axis_range     range of x-axis (gainthreshold) to be depicted on the curve
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
@@ -30,19 +31,19 @@
 #'
 #' @export
 
-plotEconOfIrrig <- function(x_axis_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+plotEconOfIrrig <- function(x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 
-  df  <- reportEconOfIrrig(GT_range=x_axis_range, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
-                           EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
-                           allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
-                           proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-
+  inputdata   <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
+                                   allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
+  df          <- inputdata$data
+  description <- inputdata$description
+  unit        <- inputdata$unit
 
   out <- ggplot(data=df, aes_string(x="GT")) +
                 geom_line(aes_string(y=paste("IrrigArea", "on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(y=paste("IrrigArea", "on", scenario, sep="."))) +
                 geom_line(aes_string(y=paste("IrrigArea", "off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(y=paste("IrrigArea", "off", scenario, sep="."))) +
                 theme_bw() +
-                ggtitle(paste0("Irrigatable Area for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab("Irrigatable Area (Mha)")
+                ggtitle(paste0(description, " for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab(unit)
 
   return(out)
 }
