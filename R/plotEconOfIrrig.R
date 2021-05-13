@@ -1,4 +1,4 @@
-#' @title       plotEconomicsOfIrrigation
+#' @title       plotEconOfIrrig
 #' @description plot of irrigatable area depending on costs paid for irrigation
 #'
 #' @param x_axis_range     range of x-axis (gainthreshold) to be depicted on the curve
@@ -24,43 +24,19 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotEconomicsOfIrrigation(x_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
+#' \dontrun{ plotEconOfIrrig(x_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
 #'
-#' @importFrom madrat calcOutput
-#' @importFrom magclass dimSums collapseNames
 #' @importFrom ggplot2 ggplot geom_line geom_point aes_string ggtitle xlab ylab theme_bw
 #'
 #' @export
 
-plotEconomicsOfIrrigation <- function(x_axis_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+plotEconOfIrrig <- function(x_axis_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 
-  if (length(selectyears)>1) {
-    stop("Please select one year only for Potential Irrigatable Area Supply Curve")
-  }
+  df  <- reportEconOfIrrig(GT_range=x_axis_range, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+                           EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
+                           allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
+                           proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
 
-  irrigatable_area  <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
-  irrigatable_area  <- as.data.frame(dimSums(irrigatable_area, dim=1))
-
-  df <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, GT0=irrigatable_area$Value, stringsAsFactors = FALSE)
-
-  if (x_axis_range[1]==0) {
-    x_axis_range <- x_axis_range[-1]
-  }
-
-  for (gainthreshold in x_axis_range) {
-    irrigatable_area <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
-    irrigatable_area <- as.data.frame(dimSums(irrigatable_area, dim=1))
-
-    tmp              <- data.frame(EFP=irrigatable_area$Data1, Scen=irrigatable_area$Data2, Value=irrigatable_area$Value)
-    names(tmp)[3]    <- paste0("GT",gainthreshold)
-    df     <- merge(df, tmp)
-  }
-
-  df        <- data.frame(t(data.frame(Scen=paste("IrrigArea", df$EFP, df$Scen, sep="."), df[-c(1,2)])), stringsAsFactors = FALSE)
-  names(df) <- as.character(unlist(df[1,]))
-  df        <- df[-1,]
-  df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = FALSE)
-  df        <- as.data.frame(lapply(df, as.numeric))
 
   out <- ggplot(data=df, aes_string(x="GT")) +
                 geom_line(aes_string(y=paste("IrrigArea", "on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(y=paste("IrrigArea", "on", scenario, sep="."))) +

@@ -78,8 +78,8 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, 
   df        <- as.data.frame(lapply(df, as.numeric))
 
   out <- ggplot(data=df, aes_string(x="Q")) +
-                geom_line(aes_string(y=paste("on", scenario, sep=".")), color="darkred") + geom_point(aes_string(y=paste("on", scenario, sep="."))) +
-                geom_line(aes_string(y=paste("off", scenario, sep=".")), color="darkblue", linetype="twodash") + geom_point(aes_string(y=paste("off", scenario, sep="."))) +
+                geom_line(aes_string(y=paste("on", scenario, sep=".")), color="darkblue", linetype="twodash") + geom_point(aes_string(y=paste("on", scenario, sep="."))) +
+                geom_line(aes_string(y=paste("off", scenario, sep=".")), color="darkred") + geom_point(aes_string(y=paste("off", scenario, sep="."))) +
                 theme_bw() +
                 ggtitle(paste0(description, " Supply Curve for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab(paste0("Accessability (accessibilityrule Q", accessibilityrule,")")) + ylab(unit)
 
