@@ -57,7 +57,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype, monetary, iniyear, selectyear
     LPJmL_yields     <- toolCountryFill(LPJmL_yields, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
 
     # FAO iso-country yields
-    FAO_yields <- calcOutput("FAOYield", physical = TRUE, attributes="dm", irrigation=FALSE, cellular=FALSE, cut=0.9, aggregate=FALSE)[,iniyear,]
+    FAO_yields <- calcOutput("FAOYield", physical = TRUE, attributes="dm", irrigation=FALSE, cellular=FALSE, cut=0.99, aggregate=FALSE)[,iniyear,]
 
     # Calibration Factor:
     Calib            <- FAO_yields[getCells(LPJmL_yields),,croplist] / LPJmL_yields[,,croplist]
