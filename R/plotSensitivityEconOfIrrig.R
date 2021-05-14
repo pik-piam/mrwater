@@ -27,7 +27,8 @@
 #' @examples
 #' \dontrun{ plotSensitivityEconOfIrrig(x_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
 #'
-#' @importFrom ggplot2 ggplot geom_line geom_point aes_string ggtitle xlab ylab theme_bw
+#' @importFrom ggplot2 ggplot geom_line geom_point aes ggtitle xlab ylab theme_bw theme element_text scale_color_brewer scale_x_continuous scale_y_continuous
+#' @importFrom dplyr select matches
 #'
 #' @export
 
@@ -36,50 +37,55 @@ plotSensitivityEconOfIrrig <- function(x_axis_range, output, scenario, lpjml, se
   Q100  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:1", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
-                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  names(Q100) <- gsub("IrrigArea", "IrrigArea_Q:1", names(Q100))
+                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
+  Q100$Accessibility <- rep("Q100", length(Q100$GT))
 
   Q075  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0.75", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
-                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  names(Q075) <- gsub("IrrigArea", "IrrigArea_Q:0.75", names(Q075))
+                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
+  Q075$Accessibility <- rep("Q075", length(Q075$GT))
 
   Q050  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0.5", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
-                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  names(Q050) <- gsub("IrrigArea", "IrrigArea_Q:0.5", names(Q050))
+                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
+  Q050$Accessibility <- rep("Q050", length(Q050$GT))
 
   Q025  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0.25", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
-                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  names(Q025) <- gsub("IrrigArea", "IrrigArea_Q:0.25", names(Q025))
+                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
+  Q025$Accessibility <- rep("Q025", length(Q025$GT))
 
   Q000  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
-                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  names(Q000) <- gsub("IrrigArea", "IrrigArea_Q:0", names(Q000))
+                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
+  Q000$Accessibility <- rep("Q000", length(Q000$GT))
 
   CV2   <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="CV:2", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
-                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
-  names(CV2) <- gsub("IrrigArea", "IrrigArea_CV:2", names(CV2))
+                             proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
+  CV2$Accessibility <- rep("CV2", length(CV2$GT))
 
-  df    <- merge(CV2, Q000, Q025, Q050, Q075, Q100)
+  # Dummy assignment
+  GT            <- "gainthreshold as part of data frame df"
+  Accessibility <- "accessibility as part of data frame df"
+  Value         <- "Value as part of data frame df"
 
-  out   <- ggplot(data=df, aes_string(x="GT")) +
-           geom_line(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep=".")),  color="#000000") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
-           geom_line(aes_string(y=paste("IrrigArea_Q:0.75", "on", scenario, sep=".")),  color="#E69F00") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
-           geom_line(aes_string(y=paste("IrrigArea_Q:0.5", "on", scenario, sep=".")),  color="#56B4E9") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
-           geom_line(aes_string(y=paste("IrrigArea_Q:0.25", "on", scenario, sep=".")),  color="#009E73") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
-           geom_line(aes_string(y=paste("IrrigArea_Q:0", "on", scenario, sep=".")),  color="#0072B2") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
-           geom_line(aes_string(y=paste("IrrigArea_CV:2", "on", scenario, sep=".")),  color="#D55E00") + geom_point(aes_string(y=paste("IrrigArea_Q:1", "on", scenario, sep="."))) +
-           theme_bw() +
-           ggtitle(paste0("Irrigatable Area for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab("Irrigatable Area (Mha)")
+  df <- rbind.data.frame(Q000, Q025, Q050, CV2, Q075, Q100)
+  df <- select(df, GT, Accessibility, matches(paste("IrrigArea", "on", scenario, sep=".")))
+  names(df) <- c("GT", "Accessibility", "Value")
+
+  out <- ggplot(data=df, aes(x=GT, y=Value, color=Accessibility)) +
+                geom_line(size=1.5) + geom_point(aes(y=Value), size=2) +
+                theme_bw() +
+                theme(legend.position = c(0.95,0.9), text=element_text(size=20)) +
+                scale_x_continuous(expand = c(0, 0), breaks=df$GT) + scale_y_continuous(breaks=seq(0,1000,by=100), expand = c(0, 0)) +
+                scale_color_brewer(palette = "Dark2") +
+                ggtitle(paste0("Irrigatable Area for FAOyieldcalib = ", FAOyieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab("Irrigatable Area (Mha)")
 
   return(out)
 }
