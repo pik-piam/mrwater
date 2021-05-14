@@ -1,7 +1,7 @@
 #' @title       plotSensitivityEconOfIrrig
 #' @description plot of irrigatable area depending on costs paid for irrigation for different water accessibility
 #'
-#' @param output           output to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc"
+#' @param output           output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"
 #' @param x_axis_range     range of x-axis (gainthreshold) to be depicted on the curve
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop

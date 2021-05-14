@@ -5,6 +5,7 @@
 \title{reportEconOfIrrig}
 \usage{
 reportEconOfIrrig(
+  region = "GLO",
   output,
   GT_range,
   scenario,
@@ -25,7 +26,9 @@ reportEconOfIrrig(
 )
 }
 \arguments{
-\item{output}{output to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc"}
+\item{region}{regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)}
+
+\item{output}{output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"}
 
 \item{GT_range}{range of x-axis (gainthreshold) to be depicted on the curve}
 

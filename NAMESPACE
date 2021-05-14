@@ -3,6 +3,7 @@
 export(plotAccessibilitySensitivity)
 export(plotEconOfIrrig)
 export(plotMapCellranking)
+export(plotMapEconOfIrrig)
 export(plotMarginalReturnToIrrigation)
 export(plotReturnToIrrigation)
 export(plotSensitivityEconOfIrrig)

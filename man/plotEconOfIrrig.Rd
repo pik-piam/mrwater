@@ -27,7 +27,7 @@ plotEconOfIrrig(
 \arguments{
 \item{x_axis_range}{range of x-axis (gainthreshold) to be depicted on the curve}
 
-\item{output}{output to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc"}
+\item{output}{output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"}
 
 \item{scenario}{non-agricultural water use scenario to be displayed in plot}
 

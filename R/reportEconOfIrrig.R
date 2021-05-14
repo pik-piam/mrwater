@@ -1,7 +1,8 @@
 #' @title       reportEconOfIrrig
 #' @description reports irrigatable area depending on costs paid for irrigation
 #'
-#' @param output           output to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc"
+#' @param region           regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)
+#' @param output           output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"
 #' @param GT_range         range of x-axis (gainthreshold) to be depicted on the curve
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
@@ -32,7 +33,7 @@
 #'
 #' @export
 
-reportEconOfIrrig <- function(output, GT_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 
   if (length(selectyears)>1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -40,7 +41,7 @@ reportEconOfIrrig <- function(output, GT_range, scenario, lpjml, selectyears, cl
 
   iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
-  if (output=="area") {
+  if (output=="IrrigArea") {
     x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
     d <- "Irrigatable Area"
     u <- "Irrigatable Area (Mha)"
@@ -53,7 +54,30 @@ reportEconOfIrrig <- function(output, GT_range, scenario, lpjml, selectyears, cl
     d <- paste0("Water Use Potential")
     u <- paste0("Potential water use", output, "(km^3)")
   }
-  x  <- as.data.frame(dimSums(x, dim=1))
+  if (region=="GLO") {
+    x <- as.data.frame(dimSums(x, dim=1))
+
+  } else {
+    region <- str_split(region, ":")[[1]][1]
+    map    <- str_split(region, ":")[[1]][2]
+
+    # aggregate to iso-countries
+    mapping        <- toolGetMappingCoord2Country()
+    mapping$coords <- paste(mapping$coords, mapping$iso, sep=".")
+    x <- toolAggregate(x, rel=mapping, from="coords", to="iso", dim=1)
+    x <- toolCountryFill(x, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
+
+    # aggregate to regions
+    if (is.na(map) && map=="H12") {
+      regmap        <- toolGetMapping("regionmappingH12.csv")
+      names(regmap) <- c("Country", "iso", "reg")
+      x             <- toolAggregate(x, rel=regmap, from="iso", to="reg", dim=1)
+    } else {
+      stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
+    }
+
+    x <- as.data.frame(dimSums(x[region,,], dim=1))
+  }
 
   df <- data.frame(EFP=x$Data1, Scen=x$Data2, GT0=x$Value, stringsAsFactors = FALSE)
 
@@ -69,14 +93,38 @@ reportEconOfIrrig <- function(output, GT_range, scenario, lpjml, selectyears, cl
       x <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,output])
       x <- x / 1000
     }
-    x <- as.data.frame(dimSums(x, dim=1))
+
+    if (region=="GLO") {
+      x <- as.data.frame(dimSums(x, dim=1))
+
+    } else {
+      region <- str_split(region, ":")[[1]][1]
+      map    <- str_split(region, ":")[[1]][2]
+
+      # aggregate to iso-countries
+      mapping        <- toolGetMappingCoord2Country()
+      mapping$coords <- paste(mapping$coords, mapping$iso, sep=".")
+      x <- toolAggregate(x, rel=mapping, from="coords", to="iso", dim=1)
+      x <- toolCountryFill(x, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
+
+      # aggregate to regions
+      if (is.na(map) && map=="H12") {
+        regmap        <- toolGetMapping("regionmappingH12.csv")
+        names(regmap) <- c("Country", "iso", "reg")
+        x             <- toolAggregate(x, rel=regmap, from="iso", to="reg", dim=1)
+      } else {
+        stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
+      }
+
+      x <- as.data.frame(dimSums(x[region,,], dim=1))
+    }
 
     tmp              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value)
     names(tmp)[3]    <- paste0("GT",gainthreshold)
     df     <- merge(df, tmp)
   }
 
-  df        <- data.frame(t(data.frame(Scen=paste("IrrigArea", df$EFP, df$Scen, sep="."), df[-c(1,2)])), stringsAsFactors = FALSE)
+  df        <- data.frame(t(data.frame(Scen=paste(output, df$EFP, df$Scen, sep="."), df[-c(1,2)])), stringsAsFactors = FALSE)
   names(df) <- as.character(unlist(df[1,]))
   df        <- df[-1,]
   df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = FALSE)
