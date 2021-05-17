@@ -51,7 +51,7 @@ plotMapEconOfIrrig <- function(scenario, lpjml, selectyears, climatetype, EFRmet
   x <- xC + x0 + x100 + x500 + x1000
   x <- x[,,scenario]
 
-  out <- plotmap2(toolLPJarrayToMAgPIEmap(x), legend_discrete = TRUE, legend_breaks=c(0,1,2,3,4), highcol="darkblue", lowcol="grey")
+  out <- plotmap2(toolLPJarrayToMAgPIEmap(x), legend_discrete = TRUE, legend_breaks=c(0,0.99,1.99,2.99,3.99,4.99,5.99), highcol="darkblue", lowcol="grey", midcol="darkgreen")
 
   return(out)
 }
