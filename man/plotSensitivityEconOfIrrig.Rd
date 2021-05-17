@@ -6,6 +6,7 @@
 \usage{
 plotSensitivityEconOfIrrig(
   x_axis_range,
+  region = "GLO",
   output,
   scenario,
   lpjml,
@@ -26,6 +27,8 @@ plotSensitivityEconOfIrrig(
 }
 \arguments{
 \item{x_axis_range}{range of x-axis (gainthreshold) to be depicted on the curve}
+
+\item{region}{regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)}
 
 \item{output}{output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"}
 

@@ -7,6 +7,7 @@
 plotMarginalReturnToIrrigation(
   y_axis_range,
   x_axis,
+  region = "GLO",
   scenario,
   lpjml,
   selectyears,
@@ -28,6 +29,8 @@ plotMarginalReturnToIrrigation(
 \item{y_axis_range}{range of y-axis (monetary irrigation gain) to be depicted on the curve}
 
 \item{x_axis}{x_axis type to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"}
+
+\item{region}{regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)}
 
 \item{scenario}{non-agricultural water use scenario to be displayed in plot}
 

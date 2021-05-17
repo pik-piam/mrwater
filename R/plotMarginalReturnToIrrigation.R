@@ -1,6 +1,7 @@
 #' @title       plotMarginalReturnToIrrigation
 #' @description plot minimum monetary yield gain achieved on irrigated area
 #'
+#' @param region           regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)
 #' @param y_axis_range     range of y-axis (monetary irrigation gain) to be depicted on the curve
 #' @param x_axis           x_axis type to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
@@ -33,9 +34,9 @@
 #'
 #' @export
 
-plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, region="GLO", scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 
-  inputdata   <- reportEconOfIrrig(GT_range=y_axis_range, output=x_axis, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
+  inputdata   <- reportEconOfIrrig(GT_range=y_axis_range, region=region, output=x_axis, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                            allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
   df          <- inputdata$data
   description <- inputdata$description

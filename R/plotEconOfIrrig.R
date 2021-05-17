@@ -1,6 +1,7 @@
 #' @title       plotEconOfIrrig
 #' @description plot of irrigatable area depending on costs paid for irrigation
 #'
+#' @param region           regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)
 #' @param output           output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"
 #' @param x_axis_range     range of x-axis (gainthreshold) to be depicted on the curve
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
@@ -31,9 +32,9 @@
 #'
 #' @export
 
-plotEconOfIrrig <- function(x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+plotEconOfIrrig <- function(region="GLO", x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 
-  inputdata   <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
+  inputdata   <- reportEconOfIrrig(GT_range=x_axis_range, region=region, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                                    allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
   df          <- inputdata$data
   description <- inputdata$description

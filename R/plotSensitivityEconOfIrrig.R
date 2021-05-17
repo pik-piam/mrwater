@@ -1,6 +1,7 @@
 #' @title       plotSensitivityEconOfIrrig
 #' @description plot of irrigatable area depending on costs paid for irrigation for different water accessibility
 #'
+#' @param region           regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)
 #' @param output           output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"
 #' @param x_axis_range     range of x-axis (gainthreshold) to be depicted on the curve
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
@@ -32,39 +33,39 @@
 #'
 #' @export
 
-plotSensitivityEconOfIrrig <- function(x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+plotSensitivityEconOfIrrig <- function(x_axis_range, region="GLO", output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
 
-  Q100  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  Q100  <- reportEconOfIrrig(GT_range=x_axis_range, region=region, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:1", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
   Q100$Accessibility <- rep("Q100", length(Q100$GT))
 
-  Q075  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  Q075  <- reportEconOfIrrig(GT_range=x_axis_range, region=region, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0.75", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
   Q075$Accessibility <- rep("Q075", length(Q075$GT))
 
-  Q050  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  Q050  <- reportEconOfIrrig(GT_range=x_axis_range, region=region, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0.5", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
   Q050$Accessibility <- rep("Q050", length(Q050$GT))
 
-  Q025  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  Q025  <- reportEconOfIrrig(GT_range=x_axis_range, region=region, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0.25", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
   Q025$Accessibility <- rep("Q025", length(Q025$GT))
 
-  Q000  <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  Q000  <- reportEconOfIrrig(GT_range=x_axis_range, region=region, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="Q:0", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
   Q000$Accessibility <- rep("Q000", length(Q000$GT))
 
-  CV2   <- reportEconOfIrrig(GT_range=x_axis_range, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
+  CV2   <- reportEconOfIrrig(GT_range=x_axis_range, region=region, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype,
                              EFRmethod=EFRmethod, accessibilityrule="CV:2", rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib,
                              allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen,
                              proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)$data
