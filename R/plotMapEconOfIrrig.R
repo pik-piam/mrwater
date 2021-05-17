@@ -48,12 +48,10 @@ plotMapEconOfIrrig <- function(scenario, lpjml, selectyears, climatetype, EFRmet
   x1000              <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=1000, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"]) / avl_land
   x1000[avl_land==0] <- 0
 
-  ## test range of xes....
-
   x <- xC + x0 + x100 + x500 + x1000
   x <- x[,,scenario]
 
-  out <- plotmap2(toolLPJarrayToMAgPIEmap(x), legend_discrete=TRUE, breaks=c(0:5))
+  out <- plotmap2(toolLPJarrayToMAgPIEmap(x), legend_discrete = TRUE, legend_breaks=c(0,1,2,3,4), highcol="darkblue", lowcol="grey")
 
   return(out)
 }
