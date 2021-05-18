@@ -43,8 +43,8 @@ plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, region="GLO", s
   unit        <- inputdata$unit
 
   out <- ggplot(data=df, aes_string(y="GT")) +
-                geom_line(aes_string(x=paste("on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(x=paste("on", scenario, sep="."))) +
-                geom_line(aes_string(x=paste("off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(x=paste("off", scenario, sep="."))) +
+                geom_line(aes_string(x=paste(x_axis, "on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(x=paste(x_axis, "on", scenario, sep="."))) +
+                geom_line(aes_string(x=paste(x_axis, "off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(x=paste(x_axis, "off", scenario, sep="."))) +
                 theme_bw() +
                 ggtitle(paste0("Marginal return to ", description, " with FAO-calib=" , FAOyieldcalib, " on ", avlland_scen)) + ylab("Monetary yield gain (USD/ha)") + xlab(unit)
 
