@@ -58,8 +58,8 @@ reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, s
     x <- as.data.frame(dimSums(x, dim=1))
 
   } else {
-    region <- str_split(region, ":")[[1]][1]
     map    <- str_split(region, ":")[[1]][2]
+    region <- str_split(region, ":")[[1]][1]
 
     # aggregate to iso-countries
     mapping        <- toolGetMappingCoord2Country()
@@ -68,7 +68,7 @@ reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, s
     x <- toolCountryFill(x, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
 
     # aggregate to regions
-    if (is.na(map) && map=="H12") {
+    if (!is.na(map) && map=="H12") {
       regmap        <- toolGetMapping("regionmappingH12.csv")
       names(regmap) <- c("Country", "iso", "reg")
       x             <- toolAggregate(x, rel=regmap, from="iso", to="reg", dim=1)
@@ -98,8 +98,8 @@ reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, s
       x <- as.data.frame(dimSums(x, dim=1))
 
     } else {
-      region <- str_split(region, ":")[[1]][1]
       map    <- str_split(region, ":")[[1]][2]
+      region <- str_split(region, ":")[[1]][1]
 
       # aggregate to iso-countries
       mapping        <- toolGetMappingCoord2Country()
@@ -108,7 +108,7 @@ reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, s
       x <- toolCountryFill(x, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
 
       # aggregate to regions
-      if (is.na(map) && map=="H12") {
+      if (!is.na(map) && map=="H12") {
         regmap        <- toolGetMapping("regionmappingH12.csv")
         names(regmap) <- c("Country", "iso", "reg")
         x             <- toolAggregate(x, rel=regmap, from="iso", to="reg", dim=1)
