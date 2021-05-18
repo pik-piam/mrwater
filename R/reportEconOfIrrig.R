@@ -30,6 +30,7 @@
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames
+#' @importFrom stringr str_split
 #'
 #' @export
 
@@ -72,7 +73,7 @@ reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, s
       regmap        <- toolGetMapping("regionmappingH12.csv")
       names(regmap) <- c("Country", "iso", "reg")
       x             <- toolAggregate(x, rel=regmap, from="iso", to="reg", dim=1)
-    } else {
+    } else if (!is.na(map) && map!="H12") {
       stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
     }
 
