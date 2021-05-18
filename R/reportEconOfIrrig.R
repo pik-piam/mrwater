@@ -99,19 +99,12 @@ reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, s
       x <- as.data.frame(dimSums(x, dim=1))
 
     } else {
-      map    <- str_split(region, ":")[[1]][2]
-      region <- str_split(region, ":")[[1]][1]
-
       # aggregate to iso-countries
-      mapping        <- toolGetMappingCoord2Country()
-      mapping$coords <- paste(mapping$coords, mapping$iso, sep=".")
       x <- toolAggregate(x, rel=mapping, from="coords", to="iso", dim=1)
       x <- toolCountryFill(x, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
 
       # aggregate to regions
       if (!is.na(map) && map=="H12") {
-        regmap        <- toolGetMapping("regionmappingH12.csv")
-        names(regmap) <- c("Country", "iso", "reg")
         x             <- toolAggregate(x, rel=regmap, from="iso", to="reg", dim=1)
       } else if (!is.na(map) && map!="H12") {
         stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
