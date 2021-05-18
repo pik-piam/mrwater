@@ -41,15 +41,22 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod, accessib
   wat_avl_agr_ww         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]),  0)
   wat_avl_agr_wc         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
 
-  # Water already committed to irrigation
-  currHuman    <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", lpjml=lpjml, climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
-  currHuman_ww <- collapseNames(currHuman[,,"currHuman_ww"])
-  currHuman_wc <- collapseNames(currHuman[,,"currHuman_wc"])
-
   # Water use for non-agricultural purposes
   non_ag    <- calcOutput("RiverHumanUses", humanuse="non_agriculture", lpjml=lpjml, climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
   non_ag_ww <- collapseNames(non_ag[,,"currHuman_ww"])
   non_ag_wc <- collapseNames(non_ag[,,"currHuman_wc"])
+
+  if (com_ag) {
+    # Water already committed to irrigation
+    currHuman    <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", lpjml=lpjml, climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
+    currHuman_ww <- collapseNames(currHuman[,,"currHuman_ww"])
+    currHuman_wc <- collapseNames(currHuman[,,"currHuman_wc"])
+  } else {
+    currHuman     <- non_ag
+    currHuman[,,] <- 0
+    currHuman_ww <- collapseNames(currHuman[,,"currHuman_ww"])
+    currHuman_wc <- collapseNames(currHuman[,,"currHuman_wc"])
+  }
 
   # Function outputs
   water_ag_ww  <- currHuman_ww + wat_avl_agr_ww
