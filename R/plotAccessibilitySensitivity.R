@@ -2,7 +2,7 @@
 #' @description plot of irrigatable area supply curve
 #'
 #' @param x_axis_range     range of x-axis (gainthreshold) to be depicted on the curve
-#' @param output           output type to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"
+#' @param output           output type to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
@@ -41,7 +41,7 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, 
 
   iniyear      <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
 
-  if (output=="area") {
+  if (output=="IrrigArea") {
     x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q:0", EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
     description <- "Irrigatable Area"
     unit        <- "Irrigatable Area (Mha)"
@@ -59,7 +59,7 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, 
   }
 
   for (accessibilityrule in x_axis_range) {
-    if (output=="area") {
+    if (output=="IrrigArea") {
       x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=paste("Q", accessibilityrule, sep=":"), EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
     } else {
       x <- collapseNames(calcOutput("WaterPotUse",     lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=paste("Q", accessibilityrule, sep=":"), EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,output])

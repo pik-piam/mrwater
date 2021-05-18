@@ -29,7 +29,7 @@ plotAccessibilitySensitivity(
 
 \item{scenario}{non-agricultural water use scenario to be displayed in plot}
 
-\item{output}{output type to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"}
+\item{output}{output type to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 

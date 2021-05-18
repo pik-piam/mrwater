@@ -2,7 +2,7 @@
 #' @description plot monetary yield gain achieved on irrigated area (USD) or irrigatable area (Mha) dependent on water accessibility
 #'
 #' @param y_axis_range     range of y-axis (monetary irrigation gain) to be depicted on the curve
-#' @param x_axis           x_axis type to be displayed: irrigated area "area" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"
+#' @param x_axis           x_axis type to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
