@@ -29,7 +29,6 @@
 #' @importFrom luplot plotmap2
 #' @importFrom magclass collapseNames
 #' @importFrom ggplot2 theme scale_fill_continuous element_blank element_rect
-#' @importFrom cowplot ggdraw draw_plot
 #'
 #' @export
 
@@ -38,6 +37,8 @@ plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selecty
   if (length(selectyears)>1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
+
+  if (!requireNamespace("cowplot", quietly = TRUE)) stop("The package ncdf4 is required for writing NCDF4 files!")
 
   x0              <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
   x0[x0==0]       <- NA
@@ -104,9 +105,9 @@ plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selecty
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
             strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
 
-    out <- ggdraw() + draw_plot(p3) + draw_plot(p2) + draw_plot(p1) + draw_plot(pC)
+    out <- cowplot::ggdraw() + cowplot::draw_plot(p3) + cowplot::draw_plot(p2) + cowplot::draw_plot(p1) + cowplot::draw_plot(pC)
   } else {
-    out <- ggdraw() + draw_plot(p3) + draw_plot(p2) + draw_plot(p1)
+    out <- cowplot::ggdraw() + cowplot::draw_plot(p3) + cowplot::draw_plot(p2) + cowplot::draw_plot(p1)
   }
 
   return(out)
