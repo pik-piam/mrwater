@@ -1,6 +1,8 @@
 #' @title       plotMapEconOfIrrig
 #' @description plot of irrigatable area depending on costs paid for irrigation
 #'
+#' @param reference        TRUE current irrigated areas are printed in grey as reference to predicted
+#' @param legend_scale     Legend scale to be displayed: Mha (million hectares), Cellshare (share of cellarea), Areashare (share of area selected in avlland_scen)
 #' @param scenario         EFP and non-agricultural water use scenarios separate by "." (e.g. "on.ssp2")
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
@@ -26,32 +28,86 @@
 #'
 #' @importFrom luplot plotmap2
 #' @importFrom magclass collapseNames
+#' @importFrom ggplot2 theme scale_fill_continuous element_blank element_rect
+#' @importFrom cowplot ggdraw draw_plot
 #'
 #' @export
 
-plotMapEconOfIrrig <- function(scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, com_ag) {
+plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, FAOyieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, com_ag) {
 
   if (length(selectyears)>1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  avl_land <- calcOutput("AreaPotIrrig", selectyears=selectyears, comagyear=NULL, avlland_scen=avlland_scen, aggregate=FALSE)
+  x0              <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
+  x0[x0==0]       <- NA
+  x500            <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=500, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
+  x500[x500==0]   <- NA
+  x1000           <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=1000, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
+  x1000[x1000==0] <- NA
 
-  xC                 <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=FALSE, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"]) / avl_land
-  xC[avl_land==0]    <- 0
-  x0                 <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"]) / avl_land
-  x0[avl_land==0]    <- 0
-  x100               <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=100, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"]) / avl_land
-  x100[avl_land==0]  <- 0
-  x500               <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=500, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"]) / avl_land
-  x500[avl_land==0]  <- 0
-  x1000              <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=1000, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"]) / avl_land
-  x1000[avl_land==0] <- 0
+  if (legend_scale=="Mha") {
+    y           <- 1
+    legendtitle <- "Mha"
+    legendrange <- c(0, 0.3)
+  } else if (legend_scale=="Cellshare") {
+    y <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
+    y <- (111e3*0.5)*(111e3*0.5)*cos(y$lat/180*pi)/1000000000 # mio. ha
+    y <- as.magpie(y, spatial=1)
+    getCells(y) <- getCells(x0)
+    legendtitle <- "Cellshare"
+    legendrange <- c(0, 0.1)
+  } else if (legend_scale=="Areashare") {
+    y <- calcOutput("AreaPotIrrig", selectyears=selectyears, comagyear=NULL, avlland_scen=avlland_scen, aggregate=FALSE)
+    legendtitle <- "Areashare"
+    legendrange <- c(0, 0.1)
+  } else {
+    stop("Please select legend_scale to be displayed: Mha, Cellshare or Areashare")
+  }
 
-  x <- xC + x0 + x100 + x500 + x1000
-  x <- x[,,scenario]
+  x0    <- x0/y
+  x500  <- x500/y
+  x1000 <- x1000/y
 
-  out <- plotmap2(toolLPJarrayToMAgPIEmap(x), legend_discrete = TRUE, legend_breaks=c(0,0.99,1.99,2.99,3.99,4.99,5.99), highcol="darkblue", lowcol="grey", midcol="darkgreen")
+  p1 <- plotmap2(toolLPJarrayToMAgPIEmap(x1000), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
+    scale_fill_continuous(legendtitle, limits=legendrange, low="thistle2", high="darkred", guide="colorbar", na.value="transparent") +
+    theme(title=element_blank(),
+          legend.position = c(0.1,0.3), legend.direction = "vertical",
+          panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
+  p2 <- plotmap2(toolLPJarrayToMAgPIEmap(x500), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
+    scale_fill_continuous("", limits=legendrange, low="lightblue", high="darkblue", guide="colorbar", na.value="transparent") +
+    theme(title=element_blank(),
+          legend.position = c(0.08,0.3), legend.direction = "vertical",
+          panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
+  p3 <- plotmap2(toolLPJarrayToMAgPIEmap(x0), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
+    scale_fill_continuous("", limits=legendrange, low="lightgreen", high="darkgreen", guide="colorbar", na.value="transparent") +
+    theme(title=element_blank(),
+          legend.position = c(0.06,0.3), legend.direction = "vertical",
+          panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
+
+  if (reference) {
+    xC              <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, FAOyieldcalib=FAOyieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=FALSE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
+    xC[xC>0]        <- TRUE
+    xC[xC==0]       <- FALSE
+
+    pC <- plotmap2(toolLPJarrayToMAgPIEmap(xC), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
+      scale_fill_continuous(low="transparent", high="#00000080", na.value="transparent") +
+      theme(title=element_blank(),
+            legend.position = "none",
+            panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+            panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
+
+    out <- ggdraw() + draw_plot(p3) + draw_plot(p2) + draw_plot(p1) + draw_plot(pC)
+  } else {
+    out <- ggdraw() + draw_plot(p3) + draw_plot(p2) + draw_plot(p1)
+  }
 
   return(out)
 }

@@ -27,7 +27,7 @@ plotMapCellranking <- function(lpjml, climatetype, selectyears, rankmethod, prox
 
   glocellrank  <- calcOutput("IrrigCellranking", lpjml=lpjml, climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
 
-  out <- plotmap2(toolLPJarrayToMAgPIEmap(glocellrank))
+  out <- plotmap2(toolLPJarrayToMAgPIEmap(glocellrank), lowcol="darkred", highcol="white")
 
   return(out)
 }

@@ -5,6 +5,8 @@
 \title{plotMapEconOfIrrig}
 \usage{
 plotMapEconOfIrrig(
+  reference,
+  legend_scale,
   scenario,
   lpjml,
   selectyears,
@@ -22,6 +24,10 @@ plotMapEconOfIrrig(
 )
 }
 \arguments{
+\item{reference}{TRUE current irrigated areas are printed in grey as reference to predicted}
+
+\item{legend_scale}{Legend scale to be displayed: Mha (million hectares), Cellshare (share of cellarea), Areashare (share of area selected in avlland_scen)}
+
 \item{scenario}{EFP and non-agricultural water use scenarios separate by "." (e.g. "on.ssp2")}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
