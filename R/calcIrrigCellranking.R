@@ -4,7 +4,7 @@
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
 #' @param cellrankyear  year(s) for which cell rank is calculated
-#' @param method        method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
+#' @param method        method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotential TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
 #' @param proxycrop     proxycrop(s) selected for crop mix specific calculations: list of proxycrops or "historical"
 #' @param iniyear       initialization year for price in price-weighted normalization of meanpricedcroprank and case of monetary=TRUE year of prices
 #' @param FAOyieldcalib TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)

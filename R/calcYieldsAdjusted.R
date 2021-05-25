@@ -22,7 +22,8 @@
 calcYieldsAdjusted <- function(lpjml, climatetype, monetary, iniyear, selectyears, FAOyieldcalib) {
 
   # read in cellular lpjml yields [in tons/ha]
-  yields     <- setYears(calcOutput("Yields", lpjml=lpjml, cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE), selectyears)
+  yields     <- setYears(calcOutput("Yields", source=c(lpjml, isimip=NULL), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE), selectyears)
+
   # only crops (pasture is not irrigated)
   yields     <- yields[,,"pasture",invert=T]
   # set correct dimension names
