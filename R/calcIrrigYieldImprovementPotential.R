@@ -22,7 +22,7 @@
 calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary, iniyear, selectyears, proxycrop, FAOyieldcalib) {
 
   # read in cellular lpjml yields [in tons/ha]
-  yields     <- calcOutput("YieldsAdjusted", lpjml=lpjml, climatetype=climatetype, monetary=monetary, iniyear=iniyear, selectyears=selectyears, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
+  yields     <- calcOutput("YieldsAdjusted", lpjml=lpjml, climatetype=climatetype, iniyear=iniyear, selectyears=selectyears, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
 
   # yield gap (irrigated vs. rainfed) [in tons/ha]
   yield_gain <- collapseNames(yields[,,"irrigated"]) - collapseNames(yields[,,"rainfed"])

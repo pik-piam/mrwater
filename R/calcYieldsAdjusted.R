@@ -5,8 +5,7 @@
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
 #' @param selectyears   years to be returned by the function
-#' @param monetary      yield improvement potential in tDM (FALSE, default) or priced yield improvement potential in USD05 (TRUE)
-#' @param iniyear       year to be used when monetary activated
+#' @param iniyear       year to be used for cropland of yield calibration
 #' @param FAOyieldcalib TRUE (LPJmL yields calibrated with current FAO yield) or FALSE (LPJmL yield potentials)
 #'
 #' @return magpie object in cellular resolution
@@ -19,7 +18,7 @@
 #' @importFrom magclass collapseNames   getNames getCells getSets dimSums
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcYieldsAdjusted <- function(lpjml, climatetype, monetary, iniyear, selectyears, FAOyieldcalib) {
+calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, FAOyieldcalib) {
 
   # read in cellular lpjml yields [in tons/ha]
   yields     <- setYears(calcOutput("Yields", source=c(lpjml=as.vector(lpjml["crop"]), isimip=NULL), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE), selectyears)

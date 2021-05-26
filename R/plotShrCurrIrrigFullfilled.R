@@ -47,7 +47,13 @@ plotShrCurrIrrigFullfilled <- function(scenario, iniyear, lpjml, selectyears, cl
   wc_shr[act_wc==0 & com_wc==0] <- 0
   wc_shr[act_wc==0] <- NA
 
-  out <- plotmap2(toolLPJarrayToMAgPIEmap(ww_shr[,selectyears,scenario]), title=paste("Share of current water withdrawal for irrigated agriculture that can be fulfilled by available surface water"), legendname = "%", text_size = 6)
+  out <- plotmap2(toolLPJarrayToMAgPIEmap(ww_shr[,selectyears,scenario]), title=element_blank(), labs=FALSE, sea=FALSE, land_colour="transparent") +
+                  scale_fill_continuous("", limits=c(0,1), low="#FFFF66", high="darkred", na.value="grey") +
+                  theme(title=element_blank(),
+                        legend.position = c(0.06,0.3), legend.direction = "vertical",
+                        panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+                        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                        strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
 
   return(out)
 }
