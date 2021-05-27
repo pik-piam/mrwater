@@ -33,6 +33,10 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   tmp <- collapseNames(tmp[,,"irrigated"])
 
   # Empty object to be filled with area reserved for irrigation in current and future time steps
+  if (class(selectyears)=="character") {
+    selectyears <- as.numeric(gsub("y", "", selectyears))
+  }
+
   irrig_area <- new.magpie(getCells(tmp), seq(iniyear, tail(selectyears, 1), by=1), getNames(tmp), sets=c("x.y.iso", "year", "data"))
 
   # Each year certain share (parameter: "depreciation") of irrigated cropland is lost

@@ -1,4 +1,4 @@
-#' @title       plotShrCurrIrrigFullfilled
+#' @title       plotMapShrCurrIrrigFullfilled
 #' @description plot map of share of current irrigation that can be fulfilled given surface water availability of the algorithm
 #'
 #' @param scenario         EFP and non-agricultural water use scenario separated by "." (e.g. "on.ssp2")
@@ -12,13 +12,13 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotShrCurrIrrigFullfilled() }
+#' \dontrun{ plotMapShrCurrIrrigFullfilled() }
 #'
 #' @importFrom luplot plotmap2
 #'
 #' @export
 
-plotShrCurrIrrigFullfilled <- function(scenario, iniyear, lpjml, selectyears, climatetype, EFRmethod) {
+plotMapShrCurrIrrigFullfilled <- function(scenario, iniyear, lpjml, selectyears, climatetype, EFRmethod) {
 
   ### Reasons for not-fulfilled actually observed irrigation:
   # - fossil groundwater is used for irrigation (e.g. Northern India), but not accounted for in the river routing
@@ -47,7 +47,7 @@ plotShrCurrIrrigFullfilled <- function(scenario, iniyear, lpjml, selectyears, cl
   wc_shr[act_wc==0 & com_wc==0] <- 0
   wc_shr[act_wc==0] <- NA
 
-  out <- plotmap2(toolLPJarrayToMAgPIEmap(ww_shr[,selectyears,scenario]), title=element_blank(), labs=FALSE, sea=FALSE, land_colour="transparent") +
+  out <- plotmap2(toolLPJcell2MAgPIEcell(ww_shr[,selectyears,scenario]), title=element_blank(), labs=FALSE, sea=FALSE, land_colour="transparent") +
                   scale_fill_continuous("", limits=c(0,1), low="#FFFF66", high="darkred", na.value="grey") +
                   theme(title=element_blank(),
                         legend.position = c(0.06,0.3), legend.direction = "vertical",
