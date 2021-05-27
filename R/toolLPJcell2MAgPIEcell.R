@@ -17,7 +17,7 @@
 
 toolLPJcell2MAgPIEcell <- function(x) {
   # select correct cells and transform to magpie object
-  out <- x[magclassdata$cellbelongings$LPJ_input.Index]
+  out <- x[magclassdata$cellbelongings$LPJ_input.Index,,]
   out <- toolCell2isoCell(out)
 
   return(out)
