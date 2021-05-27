@@ -1,27 +1,30 @@
 #' @title       calcYieldsAdjusted
-#' @description This function returns irrigated and rainfed yields for magpie crops. It can either return LPJmL potential yields or LPJmL yields calibrated to FAO country yields
-#' ####### NOT FULLY IMPLEMENTED YET... Will potentially replace calcYields in calcIrrigYieldImprovementPotential ##############
+#' @description This function returns irrigated and rainfed yields for magpie crops. It can either return LPJmL potential yields of different stages or LPJmL yields calibrated to FAO country yields
 #'
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
 #' @param selectyears   years to be returned by the function
 #' @param iniyear       year to be used for cropland of yield calibration
-#' @param FAOyieldcalib TRUE (LPJmL yields calibrated with current FAO yield) or FALSE (LPJmL yield potentials)
+#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("IrrigYieldImprovementPotential", aggregate=FALSE) }
+#' \dontrun{ calcOutput("YieldsAdjusted", aggregate=FALSE) }
 #'
 #' @importFrom madrat calcOutput toolAggregate
 #' @importFrom magclass collapseNames   getNames getCells getSets dimSums
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, FAOyieldcalib) {
+calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldcalib) {
 
   # read in cellular lpjml yields [in tons/ha]
-  yields     <- setYears(calcOutput("Yields", source=c(lpjml=lpjml[["crop"]], isimip=NULL), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE), selectyears)
+  if (yieldcalib=="none") {
+    yields <- calcOutput("YieldsPotential", lpjml=lpjml, climatetype=climatetype, selectyears=selectyears, aggregate=FALSE)
+  } else {
+    yields <- setYears(calcOutput("Yields", source=c(lpjml=lpjml[["crop"]], isimip=NULL), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE), selectyears)
+  }
 
   # only crops (pasture is not irrigated)
   yields     <- yields[,,"pasture",invert=T]
@@ -34,7 +37,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, FAOyiel
   description <- "LPJmL yields for all different (MAgPIE) crop types"
   unit        <- "tDM per ha"
 
-  if (FAOyieldcalib) {
+  if (yieldcalib=="FAO") {
 
     # read in total (irrigated + rainfed) croparea
     croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
@@ -49,8 +52,8 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, FAOyiel
     LPJmL_production <- dimSums(croparea[,,croplist] * yields[,iniyear,croplist], dim="irrigation")
 
     # LPJmL iso-country yields
-    mapping        <- toolGetMappingCoord2Country()
-    mapping$coords <- paste(mapping$coords, mapping$iso, sep=".")
+    mapping          <- toolGetMappingCoord2Country()
+    mapping$coords   <- paste(mapping$coords, mapping$iso, sep=".")
     LPJmL_production <- toolAggregate(LPJmL_production, rel=mapping, from="coords", to="iso", dim=1)
     croparea_total   <- toolAggregate(croparea_total, rel=mapping, from="coords", to="iso", dim=1)
     LPJmL_yields     <- ifelse(croparea_total[,,croplist]>0, LPJmL_production[,,croplist]/croparea_total[,,croplist], 0)

@@ -4,7 +4,7 @@
 \alias{calcYieldsAdjusted}
 \title{calcYieldsAdjusted}
 \usage{
-calcYieldsAdjusted(lpjml, climatetype, iniyear, selectyears, FAOyieldcalib)
+calcYieldsAdjusted(lpjml, climatetype, iniyear, selectyears, yieldcalib)
 }
 \arguments{
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
@@ -15,17 +15,16 @@ calcYieldsAdjusted(lpjml, climatetype, iniyear, selectyears, FAOyieldcalib)
 
 \item{selectyears}{years to be returned by the function}
 
-\item{FAOyieldcalib}{TRUE (LPJmL yields calibrated with current FAO yield) or FALSE (LPJmL yield potentials)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
-This function returns irrigated and rainfed yields for magpie crops. It can either return LPJmL potential yields or LPJmL yields calibrated to FAO country yields
-####### NOT FULLY IMPLEMENTED YET... Will potentially replace calcYields in calcIrrigYieldImprovementPotential ##############
+This function returns irrigated and rainfed yields for magpie crops. It can either return LPJmL potential yields of different stages or LPJmL yields calibrated to FAO country yields
 }
 \examples{
-\dontrun{ calcOutput("IrrigYieldImprovementPotential", aggregate=FALSE) }
+\dontrun{ calcOutput("YieldsAdjusted", aggregate=FALSE) }
 
 }
 \author{

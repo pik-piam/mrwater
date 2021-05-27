@@ -18,6 +18,7 @@
 toolLPJarrayToMAgPIEmap <- function(x) {
   # select correct cells and transform to magpie object
   out <- as.magpie(x[magclassdata$cellbelongings$LPJ_input.Index],spatial=1)
+  out <- toolCell2isoCell(out)
 
   return(out)
 }
