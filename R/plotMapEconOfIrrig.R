@@ -70,21 +70,21 @@ plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selecty
   x500  <- x500/y
   x1000 <- x1000/y
 
-  p1 <- plotmap2(x1000[magclassdata$cellbelongings$LPJ_input.Index,,], title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
+  p1 <- plotmap2(toolLPJcell2MAgPIEcell(x1000), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
     scale_fill_continuous(legendtitle, limits=legendrange, low="thistle2", high="darkred", guide="colorbar", na.value="transparent") +
     theme(title=element_blank(),
           legend.position = c(0.1,0.3), legend.direction = "vertical",
           panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
           panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
-  p2 <- plotmap2(x500[magclassdata$cellbelongings$LPJ_input.Index,,], title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
+  p2 <- plotmap2(toolLPJcell2MAgPIEcell(x500), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
     scale_fill_continuous("", limits=legendrange, low="lightblue", high="darkblue", guide="colorbar", na.value="transparent") +
     theme(title=element_blank(),
           legend.position = c(0.08,0.3), legend.direction = "vertical",
           panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
           panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
-  p3 <- plotmap2(x0[magclassdata$cellbelongings$LPJ_input.Index,,], title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
+  p3 <- plotmap2(toolLPJcell2MAgPIEcell(x0), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
     scale_fill_continuous("", limits=legendrange, low="lightgreen", high="darkgreen", guide="colorbar", na.value="transparent") +
     theme(title=element_blank(),
           legend.position = c(0.06,0.3), legend.direction = "vertical",
@@ -97,7 +97,7 @@ plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selecty
     xC[xC>0]        <- TRUE
     xC[xC==0]       <- FALSE
 
-    pC <- plotmap2(xC[magclassdata$cellbelongings$LPJ_input.Index,,], title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
+    pC <- plotmap2(toolLPJcell2MAgPIEcell(xC), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
       scale_fill_continuous(low="transparent", high="#00000080", na.value="transparent") +
       theme(title=element_blank(),
             legend.position = "none",

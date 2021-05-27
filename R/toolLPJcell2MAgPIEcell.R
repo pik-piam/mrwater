@@ -1,5 +1,5 @@
-#' @title toolLPJarrayToMAgPIEmap
-#' @description transforms object (array) with 67420 cells to be able to be used in plotmap function
+#' @title toolLPJcell2MAgPIEcell
+#' @description transforms magpie object with 67420 cells to object with 59199 cells
 #'
 #' This tool function selects the required cells from object with
 #' 67420 cells to be able to plot using plotmap or plotmap2 that
@@ -15,9 +15,9 @@
 #' @export
 
 
-toolLPJarrayToMAgPIEmap <- function(x) {
+toolLPJcell2MAgPIEcell <- function(x) {
   # select correct cells and transform to magpie object
-  out <- as.magpie(x[magclassdata$cellbelongings$LPJ_input.Index],spatial=1)
+  out <- x[magclassdata$cellbelongings$LPJ_input.Index]
   out <- toolCell2isoCell(out)
 
   return(out)

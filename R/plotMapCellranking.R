@@ -32,10 +32,7 @@ plotMapCellranking <- function(lpjml, climatetype, selectyears, rankmethod, prox
     getCells(glocellrank) <- gsub("A_", "", getCells(glocellrank))
   }
 
-  # transform to 59199 for plotting
-  glocellrank <- glocellrank[magclassdata$cellbelongings$LPJ_input.Index,,]
-
-  out <- plotmap2(glocellrank, lowcol="darkred", highcol="white")
+  out <- plotmap2(toolLPJcell2MAgPIEcell(glocellrank), lowcol="darkred", highcol="white")
 
   return(out)
 }
