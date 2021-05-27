@@ -39,8 +39,9 @@ plotMapUnsusIrrig <- function(scenario, lpjml, climatetype, selectyears, rankmet
   irrigarea  <- calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)
 
   diff <- irrigarea[,,"off"] - irrigarea[,,"on"]
+  diff[diff>0] <- 1
 
-  out <- plotmap2(toolLPJcell2MAgPIEcell(diff[,selectyears,scenario]), lowcol="darkred", highcol="white")
+  out <- plotmap2(toolLPJcell2MAgPIEcell(diff[,selectyears,scenario]), lowcol="white", highcol="red")
 
   return(out)
 }

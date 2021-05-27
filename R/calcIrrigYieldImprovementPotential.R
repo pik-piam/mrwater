@@ -50,7 +50,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary, ini
     if (length(proxycrop)==1 && proxycrop=="historical") {
 
       # read in total (irrigated + rainfed) croparea
-      croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
+      croparea <- setYears(calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE), NULL)
       #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
       map                          <- toolGetMappingCoord2Country()
       getCells(croparea)           <- paste(map$coords, map$iso, sep=".")

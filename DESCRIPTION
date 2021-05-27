@@ -1,7 +1,7 @@
 Package: mrwater
 Type: Package
 Title: madrat based MAgPIE Input Data Library
-Version: 0.5.125
+Version: 0.5.126
 Date: 2021-05-27
 Authors@R: c(person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = c("aut","cre")),
              person("Jens", "Heinke", email = "heinke@pik-potsdam.de", role = "aut"),

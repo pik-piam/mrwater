@@ -40,7 +40,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
   if (yieldcalib=="FAO") {
 
     # read in total (irrigated + rainfed) croparea
-    croparea <- calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)
+    croparea <- setYears(calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE), NULL)
     #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
     map                          <- toolGetMappingCoord2Country()
     getCells(croparea)           <- paste(map$coords, map$iso, sep=".")
@@ -49,7 +49,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
     croparea_total <- dimSums(croparea, dim="irrigation")
 
     # LPJmL production on currently irrigated and rainfed area in initialization year
-    LPJmL_production <- dimSums(croparea[,,croplist] * yields[,iniyear,croplist], dim="irrigation")
+    LPJmL_production <- setYears(dimSums(croparea[,,croplist] * yields[,iniyear,croplist], dim="irrigation"), NULL)
 
     # LPJmL iso-country yields
     mapping          <- toolGetMappingCoord2Country()
@@ -60,7 +60,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
     LPJmL_yields     <- toolCountryFill(LPJmL_yields, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
 
     # FAO iso-country yields
-    FAO_yields <- calcOutput("FAOYield", physical = TRUE, attributes="dm", irrigation=FALSE, cellular=FALSE, cut=0.99, aggregate=FALSE)[,iniyear,]
+    FAO_yields <- setYears(calcOutput("FAOYield", physical = TRUE, attributes="dm", irrigation=FALSE, cellular=FALSE, cut=0.99, aggregate=FALSE)[,iniyear,], NULL)
 
     # Calibration Factor:
     Calib            <- FAO_yields[getCells(LPJmL_yields),,croplist] / LPJmL_yields[,,croplist]
