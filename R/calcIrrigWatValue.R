@@ -6,7 +6,7 @@
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices
 #' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s) or NULL for all crops
-#' @param FAOyieldcalib TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)
+#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -18,11 +18,11 @@
 #' @examples
 #' \dontrun{ calcOutput("IrrigWatValue", aggregate=FALSE) }
 
-calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, proxycrop, FAOyieldcalib) {
+calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, proxycrop, yieldcalib) {
   ## Note: Methodology for calculating value of water following D'Odorico et al. (2020)
 
   # Read in potential yield gain per cell (USD05 per ha)
-  yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml=lpjml, climatetype=climatetype, selectyears=selectyears, proxycrop=NULL, monetary=TRUE, iniyear=iniyear, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
+  yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml=lpjml, climatetype=climatetype, selectyears=selectyears, proxycrop=NULL, monetary=TRUE, iniyear=iniyear, yieldcalib=yieldcalib, aggregate=FALSE)
 
   # Set negative yield_gains to 0 (Negative yield gains (i.e. fewer yields through irrigation) would result in water value of 0)
   yield_gain[yield_gain<0] <- 0

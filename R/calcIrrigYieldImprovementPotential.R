@@ -7,7 +7,7 @@
 #' @param monetary      yield improvement potential in tDM (FALSE, default) or priced yield improvement potential in USD05 (TRUE)
 #' @param iniyear       year to be used when monetary activated
 #' @param proxycrop     proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
-#' @param FAOyieldcalib TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)
+#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -19,10 +19,10 @@
 #' @importFrom magclass collapseNames getNames getCells getSets dimSums
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary, iniyear, selectyears, proxycrop, FAOyieldcalib) {
+calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary, iniyear, selectyears, proxycrop, yieldcalib) {
 
   # read in cellular lpjml yields [in tons/ha]
-  yields     <- calcOutput("YieldsAdjusted", lpjml=lpjml, climatetype=climatetype, iniyear=iniyear, selectyears=selectyears, FAOyieldcalib=FAOyieldcalib, aggregate=FALSE)
+  yields     <- calcOutput("YieldsAdjusted", lpjml=lpjml, climatetype=climatetype, iniyear=iniyear, selectyears=selectyears, yieldcalib=yieldcalib, aggregate=FALSE)
 
   # yield gap (irrigated vs. rainfed) [in tons/ha]
   yield_gain <- collapseNames(yields[,,"irrigated"]) - collapseNames(yields[,,"rainfed"])
