@@ -10,7 +10,7 @@ calcIrrigWatValue(
   climatetype,
   iniyear,
   proxycrop,
-  FAOyieldcalib
+  yieldcalib
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ calcIrrigWatValue(
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s) or NULL for all crops}
 
-\item{FAOyieldcalib}{TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
 }
 \value{
 magpie object in cellular resolution

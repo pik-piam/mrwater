@@ -11,7 +11,7 @@ calcIrrigYieldImprovementPotential(
   iniyear,
   selectyears,
   proxycrop,
-  FAOyieldcalib
+  yieldcalib
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ calcIrrigYieldImprovementPotential(
 
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
 
-\item{FAOyieldcalib}{TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
 }
 \value{
 magpie object in cellular resolution

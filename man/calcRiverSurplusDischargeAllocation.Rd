@@ -19,7 +19,7 @@ calcRiverSurplusDischargeAllocation(
   iniyear,
   avlland_scen,
   proxycrop,
-  FAOyieldcalib,
+  yieldcalib,
   com_ag
 )
 }
@@ -54,7 +54,7 @@ protection scenario separated by "_" (only relevant when potIrrig selected): WDP
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
 
-\item{FAOyieldcalib}{TRUE (LPJmL yields scaled with current FAO yield) or FALSE (LPJmL yield potentials)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
 
 \item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
 }
