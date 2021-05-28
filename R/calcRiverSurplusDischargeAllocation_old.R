@@ -128,8 +128,8 @@ calcRiverSurplusDischargeAllocation_old <- function(lpjml, selectyears, output, 
 
             # available water for additional irrigation withdrawals
             # (Avl. water = Discharge - Inaccessible Discharge - Previously Committed for Human Consumption)
-            # (Inaccessible Discharge is either reserved for the environment: EFRs (required_wat_min_allocation - com_ww) or inaccessible due to variability (inaccessible_discharge) needs to be reserved)
-            avl_wat_ww <- max(O_discharge[c] - max(required_wat_min_allocation[c] - com_ww[c], inaccessible_discharge[c,y]) - com_ww[c], 0)
+            # (Inaccessible Discharge is either reserved for the environment: EFRs (O_required_wat_min_allocation - com_ww) or inaccessible due to variability (inaccessible_discharge) needs to be reserved)
+            avl_wat_ww <- max(O_discharge[c] - max(O_required_wat_min_allocation[c] - com_ww[c], inaccessible_discharge[c,y]) - com_ww[c], 0)
 
             # withdrawal constraint
             if (required_wat_fullirrig_ww[c,y]>0) {
@@ -168,7 +168,7 @@ calcRiverSurplusDischargeAllocation_old <- function(lpjml, selectyears, output, 
             if (irrig_yieldgainpotential[c,y] > gainthreshold) {
               # available water for additional irrigation withdrawals
               # (Avl. water = Discharge - Inaccessible Discharge - Previously Committed for Human Consumption)
-              # (Inaccessible Discharge is either reserved for the environment: EFRs (required_wat_min_allocation - com_ww) or inaccessible due to variability (inaccessible_discharge) needs to be reserved)
+              # (Inaccessible Discharge is either reserved for the environment: EFRs (O_required_wat_min_allocation - com_ww) or inaccessible due to variability (inaccessible_discharge) needs to be reserved)
               avl_wat_ww <- max(O_discharge[c] - max(O_required_wat_min_allocation[c] - com_ww[c], inaccessible_discharge[c,y]) - com_ww[c], 0)
 
               # withdrawal constraint
@@ -203,12 +203,12 @@ calcRiverSurplusDischargeAllocation_old <- function(lpjml, selectyears, output, 
       if (output=="discharge") {
         # Main output for MAgPIE: water available for agricultural consumption
         wat_avl_irrig <- O_discharge
-        dataname <- "wat_avl_irrig_c"
+        dataname <- "discharge"
         description="Discharge"
       } else if (output=="frac_fullirrig") {
         # Main output for MAgPIE: water available for agricultural withdrawal
         wat_avl_irrig <- frac_fullirrig
-        dataname <- "wat_avl_irrig_w"
+        dataname <- "frac_fullirrig"
         description="Available water for irrigation withdrawals per year"
       } else {
         stop("specify type of output: discharge or frac_fullirrig")
