@@ -1,7 +1,7 @@
-#' @title       plotMapUnsusIrrig
-#' @description map of areas that are unsustainably irrigated
+#' @title       plotMapIrrigatableArea
+#' @description map of areas that can be potentially irrigated
 #'
-#' @param scenario         Non-agricultural water use scenario
+#' @param scenario         Non-agricultural water use scenario and EFP "on" or "off" separated by .
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
@@ -24,13 +24,13 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotMapUnsusIrrig() }
+#' \dontrun{ plotMapIrrigatableArea() }
 #'
 #' @importFrom luplot plotmap2
 #'
 #' @export
 
-plotMapUnsusIrrig <- function(scenario, lpjml, climatetype, selectyears, rankmethod, proxycrop, yieldcalib, EFRmethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, potential_wat, com_ag) {
+plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, rankmethod, proxycrop, yieldcalib, EFRmethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, potential_wat, com_ag) {
 
   if (length(selectyears)>1) {
     stop("Please select one year only for the map")
@@ -38,10 +38,7 @@ plotMapUnsusIrrig <- function(scenario, lpjml, climatetype, selectyears, rankmet
 
   irrigarea  <- calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)
 
-  diff <- irrigarea[,,"off"] - irrigarea[,,"on"]
-  diff[diff>0] <- 1
-
-  out <- plotmap2(toolLPJcell2MAgPIEcell(diff[,selectyears,scenario]), lowcol="white", highcol="darkred")
+  out <- plotmap2(toolLPJcell2MAgPIEcell(diff[,selectyears,scenario]), lowcol="white", highcol="darkblue")
 
   return(out)
 }
