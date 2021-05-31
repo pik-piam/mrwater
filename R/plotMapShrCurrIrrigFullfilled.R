@@ -48,7 +48,7 @@ plotMapShrCurrIrrigFullfilled <- function(scenario, iniyear, lpjml, selectyears,
   wc_shr[act_wc==0] <- NA
 
   out <- plotmap2(toolLPJcell2MAgPIEcell(ww_shr[,selectyears,scenario]), title=element_blank(), labs=FALSE, sea=FALSE, land_colour="transparent") +
-                  scale_fill_continuous("", limits=c(0,1), low="#FFFF66", high="darkred", na.value="grey") +
+                  scale_fill_continuous("", limits=c(0,1), low="#FFFF66", high="darkgreen", na.value="grey") +
                   theme(title=element_blank(),
                         legend.position = c(0.06,0.3), legend.direction = "vertical",
                         panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),

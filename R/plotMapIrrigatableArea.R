@@ -37,8 +37,15 @@ plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, ra
   }
 
   irrigarea  <- calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)
+  irrigarea[irrigarea==0] <- NA
 
-  out <- plotmap2(toolLPJcell2MAgPIEcell(diff[,selectyears,scenario]), lowcol="white", highcol="darkblue")
+  out <- plotmap2(toolLPJcell2MAgPIEcell(irrigarea[,selectyears,scenario]), title=element_blank(), labs=FALSE, sea=FALSE, land_colour="transparent") +
+    scale_fill_continuous("", low="#ffffe5", high="darkgreen", na.value="white") +
+    theme(title=element_blank(),
+          legend.position = c(0.06,0.3), legend.direction = "vertical",
+          panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
 
   return(out)
 }
