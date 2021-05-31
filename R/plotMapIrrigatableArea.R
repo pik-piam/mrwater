@@ -40,7 +40,7 @@ plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, ra
   irrigarea[irrigarea==0] <- NA
 
   out <- plotmap2(toolLPJcell2MAgPIEcell(irrigarea[,selectyears,scenario]), title=element_blank(), labs=FALSE, sea=FALSE, land_colour="transparent") +
-    scale_fill_continuous("", low="#ffffe5", high="darkgreen", na.value="white") +
+    scale_fill_continuous("", limit=c(0, 0.25), low="#ffffe5", high="darkgreen", na.value="white") +
     theme(title=element_blank(),
           legend.position = c(0.06,0.3), legend.direction = "vertical",
           panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
