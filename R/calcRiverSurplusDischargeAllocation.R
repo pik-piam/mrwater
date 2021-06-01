@@ -18,7 +18,7 @@
 #'                         protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
 #' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s)
 #' @param yieldcalib       FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
-#' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential), if only_discharge: already irrigated areas are reserved in Human Water Use Accounting, but Algorithm can decide freely to use it or not
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears dimSums
@@ -36,6 +36,18 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
   # Check
   if (!is.na(as.list(strsplit(avlland_scen, split=":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])) stop("Initialization year in calcRiverSurplusDischargeAllocation does not match: iniyear and avlland_scen should have same initialization year")
 
+  # Retrieve arguments
+  if (com_ag==TRUE) {
+    com_ag_1 <- TRUE
+    com_ag_2 <- TRUE
+  } else if (com_ag=="only_discharge") {
+    com_ag_1 <- FALSE
+    com_ag_2 <- TRUE
+  } else if (com_ag==FALSE) {
+    com_ag_1 <- FALSE
+    com_ag_2 <- FALSE
+  }
+
   #######################################
   ###### Read in Required Inputs ########
   #######################################
@@ -45,7 +57,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
   rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
   # Inputs from previous river routing
-  if (com_ag) {
+  if (com_ag_1) {
     tmp <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", lpjml=lpjml, climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
   } else {
     tmp <- calcOutput("RiverHumanUses", humanuse="non_agriculture", lpjml=lpjml, climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
@@ -56,7 +68,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
   com_ww                      <- collapseNames(tmp[,,"currHuman_ww"])
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
-  discharge                   <- calcOutput("RiverDischargeNatAndHuman", lpjml=lpjml, selectyears=selectyears, iniyear=iniyear, climatetype=climatetype, EFRmethod=EFRmethod, com_ag=TRUE, aggregate=FALSE)
+  discharge                   <- calcOutput("RiverDischargeNatAndHuman", lpjml=lpjml, selectyears=selectyears, iniyear=iniyear, climatetype=climatetype, EFRmethod=EFRmethod, com_ag=com_ag_2, aggregate=FALSE)
 
   # Required water for full irrigation per cell (in mio. m^3)
   required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, comagyear=iniyear, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)

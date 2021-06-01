@@ -56,7 +56,7 @@ protection scenario separated by "_" (only relevant when potIrrig selected): WDP
 
 \item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
 
-\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
+\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential), if only_discharge: already irrigated areas are reserved in Human Water Use Accounting, but Algorithm can decide freely to use it or not}
 }
 \value{
 magpie object in cellular resolution

@@ -56,7 +56,7 @@ protection scenario separated by "_" (only relevant when potIrrig selected): WDP
 
 \item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
 
-\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
+\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential), if only_discharge: already irrigated areas are reserved in Human Water Use Accounting, but Algorithm can decide freely to use it or not}
 }
 \value{
 magpie object in cellular resolution
