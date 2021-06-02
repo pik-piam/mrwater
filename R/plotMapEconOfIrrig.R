@@ -62,6 +62,13 @@ plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selecty
     y <- calcOutput("AreaPotIrrig", selectyears=selectyears, comagyear=NULL, avlland_scen=avlland_scen, aggregate=FALSE)
     legendtitle <- "Areashare"
     legendrange <- c(0, 0.1)
+  } else if (legend_scale=="Boolean") {
+    x0[x0>0] <- 1
+    x500[x500>0] <- 1
+    x1000[x1000>0] <- 1
+    y <- 1
+    legendtitle <- ""
+    legendrange <- c(0, 1)
   } else {
     stop("Please select legend_scale to be displayed: Mha, Cellshare or Areashare")
   }
