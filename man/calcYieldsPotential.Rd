@@ -4,7 +4,7 @@
 \alias{calcYieldsPotential}
 \title{calcYieldsPotential}
 \usage{
-calcYieldsPotential(lpjml, climatetype, selectyears)
+calcYieldsPotential(lpjml, climatetype, selectyears, proxycalib)
 }
 \arguments{
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
@@ -12,6 +12,8 @@ calcYieldsPotential(lpjml, climatetype, selectyears)
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
 
 \item{selectyears}{Years to be returned by the function}
+
+\item{proxycalib}{TRUE (smoothed yields with LPJmL proxy yield calibration to FAO proxycrops where LPJmL crop not available) or FALSE (only smoothed yields)}
 }
 \value{
 magpie object in cellular resolution

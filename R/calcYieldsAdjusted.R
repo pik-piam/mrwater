@@ -5,7 +5,7 @@
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields
 #' @param selectyears   years to be returned by the function
 #' @param iniyear       year to be used for cropland of yield calibration
-#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
+#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or smoothed_calib (not harmonized, but calibrated)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -20,8 +20,8 @@
 calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldcalib) {
 
   # read in cellular lpjml yields [in tons/ha]
-  if (yieldcalib=="none") {
-    yields <- calcOutput("YieldsPotential", lpjml=lpjml, climatetype=climatetype, selectyears=selectyears, aggregate=FALSE)
+  if (grepl("smoothed", yieldcalib)) {
+    yields <- calcOutput("YieldsPotential", lpjml=lpjml, climatetype=climatetype, selectyears=selectyears, proxycalib=grepl("calib", yieldcalib), aggregate=FALSE)
   } else {
     yields <- setYears(calcOutput("Yields", source=c(lpjml=lpjml[["crop"]], isimip=NULL), cells="lpjcell", climatetype=climatetype, years=selectyears, aggregate=FALSE), selectyears)
   }

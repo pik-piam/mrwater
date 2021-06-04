@@ -1,6 +1,7 @@
 #' @title       plotMapEconOfIrrig
 #' @description plot of irrigatable area depending on costs paid for irrigation
 #'
+#' @param areacorrect      TRUE: only cropland area > 0.01*cellarea are shown
 #' @param reference        TRUE current irrigated areas are printed in grey as reference to predicted
 #' @param legend_scale     Legend scale to be displayed: Mha (million hectares), Cellshare (share of cellarea), Areashare (share of area selected in avlland_scen)
 #' @param scenario         EFP and non-agricultural water use scenarios separate by "." (e.g. "on.ssp2")
@@ -32,7 +33,7 @@
 #'
 #' @export
 
-plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, com_ag) {
+plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, com_ag) {
 
   if (length(selectyears)>1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -42,9 +43,9 @@ plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selecty
 
   x0              <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
   x0[x0==0]       <- NA
-  x500            <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=500, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
+  x500            <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=250, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
   x500[x500==0]   <- NA
-  x1000           <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=1000, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
+  x1000           <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=1500, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
   x1000[x1000==0] <- NA
 
   if (legend_scale=="Mha") {
@@ -71,6 +72,22 @@ plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selecty
     legendrange <- c(0, 1)
   } else {
     stop("Please select legend_scale to be displayed: Mha, Cellshare or Areashare")
+  }
+
+  if (areacorrect) {
+    z <- calcOutput("AreaPotIrrig", selectyears=selectyears, comagyear=NULL, avlland_scen=avlland_scen, aggregate=FALSE)
+    w <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
+    w <- (111e3*0.5)*(111e3*0.5)*cos(w$lat/180*pi)/1000000000 # mio. ha
+    w <- as.magpie(w, spatial=1)
+    getCells(w) <- getCells(z)
+
+    cellshare <- z/w
+    cellshare[cellshare<0.01] <- 0
+
+    x0[cellshare==0]       <- NA
+    x500[cellshare==0]     <- NA
+    x1000[cellshare==0]    <- NA
+
   }
 
   x0    <- x0/y
@@ -103,6 +120,10 @@ plotMapEconOfIrrig <- function(reference, legend_scale, scenario, lpjml, selecty
     xC              <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=FALSE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
     xC[xC>0]        <- TRUE
     xC[xC==0]       <- FALSE
+
+    if (areacorrect) {
+      xC[cellshare==0]       <- NA
+    }
 
     pC <- plotmap2(toolLPJcell2MAgPIEcell(xC), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
       scale_fill_continuous(low="transparent", high="#00000080", na.value="transparent") +

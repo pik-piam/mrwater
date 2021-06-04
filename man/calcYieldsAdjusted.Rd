@@ -15,7 +15,7 @@ calcYieldsAdjusted(lpjml, climatetype, iniyear, selectyears, yieldcalib)
 
 \item{selectyears}{years to be returned by the function}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or smoothed_calib (not harmonized, but calibrated)}
 }
 \value{
 magpie object in cellular resolution
