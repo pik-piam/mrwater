@@ -14,6 +14,7 @@
 #'
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping toolFillYears
 #' @importFrom magclass collapseNames getNames dimSums add_columns mbind
+#' @importFrom magpiesets findset
 
 calcYieldsPotential <- function(lpjml, climatetype, selectyears, proxycalib) {
 
