@@ -74,7 +74,9 @@ magpie object in cellular resolution
 plot minimum monetary yield gain achieved on irrigated area
 }
 \examples{
-\dontrun{ plotMarginalReturnToIrrigation(y_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
+\dontrun{
+plotMarginalReturnToIrrigation(y_axis_range = seq(0, 10000, by = 100), scenario = "ssp2")
+}
 
 }
 \author{

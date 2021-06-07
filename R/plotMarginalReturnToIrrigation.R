@@ -27,7 +27,9 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotMarginalReturnToIrrigation(y_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
+#' \dontrun{
+#' plotMarginalReturnToIrrigation(y_axis_range = seq(0, 10000, by = 100), scenario = "ssp2")
+#' }
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames
@@ -35,75 +37,78 @@
 #'
 #' @export
 
-plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, region="GLO", scenario, lpjml, selectyears, iniyear, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, region = "GLO", scenario, lpjml, selectyears, iniyear, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat = TRUE, com_ag) {
 
   # Main data
-  inputdata   <- reportEconOfIrrig(GT_range=y_axis_range, region=region, output=x_axis, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=FALSE,
-                           allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
+  inputdata   <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = x_axis, scenario = scenario,
+                                   lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                                   EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
+                                   allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                   avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag)
   tmp         <- inputdata$data
-  names(tmp)[-1] <- paste(names(tmp)[-1], "LPJmL", sep=".")
-  inputdata   <- reportEconOfIrrig(GT_range=y_axis_range, region=region, output=x_axis, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=TRUE,
-                                   allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
+  names(tmp)[-1] <- paste(names(tmp)[-1], "LPJmL", sep = ".")
+  inputdata   <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = x_axis, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = TRUE,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag)
   df          <- inputdata$data
-  names(df)[-1] <-paste(names(df)[-1], "FAO", sep=".")
+  names(df)[-1] <- paste(names(df)[-1], "FAO", sep = ".")
   df          <- merge(df, tmp)
   description <- inputdata$description
   unit        <- inputdata$unit
 
   # Reference lines
-  if (x_axis=="IrrigArea") {
+  if (x_axis == "IrrigArea") {
     # Area that can be irrigated with committed agricultural uses
-    current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=FALSE, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
-    current_LUH <- dimSums(calcOutput("Croparea", years=iniyear, sectoral="kcr", cells="lpjcell", physical=TRUE, cellular=TRUE, irrigation=TRUE, aggregate=FALSE)[,,"irrigated"], dim=3)
+    current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = FALSE, com_ag = com_ag, aggregate = FALSE)[, , "irrigatable"])
+    current_LUH <- dimSums(calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell", physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
     #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
     map                            <- toolGetMappingCoord2Country()
-    getCells(current_LUH)           <- paste(map$coords, map$iso, sep=".")
+    getCells(current_LUH)           <- paste(map$coords, map$iso, sep = ".")
     names(dimnames(current_LUH))[1] <- "x.y.iso"
   } else {
     # Water already committed to irrigation
-    tmp    <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", lpjml=lpjml, climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
-    current_fulfilled <- collapseNames(tmp[,,x_axis])
+    tmp    <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture", lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+    current_fulfilled <- collapseNames(tmp[, , x_axis])
   }
 
-  if (region=="GLO") {
-    current_fulfilled <- dimSums(current_fulfilled, dim=1)
-    current_LUH <- dimSums(current_LUH, dim=1)
+  if (region == "GLO") {
+    current_fulfilled <- dimSums(current_fulfilled, dim = 1)
+    current_LUH       <- dimSums(current_LUH, dim = 1)
   } else {
     map    <- str_split(region, ":")[[1]][2]
     region <- str_split(region, ":")[[1]][1]
 
     # aggregate to iso-countries
     mapping        <- toolGetMappingCoord2Country()
-    mapping$coords <- paste(mapping$coords, mapping$iso, sep=".")
-    current_fulfilled <- toolAggregate(current_fulfilled, rel=mapping, from="coords", to="iso", dim=1)
-    current_fulfilled <- toolCountryFill(current_fulfilled, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
-    current_LUH <- toolAggregate(current_LUH, rel=mapping, from="coords", to="iso", dim=1)
-    current_LUH <- toolCountryFill(current_LUH, fill=0)
+    mapping$coords <- paste(mapping$coords, mapping$iso, sep = ".")
+    current_fulfilled <- toolAggregate(current_fulfilled, rel = mapping, from = "coords", to = "iso", dim = 1)
+    current_fulfilled <- toolCountryFill(current_fulfilled, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
+    current_LUH <- toolAggregate(current_LUH, rel = mapping, from = "coords", to = "iso", dim = 1)
+    current_LUH <- toolCountryFill(current_LUH, fill = 0)
 
     # aggregate to regions
-    if (!is.na(map) && map=="H12") {
+    if (!is.na(map) && map == "H12") {
       regmap        <- toolGetMapping("regionmappingH12.csv")
       names(regmap) <- c("Country", "iso", "reg")
-      current_fulfilled <- toolAggregate(current_fulfilled, rel=regmap, from="iso", to="reg", dim=1)
-      current_LUH       <- toolAggregate(current_LUH, rel=regmap, from="iso", to="reg", dim=1)
-    } else if (!is.na(map) && map!="H12") {
+      current_fulfilled <- toolAggregate(current_fulfilled, rel = regmap, from = "iso", to = "reg", dim = 1)
+      current_LUH       <- toolAggregate(current_LUH, rel = regmap, from = "iso", to = "reg", dim = 1)
+    } else if (!is.na(map) && map != "H12") {
       stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
     }
 
-    current_fulfilled <- dimSums(current_fulfilled[region,,], dim=1)
-    current_LUH       <- dimSums(current_LUH[region,,], dim=1)
+    current_fulfilled <- dimSums(current_fulfilled[region, , ], dim = 1)
+    current_LUH       <- dimSums(current_LUH[region, , ], dim = 1)
   }
 
-  out <- ggplot(data=df, aes_string(y="GT")) +
-                geom_line(aes_string(x=paste(x_axis, "on", scenario, "LPJmL", sep=".")),  color="darkblue", linetype="dotted", size=1.1) + geom_point(aes_string(x=paste(x_axis, "on", scenario, "LPJmL", sep="."))) +
-                geom_line(aes_string(x=paste(x_axis, "off", scenario, "LPJmL", sep=".")), color="darkred", linetype="dotted", size=1.1) + geom_point(aes_string(x=paste(x_axis, "off", scenario, "LPJmL", sep="."))) +
-                geom_line(aes_string(x=paste(x_axis, "on", scenario, "FAO", sep=".")),  color="darkblue", size=1.1) + geom_point(aes_string(x=paste(x_axis, "on", scenario, "FAO", sep="."))) +
-                geom_line(aes_string(x=paste(x_axis, "off", scenario, "FAO", sep=".")), color="darkred", size=1.1)  + geom_point(aes_string(x=paste(x_axis, "off", scenario, "FAO", sep="."))) +
-                theme_bw() +
-                geom_vline(xintercept=current_fulfilled[,,paste("on", scenario, sep=".")], color = "blue", size=1.01) +
-                geom_vline(xintercept=current_fulfilled[,,paste("off", scenario, sep=".")], color = "red", size=1.01) +
-                geom_vline(xintercept=current_LUH, color = "black", linetype="dashed", size=1.01) +
-                ggtitle(paste0("Marginal return to ", description, " on ", avlland_scen)) + ylab("Monetary yield gain (USD/ha)") + xlab(unit)
+  out <- ggplot(data = df, aes_string(y = "GT")) +
+    geom_line(aes_string(x = paste(x_axis, "on", scenario, "LPJmL", sep = ".")),  color = "darkblue", linetype = "dotted", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "LPJmL", sep = "."))) +
+    geom_line(aes_string(x = paste(x_axis, "off", scenario, "LPJmL", sep = ".")), color = "darkred", linetype = "dotted", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "off", scenario, "LPJmL", sep = "."))) +
+    geom_line(aes_string(x = paste(x_axis, "on", scenario, "FAO", sep = ".")),  color = "darkblue", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "FAO", sep = "."))) +
+    geom_line(aes_string(x = paste(x_axis, "off", scenario, "FAO", sep = ".")), color = "darkred", size = 1.1)  + geom_point(aes_string(x = paste(x_axis, "off", scenario, "FAO", sep = "."))) +
+    theme_bw() +
+    geom_vline(xintercept = as.numeric(current_fulfilled[, , paste("on", scenario, sep = ".")]), color = "blue", size = 1.01) +
+    geom_vline(xintercept = as.numeric(current_fulfilled[, , paste("off", scenario, sep = ".")]), color = "red", size = 1.01) +
+    geom_vline(xintercept = as.numeric(current_LUH), color = "black", linetype = "dashed", size = 1.01) +
+    ggtitle(paste0("Marginal return to ", description, " on ", avlland_scen)) + ylab("Monetary yield gain (USD/ha)") + xlab(unit)
 
   return(out)
 }
