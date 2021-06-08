@@ -20,7 +20,8 @@ calcDischargeAccessibilityShare(
 
 \item{accessibilityrule}{Method used: Quantile method (Q) or coefficient of variation (CV)
 combined with Scalar value defining the strictness of accessibility restriction:
-discharge that is exceeded x percent of the time on average throughout a year (Qx, e.g. Q75: 0.25, Q50: 0.5)
+discharge that is exceeded x percent of the time on average throughout a year
+(Qx, e.g. Q75: 0.25, Q50: 0.5)
 or base value for expontential curve separated by : (CV:2)}
 }
 \value{
@@ -33,7 +34,9 @@ This function calculates the share of discharge that is useable
              water availability (for human use) is reduced.
 }
 \examples{
-\dontrun{ calcOutput("DischargeAccessibilityShare", aggregate=FALSE) }
+\dontrun{
+calcOutput("DischargeAccessibilityShare", aggregate = FALSE)
+}
 
 }
 \author{

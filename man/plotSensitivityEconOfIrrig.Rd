@@ -74,7 +74,9 @@ magpie object in cellular resolution
 plot of irrigatable area depending on costs paid for irrigation for different water accessibility
 }
 \examples{
-\dontrun{ plotSensitivityEconOfIrrig(x_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
+\dontrun{
+plotSensitivityEconOfIrrig(x_axis_range = seq(0, 10000, by = 100), scenario = "ssp2")
+}
 
 }
 \author{

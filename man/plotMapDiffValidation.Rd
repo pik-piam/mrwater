@@ -62,7 +62,9 @@ magpie object in cellular resolution
 map of difference between potential irrigation and actual irrigation
 }
 \examples{
-\dontrun{ plotMapDiffValidation() }
+\dontrun{
+plotMapDiffValidation()
+}
 
 }
 \author{

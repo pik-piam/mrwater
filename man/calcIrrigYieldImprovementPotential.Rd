@@ -39,7 +39,9 @@ magpie object in cellular resolution
 This function calculates the yield improvement potential of irrigation for different crops
 }
 \examples{
-\dontrun{ calcOutput("IrrigYieldImprovementPotential", aggregate=FALSE) }
+\dontrun{
+calcOutput("IrrigYieldImprovementPotential", aggregate = FALSE)
+}
 
 }
 \author{

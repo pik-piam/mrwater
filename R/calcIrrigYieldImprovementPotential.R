@@ -46,6 +46,9 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary, ini
     p           <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr", aggregate = FALSE, years = NULL, year = iniyear)
     croplist    <- intersect(croplist, getNames(p))
 
+    # set negative yield gains to 0
+    yield_gain[yield_gain < 0] <- 0
+
     # Calculate monetary yield gain (in USD05/ha)
     yield_gain  <- yield_gain[, , croplist] * p[, , croplist]
     unit        <- "USD05 per ha"

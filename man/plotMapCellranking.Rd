@@ -11,7 +11,8 @@ plotMapCellranking(
   rankmethod,
   proxycrop,
   iniyear,
-  yieldcalib
+  yieldcalib,
+  multicropping
 )
 }
 \arguments{
@@ -21,13 +22,23 @@ plotMapCellranking(
 
 \item{selectyears}{year to be displayed}
 
-\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops,
+"meancroprank": rank over mean of proxy crops (normalized),
+"meanpricedcroprank": rank over mean of proxy crops (normalized using price),
+"watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE
+separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
+                  FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
-\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
+\item{proxycrop}{proxycrop(s) or historical or NULL}
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
+calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
+smoothed_calib (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

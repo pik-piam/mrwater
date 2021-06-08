@@ -37,9 +37,8 @@ properly).}
 Function that produces the complete water-related cellular data required for running the MAgPIE model.
 }
 \examples{
-
 \dontrun{
-retrieveData("CELLULARMAGPIE", revision=12, mainfolder="pathtowhereallfilesarestored")
+retrieveData("CELLULARMAGPIE", revision = 12, mainfolder = "pathtowhereallfilesarestored")
 }
 }
 \seealso{

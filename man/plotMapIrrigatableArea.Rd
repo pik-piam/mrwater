@@ -68,7 +68,9 @@ magpie object in cellular resolution
 map of areas that can be potentially irrigated
 }
 \examples{
-\dontrun{ plotMapIrrigatableArea() }
+\dontrun{
+plotMapIrrigatableArea()
+}
 
 }
 \author{

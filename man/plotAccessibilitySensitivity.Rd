@@ -71,7 +71,9 @@ magpie object in cellular resolution
 plot of irrigatable area supply curve
 }
 \examples{
-\dontrun{ plotAccessibilitySensitivity(x_axis_range=c(0.25,0.5,0.75,1), scenario="ssp2") }
+\dontrun{
+plotAccessibilitySensitivity(x_axis_range = c(0.25, 0.5, 0.75, 1), scenario = "ssp2")
+}
 
 }
 \author{

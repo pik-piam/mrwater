@@ -65,7 +65,9 @@ magpie object in cellular resolution
 This function returns the potential water quantity available for different uses
 }
 \examples{
-\dontrun{ calcOutput("WaterPotUse", aggregate = FALSE) }
+\dontrun{
+calcOutput("WaterPotUse", aggregate = FALSE)
+}
 
 }
 \author{

@@ -16,7 +16,9 @@ MAgPIE object at 0.5 cellular level
 Read in data from the Global Agro-ecological Zones (GAEZ) data set version 4
 }
 \examples{
-\dontrun{ readSource("GAEZv4", convert="onlycorrect") }
+\dontrun{
+readSource("GAEZv4", convert = "onlycorrect")
+}
 
 }
 \author{

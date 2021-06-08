@@ -65,7 +65,9 @@ magpie object in cellular resolution
 calculates area that can potentially be irrigated given available water and land
 }
 \examples{
-\dontrun{ calcOutput("IrrigatableArea", aggregate=FALSE) }
+\dontrun{
+calcOutput("IrrigatableArea", aggregate = FALSE)
+}
 
 }
 \author{

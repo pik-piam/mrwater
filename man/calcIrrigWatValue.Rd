@@ -36,7 +36,10 @@ magpie object in cellular resolution
 This function calculates the value of irrigation water (added value of water to the production process) based on yield gain, crop prices and irrigation water requirements
 }
 \examples{
-\dontrun{ calcOutput("IrrigWatValue", aggregate=FALSE) }
+\dontrun{
+calcOutput("IrrigWatValue", aggregate = FALSE)
+}
+
 }
 \author{
 Felicitas Beier

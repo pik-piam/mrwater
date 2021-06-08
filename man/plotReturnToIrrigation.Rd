@@ -71,7 +71,9 @@ magpie object in cellular resolution
 plot monetary yield gain achieved on irrigated area (USD) or irrigatable area (Mha) dependent on water accessibility
 }
 \examples{
-\dontrun{ plotReturnToIrrigation(y_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
+\dontrun{
+plotReturnToIrrigation(y_axis_range = seq(0, 10000, by = 100), scenario = "ssp2")
+}
 
 }
 \author{

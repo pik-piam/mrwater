@@ -74,7 +74,9 @@ magpie object in cellular resolution
 reports irrigatable area depending on costs paid for irrigation
 }
 \examples{
-\dontrun{ reportEconOfIrrig(GT_range=seq(0, 10000, by=100), scenario="ssp2") }
+\dontrun{
+reportEconOfIrrig(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
+}
 
 }
 \author{

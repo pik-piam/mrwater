@@ -68,7 +68,9 @@ magpie object in cellular resolution
 map of areas that are unsustainably irrigated
 }
 \examples{
-\dontrun{ plotMapUnsusIrrig() }
+\dontrun{
+plotMapUnsusIrrig()
+}
 
 }
 \author{

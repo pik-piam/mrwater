@@ -84,7 +84,7 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, selectyears, output
   inaccessible_discharge      <- calcOutput("DischargeInaccessible", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, aggregate = FALSE)
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  glocellrank     <- setYears(calcOutput("IrrigCellranking", lpjml = lpjml, climatetype = climatetype, cellrankyear = selectyears, method = rankmethod, proxycrop = proxycrop, iniyear = iniyear, yieldcalib = yieldcalib, aggregate = FALSE), selectyears)
+  glocellrank     <- setYears(calcOutput("IrrigCellranking", lpjml = lpjml, climatetype = climatetype, cellrankyear = selectyears, method = rankmethod, proxycrop = proxycrop, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE), selectyears)
 
   # Initialization of objects
   tmp <- as.magpie(discharge)

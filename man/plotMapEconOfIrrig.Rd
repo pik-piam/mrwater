@@ -71,7 +71,9 @@ magpie object in cellular resolution
 plot of irrigatable area depending on costs paid for irrigation
 }
 \examples{
-\dontrun{ plotMapEconOfIrrig() }
+\dontrun{
+plotMapEconOfIrrig()
+}
 
 }
 \author{

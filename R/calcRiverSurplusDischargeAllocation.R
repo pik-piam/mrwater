@@ -88,7 +88,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
     fullpotential <- as.logical(strsplit(rankmethod, ":")[[1]][2])
 
     # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-    glocellrank   <- setYears(calcOutput("IrrigCellranking", lpjml = lpjml, climatetype = climatetype, cellrankyear = selectyears, method = rankmethod, proxycrop = proxycrop, iniyear = iniyear, yieldcalib = yieldcalib, aggregate = FALSE), selectyears)
+    glocellrank   <- setYears(calcOutput("IrrigCellranking", lpjml = lpjml, climatetype = climatetype, cellrankyear = selectyears, method = rankmethod, proxycrop = proxycrop, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE), selectyears)
 
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
     allocationshare           <- 1 / (length(glocellrank[, 1, 1]) / 67420)

@@ -68,7 +68,9 @@ magpie object in cellular resolution
 This function distributes surplus basin discharge after the previous river routings following certain management assumptions
 }
 \examples{
-\dontrun{ calcOutput("RiverSurplusDischargeAllocation_final", aggregate = FALSE) }
+\dontrun{
+calcOutput("RiverSurplusDischargeAllocation_final", aggregate = FALSE)
+}
 
 }
 \author{
