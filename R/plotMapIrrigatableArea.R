@@ -19,33 +19,36 @@
 #' @param proxycrop        proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotMapIrrigatableArea() }
+#' \dontrun{
+#' plotMapIrrigatableArea()
+#' }
 #'
 #' @importFrom luplot plotmap2
 #'
 #' @export
 
-plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, rankmethod, proxycrop, yieldcalib, EFRmethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, potential_wat, com_ag) {
+plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, rankmethod, proxycrop, yieldcalib, EFRmethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, potential_wat, com_ag, multicropping) {
 
-  if (length(selectyears)>1) {
+  if (length(selectyears) > 1) {
     stop("Please select one year only for the map")
   }
 
-  irrigarea  <- calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)
-  irrigarea[irrigarea==0] <- NA
+  irrigarea  <- calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+  irrigarea[irrigarea == 0] <- NA
 
-  out <- plotmap2(toolLPJcell2MAgPIEcell(irrigarea[,selectyears,scenario]), title=element_blank(), labs=FALSE, sea=FALSE, land_colour="transparent") +
-    scale_fill_continuous("", limit=c(0, 0.25), low="#ffffe5", high="darkgreen", na.value="white") +
-    theme(title=element_blank(),
-          legend.position = c(0.06,0.3), legend.direction = "vertical",
-          panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
+  out <- plotmap2(toolLPJcell2MAgPIEcell(irrigarea[, selectyears, scenario]), title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +
+    scale_fill_continuous("", limit = c(0, 0.25), low = "#ffffe5", high = "darkgreen", na.value = "white") +
+    theme(title = element_blank(),
+      legend.position = c(0.06, 0.3), legend.direction = "vertical",
+      panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
 
   return(out)
 }

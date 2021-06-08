@@ -20,12 +20,15 @@
 #'                         protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
 #' @param proxycrop        proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotMapEconOfIrrig() }
+#' \dontrun{
+#' plotMapEconOfIrrig()
+#' }
 #'
 #' @importFrom luplot plotmap2
 #' @importFrom magclass collapseNames
@@ -33,40 +36,40 @@
 #'
 #' @export
 
-plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, com_ag) {
+plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, com_ag, multicropping) {
 
-  if (length(selectyears)>1) {
+  if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  if (!requireNamespace("cowplot", quietly = TRUE)) stop("The package ncdf4 is required for writing NCDF4 files!")
+  if (!requireNamespace("cowplot", quietly = TRUE)) stop("The package cowplot is required for plotting MapEconOfIrrig!")
 
-  x0              <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
-  x0[x0==0]       <- NA
-  x500            <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=250, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
-  x500[x500==0]   <- NA
-  x1000           <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=1500, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
-  x1000[x1000==0] <- NA
+  x0              <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  x0[x0 == 0]       <- NA
+  x500            <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 250, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  x500[x500 == 0]   <- NA
+  x1000           <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 1500, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  x1000[x1000 == 0] <- NA
 
-  if (legend_scale=="Mha") {
+  if (legend_scale == "Mha") {
     y           <- 1
     legendtitle <- "Mha"
     legendrange <- c(0, 0.3)
-  } else if (legend_scale=="Cellshare") {
-    y <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
-    y <- (111e3*0.5)*(111e3*0.5)*cos(y$lat/180*pi)/1000000000 # mio. ha
-    y <- as.magpie(y, spatial=1)
+  } else if (legend_scale == "Cellshare") {
+    y <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type = "cell")
+    y <- (111e3 * 0.5) * (111e3 * 0.5) * cos(y$lat / 180 * pi) / 1000000000 # mio. ha
+    y <- as.magpie(y, spatial = 1)
     getCells(y) <- getCells(x0)
     legendtitle <- "Cellshare"
     legendrange <- c(0, 0.1)
-  } else if (legend_scale=="Areashare") {
-    y <- calcOutput("AreaPotIrrig", selectyears=selectyears, comagyear=NULL, avlland_scen=avlland_scen, aggregate=FALSE)
+  } else if (legend_scale == "Areashare") {
+    y <- calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL, avlland_scen = avlland_scen, aggregate = FALSE)
     legendtitle <- "Areashare"
     legendrange <- c(0, 0.1)
-  } else if (legend_scale=="Boolean") {
-    x0[x0>0] <- 1
-    x500[x500>0] <- 1
-    x1000[x1000>0] <- 1
+  } else if (legend_scale == "Boolean") {
+    x0[x0 > 0] <- 1
+    x500[x500 > 0] <- 1
+    x1000[x1000 > 0] <- 1
     y <- 1
     legendtitle <- ""
     legendrange <- c(0, 1)
@@ -75,63 +78,63 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
   }
 
   if (areacorrect) {
-    z <- calcOutput("AreaPotIrrig", selectyears=selectyears, comagyear=NULL, avlland_scen=avlland_scen, aggregate=FALSE)
-    w <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type="cell")
-    w <- (111e3*0.5)*(111e3*0.5)*cos(w$lat/180*pi)/1000000000 # mio. ha
-    w <- as.magpie(w, spatial=1)
+    z <- calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL, avlland_scen = avlland_scen, aggregate = FALSE)
+    w <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type = "cell")
+    w <- (111e3 * 0.5) * (111e3 * 0.5) * cos(w$lat / 180 * pi) / 1000000000 # mio. ha
+    w <- as.magpie(w, spatial = 1)
     getCells(w) <- getCells(z)
 
-    cellshare <- z/w
-    cellshare[cellshare<0.01] <- 0
+    cellshare <- z / w
+    cellshare[cellshare < 0.01] <- 0
 
-    x0[cellshare==0]       <- NA
-    x500[cellshare==0]     <- NA
-    x1000[cellshare==0]    <- NA
+    x0[cellshare == 0]       <- NA
+    x500[cellshare == 0]     <- NA
+    x1000[cellshare == 0]    <- NA
 
   }
 
-  x0    <- x0/y
-  x500  <- x500/y
-  x1000 <- x1000/y
+  x0    <- x0 / y
+  x500  <- x500 / y
+  x1000 <- x1000 / y
 
-  p1 <- plotmap2(toolLPJcell2MAgPIEcell(x1000), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
-    scale_fill_continuous(legendtitle, limits=legendrange, low="thistle2", high="darkred", guide="colorbar", na.value="transparent") +
-    theme(title=element_blank(),
-          legend.position = c(0.1,0.3), legend.direction = "vertical",
-          panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
-  p2 <- plotmap2(toolLPJcell2MAgPIEcell(x500), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
-    scale_fill_continuous("", limits=legendrange, low="lightblue", high="darkblue", guide="colorbar", na.value="transparent") +
-    theme(title=element_blank(),
-          legend.position = c(0.08,0.3), legend.direction = "vertical",
-          panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
-  p3 <- plotmap2(toolLPJcell2MAgPIEcell(x0), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
-    scale_fill_continuous("", limits=legendrange, low="lightgreen", high="darkgreen", guide="colorbar", na.value="transparent") +
-    theme(title=element_blank(),
-          legend.position = c(0.06,0.3), legend.direction = "vertical",
-          panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
+  p1 <- plotmap2(toolLPJcell2MAgPIEcell(x1000), title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +
+    scale_fill_continuous(legendtitle, limits = legendrange, low = "thistle2", high = "darkred", guide = "colorbar", na.value = "transparent") +
+    theme(title = element_blank(),
+      legend.position = c(0.1, 0.3), legend.direction = "vertical",
+      panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
+  p2 <- plotmap2(toolLPJcell2MAgPIEcell(x500), title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +
+    scale_fill_continuous("", limits = legendrange, low = "lightblue", high = "darkblue", guide = "colorbar", na.value = "transparent") +
+    theme(title = element_blank(),
+      legend.position = c(0.08, 0.3), legend.direction = "vertical",
+      panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
+  p3 <- plotmap2(toolLPJcell2MAgPIEcell(x0), title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +
+    scale_fill_continuous("", limits = legendrange, low = "lightgreen", high = "darkgreen", guide = "colorbar", na.value = "transparent") +
+    theme(title = element_blank(),
+      legend.position = c(0.06, 0.3), legend.direction = "vertical",
+      panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
 
   if (reference) {
-    xC              <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=FALSE, com_ag=com_ag, aggregate=FALSE)[,,paste(scenario, "irrigatable", sep=".")])
-    xC[xC>0]        <- TRUE
-    xC[xC==0]       <- FALSE
+    xC              <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = FALSE, com_ag = com_ag, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+    xC[xC > 0]        <- TRUE
+    xC[xC == 0]       <- FALSE
 
     if (areacorrect) {
-      xC[cellshare==0]       <- NA
+      xC[cellshare == 0]       <- NA
     }
 
-    pC <- plotmap2(toolLPJcell2MAgPIEcell(xC), title = element_blank(), labs= FALSE, sea=FALSE, land_colour = "transparent") +
-      scale_fill_continuous(low="transparent", high="#00000080", na.value="transparent") +
-      theme(title=element_blank(),
-            legend.position = "none",
-            panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
-            panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-            strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
+    pC <- plotmap2(toolLPJcell2MAgPIEcell(xC), title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +
+      scale_fill_continuous(low = "transparent", high = "#00000080", na.value = "transparent") +
+      theme(title = element_blank(),
+        legend.position = "none",
+        panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
 
     out <- cowplot::ggdraw() + cowplot::draw_plot(p3) + cowplot::draw_plot(p2) + cowplot::draw_plot(p1) + cowplot::draw_plot(pC)
   } else {

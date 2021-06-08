@@ -11,7 +11,8 @@ calcIrrigCellranking(
   method,
   proxycrop,
   iniyear,
-  yieldcalib
+  yieldcalib,
+  multicropping
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ calcIrrigCellranking(
 \item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank and case of monetary=TRUE year of prices}
 
 \item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

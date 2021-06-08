@@ -21,6 +21,7 @@ plotReturnToIrrigation(
   avlland_scen,
   proxycrop,
   com_ag,
+  multicropping,
   potential_wat = TRUE
 )
 }
@@ -58,6 +59,8 @@ protection scenario separated by "_" (only relevant when potIrrig selected): WDP
 \item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
 
 \item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 
 \item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
 }

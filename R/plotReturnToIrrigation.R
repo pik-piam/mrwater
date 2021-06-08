@@ -20,12 +20,15 @@
 #' @param proxycrop        proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotReturnToIrrigation(y_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
+#' \dontrun{
+#' plotReturnToIrrigation(y_axis_range = seq(0, 10000, by = 100), scenario = "ssp2")
+#' }
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames
@@ -33,63 +36,63 @@
 #'
 #' @export
 
-plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, selectyears, climatetype, EFRmethod, rankmethod, yieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop, com_ag, potential_wat=TRUE) {
+plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, selectyears, climatetype, EFRmethod, rankmethod, yieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop, com_ag, multicropping, potential_wat = TRUE) {
 
-  if (length(selectyears)>1) {
+  if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
+  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
-  x     <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q0", EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
-  x     <- as.data.frame(dimSums(x, dim=1))
-  tmp1A <- data.frame(EFP=x$Data1, Scen=x$Data2, Irrigarea_GT0=x$Value, stringsAsFactors = F)
+  x     <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = "Q0", EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+  x     <- as.data.frame(dimSums(x, dim = 1))
+  tmp1A <- data.frame(EFP = x$Data1, Scen = x$Data2, Irrigarea_GT0 = x$Value, stringsAsFactors = F)
 
-  x     <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule="Q0", EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,x_axis])
+  x     <- collapseNames(calcOutput("WaterPotUse",      lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = "Q0", EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, proxycrop = proxycrop, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , x_axis])
   # transform from mio. m^3 to km^3:
   x     <- x / 1000
-  x     <- as.data.frame(dimSums(x, dim=1))
-  tmp2A <- data.frame(EFP=x$Data1, Scen=x$Data2, Potwat_GT0=x$Value, stringsAsFactors = F)
+  x     <- as.data.frame(dimSums(x, dim = 1))
+  tmp2A <- data.frame(EFP = x$Data1, Scen = x$Data2, Potwat_GT0 = x$Value, stringsAsFactors = F)
 
-  if (y_axis_range[1]==0) {
+  if (y_axis_range[1] == 0) {
     y_axis_range <- y_axis_range[-1]
   }
 
   for (accessibilityrule in y_axis_range) {
 
-    x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=paste("Q", accessibilityrule, sep=":"), EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
-    x <- as.data.frame(dimSums(x, dim=1))
-    tmp1B              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value)
+    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"), EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+    x <- as.data.frame(dimSums(x, dim = 1))
+    tmp1B              <- data.frame(EFP = x$Data1, Scen = x$Data2, Value = x$Value)
     names(tmp1B)[3]    <- paste0("Q", accessibilityrule)
     tmp1A              <- merge(tmp1A, tmp1B)
 
-    x <- collapseNames(calcOutput("WaterPotUse",     lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=paste("Q", accessibilityrule, sep=":"), EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,x_axis])
+    x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"), EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, proxycrop = proxycrop, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , x_axis])
     x <- x / 1000
-    x <- as.data.frame(dimSums(x, dim=1))
-    tmp2B              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value)
+    x <- as.data.frame(dimSums(x, dim = 1))
+    tmp2B              <- data.frame(EFP = x$Data1, Scen = x$Data2, Value = x$Value)
     names(tmp2B)[3]    <- paste0("Q", accessibilityrule)
     tmp2A              <- merge(tmp2A, tmp2B)
   }
 
-  tmp1A        <- data.frame(t(data.frame(Scen=paste("IrrigArea", tmp1A$EFP, tmp1A$Scen, sep="."),tmp1A[-c(1,2)])), stringsAsFactors = F)
-  names(tmp1A) <- as.character(unlist(tmp1A[1,]))
-  tmp1A        <- tmp1A[-1,]
-  tmp1A        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(tmp1A))), tmp1A, stringsAsFactors = F)
+  tmp1A        <- data.frame(t(data.frame(Scen = paste("IrrigArea", tmp1A$EFP, tmp1A$Scen, sep = "."), tmp1A[-c(1, 2)])), stringsAsFactors = F)
+  names(tmp1A) <- as.character(unlist(tmp1A[1, ]))
+  tmp1A        <- tmp1A[-1, ]
+  tmp1A        <- data.frame(GT = as.numeric(gsub("GT", "", rownames(tmp1A))), tmp1A, stringsAsFactors = F)
   tmp1A        <- as.data.frame(lapply(tmp1A, as.numeric))
 
-  tmp2A        <- data.frame(t(data.frame(Scen=paste("PotWat", tmp2A$EFP, tmp2A$Scen, sep="."),tmp2A[-c(1,2)])), stringsAsFactors = F)
-  names(tmp2A) <- as.character(unlist(tmp2A[1,]))
-  tmp2A        <- tmp2A[-1,]
-  tmp2A        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(tmp2A))), tmp2A, stringsAsFactors = F)
+  tmp2A        <- data.frame(t(data.frame(Scen = paste("PotWat", tmp2A$EFP, tmp2A$Scen, sep = "."), tmp2A[-c(1, 2)])), stringsAsFactors = F)
+  names(tmp2A) <- as.character(unlist(tmp2A[1, ]))
+  tmp2A        <- tmp2A[-1, ]
+  tmp2A        <- data.frame(GT = as.numeric(gsub("GT", "", rownames(tmp2A))), tmp2A, stringsAsFactors = F)
   tmp2A        <- as.data.frame(lapply(tmp2A, as.numeric))
 
   df <- merge(tmp1A, tmp2A)
 
-  out <- ggplot(data=df, aes_string(y=paste("IrrigArea", "on", scenario, sep="."))) +
-                geom_line(aes_string(x=paste("PotWat", "on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(x=paste("PotWat", "on", scenario, sep="."))) +
-                geom_line(aes_string(x=paste("PotWat", "off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(x=paste("PotWat", "off", scenario, sep="."))) +
-                theme_bw() +
-                ggtitle(paste0("Return to to Irrigation with FAO-calib=" , yieldcalib, " on ", avlland_scen)) + ylab("Irrigatable Area (Mha)") + xlab("Accessible Water (km^3)")
+  out <- ggplot(data = df, aes_string(y = paste("IrrigArea", "on", scenario, sep = "."))) +
+    geom_line(aes_string(x = paste("PotWat", "on", scenario, sep = ".")),  color = "darkblue")                    + geom_point(aes_string(x = paste("PotWat", "on", scenario, sep = "."))) +
+    geom_line(aes_string(x = paste("PotWat", "off", scenario, sep = ".")), color = "darkred", linetype = "twodash") + geom_point(aes_string(x = paste("PotWat", "off", scenario, sep = "."))) +
+    theme_bw() +
+    ggtitle(paste0("Return to to Irrigation with FAO-calib=", yieldcalib, " on ", avlland_scen)) + ylab("Irrigatable Area (Mha)") + xlab("Accessible Water (km^3)")
 
   return(out)
 }

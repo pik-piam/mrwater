@@ -19,6 +19,7 @@
 #'                         protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
 #' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s)
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential), if only_discharge: already irrigated areas are reserved in Human Water Use Accounting, but Algorithm can decide freely to use it or not
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears dimSums
@@ -28,22 +29,23 @@
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
-#' \dontrun{ calcOutput("RiverSurplusDischargeAllocation_final", aggregate = FALSE) }
+#' \dontrun{
+#' calcOutput("RiverSurplusDischargeAllocation_final", aggregate = FALSE)
+#' }
 #'
-
-calcRiverSurplusDischargeAllocation_final <- function(lpjml, selectyears, output, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop, com_ag) {
+calcRiverSurplusDischargeAllocation_final <- function(lpjml, selectyears, output, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, iniyear, avlland_scen, proxycrop, com_ag, multicropping) {
 
   # Check
-  if (!is.na(as.list(strsplit(avlland_scen, split=":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])) stop("Initialization year in calcRiverSurplusDischargeAllocation does not match: iniyear and avlland_scen should have same initialization year")
+  if (!is.na(as.list(strsplit(avlland_scen, split = ":"))[[1]][2]) && iniyear != as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])) stop("Initialization year in calcRiverSurplusDischargeAllocation does not match: iniyear and avlland_scen should have same initialization year")
 
   # Retrieve arguments
-  if (com_ag==TRUE) {
+  if (com_ag == TRUE) {
     com_ag_1 <- TRUE
     com_ag_2 <- TRUE
-  } else if (com_ag=="only_discharge") {
+  } else if (com_ag == "only_discharge") {
     com_ag_1 <- FALSE
     com_ag_2 <- TRUE
-  } else if (com_ag==FALSE) {
+  } else if (com_ag == FALSE) {
     com_ag_1 <- FALSE
     com_ag_2 <- FALSE
   }
@@ -52,44 +54,44 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, selectyears, output
   ###### Read in Required Inputs ########
   #######################################
   # River Structure
-  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
+  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
 
   # Inputs from previous river routing
   if (com_ag_1) {
-    tmp <- calcOutput("RiverHumanUses", humanuse="committed_agriculture", lpjml=lpjml, climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
+    tmp <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture", lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
   } else {
-    tmp <- calcOutput("RiverHumanUses", humanuse="non_agriculture", lpjml=lpjml, climatetype=climatetype, EFRmethod=EFRmethod, selectyears=selectyears, iniyear=iniyear, aggregate=FALSE)
+    tmp <- calcOutput("RiverHumanUses", humanuse = "non_agriculture", lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
   }  # Minimum flow requirements: Environmental Flow Requirements + Reserved for Non-Agricultural Uses + Reserved Committed Agricultural Uses (in mio. m^3 / yr)
-  required_wat_min_allocation <- collapseNames(tmp[,,"required_wat_min"])
+  required_wat_min_allocation <- collapseNames(tmp[, , "required_wat_min"])
   # Already committed water withdrawals
-  com_ww                      <- collapseNames(tmp[,,"currHuman_ww"])
+  com_ww                      <- collapseNames(tmp[, , "currHuman_ww"])
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
-  discharge                   <- calcOutput("RiverDischargeNatAndHuman", lpjml=lpjml, selectyears=selectyears, iniyear=iniyear, climatetype=climatetype, EFRmethod=EFRmethod, com_ag=com_ag_2, aggregate=FALSE)
+  discharge                   <- calcOutput("RiverDischargeNatAndHuman", lpjml = lpjml, selectyears = selectyears, iniyear = iniyear, climatetype = climatetype, EFRmethod = EFRmethod, com_ag = com_ag_2, aggregate = FALSE)
 
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, comagyear=iniyear, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, aggregate=FALSE)
-  required_wat_fullirrig_ww   <- pmax(collapseNames(required_wat_fullirrig[,,"withdrawal"]), 0)
-  required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[,,"consumption"]), 0)
+  required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, comagyear = iniyear, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, aggregate = FALSE)
+  required_wat_fullirrig_ww   <- pmax(collapseNames(required_wat_fullirrig[, , "withdrawal"]), 0)
+  required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[, , "consumption"]), 0)
 
   # Yield gain potential through irrigation of proxy crops
-  irrig_yieldgainpotential    <- calcOutput("IrrigYieldImprovementPotential", lpjml=lpjml, climatetype=climatetype, selectyears=selectyears, proxycrop=proxycrop, monetary=thresholdtype, iniyear=iniyear, yieldcalib=yieldcalib, aggregate=FALSE)
+  irrig_yieldgainpotential    <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears, proxycrop = proxycrop, monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
   # Initialization of fraction of full irrigation requirements that can be fulfilled
-  frac_fullirrig              <- new.magpie(cells_and_regions = getCells(discharge), years = getYears(discharge), names = getNames(discharge), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
+  frac_fullirrig              <- new.magpie(cells_and_regions = getCells(discharge), years = getYears(discharge), names = getNames(discharge), fill = 0, sets = c("x.y.iso", "year", "EFP.scen"))
 
   # Discharge that is inaccessible to human uses (mio m^3)
-  inaccessible_discharge      <- calcOutput("DischargeInaccessible", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, aggregate=FALSE)
+  inaccessible_discharge      <- calcOutput("DischargeInaccessible", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, aggregate = FALSE)
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  glocellrank     <- setYears(calcOutput("IrrigCellranking", lpjml=lpjml, climatetype=climatetype, cellrankyear=selectyears, method=rankmethod, proxycrop=proxycrop, iniyear=iniyear, yieldcalib=yieldcalib, aggregate=FALSE), selectyears)
+  glocellrank     <- setYears(calcOutput("IrrigCellranking", lpjml = lpjml, climatetype = climatetype, cellrankyear = selectyears, method = rankmethod, proxycrop = proxycrop, iniyear = iniyear, yieldcalib = yieldcalib, aggregate = FALSE), selectyears)
 
   # Initialization of objects
   tmp <- as.magpie(discharge)
 
   .transformObject <- function(x) {
     # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getCells(tmp), years = getYears(tmp), names = getNames(tmp), fill=0, sets=c("x.y.iso", "year", "EFP.scen"))
+    object0 <- new.magpie(cells_and_regions = getCells(tmp), years = getYears(tmp), names = getNames(tmp), fill = 0, sets = c("x.y.iso", "year", "EFP.scen"))
     # bring object x to dimension of object0
     out     <- object0 + x
     return(out)
@@ -111,35 +113,35 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, selectyears, output
   ####### River basin discharge allocation #######
   ################################################
   out     <- NULL
-  if (class(selectyears)=="numeric") {
+  if (class(selectyears) == "numeric") {
     selectyears <- paste0("y", selectyears)
   }
 
   # list of objects that are inputs and outputs to the allocation function
-  l_inout <- list(discharge=discharge, required_wat_min_allocation=required_wat_min_allocation, frac_fullirrig=frac_fullirrig, com_ww=com_ww)
+  l_inout <- list(discharge = discharge, required_wat_min_allocation = required_wat_min_allocation, frac_fullirrig = frac_fullirrig, com_ww = com_ww)
   # list of objects that are inputs to the allocation function
-  l_in    <- list(irrig_yieldgainpotential=irrig_yieldgainpotential, required_wat_fullirrig_ww=required_wat_fullirrig_ww, required_wat_fullirrig_wc=required_wat_fullirrig_wc, gainthreshold=gainthreshold, avl_wat_ww=avl_wat_ww, avl_wat_wc=avl_wat_wc, inaccessible_discharge=inaccessible_discharge)
+  l_in    <- list(irrig_yieldgainpotential = irrig_yieldgainpotential, required_wat_fullirrig_ww = required_wat_fullirrig_ww, required_wat_fullirrig_wc = required_wat_fullirrig_wc, gainthreshold = gainthreshold, avl_wat_ww = avl_wat_ww, avl_wat_wc = avl_wat_wc, inaccessible_discharge = inaccessible_discharge)
 
   for (y in selectyears) {
-    l_inout <- toolDischargeAllocation(y=y, rs=rs, l_inout=l_inout, l_in=l_in, glocellrank=glocellrank, allocationrule=allocationrule)
+    l_inout <- toolDischargeAllocation(y = y, rs = rs, l_inout = l_inout, l_in = l_in, glocellrank = glocellrank, allocationrule = allocationrule)
   }
 
-  if (output=="discharge") {
+  if (output == "discharge") {
     # Main output for MAgPIE: water available for agricultural consumption
-    out         <- as.magpie(l_inout$discharge, spatial=1)
+    out         <- as.magpie(l_inout$discharge, spatial = 1)
     description <- "Cellular discharge after accounting for known human uses along the river"
-  } else if (output=="frac_fullirrig") {
+  } else if (output == "frac_fullirrig") {
     # Main output for MAgPIE: water available for agricultural withdrawal
-    out         <- as.magpie(l_inout$frac_fullirrig, spatial=1)
+    out         <- as.magpie(l_inout$frac_fullirrig, spatial = 1)
     description <- "Fraction of full irrigation requirements that can be fulfilled"
   } else {
     stop("specify outputtype")
   }
 
   return(list(
-    x=out,
-    weight=NULL,
-    unit="mio. m^3",
-    description=description,
-    isocountries=FALSE))
+    x = out,
+    weight = NULL,
+    unit = "mio. m^3",
+    description = description,
+    isocountries = FALSE))
 }

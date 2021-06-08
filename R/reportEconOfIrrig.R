@@ -21,12 +21,15 @@
 #' @param proxycrop        proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ reportEconOfIrrig(GT_range=seq(0, 10000, by=100), scenario="ssp2") }
+#' \dontrun{
+#' reportEconOfIrrig(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
+#' }
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames
@@ -34,20 +37,20 @@
 #'
 #' @export
 
-reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat = TRUE, com_ag, multicropping) {
 
-  if (length(selectyears)>1) {
+  if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
+  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
-  if (output=="IrrigArea") {
-    x <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
+  if (output == "IrrigArea") {
+    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
     d <- "Irrigatable Area"
     u <- "Irrigatable Area (Mha)"
   } else {
-    x <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=0, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,output])
+    x <- collapseNames(calcOutput("WaterPotUse",      lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, proxycrop = proxycrop, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)
     # (1 mio. = 1e+06)
@@ -55,8 +58,8 @@ reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, s
     d <- paste0("Water Use Potential")
     u <- paste0("Potential water use", output, "(km^3)")
   }
-  if (region=="GLO") {
-    x <- as.data.frame(dimSums(x, dim=1))
+  if (region == "GLO") {
+    x <- as.data.frame(dimSums(x, dim = 1))
 
   } else {
     map    <- str_split(region, ":")[[1]][2]
@@ -64,65 +67,65 @@ reportEconOfIrrig <- function(region="GLO", output, GT_range, scenario, lpjml, s
 
     # aggregate to iso-countries
     mapping        <- toolGetMappingCoord2Country()
-    mapping$coords <- paste(mapping$coords, mapping$iso, sep=".")
-    x <- toolAggregate(x, rel=mapping, from="coords", to="iso", dim=1)
-    x <- toolCountryFill(x, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
+    mapping$coords <- paste(mapping$coords, mapping$iso, sep = ".")
+    x <- toolAggregate(x, rel = mapping, from = "coords", to = "iso", dim = 1)
+    x <- toolCountryFill(x, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
 
     # aggregate to regions
-    if (!is.na(map) && map=="H12") {
+    if (!is.na(map) && map == "H12") {
       regmap        <- toolGetMapping("regionmappingH12.csv")
       names(regmap) <- c("Country", "iso", "reg")
-      x             <- toolAggregate(x, rel=regmap, from="iso", to="reg", dim=1)
-    } else if (!is.na(map) && map!="H12") {
+      x             <- toolAggregate(x, rel = regmap, from = "iso", to = "reg", dim = 1)
+    } else if (!is.na(map) && map != "H12") {
       stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
     }
 
-    x <- as.data.frame(dimSums(x[region,,], dim=1))
+    x <- as.data.frame(dimSums(x[region, , ], dim = 1))
   }
 
-  df <- data.frame(EFP=x$Data1, Scen=x$Data2, GT0=x$Value, stringsAsFactors = FALSE)
+  df <- data.frame(EFP = x$Data1, Scen = x$Data2, GT0 = x$Value, stringsAsFactors = FALSE)
 
-  if (GT_range[1]==0) {
+  if (GT_range[1] == 0) {
     GT_range <- GT_range[-1]
   }
 
   for (gainthreshold in GT_range) {
 
-    if (output=="IrrigArea") {
-      x  <- collapseNames(calcOutput("IrrigatableArea", lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=potential_wat, com_ag=com_ag, aggregate=FALSE)[,,"irrigatable"])
+    if (output == "IrrigArea") {
+      x  <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
     } else {
-      x <- collapseNames(calcOutput("WaterPotUse",      lpjml=lpjml, gainthreshold=gainthreshold, selectyears=selectyears, climatetype=climatetype, accessibilityrule=accessibilityrule, EFRmethod=EFRmethod, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)[,,output])
+      x <- collapseNames(calcOutput("WaterPotUse",      lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, proxycrop = proxycrop, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
       x <- x / 1000
     }
 
-    if (region=="GLO") {
-      x <- as.data.frame(dimSums(x, dim=1))
+    if (region == "GLO") {
+      x <- as.data.frame(dimSums(x, dim = 1))
 
     } else {
       # aggregate to iso-countries
-      x <- toolAggregate(x, rel=mapping, from="coords", to="iso", dim=1)
-      x <- toolCountryFill(x, fill=0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
+      x <- toolAggregate(x, rel = mapping, from = "coords", to = "iso", dim = 1)
+      x <- toolCountryFill(x, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
 
       # aggregate to regions
-      if (!is.na(map) && map=="H12") {
-        x             <- toolAggregate(x, rel=regmap, from="iso", to="reg", dim=1)
-      } else if (!is.na(map) && map!="H12") {
+      if (!is.na(map) && map == "H12") {
+        x             <- toolAggregate(x, rel = regmap, from = "iso", to = "reg", dim = 1)
+      } else if (!is.na(map) && map != "H12") {
         stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
       }
 
-      x <- as.data.frame(dimSums(x[region,,], dim=1))
+      x <- as.data.frame(dimSums(x[region, , ], dim = 1))
     }
 
-    tmp              <- data.frame(EFP=x$Data1, Scen=x$Data2, Value=x$Value)
-    names(tmp)[3]    <- paste0("GT",gainthreshold)
+    tmp              <- data.frame(EFP = x$Data1, Scen = x$Data2, Value = x$Value)
+    names(tmp)[3]    <- paste0("GT", gainthreshold)
     df     <- merge(df, tmp)
   }
 
-  df        <- data.frame(t(data.frame(Scen=paste(output, df$EFP, df$Scen, sep="."), df[-c(1,2)])), stringsAsFactors = FALSE)
-  names(df) <- as.character(unlist(df[1,]))
-  df        <- df[-1,]
-  df        <- data.frame(GT=as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = FALSE)
+  df        <- data.frame(t(data.frame(Scen = paste(output, df$EFP, df$Scen, sep = "."), df[-c(1, 2)])), stringsAsFactors = FALSE)
+  names(df) <- as.character(unlist(df[1, ]))
+  df        <- df[-1, ]
+  df        <- data.frame(GT = as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = FALSE)
   df        <- as.data.frame(lapply(df, as.numeric))
 
-  return(list(data=df, description=d, unit=u))
+  return(list(data = df, description = d, unit = u))
 }

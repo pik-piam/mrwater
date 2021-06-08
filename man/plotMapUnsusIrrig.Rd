@@ -20,7 +20,8 @@ plotMapUnsusIrrig(
   irrigationsystem,
   avlland_scen,
   potential_wat,
-  com_ag
+  com_ag,
+  multicropping
 )
 }
 \arguments{
@@ -57,6 +58,8 @@ protection scenario separated by "_" (only relevant when potIrrig selected): WDP
 \item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
 
 \item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

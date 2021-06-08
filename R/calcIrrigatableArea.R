@@ -18,51 +18,54 @@
 #' @param proxycrop        proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ calcOutput("IrrigatableArea", aggregate=FALSE) }
+#' \dontrun{
+#' calcOutput("IrrigatableArea", aggregate = FALSE)
+#' }
 #'
 #' @import magclass
 #' @import magpiesets
 
-calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop, potential_wat, com_ag){
+calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, proxycrop, potential_wat, com_ag, multicropping) {
 
   # retrieve function arguments
-  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split=":"))[[1]][2])
+  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
   ## Read in water available for irrigation
   if (potential_wat) {
-    wat_avl         <- calcOutput("WaterPotUse", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, iniyear=iniyear, avlland_scen=avlland_scen, proxycrop=proxycrop, com_ag=com_ag, aggregate=FALSE)
-    wat_avl_irrig_c <- collapseNames(wat_avl[,,"wat_ag_wc"])
-    wat_avl_irrig_w <- collapseNames(wat_avl[,,"wat_ag_ww"])
+    wat_avl         <- calcOutput("WaterPotUse", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, proxycrop = proxycrop, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+    wat_avl_irrig_c <- collapseNames(wat_avl[, , "wat_ag_wc"])
+    wat_avl_irrig_w <- collapseNames(wat_avl[, , "wat_ag_ww"])
   } else {
-    wat_avl         <- calcOutput("RiverHumanUses", lpjml=lpjml, selectyears=selectyears, humanuse="committed_agriculture", iniyear=iniyear, climatetype=climatetype, EFRmethod=EFRmethod, aggregate=FALSE)
-    wat_avl_irrig_c <- collapseNames(wat_avl[,,"currHuman_wc"])
-    wat_avl_irrig_w <- collapseNames(wat_avl[,,"currHuman_ww"])
+    wat_avl         <- calcOutput("RiverHumanUses", lpjml = lpjml, selectyears = selectyears, humanuse = "committed_agriculture", iniyear = iniyear, climatetype = climatetype, EFRmethod = EFRmethod, aggregate = FALSE)
+    wat_avl_irrig_c <- collapseNames(wat_avl[, , "currHuman_wc"])
+    wat_avl_irrig_w <- collapseNames(wat_avl[, , "currHuman_ww"])
   }
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
-  wat_req    <- calcOutput("FullIrrigationRequirement", lpjml=lpjml, climatetype=climatetype, selectyears=selectyears, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, comagyear=NULL, aggregate=FALSE)
-  wat_req_ww <- collapseNames(wat_req[,,"withdrawal"])
-  wat_req_wc <- collapseNames(wat_req[,,"consumption"])
+  wat_req    <- calcOutput("FullIrrigationRequirement", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, comagyear = NULL, aggregate = FALSE)
+  wat_req_ww <- collapseNames(wat_req[, , "withdrawal"])
+  wat_req_wc <- collapseNames(wat_req[, , "consumption"])
 
   ## Read in area that can potentially be irrigated (including total potentially irrigatable area; defined by comagyear=NULL)
-  area_potirrig <- calcOutput("AreaPotIrrig", selectyears=selectyears, avlland_scen=avlland_scen, comagyear=NULL, aggregate=FALSE)
+  area_potirrig <- calcOutput("AreaPotIrrig", selectyears = selectyears, avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
   irrigarea_ww <- pmin(wat_avl_irrig_w / wat_req_ww, 1) * area_potirrig
-  irrigarea_ww[wat_req_ww==0] <- 0      # cells with no water requirements also get no irrigated area assigned
-  irrigarea_ww <- add_dimension(irrigarea_ww, dim=3.3, add="data", nm="irrigatable_ww")
+  irrigarea_ww[wat_req_ww == 0] <- 0      # cells with no water requirements also get no irrigated area assigned
+  irrigarea_ww <- add_dimension(irrigarea_ww, dim = 3.3, add = "data", nm = "irrigatable_ww")
 
   irrigarea_wc <- pmin(wat_avl_irrig_c / wat_req_wc, 1) * area_potirrig
-  irrigarea_wc[wat_req_wc==0] <- 0
-  irrigarea_wc <- add_dimension(irrigarea_wc, dim=3.3, add="data", nm="irrigatable_wc")
+  irrigarea_wc[wat_req_wc == 0] <- 0
+  irrigarea_wc <- add_dimension(irrigarea_wc, dim = 3.3, add = "data", nm = "irrigatable_wc")
 
   irrigatable_area <- pmin(collapseNames(irrigarea_ww), collapseNames(irrigarea_wc))
-  irrigatable_area <- add_dimension(irrigatable_area, dim=3.3, add="data", nm="irrigatable")
+  irrigatable_area <- add_dimension(irrigatable_area, dim = 3.3, add = "data", nm = "irrigatable")
 
   out <- mbind(irrigatable_area, irrigarea_ww, irrigarea_wc)
 
@@ -70,14 +73,14 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod, acce
   if (any(is.na(out))) {
     stop("produced NA irrigatable area")
   }
-  if (any(out<0)) {
+  if (any(out < 0)) {
     stop("produced negative irrigatable")
   }
 
   return(list(
-    x=out,
-    weight=NULL,
-    unit="mio. ha",
-    description="Area that can be irrigated given land and water constraints",
-    isocountries=FALSE))
+    x = out,
+    weight = NULL,
+    unit = "mio. ha",
+    description = "Area that can be irrigated given land and water constraints",
+    isocountries = FALSE))
 }

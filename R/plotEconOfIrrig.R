@@ -21,30 +21,33 @@
 #' @param proxycrop        proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotEconOfIrrig(x_axis_range=seq(0, 10000, by=100), scenario="ssp2") }
+#' \dontrun{
+#' plotEconOfIrrig(x_axis_range = seq(0, 10000, by = 100), scenario = "ssp2")
+#' }
 #'
 #' @importFrom ggplot2 ggplot geom_line geom_point aes_string ggtitle xlab ylab theme_bw
 #'
 #' @export
 
-plotEconOfIrrig <- function(region="GLO", x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat=TRUE, com_ag) {
+plotEconOfIrrig <- function(region = "GLO", x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat = TRUE, com_ag, multicropping) {
 
-  inputdata   <- reportEconOfIrrig(GT_range=x_axis_range, region=region, output=output, scenario=scenario, lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=yieldcalib,
-                                   allocationrule=allocationrule, thresholdtype=thresholdtype, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, proxycrop=proxycrop, potential_wat=TRUE, com_ag=com_ag)
+  inputdata   <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
   df          <- inputdata$data
   description <- inputdata$description
   unit        <- inputdata$unit
 
-  out <- ggplot(data=df, aes_string(x="GT")) +
-                geom_line(aes_string(y=paste("IrrigArea", "on", scenario, sep=".")),  color="darkblue")                    + geom_point(aes_string(y=paste("IrrigArea", "on", scenario, sep="."))) +
-                geom_line(aes_string(y=paste("IrrigArea", "off", scenario, sep=".")), color="darkred", linetype="twodash") + geom_point(aes_string(y=paste("IrrigArea", "off", scenario, sep="."))) +
-                theme_bw() +
-                ggtitle(paste0(description, " for yieldcalib = ", yieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab(unit)
+  out <- ggplot(data = df, aes_string(x = "GT")) +
+    geom_line(aes_string(y = paste("IrrigArea", "on", scenario, sep = ".")),  color = "darkblue")                    + geom_point(aes_string(y = paste("IrrigArea", "on", scenario, sep = "."))) +
+    geom_line(aes_string(y = paste("IrrigArea", "off", scenario, sep = ".")), color = "darkred", linetype = "twodash") + geom_point(aes_string(y = paste("IrrigArea", "off", scenario, sep = "."))) +
+    theme_bw() +
+    ggtitle(paste0(description, " for yieldcalib = ", yieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab(unit)
 
   return(out)
 }
