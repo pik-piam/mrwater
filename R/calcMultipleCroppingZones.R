@@ -31,7 +31,7 @@ calcMultipleCroppingZones <- function(layers = 3) {
     out[x == 0] <- 1 # where no data given single-cropping potential assumed
     out[x == 1] <- 1 # where no cropping takes place yet single-cropping potential assumed
     out[x == 2] <- 1 # single cropping -> single cropping
-    out[x == 3] <- 2 # limited double cropping -> double cropping        ###### OR 1????
+    out[x == 3] <- 1 # limited double cropping -> single cropping
     out[x == 4] <- 2 # double cropping -> double cropping
     out[x == 5] <- 2 # double cropping with rice -> double cropping
     out[x == 6] <- 2 # double rice cropping -> double cropping
