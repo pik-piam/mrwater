@@ -41,7 +41,8 @@ plotMapIrrigatableArea(
 
 \item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
-\item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
+\item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction:
+discharge that is exceeded x percent of the time on average throughout a year (Qx, e.g. Q75: 0.25, Q50: 0.5)}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
 

@@ -25,21 +25,21 @@
 calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary, iniyear, selectyears, proxycrop, yieldcalib, multicropping) {
 
   # read in cellular lpjml yields [in tons/ha]
-  yields     <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype, iniyear = iniyear, selectyears = selectyears, yieldcalib = yieldcalib, aggregate = FALSE)
+  yields <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype, iniyear = iniyear, selectyears = selectyears, yieldcalib = yieldcalib, aggregate = FALSE)
 
   if (multicropping) {
     # read in multiple cropping zones [3 layers: single, double, triple cropping]
-    mc         <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
+    mc     <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
     # correct yield potential for multicropping
     yields <- yields * mc
   }
 
   # yield gap (irrigated vs. rainfed) [in tons/ha]
   yield_gain <- collapseNames(yields[, , "irrigated"]) - collapseNames(yields[, , "rainfed"])
-  # (Note: irrigation may lead to shift in growing period -> tmp can have negative values; also: under N-stress, irrigation may lead to lower yields, the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
+  # (Note: irrigation may lead to shift in growing period -> can have negative values; also: under N-stress, irrigation may lead to lower yields, the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
 
   # magpie crops
-  croplist   <- getNames(yield_gain)
+  croplist <- getNames(yield_gain)
 
   if (monetary) {
     # Read in crop output price in initialization (USD05/tDM)
