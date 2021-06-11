@@ -42,12 +42,15 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
   if (com_ag == TRUE) {
     com_ag_1 <- TRUE
     com_ag_2 <- TRUE
+    comagyear <- iniyear
   } else if (com_ag == "only_discharge") {
     com_ag_1 <- FALSE
     com_ag_2 <- TRUE
+    comagyear <- NULL
   } else if (com_ag == FALSE) {
     com_ag_1 <- FALSE
     com_ag_2 <- FALSE
+    comagyear <- NULL
   }
 
   #######################################
@@ -73,7 +76,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, selectyears, output, clim
   discharge                   <- calcOutput("RiverDischargeNatAndHuman", lpjml = lpjml, selectyears = selectyears, iniyear = iniyear, climatetype = climatetype, EFRmethod = EFRmethod, com_ag = com_ag_2, aggregate = FALSE)
 
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, comagyear = iniyear, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, aggregate = FALSE)
+  required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, comagyear = comagyear, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, aggregate = FALSE)
   required_wat_fullirrig_ww   <- pmax(collapseNames(required_wat_fullirrig[, , "withdrawal"]), 0)
   required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[, , "consumption"]), 0)
 
