@@ -1,4 +1,4 @@
-#' @title       plotSensitivityEFRmethod
+#' @title       plotSensitivityMulticropping
 #' @description plot of irrigatable area depending on costs paid for irrigation for different water accessibility
 #'
 #' @param region           regional resolution (can be country iso-code, "GLO" for global,
@@ -44,7 +44,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' plotSensitivityEFRmethod(x_axis_range = seq(0, 10000, by = 100), scenario = "ssp2")
+#' plotSensitivityMulticropping(x_axis_range = seq(0, 10000, by = 100), scenario = "ssp2")
 #' }
 #'
 #' @importFrom ggplot2 ggplot geom_line geom_point aes ggtitle xlab ylab theme_bw theme element_text scale_color_brewer scale_x_continuous scale_y_continuous
@@ -52,7 +52,7 @@
 #'
 #' @export
 
-plotSensitivityEconOfIrrig <- function(x_axis_range, region = "GLO", output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat = TRUE, com_ag) {
+plotSensitivityMulticropping <- function(x_axis_range, region = "GLO", output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat = TRUE, com_ag) {
 
   MCTrue  <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
     EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
