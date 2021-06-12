@@ -98,10 +98,10 @@ plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "G
   }
 
   out <- ggplot(data = df, aes_string(y = "GT")) +
-    geom_line(aes_string(x = paste(x_axis, "on", scenario, "CurrCropland", sep = ".")),  color = "darkblue", linetype = "dotted", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "CurrCropland", sep = "."))) +
-    geom_line(aes_string(x = paste(x_axis, "off", scenario, "CurrCropland", sep = ".")), color = "darkred", linetype = "dotted", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "off", scenario, "CurrCropland", sep = "."))) +
-    geom_line(aes_string(x = paste(x_axis, "on", scenario, "PotCropland", sep = ".")),  color = "darkblue", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "PotCropland", sep = "."))) +
-    geom_line(aes_string(x = paste(x_axis, "off", scenario, "PotCropland", sep = ".")), color = "darkred", size = 1.1)  + geom_point(aes_string(x = paste(x_axis, "off", scenario, "PotCropland", sep = "."))) +
+    geom_line(aes_string(x = paste(x_axis, "on", scenario, "CurrCropland", sep = ".")),  color = "darkblue", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "CurrCropland", sep = "."))) +
+    geom_line(aes_string(x = paste(x_axis, "off", scenario, "CurrCropland", sep = ".")), color = "darkred", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "off", scenario, "CurrCropland", sep = "."))) +
+    geom_line(aes_string(x = paste(x_axis, "on", scenario, "PotCropland", sep = ".")),  color = "darkblue", linetype = "dotted", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "PotCropland", sep = "."))) +
+    geom_line(aes_string(x = paste(x_axis, "off", scenario, "PotCropland", sep = ".")), color = "darkred", linetype = "dotted", size = 1.1)  + geom_point(aes_string(x = paste(x_axis, "off", scenario, "PotCropland", sep = "."))) +
     theme_bw() +
     geom_vline(xintercept = as.numeric(current_fulfilled[, , paste("on", scenario, sep = ".")]), color = "blue", size = 1.01) +
     geom_vline(xintercept = as.numeric(current_fulfilled[, , paste("off", scenario, sep = ".")]), color = "red", size = 1.01) +
