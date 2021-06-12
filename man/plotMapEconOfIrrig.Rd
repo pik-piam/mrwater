@@ -28,7 +28,7 @@ plotMapEconOfIrrig(
 \arguments{
 \item{areacorrect}{TRUE: only cropland area > 0.01*cellarea are shown}
 
-\item{reference}{TRUE current irrigated areas are printed in grey as reference to predicted}
+\item{reference}{LUH or committed current irrigated areas are printed in grey as reference to predicted}
 
 \item{legend_scale}{Legend scale to be displayed: Mha (million hectares), Cellshare (share of cellarea), Areashare (share of area selected in avlland_scen)}
 

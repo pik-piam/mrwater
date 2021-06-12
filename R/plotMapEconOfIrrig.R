@@ -2,7 +2,7 @@
 #' @description plot of irrigatable area depending on costs paid for irrigation
 #'
 #' @param areacorrect      TRUE: only cropland area > 0.01*cellarea are shown
-#' @param reference        TRUE current irrigated areas are printed in grey as reference to predicted
+#' @param reference        LUH or committed current irrigated areas are printed in grey as reference to predicted
 #' @param legend_scale     Legend scale to be displayed: Mha (million hectares), Cellshare (share of cellarea), Areashare (share of area selected in avlland_scen)
 #' @param scenario         EFP and non-agricultural water use scenarios separate by "." (e.g. "on.ssp2")
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
@@ -119,13 +119,37 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
       strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
 
-  if (reference) {
-    xC              <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = FALSE, com_ag = com_ag, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  if (reference == "committed") {
+    xC              <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = FALSE, com_ag = TRUE, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
     xC[xC > 0]        <- TRUE
     xC[xC == 0]       <- FALSE
 
     if (areacorrect) {
-      xC[cellshare == 0]       <- NA
+      xC[cellshare == 0] <- NA
+    }
+
+    pC <- plotmap2(toolLPJcell2MAgPIEcell(xC), title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +
+      scale_fill_continuous(low = "transparent", high = "#00000080", na.value = "transparent") +
+      theme(title = element_blank(),
+        legend.position = "none",
+        panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
+
+    out <- cowplot::ggdraw() + cowplot::draw_plot(p3) + cowplot::draw_plot(p2) + cowplot::draw_plot(p1) + cowplot::draw_plot(pC)
+  } else if (reference == "LUH") {
+    xC <- dimSums(calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
+      physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
+    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+    map                    <- toolGetMappingCoord2Country()
+    getCells(xC)           <- paste(map$coords, map$iso, sep = ".")
+    names(dimnames(xC))[1] <- "x.y.iso"
+    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+    xC[xC > 0]        <- TRUE
+    xC[xC == 0]       <- FALSE
+
+    if (areacorrect) {
+      xC[cellshare == 0] <- NA
     }
 
     pC <- plotmap2(toolLPJcell2MAgPIEcell(xC), title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +

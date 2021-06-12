@@ -5,6 +5,7 @@
 \title{plotMapDiffValidation}
 \usage{
 plotMapDiffValidation(
+  reference,
   scenario,
   lpjml,
   climatetype,
@@ -23,6 +24,8 @@ plotMapDiffValidation(
 )
 }
 \arguments{
+\item{reference}{LUH or committed}
+
 \item{scenario}{Non-agricultural water use scenario}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}

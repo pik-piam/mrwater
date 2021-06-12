@@ -1,6 +1,7 @@
 #' @title       plotMapDiffValidation
 #' @description map of difference between potential irrigation and actual irrigation
 #'
+#' @param reference        LUH or committed
 #' @param scenario         Non-agricultural water use scenario
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
@@ -31,22 +32,36 @@
 #'
 #' @export
 
-plotMapDiffValidation <- function(scenario, lpjml, climatetype, selectyears, gainthreshold, rankmethod, proxycrop, yieldcalib, EFRmethod, accessibilityrule, allocationrule, thresholdtype, irrigationsystem, avlland_scen, multicropping) {
+plotMapDiffValidation <- function(reference, scenario, lpjml, climatetype, selectyears, gainthreshold, rankmethod, proxycrop, yieldcalib, EFRmethod, accessibilityrule, allocationrule, thresholdtype, irrigationsystem, avlland_scen, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for the map")
   }
 
   x1000 <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold,
-                                    selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                    EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                    thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
-                                    proxycrop = proxycrop, potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
-  xC    <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears,
-                                    climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
-                                    rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
-                                    irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = FALSE,
-                                    com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+    selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
+    EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+    thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+    proxycrop = proxycrop, potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  if (reference == "committed") {
+    xC  <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears,
+      climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+      rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
+      irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = FALSE,
+      com_ag = TRUE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  } else if (reference == "LUH") {
+    xC <- dimSums(calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
+      physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
+    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+    map                    <- toolGetMappingCoord2Country()
+    getCells(xC)           <- paste(map$coords, map$iso, sep = ".")
+    names(dimnames(xC))[1] <- "x.y.iso"
+    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+  } else {
+    stop("Please choose the reference scenario for difference map: committed or LUH")
+  }
+
+
   diff <- x1000 - xC
   diff[xC == 0] <- NA
 
