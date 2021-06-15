@@ -38,19 +38,21 @@ calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, cropmix,
   # Read in irrigation water requirement (withdrawals) (in m^3 per hectar per year) [smoothed and harmonized]
   # Note: Following D'Odorico et al. (2020), results refer to water withdrawals (because that's what one would pay for rather than for consumption)
   irrig_withdrawal <- calcOutput("IrrigWatRequirements", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears, aggregate = FALSE)
-  irrig_withdrawal <- collapseNames(irrig_withdrawal[, , "withdrawal"])
-  irrig_withdrawal <- irrig_withdrawal[, , intersect(gsub("[.].*", "", getNames(irrig_withdrawal)), getNames(yield_gain))]
+  irrig_withdrawal <- collapseNames(irrig_withdrawal[,,"withdrawal"])
+  irrig_withdrawal <- irrig_withdrawal[,,intersect(gsub("[.].*", "", getNames(irrig_withdrawal)), getNames(yield_gain))]
 
   # Read in irrigation system area initialization
   irrigation_system <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
 
   # Calculate irrigation water requirements
   IWR          <- dimSums((irrigation_system[,,] * irrig_withdrawal[,,]), dim = 3.1)
+  IWR          <- IWR[,,getNames(yield_gain)]
   # Note: Correction where IWR is small (close to 0)
-  IWR[IWR < 1] <- NA             ### CHOOSE APPROPRIATE THRESHOLD!
+  IWR[IWR < 1] <- 0             ### CHOOSE APPROPRIATE THRESHOLD! SET TO 0 or NA?
 
   # Calculate value of water
   watvalue <- yield_gain / IWR
+  watvalue[IWR==0] <- 0   #### SET TO 0 or NA?
 
   # Selected crops
   if (!is.null(cropmix)) {
