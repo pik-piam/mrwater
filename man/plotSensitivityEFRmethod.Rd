@@ -19,7 +19,7 @@ plotSensitivityEFRmethod(
   thresholdtype,
   irrigationsystem,
   avlland_scen,
-  proxycrop,
+  cropmix,
   potential_wat = TRUE,
   com_ag,
   multicropping
@@ -72,7 +72,9 @@ combination of land availability scenario and initialization year separated by "
 protection scenario separated by "_" (only relevant when potIrrig selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
-\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix}
 
 \item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
 

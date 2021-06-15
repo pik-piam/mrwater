@@ -9,23 +9,28 @@ calcIrrigWatValue(
   selectyears,
   climatetype,
   iniyear,
-  proxycrop,
+  cropmix,
   yieldcalib,
   multicropping
 )
 }
 \arguments{
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+\item{lpjml}{LPJmL version to be used}
 
-\item{selectyears}{years to be returned}
+\item{selectyears}{Years to be returned}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Climate model or historical baseline "GSWP3-W5E5:historical"}
 
-\item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices}
+\item{iniyear}{Initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices}
 
-\item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s) or NULL for all crops}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
+calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
+smoothed_calib}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
@@ -33,7 +38,9 @@ calcIrrigWatValue(
 magpie object in cellular resolution
 }
 \description{
-This function calculates the value of irrigation water (added value of water to the production process) based on yield gain, crop prices and irrigation water requirements
+This function calculates the value of irrigation water
+             (added value of water to the production process)
+             based on yield gain, crop prices and irrigation water requirements
 }
 \examples{
 \dontrun{

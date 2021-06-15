@@ -11,13 +11,14 @@ calcIrrigWatRequirements(selectyears, lpjml, climatetype)
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Climate model or historical baseline "GSWP3-W5E5:historical"}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
-This function calculates irrigation water requirements based on LPJmL blue water consumption of plants and considering irrigation efficiencies
+This function calculates irrigation water requirements based on
+             LPJmL blue water consumption of plants and considering irrigation efficiencies
 }
 \examples{
 \dontrun{ calcOutput("IrrigWatRequirements", aggregate=FALSE) }

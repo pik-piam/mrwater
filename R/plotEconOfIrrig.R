@@ -18,7 +18,9 @@
 #' @param avlland_scen     Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
 #'                         combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
 #'                         protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
-#' @param proxycrop        proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
+#' @param cropmix       cropmix for which irrigation yield improvement is calculated
+#'                      can be selection of proxycrop(s) for calculation of average yield gain
+#'                      or hist_irrig or hist_total for historical cropmix
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
@@ -35,10 +37,10 @@
 #'
 #' @export
 
-plotEconOfIrrig <- function(region = "GLO", x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, potential_wat = TRUE, com_ag, multicropping) {
+plotEconOfIrrig <- function(region = "GLO", x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
 
   inputdata   <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
   df          <- inputdata$data
   description <- inputdata$description
   unit        <- inputdata$unit

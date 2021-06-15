@@ -9,7 +9,7 @@ plotMapCellranking(
   climatetype,
   selectyears,
   rankmethod,
-  proxycrop,
+  cropmix,
   iniyear,
   yieldcalib,
   multicropping
@@ -29,7 +29,9 @@ plotMapCellranking(
 separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
                   FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
-\item{proxycrop}{proxycrop(s) or historical or NULL}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix}
 
 \item{iniyear}{Initialization year of irrigation system}
 

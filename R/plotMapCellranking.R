@@ -15,7 +15,9 @@
 #'                         "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE
 #'                         separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
 #'                                           FALSE: reduced potential of cell receives at later stage in allocation algorithm)
-#' @param proxycrop        proxycrop(s) or historical or NULL
+#' @param cropmix       cropmix for which irrigation yield improvement is calculated
+#'                      can be selection of proxycrop(s) for calculation of average yield gain
+#'                      or hist_irrig or hist_total for historical cropmix
 #' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
@@ -28,14 +30,14 @@
 #'
 #' @export
 
-plotMapCellranking <- function(lpjml, climatetype, selectyears, rankmethod, proxycrop, iniyear, yieldcalib, multicropping) {
+plotMapCellranking <- function(lpjml, climatetype, selectyears, rankmethod, cropmix, iniyear, yieldcalib, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for the map")
   }
 
   glocellrank  <- calcOutput("IrrigCellranking", lpjml = lpjml, climatetype = climatetype, cellrankyear = selectyears, method = rankmethod,
-                             proxycrop = proxycrop, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+                             cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
   if (length(glocellrank[, 1, 1]) > 67420) {
     glocellrank <- glocellrank[1:67420, , ]

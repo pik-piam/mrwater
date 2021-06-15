@@ -18,7 +18,9 @@
 #' @param avlland_scen     Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
 #'                         combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
 #'                         protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
-#' @param proxycrop        proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
+#' @param cropmix       cropmix for which irrigation yield improvement is calculated
+#'                      can be selection of proxycrop(s) for calculation of average yield gain
+#'                      or hist_irrig or hist_total for historical cropmix
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
@@ -36,7 +38,7 @@
 #'
 #' @export
 
-plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, proxycrop, com_ag, multicropping) {
+plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, com_ag, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -44,11 +46,11 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
 
   if (!requireNamespace("cowplot", quietly = TRUE)) stop("The package cowplot is required for plotting MapEconOfIrrig!")
 
-  x0              <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  x0              <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
   x0[x0 == 0]       <- NA
-  x500            <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 250, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  x500            <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 250, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
   x500[x500 == 0]   <- NA
-  x1000           <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 1500, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  x1000           <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 1500, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
   x1000[x1000 == 0] <- NA
 
   if (legend_scale == "Mha") {
@@ -120,7 +122,7 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
       strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
 
   if (reference == "committed") {
-    xC              <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, proxycrop = proxycrop, potential_wat = FALSE, com_ag = TRUE, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+    xC              <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
     xC[xC > 0]        <- TRUE
     xC[xC == 0]       <- FALSE
 

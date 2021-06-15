@@ -1,12 +1,19 @@
 #' @title       calcIrrigWatValue
-#' @description This function calculates the value of irrigation water (added value of water to the production process) based on yield gain, crop prices and irrigation water requirements
+#' @description This function calculates the value of irrigation water
+#'              (added value of water to the production process)
+#'              based on yield gain, crop prices and irrigation water requirements
 #'
-#' @param lpjml       LPJmL version required for respective inputs: natveg or crop
-#' @param selectyears years to be returned
-#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param iniyear     initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices
-#' @param proxycrop        historical crop mix pattern ("historical") or list of proxycrop(s) or NULL for all crops
-#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
+#' @param lpjml         LPJmL version to be used
+#' @param selectyears   Years to be returned
+#' @param climatetype   Climate model or historical baseline "GSWP3-W5E5:historical"
+#' @param iniyear       Initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices
+#' @param cropmix       cropmix for which irrigation yield improvement is calculated
+#'                      can be selection of proxycrop(s) for calculation of average yield gain
+#'                      or hist_irrig or hist_total for historical cropmix
+#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or
+#'                      calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+#'                      smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
+#'                      smoothed_calib
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
@@ -21,18 +28,16 @@
 #' calcOutput("IrrigWatValue", aggregate = FALSE)
 #' }
 #'
-calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, proxycrop, yieldcalib, multicropping) {
+calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, cropmix, yieldcalib, multicropping) {
   ## Note: Methodology for calculating value of water following D'Odorico et al. (2020)
 
   # Read in potential yield gain per cell (USD05 per ha)
-  yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears, proxycrop = NULL, monetary = TRUE, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
-
-  # Set negative yield_gains to 0 (Negative yield gains (i.e. fewer yields through irrigation) would result in water value of 0)
-  yield_gain[yield_gain < 0] <- 0
+  yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
+                           cropmix = NULL, monetary = TRUE, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
   # Read in irrigation water requirement (withdrawals) (in m^3 per hectar per year) [smoothed and harmonized]
   # Note: Following D'Odorico et al. (2020), results refer to water withdrawals (because that's what one would pay for rather than for consumption)
-  irrig_withdrawal <- calcOutput("IrrigWatRequirements", aggregate = FALSE, lpjml = lpjml, selectyears = iniyear, climatetype = climatetype)
+  irrig_withdrawal <- calcOutput("IrrigWatRequirements", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears, aggregate = FALSE)
   irrig_withdrawal <- collapseNames(irrig_withdrawal[, , "withdrawal"])
   irrig_withdrawal <- irrig_withdrawal[, , intersect(gsub("[.].*", "", getNames(irrig_withdrawal)), getNames(yield_gain))]
 
@@ -40,7 +45,7 @@ calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, proxycro
   irrigation_system <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
 
   # Calculate irrigation water requirements
-  IWR        <- dimSums((irrigation_system[, , ] * irrig_withdrawal[, , ]), dim = 3.1)
+  IWR          <- dimSums((irrigation_system[,,] * irrig_withdrawal[,,]), dim = 3.1)
   # Note: Correction where IWR is small (close to 0)
   IWR[IWR < 1] <- NA             ### CHOOSE APPROPRIATE THRESHOLD!
 
@@ -48,17 +53,14 @@ calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, proxycro
   watvalue <- yield_gain / IWR
 
   # Selected crops
-  if (!is.null(proxycrop)) {
+  if (!is.null(cropmix)) {
 
     # share of corp area by crop type
-    if (length(proxycrop) == 1 && proxycrop == "historical") {
+    if (length(cropmix) == 1 && grepl("hist", cropmix)) {
       # historical crop mix
       # read in total (irrigated + rainfed) croparea
-      croparea <- calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell", physical = TRUE, cellular = TRUE, irrigation = FALSE, aggregate = FALSE)
-
-      ### Note: Yield gain only given for 14 crops (begr, betr, cottn_pro, foddr, oilpalm missing)
-      # Reduce crops in croparea_shr
-      croparea <- croparea[, , getNames(watvalue)]
+      croparea <- calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell",
+                             physical = TRUE, cellular = TRUE, irrigation = FALSE, aggregate = FALSE)
 
       #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
       map                          <- toolGetMappingCoord2Country()
@@ -66,7 +68,17 @@ calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, proxycro
       names(dimnames(croparea))[1] <- "x.y.iso"
       #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
 
-      # historical share of crop types in total cropland per cell
+      if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "irrig") {
+        # irrigated croparea
+        croparea <- collapseNames(croparea[,,"irrigated"])
+      } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "total") {
+        # total croparea (irrigated + rainfed)
+        croparea <- dimSums(croparea, dim = "irrigation")
+      } else {
+        stop("Please select hist_irrig or hist_total when selecting the historical cropmix")
+      }
+
+      # historical share of crop types in cropland per cell
       croparea_shr <- croparea / dimSums(croparea, dim = 3)
       # correct NAs: where no current cropland available -> representative crops (maize, rapeseed, pulses) assumed as proxy
       rep_crops   <- c("maiz", "rapeseed", "puls_pro")
@@ -74,14 +86,14 @@ calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, proxycro
       croparea_shr[, , rep_crops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
       croparea_shr[, , other_crops][dimSums(croparea, dim = 3) == 0] <- 0
 
-      # average water value over histrical crops weighted with their croparea share
+      # average water value over historical crops weighted with their croparea share
       watvalue <- dimSums(croparea_shr * watvalue, dim = 3)
 
       description <- "Average yield improvement potential for crop types weighted with historical croparea share"
 
     } else {
-      # equal crop area share for each proxycrop assumed
-      watvalue    <- watvalue[, , proxycrop]
+      # Note: equal crop area share for each proxycrop assumed
+      watvalue    <- watvalue[,,cropmix]
       # calculate average water value over proxy crops
       watvalue    <- dimSums(watvalue, dim = 3) / length(getNames(watvalue))
 
@@ -94,13 +106,18 @@ calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, proxycro
 
   # Check for NAs
   if (any(is.na(watvalue))) {
-    stop("Function IrrigWatValue produced NAs")
+    stop("Function calcIrrigWatValue produced NAs")
+  }
+
+  # Check for negatives
+  if (any(round(watvalue) < 0)) {
+    stop("Function calcIrrigWatValue produced negative values")
   }
 
   return(list(
-    x = watvalue,
-    weight = NULL,
-    unit = "USD05 per m^3",
-    description = description,
+    x            = watvalue,
+    weight       = NULL,
+    unit         = "USD05 per m^3",
+    description  = description,
     isocountries = FALSE))
 }

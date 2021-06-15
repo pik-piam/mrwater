@@ -20,7 +20,7 @@ plotMapEconOfIrrig(
   thresholdtype,
   irrigationsystem,
   avlland_scen,
-  proxycrop,
+  cropmix,
   com_ag,
   multicropping
 )
@@ -58,7 +58,9 @@ plotMapEconOfIrrig(
 combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
 protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
-\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix}
 
 \item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
 

@@ -18,7 +18,7 @@ calcWaterPotUse(
   irrigationsystem,
   iniyear,
   avlland_scen,
-  proxycrop,
+  cropmix,
   com_ag,
   multicropping
 )
@@ -34,7 +34,7 @@ calcWaterPotUse(
 
 \item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
 
-\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxycrops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
 \item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
 
@@ -52,7 +52,9 @@ calcWaterPotUse(
 combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
 protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
-\item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix}
 
 \item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
 

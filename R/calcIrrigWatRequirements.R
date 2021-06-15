@@ -1,9 +1,10 @@
 #' @title       calcIrrigWatRequirements
-#' @description This function calculates irrigation water requirements based on LPJmL blue water consumption of plants and considering irrigation efficiencies
+#' @description This function calculates irrigation water requirements based on
+#'              LPJmL blue water consumption of plants and considering irrigation efficiencies
 #'
 #' @param selectyears Years to be returned
 #' @param lpjml       LPJmL version required for respective inputs: natveg or crop
-#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param climatetype Climate model or historical baseline "GSWP3-W5E5:historical"
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -18,8 +19,8 @@
 calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype) {
 
   sizelimit <- getOption("magclass_sizeLimit")
-  options(magclass_sizeLimit=1e+12)
-  on.exit(options(magclass_sizeLimit=sizelimit))
+  options(magclass_sizeLimit = 1e+12)
+  on.exit(options(magclass_sizeLimit = sizelimit))
 
   ##############################
   ######## Read in data ########
@@ -28,7 +29,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype) {
   LPJ2MAG       <- toolGetMapping( "MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
   ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr): [[[QUESTION: Smoothed & Harmonized? How to handle historical & harmonized?]]]
-  blue_water_consumption <- collapseNames(setYears(calcOutput("LPJmL_new", subtype="cwater_b", version=lpjml["crop"], climatetype=climatetype, stage="smoothed", aggregate=FALSE, years=selectyears), selectyears))
+  blue_water_consumption <- collapseNames(setYears(calcOutput("LPJmL_new", subtype = "cwater_b", version = lpjml["crop"], climatetype = climatetype, stage = "smoothed", aggregate = FALSE, years = selectyears), selectyears))
   names(dimnames(blue_water_consumption))[3] <- "crop"
   years       <- getYears(blue_water_consumption)
   cropnames   <- getNames(blue_water_consumption)
@@ -37,7 +38,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype) {
   ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
   #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
   ### Alternatively: use regional efficiencies from Sauer et al. (2010), Table 5,
-  field_efficiency                <- new.magpie(getCells(blue_water_consumption), years, sort(paste(systemnames, rep(cropnames,3), sep=".")), sets=c("x.y.iso", "year", "system.crop"))
+  field_efficiency                <- new.magpie(getCells(blue_water_consumption), years, sort(paste(systemnames, rep(cropnames, 3), sep=".")), sets = c("x.y.iso", "year", "system.crop"))
   field_efficiency[,,"drip"]      <- 0.88 # Sauer: 0.8-0.93
   field_efficiency[,,"sprinkler"] <- 0.78 # Sauer: 0.6-0.86
   field_efficiency[,,"surface"]   <- 0.52 # Sauer: 0.25-0.5
@@ -45,7 +46,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype) {
 
   ### Conveyance efficiency proxy [placeholder]
   #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-  conveyance_efficiency                <- new.magpie(getCells(blue_water_consumption), years, sort(paste(systemnames, rep(cropnames,3), sep=".")), sets=c("x.y.iso", "year", "system.crop"))
+  conveyance_efficiency                <- new.magpie(getCells(blue_water_consumption), years, sort(paste(systemnames, rep(cropnames, 3), sep = ".")), sets = c("x.y.iso", "year", "system.crop"))
   conveyance_efficiency[,,"drip"]      <- 0.95
   conveyance_efficiency[,,"sprinkler"] <- 0.95
   conveyance_efficiency[,,"surface"]   <- 0.7
@@ -69,26 +70,26 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype) {
   water_consumption      <- blue_water_consumption + 0.5 * conveyance_loss
 
   # Output: irrigation water requirements (consumption and withdrawals)
-  irrig_requirements <- new.magpie(cells_and_regions=getCells(water_consumption), years=getYears(water_consumption), names=getNames(water_consumption), sets=c("x.y.iso", "year", "crop.system"))
-  irrig_requirements <- add_dimension(irrig_requirements, dim=3.3, add="irrig_type", nm=c("consumption","withdrawal"))
+  irrig_requirements <- new.magpie(cells_and_regions = getCells(water_consumption), years = getYears(water_consumption), names = getNames(water_consumption), sets = c("x.y.iso", "year", "crop.system"))
+  irrig_requirements <- add_dimension(irrig_requirements, dim = 3.3, add = "irrig_type", nm = c("consumption","withdrawal"))
   irrig_requirements[,,"consumption"] <- water_consumption
   irrig_requirements[,,"withdrawal"]  <- water_withdrawal
 
   # Aggregate to MAgPIE crops
-  irrig_requirements  <- toolAggregate(irrig_requirements, LPJ2MAG, from="LPJmL", to="MAgPIE", dim=3.1, partrel=TRUE)
+  irrig_requirements  <- toolAggregate(irrig_requirements, LPJ2MAG, from = "LPJmL", to = "MAgPIE", dim = 3.1, partrel = TRUE)
 
   # Check for NAs and negative values
   if (any(is.na(irrig_requirements))) {
     stop("produced NA irrigation water requirements")
   }
-  if (any(irrig_requirements<0)) {
+  if (any(irrig_requirements < 0)) {
     stop("produced negative irrigation water requirements")
   }
 
   return(list(
-    x=irrig_requirements,
-    weight=NULL,
-    unit="m^3 per ha per yr",
-    description="Irrigation water requirements for irrigation for different crop types under different irrigation systems",
-    isocountries=FALSE))
+    x            = irrig_requirements,
+    weight       = NULL,
+    unit         = "m^3 per ha per yr",
+    description  = "Irrigation water requirements for irrigation for different crop types under different irrigation systems",
+    isocountries = FALSE))
 }

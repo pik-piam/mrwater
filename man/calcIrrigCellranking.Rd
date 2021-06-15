@@ -9,7 +9,7 @@ calcIrrigCellranking(
   climatetype,
   cellrankyear,
   method,
-  proxycrop,
+  cropmix,
   iniyear,
   yieldcalib,
   multicropping
@@ -24,7 +24,9 @@ calcIrrigCellranking(
 
 \item{method}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotential TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
-\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: list of proxycrops or "historical"}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix}
 
 \item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank and case of monetary=TRUE year of prices}
 

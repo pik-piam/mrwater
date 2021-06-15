@@ -11,15 +11,15 @@ calcFullIrrigationRequirement(
   comagyear,
   irrigationsystem,
   avlland_scen,
-  proxycrop
+  cropmix
 )
 }
 \arguments{
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Climate model or historical baseline "GSWP3-W5E5:historical"}
 
-\item{selectyears}{years to be returned}
+\item{selectyears}{Years to be returned}
 
 \item{comagyear}{if !NULL: already irrigated area is subtracted; if NULL: total potential land area is used; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea}
 
@@ -29,7 +29,9 @@ calcFullIrrigationRequirement(
 combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
 protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
-\item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix}
 }
 \value{
 magpie object in cellular resolution

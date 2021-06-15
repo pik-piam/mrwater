@@ -16,7 +16,9 @@
 #' @param allocationrule   Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
 #' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param proxycrop        proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually
+#' @param cropmix       cropmix for which irrigation yield improvement is calculated
+#'                      can be selection of proxycrop(s) for calculation of average yield gain
+#'                      or hist_irrig or hist_total for historical cropmix
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
@@ -35,18 +37,18 @@
 #'
 #' @export
 
-plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "GLO", scenario, lpjml, selectyears, iniyear, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, proxycrop, potential_wat = TRUE, com_ag, multicropping) {
+plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "GLO", scenario, lpjml, selectyears, iniyear, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, cropmix, potential_wat = TRUE, com_ag, multicropping) {
 
   # Main data
   inputdata   <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = x_axis, scenario = scenario,
     lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
     EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
     allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-    avlland_scen = "currCropland:2010", proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
+    avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
   tmp         <- inputdata$data
   names(tmp)[-1] <- paste(names(tmp)[-1], "CurrCropland", sep = ".")
   inputdata   <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = x_axis, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = TRUE,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010", proxycrop = proxycrop, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
   df          <- inputdata$data
   names(df)[-1] <- paste(names(df)[-1], "PotCropland", sep = ".")
   df          <- merge(df, tmp)
@@ -56,7 +58,7 @@ plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "G
   # Reference lines
   if (x_axis == "IrrigArea") {
     # Area that can be irrigated with committed agricultural uses
-    current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010", proxycrop = proxycrop, potential_wat = FALSE, com_ag = TRUE, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+    current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
     current_LUH <- dimSums(calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell", physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
     #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
     map                            <- toolGetMappingCoord2Country()

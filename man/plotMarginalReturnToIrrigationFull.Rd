@@ -20,7 +20,7 @@ plotMarginalReturnToIrrigationFull(
   allocationrule,
   thresholdtype,
   irrigationsystem,
-  proxycrop,
+  cropmix,
   potential_wat = TRUE,
   com_ag,
   multicropping
@@ -57,7 +57,9 @@ plotMarginalReturnToIrrigationFull(
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
-\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix}
 
 \item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
 

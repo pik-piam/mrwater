@@ -18,7 +18,7 @@ calcRiverSurplusDischargeAllocation(
   irrigationsystem,
   iniyear,
   avlland_scen,
-  proxycrop,
+  cropmix,
   yieldcalib,
   com_ag,
   multicropping
@@ -53,7 +53,9 @@ calcRiverSurplusDischargeAllocation(
 combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
 protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
-\item{proxycrop}{historical crop mix pattern ("historical") or list of proxycrop(s)}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix}
 
 \item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
 

@@ -10,25 +10,32 @@ calcIrrigYieldImprovementPotential(
   monetary,
   iniyear,
   selectyears,
-  proxycrop,
+  cropmix,
   yieldcalib,
   multicropping
 )
 }
 \arguments{
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+\item{lpjml}{LPJmL version required for yields}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
+\item{climatetype}{Climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
 
-\item{monetary}{yield improvement potential in tDM (FALSE, default) or priced yield improvement potential in USD05 (TRUE)}
+\item{monetary}{Yield improvement potential in tDM (FALSE, default) or
+priced yield improvement potential in USD05 (TRUE)}
 
-\item{iniyear}{year to be used when monetary activated}
+\item{iniyear}{initialization year for food price and cropmix area}
 
-\item{selectyears}{years to be returned by the function}
+\item{selectyears}{Years to be returned by the function}
 
-\item{proxycrop}{proxycrop(s) selected for crop mix specific calculations: average over proxycrop(s) yield gain. NULL returns all crops individually}
+\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+can be selection of proxycrop(s) for calculation of average yield gain
+or hist_irrig or hist_total for historical cropmix
+NULL returns all crops individually}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or smoothed_calib (not harmonized, but calibrated)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
+calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
+smoothed_calib (not harmonized, but calibrated)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
