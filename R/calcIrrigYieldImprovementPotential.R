@@ -78,10 +78,10 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary, ini
       names(dimnames(croparea))[1] <- "x.y.iso"
       #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
 
-      if (as.list(strsplit(cropmix, split="_"))[[1]][2]=="irrig") {
+      if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "irrig") {
         # irrigated croparea
         croparea <- collapseNames(croparea[,,"irrigated"])
-      } else if (as.list(strsplit(cropmix, split="_"))[[1]][2]=="total") {
+      } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "total") {
         # total croparea (irrigated + rainfed)
         croparea <- dimSums(croparea, dim = "irrigation")
       } else {

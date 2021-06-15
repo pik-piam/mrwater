@@ -60,7 +60,7 @@ calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, cropmix,
       # historical crop mix
       # read in total (irrigated + rainfed) croparea
       croparea <- calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell",
-                             physical = TRUE, cellular = TRUE, irrigation = FALSE, aggregate = FALSE)
+                             physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
 
       #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
       map                          <- toolGetMappingCoord2Country()
