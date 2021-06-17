@@ -1,7 +1,7 @@
 Package: mrwater
 Type: Package
 Title: madrat based MAgPIE Input Data Library
-Version: 0.5.152
+Version: 0.5.153
 Date: 2021-06-17
 Authors@R: c(person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = c("aut","cre")),
              person("Jens", "Heinke", email = "heinke@pik-potsdam.de", role = "aut"),
@@ -23,7 +23,6 @@ Imports:
     magpiesets,
     mstools, 
     ggplot2,
-    plotrix, 
     dplyr
 License: LGPL-3 | file LICENSE
 LazyData: no
@@ -34,5 +33,6 @@ Suggests:
     rmarkdown,
     testthat,
     cowplot,
+    plotrix, 
     covr
 VignetteBuilder: knitr

@@ -15,10 +15,13 @@ calcIrrigAreaCommitted(selectyears, iniyear)
 magpie object in cellular resolution
 }
 \description{
-calculates area reserved for irrigation based on area irrigated in initialization year and depreciation parameter
+calculates area reserved for irrigation based on area irrigated
+             in initialization year and depreciation parameter (set to 0.1)
 }
 \examples{
-\dontrun{ calcOutput("IrrigAreaCommitted", aggregate=FALSE) }
+\dontrun{
+calcOutput("IrrigAreaCommitted", aggregate = FALSE)
+}
 
 }
 \author{

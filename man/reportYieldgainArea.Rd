@@ -20,21 +20,25 @@ reportYieldgainArea(
 )
 }
 \arguments{
-\item{region}{regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)}
+\item{region}{Regional resolution (can be country iso-code, "GLO" for global, or
+region name and respective mapping "EUR:H12")}
 
-\item{GT_range}{range of x-axis (gainthreshold) to be depicted on the curve}
+\item{GT_range}{Range of gainthreshold}
 
 \item{scenario}{non-agricultural water use scenario to be displayed in plot}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
-\item{selectyears}{years for which irrigatable area is calculated}
+\item{selectyears}{Years for which irrigatable area is calculated}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
+calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
+smoothed_calib (smoothed LPJmL yield potentials, not harmonized, but calibrated as in calcYields)}
 
 \item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
@@ -42,7 +46,7 @@ reportYieldgainArea(
 combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
 protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
 
-\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+\item{cropmix}{Cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix}
 
@@ -52,7 +56,8 @@ or hist_irrig or hist_total for historical cropmix}
 magpie object in cellular resolution
 }
 \description{
-reports potentially irrigated area depending on gainthreshold and land constraint only
+reports potentially irrigated area depending on gainthreshold
+             and land constraint only
 }
 \examples{
 \dontrun{
