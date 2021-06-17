@@ -41,21 +41,21 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod, acce
   ## Read in water available for irrigation
   if (potential_wat) {
     wat_avl         <- calcOutput("WaterPotUse", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
-                                  accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
-                                  allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
-                                  iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+      accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
+      allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+      iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
     wat_avl_irrig_c <- collapseNames(wat_avl[, , "wat_ag_wc"])
     wat_avl_irrig_w <- collapseNames(wat_avl[, , "wat_ag_ww"])
   } else {
     wat_avl         <- calcOutput("RiverHumanUses", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears, iniyear = iniyear,
-                                  EFRmethod = EFRmethod, humanuse = "committed_agriculture", aggregate = FALSE)
+      EFRmethod = EFRmethod, humanuse = "committed_agriculture", aggregate = FALSE)
     wat_avl_irrig_c <- collapseNames(wat_avl[, , "currHuman_wc"])
     wat_avl_irrig_w <- collapseNames(wat_avl[, , "currHuman_ww"])
   }
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
   wat_req    <- calcOutput("FullIrrigationRequirement", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
-                           irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, comagyear = NULL, aggregate = FALSE)
+    irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, comagyear = NULL, aggregate = FALSE)
   wat_req_ww <- collapseNames(wat_req[, , "withdrawal"])
   wat_req_wc <- collapseNames(wat_req[, , "consumption"])
 
@@ -81,7 +81,7 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod, acce
     stop("produced NA irrigatable area")
   }
   if (any(out < 0)) {
-    stop("produced negative irrigatable")
+    stop("produced negative irrigatable area")
   }
 
   return(list(

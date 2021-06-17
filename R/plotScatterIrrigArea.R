@@ -32,7 +32,8 @@
 #'
 #' @importFrom luplot plotmap2
 #' @importFrom magclass collapseNames
-#' @importFrom ggplot2 ggplot geom_point theme scale_color_manual guide_legend guides
+#' @importFrom stats lm
+#' @importFrom ggplot2 ggplot geom_point theme scale_color_manual guide_legend guides geom_smooth geom_text
 #'
 #' @export
 
@@ -43,45 +44,53 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
   }
 
   croparea  <- calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
-                         physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
+    physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
   #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
   map                          <- toolGetMappingCoord2Country()
   getCells(croparea)           <- paste(map$coords, map$iso, sep = ".")
   names(dimnames(croparea))[1] <- "x.y.iso"
   #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-  irrigarea <- dimSums(croparea[,,"irrigated"], dim = 3)
+  irrigarea <- dimSums(croparea[, , "irrigated"], dim = 3)
   croparea  <- dimSums(croparea, dim = 3)
 
   irrigatablearea <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype,
-                                          accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                          thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE,
-                                          com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+    accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+    thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE,
+    com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
 
   # regionmapping
   mapping        <- toolGetMappingCoord2Country()
   mapping$coords <- paste(mapping$coords, mapping$iso, sep = ".")
-  regmap        <- toolGetMapping("regionmappingH12.csv")
-  names(regmap) <- c("Country", "iso", "reg")
+  regmap         <- toolGetMapping("regionmappingH12.csv")
+  names(regmap)  <- c("Country", "iso", "reg")
 
   mapping <- merge(regmap, mapping)
 
-  df <- data.frame(coord = mapping$coords, irrigarea = as.data.frame(irrigarea[mapping$coords,,])$Value, irrigatablearea = as.data.frame(irrigatablearea[mapping$coords,,])$Value, region = mapping$reg)
+  df <- data.frame(coord = mapping$coords, irrigarea = as.data.frame(irrigarea[mapping$coords, , ])$Value, irrigatablearea = as.data.frame(irrigatablearea[mapping$coords, , ])$Value, region = mapping$reg)
 
   if (region != "GLO") {
     df  <- df[df$region == region, ]
+    modelstat <- lm(irrigatablearea ~ irrigarea, data = df)
+    rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
     out <- ggplot(df, aes(x = irrigarea, y = irrigatablearea)) +
       geom_point(size = 0.9, na.rm = TRUE) +
+      geom_smooth(method = lm, na.rm = TRUE) +
+      geom_text(x = (max(df$irrigarea) - 0.1), y = max(df$irrigatablearea), label = paste0("Rsqured: ", rsquared)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
       ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
       theme_bw()
   } else {
+    modelstat <- lm(irrigatablearea ~ irrigarea, data = df)
+    rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
     out <- ggplot(df, aes(x = irrigarea, y = irrigatablearea, color = region)) +
       geom_point(size = 0.9, na.rm = TRUE) +
+      geom_smooth(method = lm, na.rm = TRUE) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
       ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
-      scale_color_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00" ,"#cab2d6", "#6a3d9a", "#ffff99", "#b15928")) +
+      scale_color_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#ffff99", "#b15928")) +
       guides(colour = guide_legend(override.aes = list(size = 5))) +
-      theme_bw()
+      theme_bw() +
+      ggtitle(paste0("Rsquared: ", rsquared))
   }
 
   return(out)
