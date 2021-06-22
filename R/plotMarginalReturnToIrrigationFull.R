@@ -70,34 +70,9 @@ plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "G
     current_fulfilled <- collapseNames(tmp[, , x_axis])
   }
 
-  if (region == "GLO") {
-    current_fulfilled <- dimSums(current_fulfilled, dim = 1)
-    current_LUH       <- dimSums(current_LUH, dim = 1)
-  } else {
-    map    <- str_split(region, ":")[[1]][2]
-    region <- str_split(region, ":")[[1]][1]
-
-    # aggregate to iso-countries
-    mapping        <- toolGetMappingCoord2Country()
-    mapping$coords <- paste(mapping$coords, mapping$iso, sep = ".")
-    current_fulfilled <- toolAggregate(current_fulfilled, rel = mapping, from = "coords", to = "iso", dim = 1)
-    current_fulfilled <- toolCountryFill(current_fulfilled, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
-    current_LUH <- toolAggregate(current_LUH, rel = mapping, from = "coords", to = "iso", dim = 1)
-    current_LUH <- toolCountryFill(current_LUH, fill = 0)
-
-    # aggregate to regions
-    if (!is.na(map) && map == "H12") {
-      regmap        <- toolGetMapping("regionmappingH12.csv")
-      names(regmap) <- c("Country", "iso", "reg")
-      current_fulfilled <- toolAggregate(current_fulfilled, rel = regmap, from = "iso", to = "reg", dim = 1)
-      current_LUH       <- toolAggregate(current_LUH, rel = regmap, from = "iso", to = "reg", dim = 1)
-    } else if (!is.na(map) && map != "H12") {
-      stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
-    }
-
-    current_fulfilled <- dimSums(current_fulfilled[region, , ], dim = 1)
-    current_LUH       <- dimSums(current_LUH[region, , ], dim = 1)
-  }
+  # sum up over regional dimension
+  current_fulfilled <- toolRegionSums(x = current_fulfilled, region = region)
+  current_LUH       <- toolRegionSums(x = current_LUH,       region = region)
 
   out <- ggplot(data = df, aes_string(y = "GT")) +
     geom_line(aes_string(x = paste(x_axis, "on", scenario, "CurrCropland", sep = ".")),  color = "darkblue", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "CurrCropland", sep = "."))) +

@@ -7,7 +7,6 @@
 reportYieldgainArea(
   region = "GLO",
   GT_range,
-  scenario,
   lpjml,
   selectyears,
   climatetype,
@@ -23,9 +22,8 @@ reportYieldgainArea(
 \item{region}{Regional resolution (can be country iso-code, "GLO" for global, or
 region name and respective mapping "EUR:H12")}
 
-\item{GT_range}{Range of gainthreshold}
-
-\item{scenario}{non-agricultural water use scenario to be displayed in plot}
+\item{GT_range}{Range of gainthreshold for calculation of potentially
+irrigated areas}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 

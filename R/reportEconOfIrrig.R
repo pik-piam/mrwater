@@ -52,7 +52,7 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
     d <- "Irrigatable Area"
     u <- "Irrigatable Area (Mha)"
   } else {
-    x <- collapseNames(calcOutput("WaterPotUse",      lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
+    x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)
     # (1 mio. = 1e+06)
@@ -60,31 +60,9 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
     d <- paste0("Water Use Potential")
     u <- paste0("Potential water use", output, "(km^3)")
   }
-  if (region == "GLO") {
-    x <- as.data.frame(dimSums(x, dim = 1))
 
-  } else {
-    map    <- str_split(region, ":")[[1]][2]
-    region <- str_split(region, ":")[[1]][1]
-
-    # aggregate to iso-countries
-    mapping        <- toolGetMappingCoord2Country()
-    mapping$coords <- paste(mapping$coords, mapping$iso, sep = ".")
-    x <- toolAggregate(x, rel = mapping, from = "coords", to = "iso", dim = 1)
-    x <- toolCountryFill(x, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
-
-    # aggregate to regions
-    if (!is.na(map) && map == "H12") {
-      regmap        <- toolGetMapping("regionmappingH12.csv")
-      names(regmap) <- c("Country", "iso", "reg")
-      x             <- toolAggregate(x, rel = regmap, from = "iso", to = "reg", dim = 1)
-    } else if (!is.na(map) && map != "H12") {
-      stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
-    }
-
-    x <- as.data.frame(dimSums(x[region, , ], dim = 1))
-  }
-
+  # sum up over regional dimension and create data frame
+  x  <- as.data.frame(toolRegionSums(x = x, region = region))
   df <- data.frame(EFP = x$Data1, Scen = x$Data2, GT0 = x$Value, stringsAsFactors = FALSE)
 
   if (GT_range[1] == 0) {
@@ -94,29 +72,14 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
   for (gainthreshold in GT_range) {
 
     if (output == "IrrigArea") {
-      x  <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+      x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
     } else {
-      x <- collapseNames(calcOutput("WaterPotUse",      lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
+      x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
       x <- x / 1000
     }
 
-    if (region == "GLO") {
-      x <- as.data.frame(dimSums(x, dim = 1))
-
-    } else {
-      # aggregate to iso-countries
-      x <- toolAggregate(x, rel = mapping, from = "coords", to = "iso", dim = 1)
-      x <- toolCountryFill(x, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
-
-      # aggregate to regions
-      if (!is.na(map) && map == "H12") {
-        x             <- toolAggregate(x, rel = regmap, from = "iso", to = "reg", dim = 1)
-      } else if (!is.na(map) && map != "H12") {
-        stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
-      }
-
-      x <- as.data.frame(dimSums(x[region, , ], dim = 1))
-    }
+    # sum up over regional dimension and create data frame
+    x  <- as.data.frame(toolRegionSums(x = x, region = region))
 
     tmp              <- data.frame(EFP = x$Data1, Scen = x$Data2, Value = x$Value)
     names(tmp)[3]    <- paste0("GT", gainthreshold)
@@ -129,5 +92,7 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
   df        <- data.frame(GT = as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = FALSE)
   df        <- as.data.frame(lapply(df, as.numeric))
 
-  return(list(data = df, description = d, unit = u))
+  return(list(data        = df,
+              description = d,
+              unit        = u))
 }

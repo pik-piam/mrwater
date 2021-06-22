@@ -39,7 +39,8 @@ calcMultipleCroppingZones <- function(layers = 3) {
     out[x == 8] <- 3 # triple rice cropping -> triple cropping
 
   } else {
-    stop("Selected number of layers is not available. Please select 8 for original GAEZ layers or 3 for reduced layers")
+    stop("Selected number of layers is not available.
+         Please select 8 for original GAEZ layers or 3 for reduced layers")
   }
 
   # Checks
@@ -48,9 +49,9 @@ calcMultipleCroppingZones <- function(layers = 3) {
   }
 
   return(list(
-    x = out,
-    weight = NULL,
-    unit = "1",
-    description = "multiple cropping zones",
+    x            = out,
+    weight       = NULL,
+    unit         = "1",
+    description  = "multiple cropping zones",
     isocountries = FALSE))
 }

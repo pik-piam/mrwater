@@ -4,8 +4,8 @@
 #'
 #' @param region        Regional resolution (can be country iso-code, "GLO" for global, or
 #'                      region name and respective mapping "EUR:H12")
-#' @param GT_range      Range of gainthreshold
-#' @param scenario      non-agricultural water use scenario to be displayed in plot
+#' @param GT_range      Range of gainthreshold for calculation of potentially
+#'                      irrigated areas
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years for which irrigatable area is calculated
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
@@ -37,42 +37,27 @@
 #'
 #' @export
 
-reportYieldgainArea <- function(region = "GLO", GT_range, scenario, lpjml, selectyears, climatetype, EFRmethod, yieldcalib, thresholdtype, avlland_scen, cropmix, multicropping) {
+reportYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
+                                climatetype, EFRmethod, yieldcalib, thresholdtype,
+                                avlland_scen, cropmix, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  x <- calcOutput("IrrigatableAreaUnlimited", selectyears = selectyears, avlland_scen = avlland_scen, lpjml = lpjml, climatetype = climatetype, cropmix = cropmix, yieldcalib = yieldcalib, thresholdtype = thresholdtype, gainthreshold = 0, multicropping = multicropping, aggregate = FALSE)
-  d <- "Irrigatable Area only considering land constraint"
-  u <- "Irrigatable Area (Mha)"
+  x <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = 0,
+                  selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,
+                  cropmix = cropmix, yieldcalib = yieldcalib,
+                  thresholdtype = thresholdtype, multicropping = multicropping,
+                  avlland_scen = avlland_scen, aggregate = FALSE)
+  d <- "Potentially Irrigated Area only considering land constraint"
+  u <- "Mha"
 
-  if (region == "GLO") {
-    x <- as.data.frame(dimSums(x, dim = 1))
+  # sum up over regional dimension
+  x  <- as.data.frame(toolRegionSums(x = x, region = region))
 
-  } else {
-    map    <- str_split(region, ":")[[1]][2]
-    region <- str_split(region, ":")[[1]][1]
-
-    # aggregate to iso-countries
-    mapping        <- toolGetMappingCoord2Country()
-    mapping$coords <- paste(mapping$coords, mapping$iso, sep = ".")
-    x <- toolAggregate(x, rel = mapping, from = "coords", to = "iso", dim = 1)
-    x <- toolCountryFill(x, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
-
-    # aggregate to regions
-    if (!is.na(map) && map == "H12") {
-      regmap        <- toolGetMapping("regionmappingH12.csv")
-      names(regmap) <- c("Country", "iso", "reg")
-      x             <- toolAggregate(x, rel = regmap, from = "iso", to = "reg", dim = 1)
-    } else if (!is.na(map) && map != "H12") {
-      stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
-    }
-
-    x <- as.data.frame(dimSums(x[region, , ], dim = 1))
-  }
-
-  df <- data.frame(EFP = x$Data1, Scen = x$Data2, GT0 = x$Value, stringsAsFactors = FALSE)
+  # create data frame
+  df <- data.frame(GT0 = x$Value, stringsAsFactors = FALSE)
 
   if (GT_range[1] == 0) {
     GT_range <- GT_range[-1]
@@ -80,36 +65,26 @@ reportYieldgainArea <- function(region = "GLO", GT_range, scenario, lpjml, selec
 
   for (gainthreshold in GT_range) {
 
-    x <- calcOutput("IrrigatableAreaUnlimited", selectyears = selectyears, avlland_scen = avlland_scen, lpjml = lpjml, climatetype = climatetype, cropmix = cropmix, yieldcalib = yieldcalib, thresholdtype = thresholdtype, gainthreshold = gainthreshold, multicropping = multicropping, aggregate = FALSE)
+    x <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = gainthreshold,
+                    selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,
+                    cropmix = cropmix, yieldcalib = yieldcalib,
+                    thresholdtype = thresholdtype, multicropping = multicropping,
+                    avlland_scen = avlland_scen, aggregate = FALSE)
 
-    if (region == "GLO") {
-      x <- as.data.frame(dimSums(x, dim = 1))
+    # sum up over regional dimension
+    x  <- as.data.frame(toolRegionSums(x = x, region = region))
 
-    } else {
-      # aggregate to iso-countries
-      x <- toolAggregate(x, rel = mapping, from = "coords", to = "iso", dim = 1)
-      x <- toolCountryFill(x, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
-
-      # aggregate to regions
-      if (!is.na(map) && map == "H12") {
-        x             <- toolAggregate(x, rel = regmap, from = "iso", to = "reg", dim = 1)
-      } else if (!is.na(map) && map != "H12") {
-        stop("Selected regionmapping is not yet available. Please select region and respective mapping via region argument: e.g. EUR:H12")
-      }
-
-      x <- as.data.frame(dimSums(x[region, , ], dim = 1))
-    }
-
-    tmp              <- data.frame(EFP = x$Data1, Scen = x$Data2, Value = x$Value)
-    names(tmp)[3]    <- paste0("GT", gainthreshold)
+    tmp              <- data.frame(GT0 = x$Value, stringsAsFactors = FALSE)
+    names(tmp)[1]    <- paste0("GT", gainthreshold)
     df               <- merge(df, tmp)
   }
 
-  df        <- data.frame(t(data.frame(Scen = paste("IrrigArea", df$EFP, df$Scen, sep = "."), df[-c(1, 2)])), stringsAsFactors = FALSE)
-  names(df) <- as.character(unlist(df[1, ]))
-  df        <- df[-1, ]
-  df        <- data.frame(GT = as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = FALSE)
-  df        <- as.data.frame(lapply(df, as.numeric))
+  df           <- data.frame(GT            = as.numeric(gsub("GT", "", names(df))),
+                             YieldGainArea = as.data.frame(t(df)))
+  names(df)[2] <- "YieldGainArea"
 
-  return(list(data = df, description = d, unit = u))
+  return(list(
+    data        = df,
+    description = d,
+    unit        = u))
 }

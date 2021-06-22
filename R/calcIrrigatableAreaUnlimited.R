@@ -1,21 +1,28 @@
 #' @title       calcIrrigatableAreaUnlimited
-#' @description calculates area that can potentially be irrigated given chosen land scenario and gainthreshold
+#' @description calculates area that can potentially be irrigated given chosen
+#'              land scenario and gainthreshold
 #'
-#' @param selectyears      years for which irrigatable area is calculated
-#' @param avlland_scen     Land availability scenario: current or potential;
-#'                         optional additionally: protection scenario in case of potential
-#'                         and initialization year of cropland area
-#'                         combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-#'                         protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
-#' @param lpjml            LPJmL version required for respective inputs: natveg or crop
-#' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param cropmix          cropmix for which irrigation yield improvement is calculated
-#'                         can be selection of proxycrop(s) for calculation of average yield gain
-#'                         or hist_irrig or hist_total for historical cropmix
-#' @param yieldcalib       FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
-#' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
-#' @param gainthreshold    Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
-#' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
+#' @param selectyears   years for which irrigatable area is calculated
+#' @param avlland_scen  Land availability scenario: current or potential;
+#'                      optional additionally: protection scenario in case of potential
+#'                      and initialization year of cropland area
+#'                      combination of land availability scenario and initialization year separated by ":"
+#'                      land availability scenario: currIrrig, currCropland, potIrrig
+#'                      protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                      WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param lpjml         LPJmL version required for respective inputs: natveg or crop
+#' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param cropmix       cropmix for which irrigation yield improvement is calculated
+#'                      can be selection of proxycrop(s) for calculation of average yield gain
+#'                      or hist_irrig or hist_total for historical cropmix
+#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or
+#'                      calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+#'                      smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
+#'                      smoothed_calibrated (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)
+#' @param thresholdtype Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm:
+#'                      TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
+#' @param gainthreshold Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -38,7 +45,7 @@ calcIrrigatableAreaUnlimited <- function(selectyears, avlland_scen, lpjml, clima
 
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears, cropmix = cropmix,
-    monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+                                          monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
   # remove areas below chosen gainthreshold
   area_potirrig[irrig_yieldgainpotential < gainthreshold] <- 0

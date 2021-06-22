@@ -14,28 +14,29 @@ plotHistShrCurrIrrigFulfilled(
 )
 }
 \arguments{
-\item{scenario}{EFP and non-agricultural water use scenario separated by "." (e.g. "on.ssp2")}
+\item{scenario}{EFP and non-agricultural water use scenario separated by "."
+(e.g. "on.ssp2")}
 
-\item{iniyear}{initialization year}
+\item{iniyear}{Initialization year for committed agricultural uses}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
-\item{selectyears}{years for which irrigatable area is calculated}
+\item{selectyears}{Year of plot (Note: one single year must be selected)}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Switch between different climate models or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:fair)}
 }
 \value{
 map of magpie cells
 }
 \description{
-plot map of share of current irrigation that can be fulfilled given surface water availability of the algorithm
+plots histogram of share of current irrigation that can be
+             fulfilled given water availability of the algorithm
+             weighted with irrigated area
 }
 \examples{
-\dontrun{
-plotHistShrCurrIrrigFulfilled()
-}
+\dontrun{ plotHistShrCurrIrrigFulfilled() }
 
 }
 \author{
