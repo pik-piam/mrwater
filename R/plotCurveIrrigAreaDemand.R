@@ -42,10 +42,10 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
   ## Main data: with water constraint
   # on current cropland
   inputdata <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = "IrrigArea", scenario = scenario,
-                                lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-                                EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
-                                allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
+                                  lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                                  EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
+                                  allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                  avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
   tmp            <- inputdata$data
   names(tmp)[-1] <- paste(names(tmp)[-1], "CurrCropland", sep = ".")
 
@@ -63,25 +63,27 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
 
   # Reference data: without water constraint
   tmp <- reportYieldgainArea(region = region, GT_range = y_axis_range, lpjml = lpjml,
-                             selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
-                             yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "currCropland:2010",
-                             cropmix = cropmix, multicropping = multicropping)
+                              selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
+                              yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "currCropland:2010",
+                              cropmix = cropmix, multicropping = multicropping)$data
+  names(tmp)[-1] <- paste(names(tmp)[-1], "CurrCropland", sep = ".")
   df   <- merge(df, tmp)
   tmp  <- reportYieldgainArea(region = region, GT_range = y_axis_range, lpjml = lpjml,
                               selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
                               yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "potIrrig_HalfEarth:2010",
-                              cropmix = cropmix, multicropping = multicropping)
+                              cropmix = cropmix, multicropping = multicropping)$data
+  names(tmp)[-1] <- paste(names(tmp)[-1], "PotCropland", sep = ".")
   df <- merge(df, tmp)
 
   ## Reference points
   # Area that can be irrigated with committed agricultural uses
   current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = 0,
-                                                selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
-                                                accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
-                                                rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                                thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                                avlland_scen = "currCropland:2010", cropmix = cropmix, multicropping = multicropping,
-                                                potential_wat = FALSE, com_ag = TRUE, aggregate = FALSE)[, , "irrigatable"])
+                                      selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
+                                      accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+                                      rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+                                      thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                      avlland_scen = "currCropland:2010", cropmix = cropmix, multicropping = multicropping,
+                                      potential_wat = FALSE, com_ag = TRUE, aggregate = FALSE)[, , "irrigatable"])
   # Area that is irrigated according to LUH
   current_LUH <- dimSums(calcOutput("Croparea", years = iniyear, sectoral = "kcr",
                                     cells = "lpjcell", physical = TRUE, cellular = TRUE,
@@ -101,7 +103,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
     # geom_line(aes_string(x = paste(x_axis, "off", scenario, "CurrCropland", sep = ".")), color = "darkred", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "off", scenario, "CurrCropland", sep = "."))) +
     # geom_line(aes_string(x = paste(x_axis, "on", scenario, "PotCropland", sep = ".")),  color = "darkblue", linetype = "dotted", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "PotCropland", sep = "."))) +
     # geom_line(aes_string(x = paste(x_axis, "off", scenario, "PotCropland", sep = ".")), color = "darkred", linetype = "dotted", size = 1.1)  + geom_point(aes_string(x = paste(x_axis, "off", scenario, "PotCropland", sep = "."))) +
-    # theme_bw() +
+    theme_bw() +
     # geom_point(x = as.numeric(current_fulfilled[, , paste("on", scenario, sep = ".")]), y = 0, color = "blue", size = 1.1) +
     # geom_text(aes(label=ifelse((x == as.numeric(current_fulfilled[, , paste("on", scenario, sep = ".")]) & y == 0), as.character("EFP on"), "")), hjust = 0, vjust = -0.5)
     # geom_point(x = as.numeric(current_fulfilled[, , paste("on", scenario, sep = ".")]), y = 0, color = "red", size = 1.1) +
@@ -110,5 +112,5 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
     # geom_text(aes(label=ifelse((x == as.numeric(current_LUH) & y == 0), as.character("LUH"), "")), hjust = 0, vjust = -0.5) +
     ggtitle(paste0("Marginal return to ", description)) + ylab("Monetary yield gain (USD/ha)") + xlab(unit)
 
- return(out)
+  return(out)
 }

@@ -10,7 +10,7 @@ toolRegionSums(x, region)
 \item{x}{magpie object to be summed up over first dimension}
 
 \item{region}{regional resolution (can be country iso-code, "GLO" for global,
-or region name and respective mapping "EUR:H12")#'}
+or region name and respective mapping "EUR:H12")}
 }
 \value{
 magpie object with regional sum
