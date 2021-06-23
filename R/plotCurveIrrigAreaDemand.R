@@ -43,7 +43,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
 
   ## Main data: with water constraint
   # on current cropland
-  inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, region = region, output = "IrrigArea",
+  inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub("*..\\.", "", scenario), region = region, output = "IrrigArea",
                        lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                        EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                        allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
