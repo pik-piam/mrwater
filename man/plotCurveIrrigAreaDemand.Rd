@@ -30,7 +30,8 @@ plotCurveIrrigAreaDemand(
 
 \item{region}{regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)}
 
-\item{scenario}{non-agricultural water use scenario to be displayed in plot}
+\item{scenario}{combination of EFP and non-agricultural water use scenario
+to be displayed in plot separated by "."}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 

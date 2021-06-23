@@ -4,7 +4,8 @@
 #'
 #' @param region           regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)
 #' @param y_axis_range     range of y-axis (monetary irrigation gain) to be depicted on the curve
-#' @param scenario         non-agricultural water use scenario to be displayed in plot
+#' @param scenario         combination of EFP and non-agricultural water use scenario
+#'                         to be displayed in plot separated by "."
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param iniyear          initialization year
@@ -33,7 +34,8 @@
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames
-#' @importFrom ggplot2 ggplot geom_line geom_vline geom_point aes_string ggtitle xlab ylab theme_bw geom_text
+#' @importFrom stats reshape
+#' @importFrom ggplot2 ggplot geom_line geom_vline geom_point aes_string ggtitle xlab ylab theme_bw geom_text xlim ylim
 #'
 #' @export
 
@@ -41,6 +43,18 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
 
   ## Main data: with water constraint
   # on current cropland
+  inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, region = region, output = "IrrigArea",
+                       lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                       EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
+                       allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                       avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+  tmp <- as.data.frame(inputdata)
+  tmp <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
+                    scen = paste(as.character(inputdata$Data2), as.character(inputdata$Data3), sep = "."),
+                    IrrigArea = inputdata$Value, stringsAsFactors = FALSE)
+
+  tmp <- reshape(tmp, idvar = "GT", timevar = "scen", direction = "wide")
+
   inputdata <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = "IrrigArea", scenario = scenario,
                                   lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                                   EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
@@ -58,7 +72,6 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
   df            <- inputdata$data
   names(df)[-1] <- paste(names(df)[-1], "PotCropland", sep = ".")
   df            <- merge(df, tmp)
-  description   <- inputdata$description
   unit          <- inputdata$unit
 
   # Reference data: without water constraint
@@ -99,18 +112,17 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
   current_LUH       <- toolRegionSums(x = current_LUH,       region = region)
 
   out <- ggplot(data = df, aes_string(y = "GT")) +
-    # geom_line(aes_string(x = paste("Potentially Irrigated Area on", scenario, "CurrCropland", sep = ".")),  color = "darkblue", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "CurrCropland", sep = "."))) +
-    # geom_line(aes_string(x = paste(x_axis, "off", scenario, "CurrCropland", sep = ".")), color = "darkred", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "off", scenario, "CurrCropland", sep = "."))) +
-    # geom_line(aes_string(x = paste(x_axis, "on", scenario, "PotCropland", sep = ".")),  color = "darkblue", linetype = "dotted", size = 1.1) + geom_point(aes_string(x = paste(x_axis, "on", scenario, "PotCropland", sep = "."))) +
-    # geom_line(aes_string(x = paste(x_axis, "off", scenario, "PotCropland", sep = ".")), color = "darkred", linetype = "dotted", size = 1.1)  + geom_point(aes_string(x = paste(x_axis, "off", scenario, "PotCropland", sep = "."))) +
+    geom_line(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = ".")), color = "darkgreen", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = "."))) +
+    geom_line(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = ".")), color = "darkred", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = "."))) +
+    geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = "."))) +
+    geom_line(aes_string(x = paste("YieldGainArea", "PotCropland", sep = ".")), color = "darkred", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = "."))) +
     theme_bw() +
-    # geom_point(x = as.numeric(current_fulfilled[, , paste("on", scenario, sep = ".")]), y = 0, color = "blue", size = 1.1) +
-    # geom_text(aes(label=ifelse((x == as.numeric(current_fulfilled[, , paste("on", scenario, sep = ".")]) & y == 0), as.character("EFP on"), "")), hjust = 0, vjust = -0.5)
-    # geom_point(x = as.numeric(current_fulfilled[, , paste("on", scenario, sep = ".")]), y = 0, color = "red", size = 1.1) +
-    # geom_text(aes(label=ifelse((x == as.numeric(current_fulfilled[, , paste("off", scenario, sep = ".")]) & y == 0), as.character("EFP off"), "")), hjust = 0, vjust = -0.5)
-    # geom_point(x = as.numeric(current_fulfilled[, , paste("on", scenario, sep = ".")]), y = 0, color = "blue", size = 1.1) +
-    # geom_text(aes(label=ifelse((x == as.numeric(current_LUH) & y == 0), as.character("LUH"), "")), hjust = 0, vjust = -0.5) +
-    ggtitle(paste0("Marginal return to ", description)) + ylab("Monetary yield gain (USD/ha)") + xlab(unit)
+    scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100), limits = c(0, 4000)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
+    geom_point(x = as.numeric(current_fulfilled[, , paste("on", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "blue", size = 2) +
+    geom_point(x = as.numeric(current_fulfilled[, , paste("off", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "red", size = 2) +
+    geom_point(x = as.numeric(current_LUH), y = 0, color = "black", size = 2) +
+    ggtitle("Irrigation Area Demand Curve") + ylab("Monetary yield gain (USD/ha)") + xlab(unit)
 
   return(out)
 }

@@ -8,7 +8,6 @@ calcEconOfIrrig(
   region = "GLO",
   output,
   GT_range,
-  scenario,
   lpjml,
   selectyears,
   climatetype,
@@ -27,13 +26,13 @@ calcEconOfIrrig(
 )
 }
 \arguments{
-\item{region}{regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)}
+\item{region}{regional resolution (can be country iso-code,
+region name and respective mapping "EUR:H12", "GLO" for global)}
 
-\item{output}{output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"}
+\item{output}{output to be displayed: irrigated area "IrrigArea" or
+available water volume "wat_ag_ww" "wat_ag_wc"}
 
 \item{GT_range}{range of x-axis (gainthreshold) to be depicted on the curve}
-
-\item{scenario}{non-agricultural water use scenario to be displayed in plot}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
@@ -65,7 +64,8 @@ or hist_irrig or hist_total for historical cropmix}
 
 \item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
 
-\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
+\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
+if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
@@ -77,7 +77,9 @@ calculates potentially irrigated area for different gainthresholds
              subject to land and water constraints
 }
 \examples{
-\dontrun{ calcEconOfIrrig(region = "GLO", aggregate = FALSE) }
+\dontrun{
+calcEconOfIrrig(region = "GLO", aggregate = FALSE)
+}
 
 }
 \author{
