@@ -1,4 +1,4 @@
-#' @title       reportYieldgainArea
+#' @title       calcYieldgainArea
 #' @description reports potentially irrigated area depending on gainthreshold
 #'              and land constraint only
 #'
@@ -13,11 +13,12 @@
 #' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or
 #'                      calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
 #'                      smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-#'                      smoothed_calib (smoothed LPJmL yield potentials, not harmonized, but calibrated as in calcYields)
-#' @param thresholdtype Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
-#' @param avlland_scen  Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-#'                      combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-#'                      protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
+#'                      smoothed_calib (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)
+#' @param thresholdtype TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
+#' @param avlland_scen  Land availability scenario (currCropland, currIrrig, potIrrig)
+#'                      combination of land availability scenario and initialization year separated by ":".
+#'                      protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                      WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix       Cropmix for which irrigation yield improvement is calculated
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
 #'                      or hist_irrig or hist_total for historical cropmix
@@ -28,7 +29,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' reportYieldgainArea(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
+#' calcYieldgainArea(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
 #' }
 #'
 #' @importFrom madrat calcOutput
@@ -37,7 +38,7 @@
 #'
 #' @export
 
-reportYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
+calcYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
                                 climatetype, EFRmethod, yieldcalib, thresholdtype,
                                 avlland_scen, cropmix, multicropping) {
 
@@ -54,10 +55,9 @@ reportYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
   u <- "Mha"
 
   # sum up over regional dimension
-  x  <- as.data.frame(toolRegionSums(x = x, region = region))
+  x <- toolRegionSums(x = x, region = region)
+  x <- add_dimension(x, dim = 3.1, add = "GT", nm = "0")
 
-  # create data frame
-  df <- data.frame(GT0 = x$Value, stringsAsFactors = FALSE)
 
   if (GT_range[1] == 0) {
     GT_range <- GT_range[-1]
@@ -65,26 +65,24 @@ reportYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
 
   for (gainthreshold in GT_range) {
 
-    x <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = gainthreshold,
+    tmp <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = gainthreshold,
                     selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,
                     cropmix = cropmix, yieldcalib = yieldcalib,
                     thresholdtype = thresholdtype, multicropping = multicropping,
                     avlland_scen = avlland_scen, aggregate = FALSE)
 
     # sum up over regional dimension
-    x  <- as.data.frame(toolRegionSums(x = x, region = region))
+    tmp <- toolRegionSums(x = tmp, region = region)
+    tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
 
-    tmp              <- data.frame(GT0 = x$Value, stringsAsFactors = FALSE)
-    names(tmp)[1]    <- paste0("GT", gainthreshold)
-    df               <- merge(df, tmp)
+    x   <- mbind(x, tmp)
   }
 
-  df           <- data.frame(GT            = as.numeric(gsub("GT", "", names(df))),
-                             YieldGainArea = as.data.frame(t(df)))
-  names(df)[2] <- "YieldGainArea"
+  out <- collapseNames(x)
 
-  return(list(
-    data        = df,
-    description = d,
-    unit        = u))
+  return(list(x            = out,
+              weight       = NULL,
+              unit         = u,
+              description  = d,
+              isocountries = FALSE))
 }

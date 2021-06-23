@@ -48,43 +48,41 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
                        EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                        allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                        avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
-  tmp <- as.data.frame(inputdata)
-  tmp <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
-                    scen = paste(as.character(inputdata$Data2), as.character(inputdata$Data3), sep = "."),
+  inputdata <- as.data.frame(inputdata)
+  df <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
+                    scen = as.character(inputdata$Data2),
                     IrrigArea = inputdata$Value, stringsAsFactors = FALSE)
 
-  tmp <- reshape(tmp, idvar = "GT", timevar = "scen", direction = "wide")
-
-  inputdata <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = "IrrigArea", scenario = scenario,
-                                  lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-                                  EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
-                                  allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                  avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
-  tmp            <- inputdata$data
-  names(tmp)[-1] <- paste(names(tmp)[-1], "CurrCropland", sep = ".")
+  df            <- reshape(df, idvar = "GT", timevar = "scen", direction = "wide")
+  names(df)[-1] <- paste(names(df)[-1], "CurrCropland", sep = ".")
 
   # on potential cropland
-  inputdata <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = "IrrigArea", scenario = scenario,
-                                lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-                                EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = TRUE,
-                                allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
-  df            <- inputdata$data
-  names(df)[-1] <- paste(names(df)[-1], "PotCropland", sep = ".")
-  df            <- merge(df, tmp)
-  unit          <- inputdata$unit
+  inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub("*..\\.", "", scenario), region = region, output = "IrrigArea",
+                          lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                          EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
+                          allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                          avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+  inputdata <- as.data.frame(inputdata)
+  tmp <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
+                    scen = as.character(inputdata$Data2),
+                    IrrigArea = inputdata$Value, stringsAsFactors = FALSE)
+
+  tmp            <- reshape(tmp, idvar = "GT", timevar = "scen", direction = "wide")
+  names(tmp)[-1] <- paste(names(tmp)[-1], "PotCropland", sep = ".")
+
+  df             <- merge(df, tmp)
 
   # Reference data: without water constraint
-  tmp <- reportYieldgainArea(region = region, GT_range = y_axis_range, lpjml = lpjml,
+  tmp <- calcOutput("YieldgainArea", region = region, GT_range = y_axis_range, lpjml = lpjml,
                               selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
                               yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "currCropland:2010",
-                              cropmix = cropmix, multicropping = multicropping)$data
+                              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
   names(tmp)[-1] <- paste(names(tmp)[-1], "CurrCropland", sep = ".")
   df   <- merge(df, tmp)
-  tmp  <- reportYieldgainArea(region = region, GT_range = y_axis_range, lpjml = lpjml,
+  tmp  <- calcOutput("YieldgainArea", region = region, GT_range = y_axis_range, lpjml = lpjml,
                               selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
                               yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "potIrrig_HalfEarth:2010",
-                              cropmix = cropmix, multicropping = multicropping)$data
+                              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
   names(tmp)[-1] <- paste(names(tmp)[-1], "PotCropland", sep = ".")
   df <- merge(df, tmp)
 
@@ -122,7 +120,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
     geom_point(x = as.numeric(current_fulfilled[, , paste("on", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "blue", size = 2) +
     geom_point(x = as.numeric(current_fulfilled[, , paste("off", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "red", size = 2) +
     geom_point(x = as.numeric(current_LUH), y = 0, color = "black", size = 2) +
-    ggtitle("Irrigation Area Demand Curve") + ylab("Monetary yield gain (USD/ha)") + xlab(unit)
+    ggtitle("Irrigation Area Demand Curve") + ylab("Monetary yield gain (USD/ha)") + xlab("Potentially irrigated area (Mha)")
 
   return(out)
 }
