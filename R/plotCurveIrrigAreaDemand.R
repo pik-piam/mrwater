@@ -23,6 +23,8 @@
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
+#' @param display          specifies whether current cropland, potential cropland
+#'                         or both should be displayed in the graph
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -39,7 +41,7 @@
 #'
 #' @export
 
-plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpjml, selectyears, iniyear, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, cropmix, potential_wat = TRUE, com_ag, multicropping) {
+plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpjml, selectyears, iniyear, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, cropmix, potential_wat = TRUE, com_ag, multicropping, display) {
 
   ## Main data: with water constraint
   # on current cropland
@@ -109,18 +111,54 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
   current_fulfilled <- toolRegionSums(x = current_fulfilled, region = region)
   current_LUH       <- toolRegionSums(x = current_LUH,       region = region)
 
-  out <- ggplot(data = df, aes_string(y = "GT")) +
-    geom_line(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = ".")), color = "darkgreen", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = "."))) +
-    geom_line(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = ".")), color = "darkred", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = "."))) +
-    geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = "."))) +
-    geom_line(aes_string(x = paste("YieldGainArea", "PotCropland", sep = ".")), color = "darkred", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = "."))) +
-    theme_bw() +
-    scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100), limits = c(0, 4000)) +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
-    geom_point(x = as.numeric(current_fulfilled[, , paste("on", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "blue", size = 2) +
-    geom_point(x = as.numeric(current_fulfilled[, , paste("off", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "red", size = 2) +
-    geom_point(x = as.numeric(current_LUH), y = 0, color = "black", size = 2) +
-    ggtitle("Irrigation Area Demand Curve") + ylab("Monetary yield gain (USD/ha)") + xlab("Potentially irrigated area (Mha)")
+  if (display == "currCropland") {
+
+    out <- ggplot(data = df, aes_string(y = "GT")) +
+      geom_line(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = ".")), color = "darkgreen", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = "."))) +
+      geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = "."))) +
+      theme_bw() +
+      scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100), limits = c(0, 4000)) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
+      geom_point(x = as.numeric(current_fulfilled[, , paste("on", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "blue", size = 2) +
+      geom_point(x = as.numeric(current_fulfilled[, , paste("off", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "red", size = 2) +
+      geom_point(x = as.numeric(current_LUH), y = 0, color = "black", size = 2) +
+      ggtitle("Irrigation Area Demand Curve on current Cropland") + ylab("Monetary yield gain (USD/ha)") + xlab("Potentially irrigated area (Mha)")
+
+
+  } else if (display == "potCropland") {
+
+    out <- ggplot(data = df, aes_string(y = "GT")) +
+      geom_line(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = ".")), color = "darkred", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = "."))) +
+      geom_line(aes_string(x = paste("YieldGainArea", "PotCropland", sep = ".")), color = "darkred", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = "."))) +
+      theme_bw() +
+      scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100), limits = c(0, 4000)) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
+      geom_point(x = as.numeric(current_fulfilled[, , paste("on", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "blue", size = 2) +
+      geom_point(x = as.numeric(current_fulfilled[, , paste("off", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "red", size = 2) +
+      geom_point(x = as.numeric(current_LUH), y = 0, color = "black", size = 2) +
+      ggtitle("Irrigation Area Demand Curve on Potential Cropland") + ylab("Monetary yield gain (USD/ha)") + xlab("Potentially irrigated area (Mha)")
+
+
+  } else if (display == "curr+potCropland") {
+
+    out <- ggplot(data = df, aes_string(y = "GT")) +
+      geom_line(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = ".")), color = "darkgreen", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = "."))) +
+      geom_line(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = ".")), color = "darkred", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = "."))) +
+      geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "CurrCropland", sep = "."))) +
+      geom_line(aes_string(x = paste("YieldGainArea", "PotCropland", sep = ".")), color = "darkred", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", scenario, "PotCropland", sep = "."))) +
+      theme_bw() +
+      scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100), limits = c(0, 4000)) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
+      geom_point(x = as.numeric(current_fulfilled[, , paste("on", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "blue", size = 2) +
+      geom_point(x = as.numeric(current_fulfilled[, , paste("off", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "red", size = 2) +
+      geom_point(x = as.numeric(current_LUH), y = 0, color = "black", size = 2) +
+      ggtitle("Irrigation Area Demand Curve") + ylab("Monetary yield gain (USD/ha)") + xlab("Potentially irrigated area (Mha)")
+
+  } else {
+    stop("Please choose if current (currCropland), potential (potCropland) or
+         both (curr+potCropland) should be displayed in the graph")
+  }
+
 
   return(out)
 }

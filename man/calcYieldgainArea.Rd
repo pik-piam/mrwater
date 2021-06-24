@@ -36,13 +36,14 @@ irrigated areas}
 \item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
 calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
 smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-smoothed_calib (smoothed LPJmL yield potentials, not harmonized, but calibrated as in calcYields)}
+smoothed_calib (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)}
 
 \item{thresholdtype}{TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
-\item{avlland_scen}{Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
+\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+combination of land availability scenario and initialization year separated by ":".
+protection scenario separated by "_" (only relevant when potIrrig selected):
+WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{cropmix}{Cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain

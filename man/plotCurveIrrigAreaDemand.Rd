@@ -22,7 +22,8 @@ plotCurveIrrigAreaDemand(
   cropmix,
   potential_wat = TRUE,
   com_ag,
-  multicropping
+  multicropping,
+  display
 )
 }
 \arguments{
@@ -64,6 +65,9 @@ or hist_irrig or hist_total for historical cropmix}
 \item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
+
+\item{display}{specifies whether current cropland, potential cropland
+or both should be displayed in the graph}
 }
 \value{
 magpie object in cellular resolution

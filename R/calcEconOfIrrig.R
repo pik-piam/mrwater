@@ -78,6 +78,22 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
     u <- "km^3"
   }
 
+  # separation of multicropping layers and combine to one magpie object
+  if (multicropping) {
+
+    mc <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
+    x1 <- x2 <- x3 <- x
+    x1[mc[, , "irrigated"] != 1] <- 0
+    x1 <- add_dimension(x1, dim = 3.1, add = "MC", nm = "mc1")
+    x2[mc[, , "irrigated"] != 2] <- 0
+    x2 <- add_dimension(x2, dim = 3.1, add = "MC", nm = "mc2")
+    x3[mc[, , "irrigated"] != 3] <- 0
+    x3 <- add_dimension(x3, dim = 3.1, add = "MC", nm = "mc3")
+
+    x <- mbind(x1, x2, x3)
+
+  }
+
   # sum up over regional dimension and create data frame
   x <- toolRegionSums(x = x, region = region)
   x <- add_dimension(x, dim = 3.1, add = "GT", nm = "0")
@@ -107,6 +123,21 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
       tmp <- tmp / 1000
     }
 
+    # separation of multicropping layers and combine to one magpie object
+    if (multicropping) {
+
+      tmp1 <- tmp2 <- tmp3 <- tmp
+      tmp1[mc[, , "irrigated"] != 1] <- 0
+      tmp1 <- add_dimension(tmp1, dim = 3.1, add = "MC", nm = "mc1")
+      tmp2[mc[, , "irrigated"] != 2] <- 0
+      tmp2 <- add_dimension(tmp2, dim = 3.1, add = "MC", nm = "mc2")
+      tmp3[mc[, , "irrigated"] != 3] <- 0
+      tmp3 <- add_dimension(tmp3, dim = 3.1, add = "MC", nm = "mc3")
+
+      tmp <- mbind(tmp1, tmp2, tmp3)
+
+    }
+
     # sum up over regional dimension and create data frame
     tmp <- toolRegionSums(x = tmp, region = region)
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
@@ -115,7 +146,12 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
   }
 
   out          <- x
-  getSets(out) <- c("region", "year", "GT", "EFP")
+  if (multicropping) {
+    getSets(out) <- c("region", "year", "GT", "MC", "EFP")
+
+  } else {
+    getSets(out) <- c("region", "year", "GT", "EFP")
+  }
 
   return(list(x            = out,
               weight       = NULL,
