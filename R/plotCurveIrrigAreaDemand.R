@@ -166,10 +166,10 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpj
       geom_line(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "addMC0", "CurrCropland", sep = ".")), color = "black", linetype = "solid", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "addMC0", "CurrCropland", sep = "."))) +
       geom_line(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "addMC1", "CurrCropland", sep = ".")), color = "black", linetype = "longdash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "addMC1", "CurrCropland", sep = "."))) +
       geom_line(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "addMC2", "CurrCropland", sep = ".")), color = "black", linetype = "dotdash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "addMC2", "CurrCropland", sep = "."))) +
-      geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", "CurrCropland", sep = "."))) +
+      #geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = "."))) +
       theme_bw() +
-      scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100), limits = c(0, 4000)) +
-      scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
+      #scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100), limits = c(0, 4000)) +
+      #scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
       geom_point(x = as.numeric(current_fulfilled[, , paste("on", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "blue", size = 2) +
       geom_point(x = as.numeric(current_fulfilled[, , paste("off", gsub("*..\\.", "", scenario), sep = ".")]), y = 0, color = "red", size = 2) +
       geom_point(x = as.numeric(current_LUH), y = 0, color = "black", size = 2) +
