@@ -33,7 +33,7 @@
 #' }
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass dimSums collapseNames
+#' @importFrom magclass collapseNames
 #' @importFrom stringr str_split
 #'
 #' @export

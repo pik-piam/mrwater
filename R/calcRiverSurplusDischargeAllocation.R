@@ -24,7 +24,7 @@
 #' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears dimSums
+#' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears
 #' @importFrom stringr str_split
 #'
 #' @return magpie object in cellular resolution
