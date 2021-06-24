@@ -82,13 +82,14 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
   if (multicropping) {
 
     mc <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
+    mc <- mc[, , "irrigated"] - mc[, , "rainfed"]
     x1 <- x2 <- x3 <- x
-    x1[mc[, , "irrigated"] != 1] <- 0
-    x1 <- add_dimension(x1, dim = 3.1, add = "MC", nm = "mc1")
-    x2[mc[, , "irrigated"] != 2] <- 0
-    x2 <- add_dimension(x2, dim = 3.1, add = "MC", nm = "mc2")
-    x3[mc[, , "irrigated"] != 3] <- 0
-    x3 <- add_dimension(x3, dim = 3.1, add = "MC", nm = "mc3")
+    x1[mc != 0] <- 0
+    x1 <- add_dimension(x1, dim = 3.1, add = "MC", nm = "addMC0")
+    x2[mc != 1] <- 0
+    x2 <- add_dimension(x2, dim = 3.1, add = "MC", nm = "addMC1")
+    x3[mc != 2] <- 0
+    x3 <- add_dimension(x3, dim = 3.1, add = "MC", nm = "addMC2")
 
     x <- mbind(x1, x2, x3)
 
@@ -127,12 +128,12 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
     if (multicropping) {
 
       tmp1 <- tmp2 <- tmp3 <- tmp
-      tmp1[mc[, , "irrigated"] != 1] <- 0
-      tmp1 <- add_dimension(tmp1, dim = 3.1, add = "MC", nm = "mc1")
-      tmp2[mc[, , "irrigated"] != 2] <- 0
-      tmp2 <- add_dimension(tmp2, dim = 3.1, add = "MC", nm = "mc2")
-      tmp3[mc[, , "irrigated"] != 3] <- 0
-      tmp3 <- add_dimension(tmp3, dim = 3.1, add = "MC", nm = "mc3")
+      tmp1[mc != 0] <- 0
+      tmp1 <- add_dimension(tmp1, dim = 3.1, add = "MC", nm = "addMC0")
+      tmp2[mc != 1] <- 0
+      tmp2 <- add_dimension(tmp2, dim = 3.1, add = "MC", nm = "addMC1")
+      tmp3[mc != 2] <- 0
+      tmp3 <- add_dimension(tmp3, dim = 3.1, add = "MC", nm = "addMC2")
 
       tmp <- mbind(tmp1, tmp2, tmp3)
 
@@ -145,7 +146,8 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
     x   <- mbind(x, tmp)
   }
 
-  out          <- x
+  out <- x
+
   if (multicropping) {
     getSets(out) <- c("region", "year", "GT", "MC", "EFP")
 
