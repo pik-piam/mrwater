@@ -6,7 +6,8 @@
 #' @param lpjml         LPJmL version to be used
 #' @param selectyears   Years to be returned
 #' @param climatetype   Climate model or historical baseline "GSWP3-W5E5:historical"
-#' @param iniyear       Initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices
+#' @param iniyear       Initialization year for price in price-weighted normalization
+#'                      of meanpricedcroprank and yield improvement potential prices
 #' @param cropmix       cropmix for which irrigation yield improvement is calculated
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
 #'                      or hist_irrig or hist_total for historical cropmix
@@ -28,31 +29,40 @@
 #' calcOutput("IrrigWatValue", aggregate = FALSE)
 #' }
 #'
-calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, cropmix, yieldcalib, multicropping) {
+calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear,
+                              cropmix, yieldcalib, multicropping) {
   ## Note: Methodology for calculating value of water following D'Odorico et al. (2020)
 
   # Read in potential yield gain per cell (USD05 per ha)
-  yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
-                           cropmix = NULL, monetary = TRUE, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+  yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml,
+                           climatetype = climatetype, selectyears = selectyears,
+                           cropmix = NULL, monetary = TRUE, iniyear = iniyear,
+                           yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
   # Read in irrigation water requirement (withdrawals) (in m^3 per hectar per year) [smoothed and harmonized]
   # Note: Following D'Odorico et al. (2020), results refer to water withdrawals (because that's what one would pay for rather than for consumption)
-  irrig_withdrawal <- calcOutput("IrrigWatRequirements", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears, aggregate = FALSE)
-  irrig_withdrawal <- collapseNames(irrig_withdrawal[,,"withdrawal"])
-  irrig_withdrawal <- irrig_withdrawal[,,intersect(gsub("[.].*", "", getNames(irrig_withdrawal)), getNames(yield_gain))]
+  irrig_withdrawal <- calcOutput("IrrigWatRequirements", lpjml = lpjml,
+                                 climatetype = climatetype, selectyears = selectyears, aggregate = FALSE)
+  irrig_withdrawal <- collapseNames(irrig_withdrawal[, , "withdrawal"])
+  irrig_withdrawal <- irrig_withdrawal[, , intersect(gsub("[.].*", "", getNames(irrig_withdrawal)), getNames(yield_gain))]
 
   # Read in irrigation system area initialization
   irrigation_system <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
 
   # Calculate irrigation water requirements
-  IWR          <- dimSums((irrigation_system[,,] * irrig_withdrawal[,,]), dim = 3.1)
-  IWR          <- IWR[,,getNames(yield_gain)]
-  # Note: Correction where IWR is small (close to 0)
-  IWR[IWR < 1] <- 0             ### CHOOSE APPROPRIATE THRESHOLD! SET TO 0 or NA?
+  IWR <- dimSums((irrigation_system[, , ] * irrig_withdrawal[, , ]), dim = 3.1)
+  IWR <- IWR[, , getNames(yield_gain)]
+
+  # Correction of small yield gains and small IWR: where smaller (a) or (b) set to 0
+  # (a) 1 mm = l/m^2 = 10 m^3/ha
+  # (b) 10 USD /ha
+  setToZero <- IWR < 10 | yield_gain < 10
+
+  IWR[setToZero]        <- 0
+  yield_gain[setToZero] <- 0
 
   # Calculate value of water
-  watvalue <- yield_gain / IWR
-  watvalue[IWR==0] <- 0   #### SET TO 0 or NA?
+  watvalue <- ifelse(IWR > 0, yield_gain / IWR, 0)
 
   # Selected crops
   if (!is.null(cropmix)) {
@@ -72,7 +82,7 @@ calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, cropmix,
 
       if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "irrig") {
         # irrigated croparea
-        croparea <- collapseNames(croparea[,,"irrigated"])
+        croparea <- collapseNames(croparea[, , "irrigated"])
       } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "total") {
         # total croparea (irrigated + rainfed)
         croparea <- dimSums(croparea, dim = "irrigation")
@@ -95,7 +105,7 @@ calcIrrigWatValue <- function(lpjml, selectyears, climatetype, iniyear, cropmix,
 
     } else {
       # Note: equal crop area share for each proxycrop assumed
-      watvalue    <- watvalue[,,cropmix]
+      watvalue    <- watvalue[, , cropmix]
       # calculate average water value over proxy crops
       watvalue    <- dimSums(watvalue, dim = 3) / length(getNames(watvalue))
 

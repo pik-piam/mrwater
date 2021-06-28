@@ -21,7 +21,9 @@
 #' @author Felicitas Beier
 #'
 #' @examples
-#' \dontrun{ plotHistReturnToIrrig() }
+#' \dontrun{
+#' plotHistReturnToIrrig()
+#' }
 #'
 #' @export
 
@@ -33,21 +35,30 @@ plotHistReturnToIrrig <- function(scenario, iniyear, lpjml, selectyears, climate
     stop("Please select one year only for Map depicting the share of current irrigation that can be fulfilled given surface water availability of the algorithm")
   }
 
-  # Return to Irrigation
-  revenue    <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
-                            cropmix = cropmix, monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
-                            multicropping = multicropping, aggregate = FALSE)
+  # Croplist
+  croplist <- collapseNames(calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
+                                     iniyear = iniyear, selectyears = selectyears, yieldcalib = yieldcalib, aggregate = FALSE)[, , "rainfed"])
+  croplist <- getNames(croplist)
+  croplist <- croplist[croplist != "rice_pro"]
 
+  # Return to Irrigation
+  return    <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
+                            cropmix = croplist, monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
+                            multicropping = multicropping, aggregate = FALSE) #### ALLES AUSSER REIS (evtl. stacked oder besser transparent)
+  # rice return
+  ricereturn <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
+                           cropmix = "rice_pro", monetary = TRUE, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
   # cap return to irrigation
-  revenue[revenue > 10000] <- 10000
+  return[return > 7000] <- 7000
+  ricereturn[ricereturn > 7000] <- 7000
 
   ## Read in cropland area (by crop) from crop area initialization (in mio. ha)
   area     <- calcOutput("IrrigAreaCommitted", selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
   ricearea <- area[, , "rice_pro"]
   area     <- dimSums(area, dim = 3)
 
-  plotrix::weighted.hist(x = revenue, w = area, breaks = 100, col = "darkblue")
-  out <- plotrix::weighted.hist(x = revenue, w = ricearea, breaks = 100, col = "darkred", add = T)
+  plotrix::weighted.hist(x = return, w = area, breaks = 100, col = "#5ab4ac", ylab = "Irrigated Area (Mha)", xlab = "Return to Irrigation (USD/ha)")
+  out <- plotrix::weighted.hist(x = ricereturn, w = ricearea, breaks = 100, col = "#372E1A80", ylab = "Irrigated Area (Mha)", xlab = "Return to Irrigation (USD/ha)", add = T)
 
   return(out)
 }

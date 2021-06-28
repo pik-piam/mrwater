@@ -33,7 +33,7 @@
 #' @importFrom luplot plotmap2
 #' @importFrom magclass collapseNames
 #' @importFrom stats lm
-#' @importFrom ggplot2 ggplot geom_point theme scale_color_manual guide_legend guides geom_smooth geom_text
+#' @importFrom ggplot2 ggplot geom_point theme scale_color_manual guide_legend guides geom_smooth geom_text coord_equal
 #'
 #' @export
 
@@ -75,22 +75,24 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
     out <- ggplot(df, aes(x = irrigarea, y = irrigatablearea)) +
       geom_point(size = 0.9, na.rm = TRUE) +
       geom_smooth(method = lm, na.rm = TRUE) +
-      geom_text(x = (max(df$irrigarea) - 0.1), y = max(df$irrigatablearea), label = paste0("Rsqured: ", rsquared)) +
+      coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
       ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
-      theme_bw()
+      theme_bw() +
+      ggtitle(paste0("Rsquared: ", rsquared))
   } else {
     modelstat <- lm(irrigatablearea ~ irrigarea, data = df)
     rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
     out <- ggplot(df, aes(x = irrigarea, y = irrigatablearea, color = region)) +
       geom_point(size = 0.9, na.rm = TRUE) +
       geom_smooth(method = lm, na.rm = TRUE) +
+      coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
       ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
       scale_color_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#ffff99", "#b15928")) +
       guides(colour = guide_legend(override.aes = list(size = 5))) +
       theme_bw() +
-      ggtitle(paste0("Rsquared: ", rsquared))
+      ggtitle(paste0("Rsquared: ", rsquared, " for region: ", region))
   }
 
   return(out)
