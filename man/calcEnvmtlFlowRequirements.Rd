@@ -7,19 +7,23 @@
 calcEnvmtlFlowRequirements(lpjml, selectyears, climatetype, EFRmethod)
 }
 \arguments{
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+\item{lpjml}{LPJmL version used}
 
-\item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
+\item{selectyears}{Years to be returned
+(Note: does not affect years of harmonization or smoothing)}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Switch between different climate scenarios
+or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (Smakhtin:good, VMF:fair)}
+\item{EFRmethod}{EFR method used including selected strictness of EFRs
+(Smakhtin:good, VMF:fair)}
 }
 \value{
-magpie object in cellular resolution
+magpie object with EFRs, LFRs and HFRs in cellular resolution
 }
 \description{
-This function calculates environmental flow requirements (EFR) for MAgPIE based on EFR share calculated from LPJmL monthly discharge following Smakthin et al. (2004)
+This function calculates environmental flow requirements (EFR)
+             based on EFR share calculated from LPJmL monthly discharge
 }
 \examples{
 \dontrun{ calcOutput("EnvmtlFlowRequirements", aggregate=FALSE) }

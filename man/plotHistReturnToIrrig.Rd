@@ -51,7 +51,9 @@ map of magpie cells
 plot map of share of current irrigation that can be fulfilled given surface water availability of the algorithm
 }
 \examples{
-\dontrun{ plotHistReturnToIrrig() }
+\dontrun{
+plotHistReturnToIrrig()
+}
 
 }
 \author{

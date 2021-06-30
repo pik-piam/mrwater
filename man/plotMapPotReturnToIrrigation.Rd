@@ -52,7 +52,9 @@ plots map of return to irrigation in terms of monetary yield gain in USD/ha
              or water value in USD/m^3
 }
 \examples{
-\dontrun{ plotMapPotReturnToIrrigation() }
+\dontrun{
+plotMapPotReturnToIrrigation()
+}
 
 }
 \author{

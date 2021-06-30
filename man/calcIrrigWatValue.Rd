@@ -21,7 +21,8 @@ calcIrrigWatValue(
 
 \item{climatetype}{Climate model or historical baseline "GSWP3-W5E5:historical"}
 
-\item{iniyear}{Initialization year for price in price-weighted normalization of meanpricedcroprank and yield improvement potential prices}
+\item{iniyear}{Initialization year for price in price-weighted normalization
+of meanpricedcroprank and yield improvement potential prices}
 
 \item{cropmix}{cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain
