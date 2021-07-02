@@ -1,13 +1,17 @@
 #' @title       calcRiverHumanUses
-#' @description This function calculates natural discharge for the river routing derived from inputs from LPJmL
+#' @description This function calculates human uses and reserved water along
+#'              the river
 #'
-#' @param lpjml       LPJmL version required for respective inputs: natveg or crop
-#' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
+#' @param lpjml       LPJmL version used
+#' @param selectyears Years to be returned
+#'                    (Note: does not affect years of harmonization or smoothing)
 #' @param humanuse    Human use type to which river routing shall be applied
 #'                    (non_agriculture or committed_agriculture).
-#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param climatetype Switch between different climate scenarios
+#'                    or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear     Initialization year of irrigation system
-#' @param EFRmethod   EFR method used including selected strictness of EFRs (Smakhtin:good, VMF:fair)
+#' @param EFRmethod   EFR method used including selected strictness of EFRs
+#'                    (Smakhtin:good, VMF:fair)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -22,10 +26,9 @@
 #' calcOutput("RiverHumanUses", aggregate = FALSE)
 #' }
 #'
-calcRiverHumanUses <- function(lpjml, selectyears, humanuse, iniyear, climatetype, EFRmethod) {
-  # # # # # # # # # # #
-  # # # READ IN DATA # #
-  # # # # # # # # # # #
+calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
+                               iniyear, EFRmethod) {
+
   ### Read in river structure
   # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
   # Information contained:
@@ -102,7 +105,7 @@ calcRiverHumanUses <- function(lpjml, selectyears, humanuse, iniyear, climatetyp
   if (humanuse == "non_agriculture") {
 
     # Minimum flow requirements determined by natural flow river routing:
-    # Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
+    # (full) Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
     IO_required_wat_min         <- new.magpie(cells_and_regions = getCells(yearly_runoff),
                                               years = getYears(yearly_runoff),
                                               names = c("on", "off"),
@@ -128,7 +131,8 @@ calcRiverHumanUses <- function(lpjml, selectyears, humanuse, iniyear, climatetyp
                                     EFRmethod = EFRmethod, selectyears = selectyears,
                                     iniyear = iniyear, humanuse = "non_agriculture", aggregate = FALSE)
 
-    # Minimum flow requirements determined by previous river routing: Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
+    # Minimum flow requirements determined by previous river routing:
+    # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
     IO_required_wat_min <- as.array(collapseNames(prevHuman_routing[, , "required_wat_min"]))
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
     prevHuman_wc        <- as.array(collapseNames(prevHuman_routing[, , "currHuman_wc"]))
@@ -169,7 +173,10 @@ calcRiverHumanUses <- function(lpjml, selectyears, humanuse, iniyear, climatetyp
 
       # (I) Water withdrawal constraint: All withdrawals that can be fulfilled considering
       #                                  local previously determined water requirements are served
-      frac_ww_constraint <- pmin((avl_wat_act[c, , , drop = F] - IO_required_wat_min[c, , , drop = F])[sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]] / currHuman_ww[c, , , drop = F][sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]], 1)
+      frac_ww_constraint <- pmin((avl_wat_act[c, , , drop = F] -
+                                    IO_required_wat_min[c, , , drop = F])[sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]] /
+                                   currHuman_ww[c, , , drop = F][sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]],
+                                 1)
       # Current water uses (withdrawals and consumption) given withdrawal constraint
       currHuman_wc[c, , ][sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]] <- frac_ww_constraint * (currHuman_wc[c, , , drop = F])[sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]]
       currHuman_ww[c, , ][sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]] <- frac_ww_constraint * (currHuman_ww[c, , , drop = F])[sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]]
@@ -204,7 +211,8 @@ calcRiverHumanUses <- function(lpjml, selectyears, humanuse, iniyear, climatetyp
 
         ### (A or B) Is there current upstream water consumption that can be reduced  ###
         ###          to release water required by previous (prioritary) uses?         ###
-        sufficient_upstream <- (upstream_cons[c, , , drop = F] > (IO_required_wat_min[c, , , drop = F] - avl_wat_act[c, , , drop = F]))
+        sufficient_upstream <- (upstream_cons[c, , , drop = F] > (IO_required_wat_min[c, , , drop = F] -
+                                                                    avl_wat_act[c, , , drop = F]))
 
         ## (A) upstream_cons high enough to release required water: ##
         ## -> reduce upstream consumption respectively              ##
@@ -212,7 +220,9 @@ calcRiverHumanUses <- function(lpjml, selectyears, humanuse, iniyear, climatetyp
         #                                    use in downstream cell, cannot have
         #                                    been consumed for current use upstream
         # fraction that stays in upstream cell(s) = 1 - fraction of water that needs to be released by each upstream cell
-        frac_wc_constraint <- (1 - (IO_required_wat_min[lc, , , drop = F] - avl_wat_act[lc, , , drop = F])[!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]] / upstream_cons[lc, , , drop = F][!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]])
+        frac_wc_constraint <- (1 - (IO_required_wat_min[lc, , , drop = F] -
+                                      avl_wat_act[lc, , , drop = F])[!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]] /
+                                 upstream_cons[lc, , , drop = F][!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]])
 
         # Current human uses (consumption and withdrawal) in upstreamcells is reduced by respective amount
         currHuman_wc[up, , ][!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]] <- frac_wc_constraint * (currHuman_wc[up, , , drop = F])[!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]]
@@ -232,10 +242,13 @@ calcRiverHumanUses <- function(lpjml, selectyears, humanuse, iniyear, climatetyp
         # and missing water water requirements cannot be fulfilled by upstream cells
         # (since there is not upstream consumption, this water is additionally available in the current cell)
         discharge[c, , ][!sufficient_water[, , , drop = F] & !sufficient_upstream[, , , drop = F]] <- (avl_wat_act[c, , , drop = F] + upstream_cons[c, , , drop = F] - prevHuman_wc[c, , , drop = F])[!sufficient_water[, , , drop = F] & !sufficient_upstream[, , , drop = F]]
+
       } else {
+
         # Discharge when water is not sufficient to fulfill previously (priority)
         # requirements and there are no upstream cells
         discharge[c, , ][!sufficient_water[, , , drop = F]]  <- (avl_wat_act[c, , , drop = F] - prevHuman_wc[c, , , drop = F])[!sufficient_water[, , , drop = F]]
+
       }
 
       # Inflow to nextcell (if there is a downstreamcell)

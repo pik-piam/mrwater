@@ -5,35 +5,42 @@
 \title{calcRiverHumanUses}
 \usage{
 calcRiverHumanUses(
-  lpjml,
-  selectyears,
   humanuse,
-  iniyear,
+  lpjml,
   climatetype,
+  selectyears,
+  iniyear,
   EFRmethod
 )
 }
 \arguments{
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+\item{humanuse}{Human use type to which river routing shall be applied
+(non_agriculture or committed_agriculture).}
 
-\item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
+\item{lpjml}{LPJmL version used}
 
-\item{humanuse}{Human use type to which river routing shall be applied (non_agriculture or committed_agriculture). Note: non_agriculture must be run prior to committed_agriculture}
+\item{climatetype}{Switch between different climate scenarios
+or historical baseline "GSWP3-W5E5:historical"}
+
+\item{selectyears}{Years to be returned
+(Note: does not affect years of harmonization or smoothing)}
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
-
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (Smakhtin:good, VMF:fair)}
+\item{EFRmethod}{EFR method used including selected strictness of EFRs
+(Smakhtin:good, VMF:fair)}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
-This function calculates natural discharge for the river routing derived from inputs from LPJmL
+This function calculates human uses and reserved water along
+             the river
 }
 \examples{
-\dontrun{ calcOutput("RiverHumanUses", aggregate = FALSE) }
+\dontrun{
+calcOutput("RiverHumanUses", aggregate = FALSE)
+}
 
 }
 \author{

@@ -14,9 +14,10 @@
 #' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param gainthreshold   Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param avlland_scen     Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-#'                         combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-#'                         protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
+#' @param avlland_scen  Land availability scenario (currCropland, currIrrig, potIrrig)
+#'                      combination of land availability scenario and initialization year separated by ":".
+#'                      protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                      WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix       cropmix for which irrigation yield improvement is calculated
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
 #'                      or hist_irrig or hist_total for historical cropmix
@@ -86,7 +87,8 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, 
     geom_line(aes_string(y = paste("on", scenario, sep = ".")), color = "darkblue", linetype = "twodash") + geom_point(aes_string(y = paste("on", scenario, sep = "."))) +
     geom_line(aes_string(y = paste("off", scenario, sep = ".")), color = "darkred") + geom_point(aes_string(y = paste("off", scenario, sep = "."))) +
     theme_bw() +
-    ggtitle(paste0(description, " Supply Curve for yieldcalib = ", yieldcalib, " on ", avlland_scen)) + xlab(paste0("Accessability (accessibilityrule Q", accessibilityrule, ")")) + ylab(unit)
+    ggtitle(paste0(description, " Supply Curve for yieldcalib = ", yieldcalib, " on ", avlland_scen)) +
+    xlab(paste0("Accessability (accessibilityrule Q", accessibilityrule, ")")) + ylab(unit)
 
   return(out)
 }

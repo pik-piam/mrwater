@@ -13,17 +13,24 @@ calcDischargeInaccessible(lpjml, selectyears, climatetype, accessibilityrule)
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
+\item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
+combined with scalar value defining the strictness of accessibility restriction:
+discharge that is exceeded x percent of the time on average throughout a year
+(Qx, e.g. Q75: 0.25, Q50: 0.5)
+or base value for exponential curve separated by : (CV:2)}
 }
 \value{
-magpie object in cellular resolution representing share of discharge that is reserved for environmental flows
+magpie object in cellular resolution representing discharge
+        that is inaccessible to humans
 }
 \description{
 This function calculates the discharge that is inaccessible to humans
              based on the variability of monthly flows and natural discharge.
 }
 \examples{
-\dontrun{ calcOutput("DischargeInaccessible", aggregate=FALSE) }
+\dontrun{
+calcOutput("DischargeInaccessible", aggregate = FALSE)
+}
 
 }
 \author{

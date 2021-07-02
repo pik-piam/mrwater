@@ -24,7 +24,9 @@ This function calculates environmental flow requirements (EFR)
              (as share of discharge) based on LPJmL monthly discharge
 }
 \examples{
-\dontrun{ calcOutput("EnvmtlFlowRequirementsShare", aggregate=FALSE) }
+\dontrun{
+calcOutput("EnvmtlFlowRequirementsShare", aggregate = FALSE)
+}
 
 }
 \author{

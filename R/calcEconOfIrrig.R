@@ -18,9 +18,10 @@
 #' @param allocationrule   Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
 #' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param avlland_scen     Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-#'                         combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-#'                         protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
+#' @param avlland_scen     Land availability scenario (currCropland, currIrrig, potIrrig)
+#'                         combination of land availability scenario and initialization year separated by ":".
+#'                         protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                         WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix          cropmix for which irrigation yield improvement is calculated
 #'                         can be selection of proxycrop(s) for calculation of average yield gain
 #'                         or hist_irrig or hist_total for historical cropmix
@@ -58,7 +59,8 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
                                   rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                   avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat,
-                                  com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                  com_ag = com_ag, multicropping = multicropping,
+                                  aggregate = FALSE)[, , "irrigatable"][, , scenario])
 
     d <- "Irrigatable Area for different gainthresholds"
     u <- "Mha"
@@ -112,7 +114,8 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                       thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                       avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat,
-                                      com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                      com_ag = com_ag, multicropping = multicropping,
+                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
     } else {
       tmp <- collapseNames(calcOutput("WaterPotUse", gainthreshold = gainthreshold,
                                       lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,

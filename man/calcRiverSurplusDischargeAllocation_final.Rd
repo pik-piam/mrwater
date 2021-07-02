@@ -6,9 +6,9 @@
 \usage{
 calcRiverSurplusDischargeAllocation_final(
   lpjml,
+  climatetype,
   selectyears,
   output,
-  climatetype,
   EFRmethod,
   accessibilityrule,
   rankmethod,
@@ -25,19 +25,31 @@ calcRiverSurplusDischargeAllocation_final(
 )
 }
 \arguments{
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
-
-\item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
-
-\item{output}{output to be reported}
+\item{lpjml}{LPJmL version used}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
+\item{selectyears}{Years to be returned
+(Note: does not affect years of harmonization or smoothing)}
+
+\item{output}{Output to be reported}
+
 \item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
-\item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
+\item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
+combined with scalar value defining the strictness of accessibility restriction:
+discharge that is exceeded x percent of the time on average throughout a year
+(Qx, e.g. Q75: 0.25, Q50: 0.5)
+or base value for exponential curve separated by : (CV:2)}
 
-\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{rankmethod}{Method of calculating the rank:
+"meancellrank": mean over cellrank of proxy crops,
+"meancroprank": rank over mean of proxy crops (normalized),
+"meanpricedcroprank": rank over mean of proxy crops (normalized using price),
+"watervalue": rank over value of irrigation water;
+and fullpotentail TRUE/FALSE separated by ":"
+(TRUE: Full irrigation potential (cell receives full irrigation requirements in total area),
+FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
 \item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
 
@@ -51,9 +63,10 @@ calcRiverSurplusDischargeAllocation_final(
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{avlland_scen}{Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
+\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+combination of land availability scenario and initialization year separated by ":".
+protection scenario separated by "_" (only relevant when potIrrig selected):
+WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{cropmix}{cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain
@@ -67,7 +80,8 @@ or hist_irrig or hist_total for historical cropmix}
 magpie object in cellular resolution
 }
 \description{
-This function distributes surplus basin discharge after the previous river routings following certain management assumptions
+This function distributes surplus basin discharge after the
+             previous river routings following certain management assumptions
 }
 \examples{
 \dontrun{

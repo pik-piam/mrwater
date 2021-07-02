@@ -9,21 +9,27 @@ calcAreaPotIrrig(selectyears, comagyear, avlland_scen)
 \arguments{
 \item{selectyears}{years to be returned}
 
-\item{comagyear}{if NULL: total potential croparea is used; if !NULL: already irrigated area is subtracted; year specified here is the year of the initialization used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)}
+\item{comagyear}{if NULL: total potential croparea is used;
+if !NULL: already irrigated area is subtracted;
+year specified here is the year of the initialization
+used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)}
 
-\item{avlland_scen}{land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
-(e.g. "potIrrig_HalfEarth:1995", currCropland:2010)}
+\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+combination of land availability scenario and initialization year separated by ":".
+protection scenario separated by "_" (only relevant when potIrrig selected):
+WDPA, BH, FF, CPD, LW, HalfEarth}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
-This function calculates area that can potentially be used for irrigation given assumptions defined in arguments
+This function calculates area that can potentially be used for
+             irrigation given assumptions defined in arguments
 }
 \examples{
-\dontrun{ calcOutput("AreaPotIrrig", aggregate=FALSE) }
+\dontrun{
+calcOutput("AreaPotIrrig", aggregate = FALSE)
+}
 
 }
 \author{
