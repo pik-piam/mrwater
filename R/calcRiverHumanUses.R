@@ -65,7 +65,7 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
 
   # Lake evaporation as calculated by natural flow river routing
   lake_evap_new   <- collapseNames(calcOutput("RiverNaturalFlows", selectyears = selectyears,
-                                              lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                                              lpjml = lpjml, climatetype = climatetype,
                                               aggregate = FALSE)[, , "lake_evap_nat"])
 
   ## Transform object dimensions
@@ -247,7 +247,8 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
 
         # Discharge when water is not sufficient to fulfill previously (priority)
         # requirements and there are no upstream cells
-        discharge[c, , ][!sufficient_water[, , , drop = F]]  <- (avl_wat_act[c, , , drop = F] - prevHuman_wc[c, , , drop = F])[!sufficient_water[, , , drop = F]]
+        discharge[c, , ][!sufficient_water[, , , drop = F]]  <- (avl_wat_act[c, , , drop = F] -
+                                                                   prevHuman_wc[c, , , drop = F])[!sufficient_water[, , , drop = F]]
 
       }
 
