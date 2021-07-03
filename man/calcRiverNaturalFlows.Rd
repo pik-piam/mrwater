@@ -7,17 +7,20 @@
 calcRiverNaturalFlows(selectyears, lpjml, climatetype)
 }
 \arguments{
-\item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
+\item{selectyears}{Years to be returned
+(Note: does not affect years of harmonization or smoothing)}
 
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!}
+\item{lpjml}{LPJmL version used}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Switch between different climate scenarios
+or historical baseline "GSWP3-W5E5:historical"}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
-This function calculates natural discharge for the river routing derived from inputs from LPJmL
+This function calculates natural discharge for the river routing
+             derived from inputs from LPJmL
 }
 \examples{
 \dontrun{ calcOutput("RiverNaturalFlows", aggregate = FALSE) }
