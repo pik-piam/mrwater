@@ -24,7 +24,8 @@ or historical baseline "GSWP3-W5E5:historical"}
 \item{EFRmethod}{EFR method used including selected strictness of EFRs
 (Smakhtin:good, VMF:fair)}
 
-\item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
+\item{accessibilityrule}{Method used: Quantile method (Q) or
+Coefficient of Variation (CV)
 combined with scalar value defining the strictness of accessibility restriction:
 discharge that is exceeded x percent of the time on average throughout a year
 (Qx, e.g. Q75: 0.25, Q50: 0.5)

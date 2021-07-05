@@ -23,7 +23,6 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
 #' @importFrom stringr str_split
-#' @import mrmagpie
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -38,18 +37,23 @@ calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
 
   # Discharge that is inaccessible to human uses (mio m^3)
   inaccessibleDischarge <- calcOutput("DischargeInaccessible", selectyears = selectyears,
-                                       lpjml = lpjml, climatetype = climatetype,
-                                       accessibilityrule = accessibilityrule, aggregate = FALSE)
+                                      lpjml = lpjml, climatetype = climatetype,
+                                      accessibilityrule = accessibilityrule, aggregate = FALSE)
 
   # Environmental flow requirements beyond already inaccessible water (mio. m^3) [used for Surplus Discharge Allocation]
-  reservedEFR <- calcOutput("EnvmtlFlowRequirementsConstraint", selectyears = selectyears,
-                            lpjml = lpjml, climatetype = climatetype,
-                            EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, aggregate = FALSE)
+  reservedEFR <- fullEFR <- new.magpie(cells_and_regions = getCells(inaccessibleDischarge),
+                                       years = getYears(inaccessibleDischarge),
+                                       names = c("on", "off"),
+                                       fill = 0,
+                                       sets = c("x.y.iso", "year", "EFR"))
+  reservedEFR[, , "on"]  <- calcOutput("EnvmtlFlowRequirementsConstraint", selectyears = selectyears,
+                                       lpjml = lpjml, climatetype = climatetype,
+                                       EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, aggregate = FALSE)
 
   # Full volume of EFRs (in mio. m^3) [used for Actual Use Accounting]
-  fullEFR <- collapseNames(calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
-                                      climatetype = climatetype, lpjml = lpjml, EFRmethod = EFRmethod,
-                                      aggregate = FALSE)[, , "EFR"])
+  fullEFR[, , "on"]      <- collapseNames(calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
+                                                     climatetype = climatetype, lpjml = lpjml, EFRmethod = EFRmethod,
+                                                     aggregate = FALSE)[, , "EFR"])
 
   # Water reserved from previous river routing (including full EFRs)
   if (com_ag) {
@@ -57,20 +61,18 @@ calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
     reservedRiverrouting <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                                        lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
                                        selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
-
   } else {
 
     reservedRiverrouting <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
                                        lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
                                        selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
-
   }
 
   # Correct reserved from previous river routing by EFRs
   reservedRiverrouting <- collapseNames(reservedRiverrouting[, , "required_wat_min"])
   reservedRiverrouting <- reservedRiverrouting - fullEFR
 
-  out <- reservedEFR + reservedRiverrouting + inaccessibleDischarge
+  out <-  reservedRiverrouting + reservedEFR + inaccessibleDischarge
 
   return(list(x            = out,
               weight       = NULL,

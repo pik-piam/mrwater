@@ -23,7 +23,9 @@ This function calculates natural discharge for the river routing
              derived from inputs from LPJmL
 }
 \examples{
-\dontrun{ calcOutput("RiverNaturalFlows", aggregate = FALSE) }
+\dontrun{
+calcOutput("RiverNaturalFlows", aggregate = FALSE)
+}
 
 }
 \author{

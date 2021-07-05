@@ -12,7 +12,8 @@
 #'                          or historical baseline "GSWP3-W5E5:historical"
 #' @param EFRmethod         EFR method used including selected strictness of EFRs
 #'                          (Smakhtin:good, VMF:fair)
-#' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
+#' @param accessibilityrule Method used: Quantile method (Q) or
+#'                          Coefficient of Variation (CV)
 #'                          combined with scalar value defining the strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
@@ -28,7 +29,8 @@
 #' calcOutput("EnvmtlFlowRequirementConstraint", aggregate = FALSE)
 #' }
 #'
-calcEnvmtlFlowRequirementsConstraint <- function(lpjml, selectyears, climatetype, EFRmethod, accessibilityrule) {
+calcEnvmtlFlowRequirementsConstraint <- function(lpjml, selectyears, climatetype,
+                                                 EFRmethod, accessibilityrule) {
 
   # Read in full volume of EFRs (in mio. m^3) including HFRs and LFRs
   EFR <- calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,

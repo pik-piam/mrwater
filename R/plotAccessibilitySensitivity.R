@@ -39,7 +39,10 @@
 #'
 #' @export
 
-plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml, selectyears, climatetype, EFRmethod, gainthreshold, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, com_ag, multicropping, potential_wat = TRUE) {
+plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml,
+                                         selectyears, climatetype, EFRmethod, gainthreshold, rankmethod, yieldcalib,
+                                         allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, com_ag,
+                                         multicropping, potential_wat = TRUE) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")

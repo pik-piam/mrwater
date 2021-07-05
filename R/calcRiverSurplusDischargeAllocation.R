@@ -86,7 +86,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
   rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
   # Minimum reserved flow requirements: Inaccessible discharge +
-  #                                     Environmental Flow Requirements (adjusted for part that is fulfilled by inaccessible water) +
+  #                                     [Environmental Flow Requirements (adjusted for part that is fulfilled by inaccessible water), if activated] +
   #                                     Reserved for Non-Agricultural Uses +
   #                                     [Reserved Committed Agricultural Uses, if activated] (in mio. m^3 / yr)
   required_wat_min_allocation <- calcOutput("RiverWatReserved", aggregate = FALSE,
