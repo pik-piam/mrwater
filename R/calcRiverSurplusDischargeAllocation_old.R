@@ -78,7 +78,11 @@ calcRiverSurplusDischargeAllocation_old <- function(lpjml, selectyears, output, 
   discharge                   <- calcOutput("RiverDischargeNatAndHuman", lpjml = lpjml, selectyears = selectyears, iniyear = iniyear, climatetype = climatetype, EFRmethod = EFRmethod, com_ag = com_ag_2, aggregate = FALSE)
 
   # Required water for full irrigation per cell (in mio. m^3) (accounting for area already committed to irrigated agriculture prior to this allocation step)
-  required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, comagyear = comagyear, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, aggregate = FALSE)
+  required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", lpjml = lpjml,
+                                            selectyears = selectyears, climatetype = climatetype,
+                                            comagyear = comagyear, irrigationsystem = irrigationsystem,
+                                            avlland_scen = avlland_scen, cropmix = cropmix,
+                                            multicropping = multicropping, aggregate = FALSE)
   required_wat_fullirrig_ww   <- pmax(collapseNames(required_wat_fullirrig[, , "withdrawal"]), 0)
   required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[, , "consumption"]), 0)
 

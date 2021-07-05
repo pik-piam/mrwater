@@ -103,7 +103,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
   required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
                                             lpjml = lpjml, climatetype = climatetype, comagyear = comagyear,
                                             irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
-                                            cropmix = cropmix, aggregate = FALSE)
+                                            cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
   required_wat_fullirrig_ww   <- pmax(collapseNames(required_wat_fullirrig[, , "withdrawal"]), 0)
   required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[, , "consumption"]), 0)
 

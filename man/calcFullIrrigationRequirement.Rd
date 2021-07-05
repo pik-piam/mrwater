@@ -11,7 +11,8 @@ calcFullIrrigationRequirement(
   comagyear,
   irrigationsystem,
   avlland_scen,
-  cropmix
+  cropmix,
+  multicropping
 )
 }
 \arguments{
@@ -26,7 +27,7 @@ if NULL: total potential land area is used;
 year specified here is the year of the initialization
 used for cropland area initialization in calcIrrigatedArea}
 
-\item{irrigationsystem}{irrigation system used: system share as in initialization year,
+\item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}
 
 \item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
@@ -34,9 +35,11 @@ combination of land availability scenario and initialization year separated by "
 protection scenario separated by "_" (only relevant when potIrrig selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
-\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+\item{cropmix}{Cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

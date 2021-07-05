@@ -24,40 +24,59 @@ calcIrrigatableArea(
 )
 }
 \arguments{
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+\item{lpjml}{LPJmL version used}
 
-\item{selectyears}{years for which irrigatable area is calculated}
+\item{selectyears}{Years for which irrigatable area is calculated}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
-\item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
+\item{accessibilityrule}{Strictness of accessibility restriction:
+discharge that is exceeded x percent of the time on average throughout a year (Qx).
+(e.g. Q75: 0.25, Q50: 0.5)}
 
-\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{rankmethod}{Method of calculating the rank:
+"meancellrank": mean over cellrank of proxy crops,
+"meancroprank": rank over mean of proxy crops (normalized),
+"meanpricedcroprank": rank over mean of proxy crops (normalized using price),
+"watervalue": rank over value of irrigation water;
+and fullpotentail TRUE/FALSE separated by ":"
+(TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
+FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
+calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
+smoothed_calibrated}
 
-\item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
+\item{allocationrule}{Rule to be applied for river basin discharge allocation
+across cells of river basin ("optimization", "upstreamfirst", "equality")}
 
-\item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
+\item{thresholdtype}{Thresholdtype of yield improvement:
+TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
-\item{gainthreshold}{Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)}
+\item{gainthreshold}{Threshold of yield improvement potential required
+(same unit as thresholdtype)}
 
-\item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
+\item{irrigationsystem}{Irrigation system used
+("surface", "sprinkler", "drip", "initialization")}
 
 \item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
 combination of land availability scenario and initialization year separated by ":".
 protection scenario separated by "_" (only relevant when potIrrig selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
-\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+\item{cropmix}{Cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix}
 
-\item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
+\item{potential_wat}{If TRUE: potential available water and areas used,
+if FALSE: currently reserved water on current irrigated cropland used}
 
-\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
+\item{com_ag}{If TRUE: currently already irrigated areas in
+         initialization year are reserved for irrigation,
+if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
@@ -65,7 +84,8 @@ or hist_irrig or hist_total for historical cropmix}
 magpie object in cellular resolution
 }
 \description{
-calculates area that can potentially be irrigated given available water and land
+Calculates area that can potentially be irrigated given
+             available water and land
 }
 \examples{
 \dontrun{
