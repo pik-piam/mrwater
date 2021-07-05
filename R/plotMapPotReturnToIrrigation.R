@@ -34,36 +34,51 @@
 #'
 #' @export
 
-plotMapPotReturnToIrrigation <- function(selectyears, unit, iniyear, lpjml, climatetype, yieldcalib, multicropping, cropmix, land) {
+plotMapPotReturnToIrrigation <- function(selectyears, unit, iniyear, lpjml,
+                                         climatetype, yieldcalib, multicropping, cropmix, land) {
 
   if (length(selectyears) > 1) {
-    stop("Please select one year only for Map depicting the share of current irrigation that can be fulfilled given surface water availability of the algorithm")
+    stop("Please select one year only for Map of return to irrigation")
   }
 
   if (unit == "perha") {
+
     # Read in monetary potential yield gain per cell (USD05 per ha)
-    return <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
-                             cropmix = cropmix, monetary = TRUE, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+    return <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml,
+                         climatetype = climatetype, selectyears = selectyears,
+                         cropmix = cropmix, monetary = TRUE, iniyear = iniyear,
+                         yieldcalib = yieldcalib, multicropping = multicropping,
+                         aggregate = FALSE)
     limit <- 2000
+
   } else if (unit == "perm3") {
+
     # Read in water value per cell (USD05 per m^3)
-    return <- calcOutput("IrrigWatValue", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
-                         cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+    return <- calcOutput("IrrigWatValue", lpjml = lpjml, climatetype = climatetype,
+                         selectyears = selectyears, cropmix = cropmix, iniyear = iniyear,
+                         yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
     limit <- 1
+
   } else {
-    stop("Please select unit of irrigation return to be displayed on the map (perha or perm3)")
+    stop("Please select unit of irrigation return to be displayed on the map
+         (perha or perm3)")
   }
 
   # relevant map area
-  area              <- calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL, avlland_scen = land, aggregate = FALSE)
+  area              <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+                                  comagyear = NULL, avlland_scen = land, aggregate = FALSE)
   return[area == 0] <- NA
 
-  out <- plotmap2(toolLPJcell2MAgPIEcell(pmin(return, limit)), title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent", legendname = paste0("USD ", unit)) +
+  out <- plotmap2(toolLPJcell2MAgPIEcell(pmin(return, limit)),
+                  title = element_blank(), labs = FALSE, sea = FALSE,
+                  land_colour = "transparent", legendname = paste0("USD ", unit)) +
                  # scale_fill_continuous("", breaks = c(0, 0.25, 0.5, 0.75, 1), low = "white", high = "darkgreen") +
-                  theme(title = element_blank(),
-                        panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
-                        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                        strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
+          theme(title = element_blank(),
+                panel.background = element_rect(fill = "transparent", colour = NA),
+                plot.background = element_rect(fill = "transparent", colour = NA),
+                panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                strip.background = element_rect(fill = "transparent", colour = NA),
+                strip.text = element_text(color = "white"))
 
   return(out)
 }

@@ -115,6 +115,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   if (multicropping) {
     # read in multiple cropping zones [3 layers: single, double, triple cropping]
     mc          <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
+    mc          <- collapseNames(mc[, , "irrigated"])
     # adjust multicropping factors as in case of yield!?!?!?
     # mc[mc == 2] <- 1.5
     # mc[mc == 3] <- 2

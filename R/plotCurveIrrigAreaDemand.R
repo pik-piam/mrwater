@@ -41,7 +41,11 @@
 #'
 #' @export
 
-plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario, lpjml, selectyears, iniyear, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, cropmix, potential_wat = TRUE, com_ag, multicropping, display) {
+plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
+                                     lpjml, selectyears, iniyear, climatetype, EFRmethod,
+                                     accessibilityrule, rankmethod, yieldcalib, allocationrule,
+                                     thresholdtype, irrigationsystem, cropmix, potential_wat = TRUE,
+                                     com_ag, multicropping, display) {
 
   ## Main data: with water constraint
   # on current cropland

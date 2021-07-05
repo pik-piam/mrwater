@@ -40,10 +40,11 @@ calibrated (LPJmL yield potentials harmonized to baseline and calibrated for pro
 smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
 smoothed_calibrated (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)}
 
-\item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm:
-TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
+\item{thresholdtype}{TRUE: monetary yield gain (USD05/ha),
+FALSE: yield gain in tDM/ha}
 
-\item{gainthreshold}{Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)}
+\item{gainthreshold}{Threshold of yield improvement potential
+(same unit as thresholdtype)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }

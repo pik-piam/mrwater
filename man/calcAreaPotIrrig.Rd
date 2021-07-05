@@ -23,8 +23,8 @@ WDPA, BH, FF, CPD, LW, HalfEarth}
 magpie object in cellular resolution
 }
 \description{
-This function calculates area that can potentially be used for
-             irrigation given assumptions defined in arguments
+This function calculates land that is potentially available
+             for irrigated agriculture
 }
 \examples{
 \dontrun{

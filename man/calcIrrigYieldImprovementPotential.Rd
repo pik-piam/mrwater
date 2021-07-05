@@ -16,9 +16,9 @@ calcIrrigYieldImprovementPotential(
 )
 }
 \arguments{
-\item{lpjml}{LPJmL version required for yields}
+\item{lpjml}{LPJmL version used for yields}
 
-\item{climatetype}{Climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
+\item{climatetype}{Climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{monetary}{Yield improvement potential in tDM (FALSE, default) or
 priced yield improvement potential in USD05 (TRUE)}
@@ -43,7 +43,8 @@ smoothed_calib (not harmonized, but calibrated)}
 magpie object in cellular resolution
 }
 \description{
-This function calculates the yield improvement potential of irrigation for different crops
+This function calculates the yield improvement potential
+             through irrigation for different crops
 }
 \examples{
 \dontrun{

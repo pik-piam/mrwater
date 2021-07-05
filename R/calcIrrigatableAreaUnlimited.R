@@ -19,9 +19,10 @@
 #'                      calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
 #'                      smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
 #'                      smoothed_calibrated (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)
-#' @param thresholdtype Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm:
-#'                      TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
-#' @param gainthreshold Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
+#' @param thresholdtype TRUE: monetary yield gain (USD05/ha),
+#'                      FALSE: yield gain in tDM/ha
+#' @param gainthreshold Threshold of yield improvement potential
+#'                      (same unit as thresholdtype)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
@@ -35,17 +36,22 @@
 #' @import magclass
 #' @import magpiesets
 
-calcIrrigatableAreaUnlimited <- function(selectyears, avlland_scen, lpjml, climatetype, cropmix, yieldcalib, thresholdtype, gainthreshold, multicropping) {
+calcIrrigatableAreaUnlimited <- function(selectyears, avlland_scen, lpjml,
+                                         climatetype, cropmix, yieldcalib,
+                                         thresholdtype, gainthreshold, multicropping) {
 
   # Retrieve function arguments
   iniyear       <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
   ## Area that can potentially be irrigated (including total potentially irrigatable area; defined by comagyear=NULL)
-  area_potirrig <- calcOutput("AreaPotIrrig", selectyears = selectyears, avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
+  area_potirrig <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+                              avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
 
   # Yield gain potential through irrigation of proxy crops
-  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears, cropmix = cropmix,
-                                          monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential",
+                                         lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
+                                         cropmix = cropmix, monetary = thresholdtype, iniyear = iniyear,
+                                         yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
   # remove areas below chosen gainthreshold
   area_potirrig[irrig_yieldgainpotential < gainthreshold] <- 0
@@ -58,10 +64,9 @@ calcIrrigatableAreaUnlimited <- function(selectyears, avlland_scen, lpjml, clima
     stop("produced negative irrigatable area")
   }
 
-  return(list(
-    x            = area_potirrig,
-    weight       = NULL,
-    unit         = "mio. ha",
-    description  = "Area that would be irrigated given chosen gainthreshold and land constraint",
-    isocountries = FALSE))
+  return(list(x            = area_potirrig,
+              weight       = NULL,
+              unit         = "mio. ha",
+              description  = "Area that would be irrigated given chosen gainthreshold and land constraint",
+              isocountries = FALSE))
 }

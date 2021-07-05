@@ -1,6 +1,6 @@
 #' @title       calcAreaPotIrrig
-#' @description This function calculates area that can potentially be used for
-#'              irrigation given assumptions defined in arguments
+#' @description This function calculates land that is potentially available
+#'              for irrigated agriculture
 #'
 #' @param selectyears   years to be returned
 #' @param comagyear     if NULL: total potential croparea is used;
@@ -105,8 +105,10 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
 
   # Areas that are already irrigated (by committed agricultural uses)
   if (!is.null(comagyear)) {
-    # subtract area already reserved for irrigation by committed agricultural uses [in mio. ha] (to avoid double accounting)
-    irrig_area_com  <- calcOutput("IrrigAreaCommitted", selectyears = selectyears, iniyear = comagyear, aggregate = FALSE)
+    # subtract area already reserved for irrigation by committed agricultural uses
+    # (to avoid double accounting)
+    irrig_area_com  <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
+                                  iniyear = comagyear, aggregate = FALSE)
     irrig_area_com  <- collapseNames(dimSums(irrig_area_com, dim = 3))
     land            <- land - irrig_area_com
   }
