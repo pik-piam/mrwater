@@ -63,6 +63,10 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
                                       yieldcalib, rankmethod, thresholdtype, gainthreshold,
                                       allocationrule, irrigationsystem, multicropping, cropmix, avlland_scen) {
 
+  if (length(selectyears) > 1) {
+    stop("Please select one year only for Yield Gain Potential ")
+  }
+
   unlim <- calcOutput("YieldgainPotential", scenario = scenario, selectyears = selectyears,
                   iniyear = iniyear, lpjml = lpjml, climatetype = climatetype,
                   EFRmethod = EFRmethod, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
@@ -91,8 +95,8 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
 
   } else if (output == "ratio") {
 
-    x    <- ifelse(lim > 0, unlim / lim, 0)
-    unit <- "ratio"
+    x    <- ifelse(unlim > 0, lim / unlim, 0)
+    unit <- "ratio limited / unlimited"
 
   } else {
 
