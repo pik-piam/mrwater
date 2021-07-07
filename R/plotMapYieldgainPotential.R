@@ -85,18 +85,21 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
 
   if (output == "limited") {
 
-    x    <- lim
-    unit <- "USD"
+    x      <- lim
+    unit   <- "USD"
+    limits <- c(0, 100)
 
   } else if (output == "unlimited") {
 
-    x    <- unlim
-    unit <- "USD"
+    x      <- unlim
+    unit   <- "USD"
+    limits <- c(0, 100)
 
   } else if (output == "ratio") {
 
-    x    <- ifelse(unlim > 0, lim / unlim, 0)
-    unit <- "ratio limited / unlimited"
+    x     <- ifelse(unlim > 0, lim / unlim, 0)
+    unit  <- "ratio limited / unlimited"
+    limits <- c(min(x), max(x))
 
   } else {
 
@@ -109,10 +112,16 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
                               comagyear = NULL, avlland_scen = avlland_scen, aggregate = FALSE)
   x[area == 0] <- NA
 
-  out <- plotmap2(toolLPJcell2MAgPIEcell(x),
+  yieldGain   <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
+                           lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
+                           monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
+                           multicropping = multicropping, aggregate = FALSE)
+  x[yieldGain <= gainthreshold] <- NA
+
+  # plot output
+  out <- plotmap2(toolLPJcell2MAgPIEcell(x), legend_range = limits,
                   title = element_blank(), labs = FALSE, sea = FALSE,
                   land_colour = "transparent", legendname = unit) +
-                 # scale_fill_continuous("", breaks = c(0, 0.25, 0.5, 0.75, 1), low = "white", high = "darkgreen") +
           theme(title = element_blank(),
                 panel.background = element_rect(fill = "transparent", colour = NA),
                 plot.background = element_rect(fill = "transparent", colour = NA),

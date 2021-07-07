@@ -66,7 +66,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                    avlland_scen, cropmix, multicropping, unlimited) {
 
   # Cellular yield improvement potential for all crops (in USD/ha)
-  yield_gain <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
+  yieldGain <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                             lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
                             monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
                             multicropping = multicropping, aggregate = FALSE)
@@ -146,7 +146,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
   area <- croparea_shr * area
 
   # Potential yield gain per cell (in mio. USD)
-  x <- dimSums(yield_gain * area, dim = "MAG")
+  x <- dimSums(yieldGain * area, dim = "MAG")
   u <- "mio. USD"
 
   out <- collapseNames(x)
