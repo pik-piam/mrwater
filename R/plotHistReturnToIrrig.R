@@ -49,8 +49,8 @@ plotHistReturnToIrrig <- function(scenario, iniyear, lpjml, selectyears, climate
   ricereturn <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
                            cropmix = "rice_pro", monetary = TRUE, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
   # cap return to irrigation
-  return[return > 7000] <- 7000
-  ricereturn[ricereturn > 7000] <- 7000
+  return[return > 5000] <- 5000
+  ricereturn[ricereturn > 5000] <- 5000
 
   ## Read in cropland area (by crop) from crop area initialization (in mio. ha)
   area     <- calcOutput("IrrigAreaCommitted", selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)

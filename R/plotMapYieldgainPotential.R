@@ -113,7 +113,7 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
   x[area == 0] <- NA
 
   yieldGain   <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
-                           lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
+                           lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                            monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
                            multicropping = multicropping, aggregate = FALSE)
   x[yieldGain <= gainthreshold] <- NA
