@@ -73,6 +73,7 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod,
   non_ag_wc <- collapseNames(non_ag[, , "currHuman_wc"])
 
   if (com_ag == TRUE) {
+
     # Water already committed to irrigation
     currHuman    <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                                lpjml = lpjml, climatetype = climatetype,
@@ -80,12 +81,16 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod,
     currHuman_ww <- collapseNames(currHuman[, , "currHuman_ww"])
     currHuman_wc <- collapseNames(currHuman[, , "currHuman_wc"])
     comagyear    <- iniyear
+
   } else {
+
+    # No water is previously committed
     currHuman       <- non_ag
-    currHuman[, , ]   <- 0
+    currHuman[, , ] <- 0
     currHuman_ww    <- collapseNames(currHuman[, , "currHuman_ww"])
     currHuman_wc    <- collapseNames(currHuman[, , "currHuman_wc"])
     comagyear       <- NULL
+
   }
 
   # Water potentially available for irrigation (accounting for previously committed agricultural uses)

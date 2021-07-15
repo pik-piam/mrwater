@@ -32,19 +32,26 @@
 #'
 #' @importFrom luplot plotmap2
 #' @importFrom magclass collapseNames
-#' @importFrom stats lm
-#' @importFrom ggplot2 ggplot geom_point theme scale_color_manual guide_legend guides geom_smooth geom_text coord_equal
+#' @importFrom stats lm na.omit
+#' @importFrom ggplot2 ggplot geom_point theme scale_color_manual guide_legend guides geom_smooth geom_text coord_equal geom_abline
 #'
 #' @export
 
-plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, gainthreshold, thresholdtype, irrigationsystem, avlland_scen, cropmix, multicropping) {
+plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatetype,
+                                 EFRmethod, accessibilityrule, rankmethod, yieldcalib,
+                                 allocationrule, gainthreshold, thresholdtype,
+                                 irrigationsystem, avlland_scen, cropmix, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
+  # retrieve function arguments
+  iniyear   <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
+
+
   croparea  <- calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
-    physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
+                           physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
   #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
   map                          <- toolGetMappingCoord2Country()
   getCells(croparea)           <- paste(map$coords, map$iso, sep = ".")
@@ -53,10 +60,33 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
   irrigarea <- dimSums(croparea[, , "irrigated"], dim = 3)
   croparea  <- dimSums(croparea, dim = 3)
 
-  irrigatablearea <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype,
-    accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-    thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE,
-    com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+  irrigatablearea <- collapseNames(calcOutput("IrrigatableArea", selectyears = selectyears,
+                                              climatetype = climatetype, lpjml = lpjml,
+                                              gainthreshold = gainthreshold, rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                              allocationrule = allocationrule,  thresholdtype = thresholdtype,
+                                              irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+                                              cropmix = cropmix, potential_wat = TRUE,
+                                              accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+                                              com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+
+  # Reference data
+  # yield gain > threshold
+  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
+                                            lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
+                                            cropmix = cropmix, monetary = thresholdtype, yieldcalib = yieldcalib,
+                                            multicropping = multicropping, aggregate = FALSE)
+
+  # water available
+  frac_fullirrig           <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
+                                                     output = "frac_fullirrig", selectyears = selectyears,
+                                                     lpjml = lpjml, climatetype = climatetype,
+                                                     EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                                                     rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                                     allocationrule = allocationrule, thresholdtype = thresholdtype,
+                                                     gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+                                                     iniyear = iniyear, avlland_scen = avlland_scen,
+                                                     cropmix = cropmix, com_ag = FALSE,
+                                                     multicropping = multicropping, aggregate = FALSE))[, , scenario]
 
   # regionmapping
   mapping        <- toolGetMappingCoord2Country()
@@ -66,33 +96,121 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
 
   mapping <- merge(regmap, mapping)
 
-  df <- data.frame(coord = mapping$coords, irrigarea = as.data.frame(irrigarea[mapping$coords, , ])$Value, irrigatablearea = as.data.frame(irrigatablearea[mapping$coords, , ])$Value, region = mapping$reg)
+  df <- data.frame(coord = mapping$coords,
+                   irrigarea = as.data.frame(irrigarea[mapping$coords, , ])$Value,
+                   irrigatablearea = as.data.frame(irrigatablearea[mapping$coords, , ])$Value,
+                   fracfullirrig = as.data.frame(frac_fullirrig[mapping$coords, , ])$Value,
+                   gainpotential = as.data.frame(irrig_yieldgainpotential[mapping$coords, , ])$Value,
+                   region = mapping$reg)
+  df1 <- df2 <- df3 <- df
+  df1$irrigatablearea[df1$fracfullirrig <= 0] <- NA
+  df2$irrigatablearea[df2$fracfullirrig <= 0] <- NA
+  df3$irrigatablearea[df3$fracfullirrig > 0] <- NA
+  df1$irrigatablearea[df1$gainpotential < gainthreshold] <- NA
+  df2$irrigatablearea[df2$gainpotential > gainthreshold] <- NA
+  df3$irrigatablearea[df3$gainpotential < gainthreshold] <- NA
 
   if (region != "GLO") {
     df  <- df[df$region == region, ]
-    modelstat <- lm(irrigatablearea ~ irrigarea, data = df)
+    modelstat <- lm(irrigatablearea ~ irrigarea, data = df, na.action = na.omit)
     rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
-    out <- ggplot(df, aes(x = irrigarea, y = irrigatablearea)) +
-      geom_point(size = 0.9, na.rm = TRUE) +
-      geom_smooth(method = lm, na.rm = TRUE) +
+
+    df1  <- df1[df1$region == region, ]
+    p1 <- ggplot(df1, aes(x = irrigarea, y = irrigatablearea)) +
+      geom_point(size = 0.1, color = "black", na.rm = TRUE) +
+      geom_abline(intercept = c(0, 0), slope = 1, color = "grey") +
+      # geom_smooth(method = lm, na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
       ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
       theme_bw() +
+      theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+            panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white")) +
       ggtitle(paste0("Rsquared: ", rsquared))
-  } else {
-    modelstat <- lm(irrigatablearea ~ irrigarea, data = df)
-    rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
-    out <- ggplot(df, aes(x = irrigarea, y = irrigatablearea, color = region)) +
-      geom_point(size = 0.9, na.rm = TRUE) +
-      geom_smooth(method = lm, na.rm = TRUE) +
+
+    df2  <- df2[df2$region == region, ]
+    p2 <- ggplot(df2, aes(x = irrigarea, y = irrigatablearea)) +
+      geom_point(size = 0.1, color = "green", na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
       ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
-      scale_color_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#ffff99", "#b15928")) +
-      guides(colour = guide_legend(override.aes = list(size = 5))) +
       theme_bw() +
-      ggtitle(paste0("Rsquared: ", rsquared, " for region: ", region))
+      theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+            panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white")) +
+      ggtitle(paste0("Rsquared: ", rsquared))
+
+    df3  <- df3[df3$region == region, ]
+    p3 <- ggplot(df3, aes(x = irrigarea, y = irrigatablearea)) +
+      geom_point(size = 0.1, color = "red", na.rm = TRUE) +
+      coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
+      xlab("Actually Irrigated Area according to LUH (in Mha)") +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      theme_bw() +
+      theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+            panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white")) +
+      ggtitle(paste0("Rsquared: ", rsquared))
+
+    out <- cowplot::ggdraw() + cowplot::draw_plot(p1) + cowplot::draw_plot(p3) + cowplot::draw_plot(p2)
+
+
+  } else {
+    # modelstat <- lm(irrigatablearea ~ irrigarea, data = df)
+    # rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
+    # out <- ggplot(df, aes(x = irrigarea, y = irrigatablearea, color = region)) +
+    #   geom_point(size = 0.05, na.rm = TRUE) +
+    #   geom_smooth(method = lm, na.rm = TRUE) +
+    #   coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
+    #   xlab("Actually Irrigated Area according to LUH (in Mha)") +
+    #   ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+    #   scale_color_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#ffff99", "#b15928")) +
+    #   guides(colour = guide_legend(override.aes = list(size = 5))) +
+    #   theme_bw() +
+    #   ggtitle(paste0("Rsquared: ", rsquared, " for region: ", region))
+
+    modelstat <- lm(irrigatablearea ~ irrigarea, data = df, na.action = na.omit)
+    rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
+
+    p1 <- ggplot(df1, aes(x = irrigarea, y = irrigatablearea)) +
+      geom_point(size = 0.1, color = "black", na.rm = TRUE) +
+      geom_abline(intercept = c(0, 0), slope = 1, color = "grey") +
+      # geom_smooth(method = lm, na.rm = TRUE) +
+      coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
+      xlab("Actually Irrigated Area according to LUH (in Mha)") +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      theme_bw() +
+      theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+            panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white")) +
+      ggtitle(paste0("Rsquared: ", rsquared))
+
+    p2 <- ggplot(df2, aes(x = irrigarea, y = irrigatablearea)) +
+      geom_point(size = 0.1, color = "green", na.rm = TRUE) +
+      coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
+      xlab("Actually Irrigated Area according to LUH (in Mha)") +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      theme_bw() +
+      theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+            panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white")) +
+      ggtitle(paste0("Rsquared: ", rsquared))
+
+    p3 <- ggplot(df3, aes(x = irrigarea, y = irrigatablearea)) +
+      geom_point(size = 0.1, color = "red", na.rm = TRUE) +
+      coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
+      xlab("Actually Irrigated Area according to LUH (in Mha)") +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      theme_bw() +
+      theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
+            panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white")) +
+      ggtitle(paste0("Rsquared: ", rsquared))
+
+    out <- cowplot::ggdraw() + cowplot::draw_plot(p1) + cowplot::draw_plot(p3) + cowplot::draw_plot(p2)
+
+
   }
 
   return(out)
