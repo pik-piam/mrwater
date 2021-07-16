@@ -16,21 +16,32 @@ calcIrrigCellranking(
 )
 }
 \arguments{
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+\item{lpjml}{LPJmL version used for yields}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical" for yields}
+\item{climatetype}{Switch between different climate scenarios or
+historical baseline "GSWP3-W5E5:historical" for yields}
 
-\item{cellrankyear}{year(s) for which cell rank is calculated}
+\item{cellrankyear}{Year(s) for which cell rank is calculated}
 
-\item{method}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotential TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{method}{Method of calculating the rank:
+"meancellrank": mean over cellrank of proxy crops,
+"meancroprank": rank over mean of proxy crops (normalized),
+"meanpricedcroprank": rank over mean of proxy crops (normalized using price),
+"watervalue": rank over value of irrigation water;
+and fullpotential TRUE/FALSE separated by ":"
+(TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
+FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
-\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+\item{cropmix}{Cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix}
 
-\item{iniyear}{initialization year for price in price-weighted normalization of meanpricedcroprank and case of monetary=TRUE year of prices}
+\item{iniyear}{Initialization year for price}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
+calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated)
+smoothed_calibrated}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
@@ -38,7 +49,9 @@ or hist_irrig or hist_total for historical cropmix}
 magpie object in cellular resolution
 }
 \description{
-This function calculates a cellranking for the river basin discharge allocation based on yield improvement potential through irrigation
+This function calculates a cellranking
+             for the river basin discharge allocation
+             based on yield improvement potential through irrigation
 }
 \examples{
 \dontrun{
