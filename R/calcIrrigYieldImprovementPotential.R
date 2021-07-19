@@ -119,6 +119,68 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary,
 
     }
 
+
+    # Account for multicropping potential
+    mc   <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
+
+    i1r1 <- new.magpie(cells_and_regions = getCells(yields),
+                       years = getYears(yields),
+                       fill = 0)
+    i3r1 <- i3r2 <- i3r3 <- i2r1 <- i2r2 <- i2r3 <- i1r2 <- i1r3 <- i1r1
+    i1r1[mc[, , "irrigated"] == 1 & mc[, , "rainfed"] == 1] <- 1
+    i1r2[mc[, , "irrigated"] == 1 & mc[, , "rainfed"] == 2] <- 1
+    i1r3[mc[, , "irrigated"] == 1 & mc[, , "rainfed"] == 3] <- 1
+    i2r1[mc[, , "irrigated"] == 2 & mc[, , "rainfed"] == 1] <- 1
+    i2r2[mc[, , "irrigated"] == 2 & mc[, , "rainfed"] == 2] <- 1
+    i2r3[mc[, , "irrigated"] == 2 & mc[, , "rainfed"] == 3] <- 1
+    i3r1[mc[, , "irrigated"] == 3 & mc[, , "rainfed"] == 1] <- 1
+    i3r2[mc[, , "irrigated"] == 3 & mc[, , "rainfed"] == 2] <- 1
+    i3r3[mc[, , "irrigated"] == 3 & mc[, , "rainfed"] == 3] <- 1
+
+    # additional seasonal gains
+    yield_gain_add <- new.magpie(cells_and_regions = getCells(yields),
+                                 years = getYears(yields),
+                                 names = c("ss", "sd", "st", "ds", "dd", "dt", "ts", "td", "tt"),
+                                 fill = 0)
+
+    yield_gain_add[, , "ss"] <- collapseNames(yields[, , "irrigated"]) - collapseNames(yields[, , "rainfed"])
+    yield_gain_add[, , "ds"] <- yld_shr_season2 * collapseNames(yields[, , "irrigated"])
+    yield_gain_add[, , "dd"] <- yld_shr_season2 * (collapseNames(yields[, , "irrigated"]) -
+                                                     collapseNames(yields[, , "rainfed"]))
+    yield_gain_add[, , "ts"] <- yld_shr_season3 * collapseNames(yields[, , "irrigated"])
+    yield_gain_add[, , "td"] <- yld_shr_season3 * collapseNames(yields[, , "irrigated"])
+    yield_gain_add[, , "tt"] <- yld_shr_season3 * (collapseNames(yields[, , "irrigated"]) -
+                                                     collapseNames(yields[, , "rainfed"]))
+
+    if (multicropping) {
+
+      # report seasonal gains for three seasons
+      yield_gain <- new.magpie(cells_and_regions = getCells(yields),
+                               years = getYears(yields),
+                               names = c("single", "double", "triple"),
+                               fill = 0)
+
+      yield_gain[, , "single"] <- collapseNames(yield_gain_add[, , "ss"])
+      yield_gain[, , "single"] <- yield_gain[, , "single"] * (1 - i1r2) * (1 - i1r3)
+
+      yield_gain[, , "double"] <- collapseNames(yield_gain_add[, , "ds"]) * i2r1 +
+        collapseNames(yield_gain_add[, , "dd"]) * i2r2 +
+        collapseNames(yield_gain_add[, , "dt"]) * i2r3
+
+      yield_gain[, , "triple"] <- collapseNames(yield_gain_add[, , "ts"]) * i3r1 +
+        collapseNames(yield_gain_add[, , "td"]) * i3r2 +
+        collapseNames(yield_gain_add[, , "tt"]) * i3r3
+
+    } else {
+
+      # yield gain through irrigation for each crop [in tons/ha]
+      yield_gain <- collapseNames(yield_gain_add[, , "ss"])
+      # (Note: irrigation may lead to shift in growing period -> can have negative values;
+      # also: under N-stress, irrigation may lead to lower yields,
+      # the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
+
+    }
+
   } else {
 
     if (!multicropping) {
@@ -130,67 +192,6 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary,
       stop("Yield gain potential for different crop types not implemented for
            case of multicropping")
     }
-  }
-
-  # Account for multicropping potential
-  mc   <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
-
-  i1r1 <- new.magpie(cells_and_regions = getCells(yields),
-                     years = getYears(yields),
-                     fill = 0)
-  i3r1 <- i3r2 <- i3r3 <- i2r1 <- i2r2 <- i2r3 <- i1r2 <- i1r3 <- i1r1
-  i1r1[mc[, , "irrigated"] == 1 & mc[, , "rainfed"] == 1] <- 1
-  i1r2[mc[, , "irrigated"] == 1 & mc[, , "rainfed"] == 2] <- 1
-  i1r3[mc[, , "irrigated"] == 1 & mc[, , "rainfed"] == 3] <- 1
-  i2r1[mc[, , "irrigated"] == 2 & mc[, , "rainfed"] == 1] <- 1
-  i2r2[mc[, , "irrigated"] == 2 & mc[, , "rainfed"] == 2] <- 1
-  i2r3[mc[, , "irrigated"] == 2 & mc[, , "rainfed"] == 3] <- 1
-  i3r1[mc[, , "irrigated"] == 3 & mc[, , "rainfed"] == 1] <- 1
-  i3r2[mc[, , "irrigated"] == 3 & mc[, , "rainfed"] == 2] <- 1
-  i3r3[mc[, , "irrigated"] == 3 & mc[, , "rainfed"] == 3] <- 1
-
-  # additional seasonal gains
-  yield_gain_add <- new.magpie(cells_and_regions = getCells(yields),
-                               years = getYears(yields),
-                               names = c("ss", "sd", "st", "ds", "dd", "dt", "ts", "td", "tt"),
-                               fill = 0)
-
-  yield_gain_add[, , "ss"] <- collapseNames(yields[, , "irrigated"]) - collapseNames(yields[, , "rainfed"])
-  yield_gain_add[, , "ds"] <- yld_shr_season2 * collapseNames(yields[, , "irrigated"])
-  yield_gain_add[, , "dd"] <- yld_shr_season2 * (collapseNames(yields[, , "irrigated"]) -
-                                                   collapseNames(yields[, , "rainfed"]))
-  yield_gain_add[, , "ts"] <- yld_shr_season3 * collapseNames(yields[, , "irrigated"])
-  yield_gain_add[, , "td"] <- yld_shr_season3 * collapseNames(yields[, , "irrigated"])
-  yield_gain_add[, , "tt"] <- yld_shr_season3 * (collapseNames(yields[, , "irrigated"]) -
-                                                   collapseNames(yields[, , "rainfed"]))
-
-  if (multicropping) {
-
-    # report seasonal gains for three seasons
-    yield_gain <- new.magpie(cells_and_regions = getCells(yields),
-                             years = getYears(yields),
-                             names = c("single", "double", "triple"),
-                             fill = 0)
-
-    yield_gain[, , "single"] <- collapseNames(yield_gain_add[, , "ss"])
-    yield_gain[, , "single"] <- yield_gain[, , "single"] * (1 - i1r2) * (1 - i1r3)
-
-    yield_gain[, , "double"] <- collapseNames(yield_gain_add[, , "ds"]) * i2r1 +
-                                collapseNames(yield_gain_add[, , "dd"]) * i2r2 +
-                                collapseNames(yield_gain_add[, , "dt"]) * i2r3
-
-    yield_gain[, , "triple"] <- collapseNames(yield_gain_add[, , "ts"]) * i3r1 +
-                                collapseNames(yield_gain_add[, , "td"]) * i3r2 +
-                                collapseNames(yield_gain_add[, , "tt"]) * i3r3
-
-  } else {
-
-    # yield gain through irrigation for each crop [in tons/ha]
-    yield_gain <- collapseNames(yield_gain_add[, , "ss"])
-    # (Note: irrigation may lead to shift in growing period -> can have negative values;
-    # also: under N-stress, irrigation may lead to lower yields,
-    # the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
-
   }
 
   # set negative yield gains to 0
