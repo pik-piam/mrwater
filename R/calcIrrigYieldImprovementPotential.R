@@ -38,9 +38,99 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary,
   yld_shr_season3 <- 0.7
 
   # read in cellular lpjml yields [in tons/ha]
-  yields <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
-                       iniyear = iniyear, selectyears = selectyears,
-                       yieldcalib = yieldcalib, aggregate = FALSE)
+  yields   <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
+                         iniyear = iniyear, selectyears = selectyears,
+                         yieldcalib = yieldcalib, aggregate = FALSE)
+
+  # magpie crops
+  croplist <- getNames(collapseNames(yields[, , "irrigated"]))
+
+  if (monetary) {
+
+    # Read in crop output price in initialization (USD05/tDM)
+    p        <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
+                              years = NULL, year = iniyear, aggregate = FALSE)
+    croplist <- intersect(croplist, getNames(p))
+
+    # Calculate monetary yield gain (in USD05/ha)
+    yields   <- yields[, , croplist] * p[, , croplist]
+    unit     <- "USD05 per ha"
+
+  } else {
+
+    unit     <- "tons per ha"
+
+  }
+
+  # Selected crops
+  if (!is.null(cropmix)) {
+
+    # share of corp area by crop type
+    if (length(cropmix) == 1 && grepl("hist", cropmix)) {
+
+      # read in relevant croparea: total (irrigated + rainfed) or irrigated depending on chosen cropmix
+      croparea <- setYears(calcOutput("Croparea", years = iniyear, sectoral = "kcr",
+                                      cellular = TRUE, cells = "lpjcell", physical = TRUE,
+                                      irrigation = TRUE, aggregate = FALSE),
+                           NULL)
+      #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+      map                          <- toolGetMappingCoord2Country()
+      getCells(croparea)           <- paste(map$coords, map$iso, sep = ".")
+      names(dimnames(croparea))[1] <- "x.y.iso"
+      #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+
+      if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "irrig") {
+
+        # irrigated croparea
+        croparea <- collapseNames(croparea[, , "irrigated"])
+
+      } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "total") {
+
+        # total croparea (irrigated + rainfed)
+        croparea <- dimSums(croparea, dim = "irrigation")
+
+      } else {
+        stop("Please select hist_irrig or hist_total when selecting historical cropmix")
+      }
+
+      # historical share of crop types in cropland per cell
+      croparea_shr <- croparea / dimSums(croparea, dim = 3)
+      # correct NAs: where no current cropland available,
+      # representative crops (maize, rapeseed, pulses) assumed as proxy
+      rep_crops    <- c("maiz", "rapeseed", "puls_pro")
+      other_crops  <- setdiff(getNames(croparea), rep_crops)
+      croparea_shr[, , rep_crops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
+      croparea_shr[, , other_crops][dimSums(croparea, dim = 3) == 0] <- 0
+
+      # average (rf/irr) yields over historical crops weighted with their croparea share
+      croplist <- intersect(croplist, getNames(croparea_shr))
+      yields   <- dimSums(yields[, , croplist] * croparea_shr[, , croplist], dim = "MAG")
+
+      description <- "Average yield improvement potential for crop types weighted with historical croparea share"
+
+    } else {
+
+      # Note: equal crop area share for each proxycrop assumed
+      # select proxy crops
+      yields      <- yields[, , cropmix]
+      # average over proxy crops
+      yields      <- dimSums(yields, dim = "MAG") / length(cropmix)
+      description <- "Average yield improvement potential for selection of crop types"
+
+    }
+
+  } else {
+
+    if (!multicropping) {
+
+      yield_gain  <- collapseNames(yields[, , "irrigated"]) - collapseNames(yields[, , "rainfed"])
+      description <- "Yield improvement potential by irrigation for all different crop types"
+
+    } else {
+      stop("Yield gain potential for different crop types not implemented for
+           case of multicropping")
+    }
+  }
 
   # Account for multicropping potential
   mc   <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
@@ -86,13 +176,12 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary,
     yield_gain[, , "single"] <- yield_gain[, , "single"] * (1 - i1r2) * (1 - i1r3)
 
     yield_gain[, , "double"] <- collapseNames(yield_gain_add[, , "ds"]) * i2r1 +
-                              collapseNames(yield_gain_add[, , "dd"]) * i2r2 +
-                              collapseNames(yield_gain_add[, , "dt"]) * i2r3
+                                collapseNames(yield_gain_add[, , "dd"]) * i2r2 +
+                                collapseNames(yield_gain_add[, , "dt"]) * i2r3
 
     yield_gain[, , "triple"] <- collapseNames(yield_gain_add[, , "ts"]) * i3r1 +
-                              collapseNames(yield_gain_add[, , "td"]) * i3r2 +
-                              collapseNames(yield_gain_add[, , "tt"]) * i3r3
-
+                                collapseNames(yield_gain_add[, , "td"]) * i3r2 +
+                                collapseNames(yield_gain_add[, , "tt"]) * i3r3
 
   } else {
 
@@ -104,89 +193,8 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary,
 
   }
 
-  # magpie crops
-  croplist <- getNames(yield_gain)
-
-  if (monetary) {
-
-    # Read in crop output price in initialization (USD05/tDM)
-    p           <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
-                              years = NULL, year = iniyear, aggregate = FALSE)
-    croplist    <- intersect(croplist, getNames(p))
-
-    # set negative yield gains to 0
-    yield_gain[yield_gain < 0] <- 0
-
-    # Calculate monetary yield gain (in USD05/ha)
-    yield_gain  <- yield_gain[, , croplist] * p[, , croplist]
-    unit        <- "USD05 per ha"
-
-  } else {
-
-    unit        <- "tons per ha"
-
-  }
-
-  # Selected crops
-  if (!is.null(cropmix)) {
-
-    # share of corp area by crop type
-    if (length(cropmix) == 1 && grepl("hist", cropmix)) {
-
-      # read in relevant croparea: total (irrigated + rainfed) or irrigated depending on chosen cropmix
-      croparea <- setYears(calcOutput("Croparea", years = iniyear, sectoral = "kcr",
-                                      cellular = TRUE, cells = "lpjcell", physical = TRUE,
-                                      irrigation = TRUE, aggregate = FALSE),
-                           NULL)
-      #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-      map                          <- toolGetMappingCoord2Country()
-      getCells(croparea)           <- paste(map$coords, map$iso, sep = ".")
-      names(dimnames(croparea))[1] <- "x.y.iso"
-      #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-
-      if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "irrig") {
-
-        # irrigated croparea
-        croparea <- collapseNames(croparea[, , "irrigated"])
-
-      } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "total") {
-
-        # total croparea (irrigated + rainfed)
-        croparea <- dimSums(croparea, dim = "irrigation")
-
-      } else {
-        stop("Please select hist_irrig or hist_total when selecting historical cropmix")
-      }
-
-      # historical share of crop types in cropland per cell
-      croparea_shr <- croparea / dimSums(croparea, dim = 3)
-      # correct NAs: where no current cropland available,
-      # representative crops (maize, rapeseed, pulses) assumed as proxy
-      rep_crops    <- c("maiz", "rapeseed", "puls_pro")
-      other_crops  <- setdiff(getNames(croparea), rep_crops)
-      croparea_shr[, , rep_crops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
-      croparea_shr[, , other_crops][dimSums(croparea, dim = 3) == 0] <- 0
-
-      # average yield gain over historical crops weighted with their croparea share
-      croplist    <- intersect(croplist, getNames(croparea_shr))
-      yield_gain  <- dimSums(croparea_shr[, , croplist] * yield_gain[, , croplist], dim = 3)
-
-      description <- "Average yield improvement potential for crop types weighted with historical croparea share"
-
-    } else {
-
-      # Note: equal crop area share for each proxycrop assumed
-      # select proxy crops
-      yield_gain  <- yield_gain[, , cropmix]
-      # average over proxy crops
-      yield_gain  <- dimSums(yield_gain, dim = 3) / length(getNames(yield_gain))
-      description <- "Average yield improvement potential for selection of crop types"
-
-    }
-
-  } else {
-    description <- "Yield improvement potential by irrigation for all different crop types"
-  }
+  # set negative yield gains to 0
+  yield_gain[yield_gain < 0] <- 0
 
   # Check for NAs
   if (any(is.na(yield_gain))) {
