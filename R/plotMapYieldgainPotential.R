@@ -71,7 +71,7 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
                   iniyear = iniyear, lpjml = lpjml, climatetype = climatetype,
                   EFRmethod = EFRmethod, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
                   accessibilityrule = accessibilityrule, rankmethod = rankmethod,
-                  thresholdtype = thresholdtype, gainthreshold = gainthreshold,
+                  gainthreshold = gainthreshold,
                   allocationrule = allocationrule, avlland_scen = avlland_scen,
                   cropmix = cropmix, multicropping = multicropping, unlimited = TRUE, aggregate = FALSE)
 
@@ -79,7 +79,7 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
                       iniyear = iniyear, lpjml = lpjml, climatetype = climatetype,
                       EFRmethod = EFRmethod, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
                       accessibilityrule = accessibilityrule, rankmethod = rankmethod,
-                      thresholdtype = thresholdtype, gainthreshold = gainthreshold,
+                      gainthreshold = gainthreshold,
                       allocationrule = allocationrule, avlland_scen = avlland_scen,
                       cropmix = cropmix, multicropping = multicropping, unlimited = FALSE, aggregate = FALSE)
 
@@ -114,7 +114,7 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
 
   yieldGain   <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                            lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-                           monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
+                           unit = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
                            multicropping = multicropping, aggregate = FALSE)
   x[yieldGain <= gainthreshold] <- NA
 

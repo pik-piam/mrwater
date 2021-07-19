@@ -7,7 +7,7 @@
 calcIrrigYieldImprovementPotential(
   lpjml,
   climatetype,
-  monetary,
+  unit,
   iniyear,
   selectyears,
   cropmix,
@@ -20,8 +20,10 @@ calcIrrigYieldImprovementPotential(
 
 \item{climatetype}{Climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{monetary}{Yield improvement potential in tDM (FALSE, default) or
-priced yield improvement potential in USD05 (TRUE)}
+\item{unit}{Unit of yield improvement potential to be returned:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return}
 
 \item{iniyear}{initialization year for food price and cropmix area}
 

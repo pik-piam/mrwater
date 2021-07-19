@@ -15,20 +15,20 @@
 #'                          discharge that is exceeded x percent of the time on average throughout a year
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
-#' @param rankmethod        method of calculating the rank:
-#'                          "meancellrank": mean over cellrank of proxy crops,
-#'                          "meancroprank": rank over mean of proxy crops (normalized),
-#'                          "meanpricedcroprank": rank over mean of proxy crops (normalized using price),
-#'                          "watervalue": rank over value of irrigation water;
-#'                          and fullpotentail TRUE/FALSE separated by ":"
-#'                          (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area),
-#'                          FALSE: reduced potential of cell receives at later stage in allocation algorithm)
+#' @param rankmethod        Rank and optimization method consisting of
+#'                          Unit according to which rank is calculated:
+#'                          tDM (tons per dry matter),
+#'                          USD_ha (USD per hectare) for area return, or
+#'                          USD_m3 (USD per cubic meter) for volumetric return;
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell receives full irrigation requirements in total area)
+#'                          or reduced potential (FALSE, reduced potential of cell receives at later stage in allocation algorithm);
+#'                          separated by ":"
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst")
-#' @param thresholdtype     Thresholdtype of yield improvement potential required
-#'                          for water allocation in upstreamfirst algorithm:
-#'                          TRUE: monetary yield gain (USD05/ha),
-#'                          FALSE: yield gain in tDM/ha
+#' @param thresholdtype     Unit of yield improvement potential used as threshold:
+#'                          tDM (tons per dry matter),
+#'                          USD_ha (USD per hectare) for area return, or
+#'                          USD_m3 (USD per cubic meter) for volumetric return
 #' @param gainthreshold     Threshold of yield improvement potential required for
 #'                          water allocation in upstreamfirst algorithm
 #'                          (in same unit as thresholdtype)
@@ -110,7 +110,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential    <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                                             lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
-                                            cropmix = cropmix, monetary = thresholdtype, yieldcalib = yieldcalib,
+                                            cropmix = cropmix, unit = thresholdtype, yieldcalib = yieldcalib,
                                             multicropping = multicropping, aggregate = FALSE)
 
   if (allocationrule == "optimization") {
@@ -120,13 +120,26 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
 
     # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
     glocellrank   <- setYears(calcOutput("IrrigCellranking", cellrankyear = selectyears,
-                                         lpjml = lpjml, climatetype = climatetype, method = rankmethod,
+                                         lpjml = lpjml, climatetype = climatetype, unit = rankmethod,
                                          cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
                                          multicropping = multicropping, aggregate = FALSE),
                               selectyears)
 
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
-    allocationshare           <- 1 / (length(glocellrank[, 1, 1]) / 67420)
+    if (multicropping) {
+
+      # allocation share needs to be adjusted for multicropping length
+      tmp <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
+      tmp <- range(tmp)[2]
+
+      allocationshare           <- 1 / (length(glocellrank[, 1, 1]) / tmp / 67420)
+
+    } else {
+
+      # allocation share depends on chosen cellranking
+      allocationshare           <- 1 / (length(glocellrank[, 1, 1]) / 67420)
+
+    }
     required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
     required_wat_fullirrig_wc <- required_wat_fullirrig_wc * allocationshare
 

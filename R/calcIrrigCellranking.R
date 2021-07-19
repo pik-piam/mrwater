@@ -7,14 +7,12 @@
 #' @param climatetype   Switch between different climate scenarios or
 #'                      historical baseline "GSWP3-W5E5:historical" for yields
 #' @param cellrankyear  Year(s) for which cell rank is calculated
-#' @param method        Method of calculating the rank:
-#'                      "meancellrank": mean over cellrank of proxy crops,
-#'                      "meancroprank": rank over mean of proxy crops (normalized),
-#'                      "meanpricedcroprank": rank over mean of proxy crops (normalized using price),
-#'                      "watervalue": rank over value of irrigation water;
-#'                      and fullpotential TRUE/FALSE separated by ":"
-#'                      (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
-#'                      FALSE: reduced potential of cell receives at later stage in allocation algorithm)
+#' @param method        Rank and optimization method consisting of
+#'                      Unit according to which rank is calculated:
+#'                      tDM (tons per dry matter),
+#'                      USD_ha (USD per hectare) for area return, or
+#'                      USD_m3 (USD per cubic meter) for volumetric return;
+#'                      and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
 #' @param cropmix       Cropmix for which irrigation yield improvement is calculated
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
 #'                      or hist_irrig or hist_total for historical cropmix
@@ -37,126 +35,40 @@ calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
                                  method, cropmix, iniyear, yieldcalib, multicropping) {
 
   fullpotential <- as.logical(strsplit(method, ":")[[1]][2])
-  method        <- strsplit(method, ":")[[1]][1]
+  unit          <- strsplit(method, ":")[[1]][1]
 
-  if (method == "meancellrank") {
-    # Def. "meancellrank": ranking of cells or proxy crops, then: average over ranks
-
-    ## Read in potential yield gain per cell (tons per ha)
-    yield_gain <- calcOutput("IrrigYieldImprovementPotential", selectyears = cellrankyear,
-                             lpjml = lpjml, climatetype = climatetype,
-                             cropmix = NULL, monetary = FALSE, iniyear = NULL,
-                             yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
-    # select proxy crop(s)
-    yield_gain <- yield_gain[, , cropmix]
-
-    if (!fullpotential) {
-      yield_gain_reduced   <- 0.75 * yield_gain
-      getCells(yield_gain) <- paste0("A_", getCells(yield_gain))
-      getCells(yield_gain_reduced) <- paste0("B_", getCells(yield_gain_reduced))
-      yield_gain           <- mbind(yield_gain, yield_gain_reduced)
-    }
-
-    # cell ranking for crop (from highest yield gain (rank=1) to lowest yield gain (rank=1+x))
-    cropcellrank <- apply(-yield_gain, c(2, 3), rank)
-
-    # calculate mean over cropcellranks
-    glocellrank <- dimSums(cropcellrank, dim = 3) / length(getNames(cropcellrank))
-    # ties are solved by first occurrence
-    glocellrank <- apply(glocellrank, 2, rank, ties.method = "first")
-
-  } else if (method == "meancroprank") {
-    # Def. "meancroprank": average over yield gain of proxycrops, then: ranking of resulting average yield gain
-
-    ## Read in potential yield gain per cell (tons per ha)
-    yield_gain <- calcOutput("IrrigYieldImprovementPotential", selectyears = cellrankyear,
-                             lpjml = lpjml, climatetype = climatetype, yieldcalib = yieldcalib,
-                             cropmix = NULL, monetary = FALSE, iniyear = NULL, multicropping = multicropping, aggregate = FALSE)
-    # select proxy crop(s)
-    yield_gain <- yield_gain[, , cropmix]
-
-    if (!fullpotential) {
-      yield_gain_reduced <- 0.75 * yield_gain
-      getCells(yield_gain) <- paste0("A_", getCells(yield_gain))
-      getCells(yield_gain_reduced) <- paste0("B_", getCells(yield_gain_reduced))
-      yield_gain <- mbind(yield_gain, yield_gain_reduced)
-    }
-
-    # normalize yield gains of proxy crops (unity-based normalization)
-    min_yield  <- as.magpie(apply(yield_gain, c(2, 3), min))
-    max_yield  <- as.magpie(apply(yield_gain, c(2, 3), max))
-    yield_gain <- (yield_gain - min_yield) / (max_yield - min_yield)
-
-    # calculate average yield gain over normalized proxy crops
-    yield_gain <- dimSums(yield_gain, dim = 3) / length(getNames(yield_gain))
-
-    # calculate rank (ties are solved by first occurrence)
-    glocellrank <- apply(-yield_gain, c(2, 3), rank, ties.method = "first")
-
-  } else if (method == "meanpricedcroprank") {
-    # Def.: average potential yield gain in USD05 (yield gain * food price)
-
-    ## Read in average potential yield gain per cell (USD05 per ha)
-    yield_gain <- calcOutput("IrrigYieldImprovementPotential", selectyears = cellrankyear,
-                             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix, yieldcalib = yieldcalib,
-                             monetary = TRUE, iniyear = iniyear, multicropping = multicropping, aggregate = FALSE)
-
-    if (!fullpotential) {
-      yield_gain_reduced <- 0.75 * yield_gain
-      getCells(yield_gain) <- paste0("A_", getCells(yield_gain))
-      getCells(yield_gain_reduced) <- paste0("B_", getCells(yield_gain_reduced))
-      yield_gain <- mbind(yield_gain, yield_gain_reduced)
-    }
-
-    # calculate rank (ties are solved by first occurrence)
-    glocellrank <- apply(-yield_gain, c(2, 3), rank, ties.method = "first")
-
-  } else if (method == "watervalue") {
-    # Def.: water value following D'Odorico et al. (2020) = yield gain / irrigation water requirements
-
-    # Read in average water value per cell (USD05 per m^3)
-    watvalue <- calcOutput("IrrigWatValue", selectyears = cellrankyear, lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
+  # Read in average potential yield gain per cell (USD05 per ha)
+  yield_gain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
+                           selectyears = cellrankyear, iniyear = iniyear, lpjml = lpjml, climatetype = climatetype,
                            cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
-    if (!fullpotential) {
-      watvalue_reduced <- 0.75 * watvalue
-      getCells(watvalue) <- paste0("A_", getCells(watvalue))
-      getCells(watvalue_reduced) <- paste0("B_", getCells(watvalue_reduced))
-      watvalue <- mbind(watvalue, watvalue_reduced)
-    }
+  if (!fullpotential) {
 
-    # calculate rank (ties are solved by first occurrence)
-    glocellrank <- apply(-watvalue, c(2, 3), rank, ties.method = "first")
+    yield_gain_reduced   <- 0.75 * yield_gain
+    getCells(yield_gain) <- paste0("A_", getCells(yield_gain))
+    getCells(yield_gain_reduced) <- paste0("B_", getCells(yield_gain_reduced))
 
-  } else if (method == "mostprofitable") {
+    yield_gain <- mbind(yield_gain, yield_gain_reduced)
 
-    #### NOT FULLY FUNCTIONAL YET!!!!!!!!
-
-    # Read in average potential yield gain per cell for all crops (USD05 per ha)
-    yield_gain <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = cellrankyear, cropmix = NULL, monetary = TRUE, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
-
-    # Maximum monetary yield gain in the location (across all crops)
-    yield_gain_max <- setNames(pmax(yield_gain[, , "tece"], yield_gain[, , "maiz"], yield_gain[, , "trce"], yield_gain[, , "soybean"], yield_gain[, , "cottn_pro"],
-      yield_gain[, , "rapeseed"], yield_gain[, , "groundnut"], yield_gain[, , "rice_pro"], yield_gain[, , "oilpalm"], yield_gain[, , "betr"],
-      yield_gain[, , "sunflower"], yield_gain[, , "puls_pro"], yield_gain[, , "potato"], yield_gain[, , "others"], yield_gain[, , "begr"],
-      yield_gain[, , "cassav_sp"], yield_gain[, , "sugr_cane"], yield_gain[, , "sugr_beet"], yield_gain[, , "foddr"]), NULL) #### INCLUDE foddr, begr, betr or not?
-
-    if (!fullpotential) {
-      yield_gain_reduced <- 0.75 * yield_gain_max
-      getCells(yield_gain_max) <- paste0("A_", getCells(yield_gain_max))
-      getCells(yield_gain_reduced) <- paste0("B_", getCells(yield_gain_reduced))
-      yield_gain_max <- mbind(yield_gain_max, yield_gain_reduced)
-    }
-
-    ##### !!!!!????? QUESTION: How to ensure that most profitable is then also selected in FullIrrigationRequirements etc.
-
-    # Calculate rank (ties are solved by first occurrence)
-    glocellrank <- apply(-yield_gain_max, c(2, 3), rank, ties.method = "first")
-
-  } else {
-    stop("Please select a method for rank calculation")
   }
 
+  if (multicropping) {
+
+    single           <- collapseNames(yield_gain[, , "single"])
+    getCells(single) <- paste0("S_", getCells(single))
+    double           <- collapseNames(yield_gain[, , "double"])
+    getCells(double) <- paste0("D_", getCells(double))
+    triple           <- collapseNames(yield_gain[, , "triple"])
+    getCells(triple) <- paste0("T_", getCells(triple))
+
+    yield_gain <- mbind(single, double, triple)
+
+  }
+
+  # calculate rank (ties are solved by first occurrence)
+  glocellrank <- apply(-yield_gain, c(2, 3), rank, ties.method = "first")
+
+  # transform to magpie object
   glocellrank <- as.magpie(glocellrank, spatial = 1)
 
   # Check for NAs

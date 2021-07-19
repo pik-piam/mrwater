@@ -73,7 +73,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
   # yield gain > threshold
   irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                                             lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
-                                            cropmix = cropmix, monetary = thresholdtype, yieldcalib = yieldcalib,
+                                            cropmix = cropmix, unit = thresholdtype, yieldcalib = yieldcalib,
                                             multicropping = multicropping, aggregate = FALSE)
 
   # water available

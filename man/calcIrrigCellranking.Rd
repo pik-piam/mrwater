@@ -23,14 +23,12 @@ historical baseline "GSWP3-W5E5:historical" for yields}
 
 \item{cellrankyear}{Year(s) for which cell rank is calculated}
 
-\item{method}{Method of calculating the rank:
-"meancellrank": mean over cellrank of proxy crops,
-"meancroprank": rank over mean of proxy crops (normalized),
-"meanpricedcroprank": rank over mean of proxy crops (normalized using price),
-"watervalue": rank over value of irrigation water;
-and fullpotential TRUE/FALSE separated by ":"
-(TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
-FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{method}{Rank and optimization method consisting of
+Unit according to which rank is calculated:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return;
+and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
 
 \item{cropmix}{Cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain

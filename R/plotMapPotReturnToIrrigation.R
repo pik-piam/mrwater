@@ -46,7 +46,7 @@ plotMapPotReturnToIrrigation <- function(selectyears, unit, iniyear, lpjml,
     # Read in monetary potential yield gain per cell (USD05 per ha)
     return <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml,
                          climatetype = climatetype, selectyears = selectyears,
-                         cropmix = cropmix, monetary = TRUE, iniyear = iniyear,
+                         cropmix = cropmix, unit = "USD_ha", iniyear = iniyear,
                          yieldcalib = yieldcalib, multicropping = multicropping,
                          aggregate = FALSE)
     limit <- 2000
@@ -54,9 +54,11 @@ plotMapPotReturnToIrrigation <- function(selectyears, unit, iniyear, lpjml,
   } else if (unit == "perm3") {
 
     # Read in water value per cell (USD05 per m^3)
-    return <- calcOutput("IrrigWatValue", lpjml = lpjml, climatetype = climatetype,
-                         selectyears = selectyears, cropmix = cropmix, iniyear = iniyear,
-                         yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+    return <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml,
+                         climatetype = climatetype, selectyears = selectyears,
+                         cropmix = cropmix, unit = "USD_m3", iniyear = iniyear,
+                         yieldcalib = yieldcalib, multicropping = multicropping,
+                         aggregate = FALSE)
     limit <- 1
 
   } else {

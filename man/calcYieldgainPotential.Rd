@@ -15,7 +15,6 @@ calcYieldgainPotential(
   irrigationsystem,
   accessibilityrule,
   rankmethod,
-  thresholdtype,
   gainthreshold,
   allocationrule,
   avlland_scen,
@@ -52,17 +51,12 @@ smoothed_calib (smoothed LPJmL yield potentials, not harmonized, calibrated for 
 discharge that is exceeded x percent of the time on average throughout a year (Qx).
 (e.g. Q75: 0.25, Q50: 0.5)}
 
-\item{rankmethod}{Method of calculating the rank:
-"meancellrank": mean over cellrank of proxy crops,
-"meancroprank": rank over mean of proxy crops (normalized),
-"meanpricedcroprank": rank over mean of proxy crops (normalized using price),
-"watervalue": rank over value of irrigation water;
-and fullpotentail TRUE/FALSE separated by ":"
-(TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
-FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
-
-\item{thresholdtype}{Thresholdtype of yield improvement:
-TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
+\item{rankmethod}{Rank and optimization method consisting of
+Unit according to which rank is calculated:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return;
+and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
 
 \item{gainthreshold}{Threshold of yield improvement potential required
 (same unit as thresholdtype)}

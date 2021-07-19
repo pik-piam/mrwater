@@ -20,16 +20,18 @@ plotMapCellranking(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{selectyears}{year to be displayed}
+\item{selectyears}{Year to be displayed}
 
-\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops,
-"meancroprank": rank over mean of proxy crops (normalized),
-"meanpricedcroprank": rank over mean of proxy crops (normalized using price),
-"watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE
-separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
-                  FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{rankmethod}{Rank and optimization method consisting of
+Unit according to which rank is calculated:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return;
+and boolean indicating fullpotential (TRUE, i.e. cell receives full irrigation requirements in total area)
+or reduced potential (FALSE, reduced potential of cell receives at later stage in allocation algorithm);
+separated by ":"}
 
-\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+\item{cropmix}{Cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix}
 

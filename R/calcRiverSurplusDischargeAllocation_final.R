@@ -13,29 +13,32 @@
 #'                          discharge that is exceeded x percent of the time on average throughout a year
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
-#' @param rankmethod       Method of calculating the rank:
-#'                         "meancellrank": mean over cellrank of proxy crops,
-#'                         "meancroprank": rank over mean of proxy crops (normalized),
-#'                         "meanpricedcroprank": rank over mean of proxy crops (normalized using price),
-#'                         "watervalue": rank over value of irrigation water;
-#'                         and fullpotentail TRUE/FALSE separated by ":"
-#'                         (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area),
-#'                         FALSE: reduced potential of cell receives at later stage in allocation algorithm)
-#' @param yieldcalib       FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
-#' @param allocationrule   Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
-#' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
-#' @param gainthreshold    Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
-#' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param iniyear          Initialization year of irrigation system
-#' @param avlland_scen     Land availability scenario (currCropland, currIrrig, potIrrig)
-#'                         combination of land availability scenario and initialization year separated by ":".
-#'                         protection scenario separated by "_" (only relevant when potIrrig selected):
-#'                         WDPA, BH, FF, CPD, LW, HalfEarth
-#' @param cropmix          cropmix for which irrigation yield improvement is calculated
-#'                         can be selection of proxycrop(s) for calculation of average yield gain
-#'                         or hist_irrig or hist_total for historical cropmix
-#' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential), if only_discharge: already irrigated areas are reserved in Human Water Use Accounting, but Algorithm can decide freely to use it or not
-#' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
+#' @param rankmethod        Rank and optimization method consisting of
+#'                          Unit according to which rank is calculated:
+#'                          tDM (tons per dry matter),
+#'                          USD_ha (USD per hectare) for area return, or
+#'                          USD_m3 (USD per cubic meter) for volumetric return;
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell receives full irrigation requirements in total area)
+#'                          or reduced potential (FALSE, reduced potential of cell receives at later stage in allocation algorithm);
+#'                          separated by ":"
+#' @param yieldcalib        FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
+#' @param allocationrule    Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
+#' @param thresholdtype     Unit of yield improvement potential used as threshold:
+#'                          tDM (tons per dry matter),
+#'                          USD_ha (USD per hectare) for area return, or
+#'                          USD_m3 (USD per cubic meter) for volumetric return
+#' @param gainthreshold     Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
+#' @param irrigationsystem  Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
+#' @param iniyear           Initialization year of irrigation system
+#' @param avlland_scen      Land availability scenario (currCropland, currIrrig, potIrrig)
+#'                          combination of land availability scenario and initialization year separated by ":".
+#'                          protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                          WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param cropmix           cropmix for which irrigation yield improvement is calculated
+#'                          can be selection of proxycrop(s) for calculation of average yield gain
+#'                          or hist_irrig or hist_total for historical cropmix
+#' @param com_ag            if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential), if only_discharge: already irrigated areas are reserved in Human Water Use Accounting, but Algorithm can decide freely to use it or not
+#' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears
@@ -100,7 +103,7 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
   # Yield gain potential through irrigation of proxy crops
   irrig_yieldgainpotential    <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                                             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-                                            monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
+                                            unit = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
                                             multicropping = multicropping, aggregate = FALSE)
 
   # Initialization of fraction of full irrigation requirements that can be fulfilled
@@ -111,7 +114,7 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   glocellrank     <- setYears(calcOutput("IrrigCellranking", cellrankyear = selectyears,
-                                         lpjml = lpjml, climatetype = climatetype, method = rankmethod,
+                                         lpjml = lpjml, climatetype = climatetype, unit = rankmethod,
                                          cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
                                          multicropping = multicropping, aggregate = FALSE),
                               selectyears)
@@ -160,7 +163,8 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
                   required_wat_fullirrig_wc = required_wat_fullirrig_wc,
                   gainthreshold = gainthreshold,
                   avl_wat_ww = avl_wat_ww,
-                  avl_wat_wc = avl_wat_wc)
+                  avl_wat_wc = avl_wat_wc,
+                  multicropping = multicropping)
 
   for (y in selectyears) {
 

@@ -14,22 +14,18 @@
 #' @param accessibilityrule Strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx).
 #'                          (e.g. Q75: 0.25, Q50: 0.5)
-#' @param rankmethod        Method of calculating the rank:
-#'                          "meancellrank": mean over cellrank of proxy crops,
-#'                          "meancroprank": rank over mean of proxy crops (normalized),
-#'                          "meanpricedcroprank": rank over mean of proxy crops (normalized using price),
-#'                          "watervalue": rank over value of irrigation water;
-#'                          and fullpotentail TRUE/FALSE separated by ":"
-#'                          (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
-#'                          FALSE: reduced potential of cell receives at later stage in allocation algorithm)
+#' @param rankmethod        Rank and optimization method consisting of
+#'                          Unit according to which rank is calculated:
+#'                          tDM (tons per dry matter),
+#'                          USD_ha (USD per hectare) for area return, or
+#'                          USD_m3 (USD per cubic meter) for volumetric return;
+#'                          and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
 #' @param yieldcalib        FAO (LPJmL yields calibrated with current FAO yield) or
 #'                          calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
 #'                          smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
 #'                          smoothed_calib (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
-#' @param thresholdtype     Thresholdtype of yield improvement:
-#'                          TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param gainthreshold     Threshold of yield improvement potential required
 #'                          (same unit as thresholdtype)
 #' @param irrigationsystem  Irrigation system used
@@ -62,14 +58,17 @@
 calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climatetype,
                                    EFRmethod, yieldcalib, irrigationsystem,
                                    accessibilityrule, rankmethod,
-                                   thresholdtype, gainthreshold, allocationrule,
+                                   gainthreshold, allocationrule,
                                    avlland_scen, cropmix, multicropping, unlimited) {
+
+  thresholdtype <- strsplit(rankmethod, ":")[[1]][1]
+
 
   # Cellular yield improvement potential for all crops (in USD/ha)
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
-                            lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
-                            monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
-                            multicropping = multicropping, aggregate = FALSE)
+                          lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
+                          unit = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
+                          multicropping = multicropping, aggregate = FALSE)
 
   # Total area that can potentially be irrigated (in Mha)
   if (unlimited) {

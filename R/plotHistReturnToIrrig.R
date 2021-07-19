@@ -43,11 +43,11 @@ plotHistReturnToIrrig <- function(scenario, iniyear, lpjml, selectyears, climate
 
   # Return to Irrigation
   return    <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
-                            cropmix = croplist, monetary = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
+                            cropmix = croplist, unit = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
                             multicropping = multicropping, aggregate = FALSE) #### ALLES AUSSER REIS (evtl. stacked oder besser transparent)
   # rice return
   ricereturn <- calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
-                           cropmix = "rice_pro", monetary = TRUE, iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+                           cropmix = "rice_pro", unit = "USD_ha", iniyear = iniyear, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
   # cap return to irrigation
   return[return > 5000] <- 5000
   ricereturn[ricereturn > 5000] <- 5000

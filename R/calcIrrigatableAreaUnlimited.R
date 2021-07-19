@@ -19,8 +19,10 @@
 #'                      calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
 #'                      smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
 #'                      smoothed_calibrated (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)
-#' @param thresholdtype TRUE: monetary yield gain (USD05/ha),
-#'                      FALSE: yield gain in tDM/ha
+#' @param thresholdtype Unit of yield improvement potential used as threshold:
+#'                      tDM (tons per dry matter),
+#'                      USD_ha (USD per hectare) for area return, or
+#'                      USD_m3 (USD per cubic meter) for volumetric return
 #' @param gainthreshold Threshold of yield improvement potential
 #'                      (same unit as thresholdtype)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
@@ -48,9 +50,9 @@ calcIrrigatableAreaUnlimited <- function(selectyears, avlland_scen, lpjml,
                               avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
 
   # Yield gain potential through irrigation of proxy crops
-  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential",
-                                         lpjml = lpjml, climatetype = climatetype, selectyears = selectyears,
-                                         cropmix = cropmix, monetary = thresholdtype, iniyear = iniyear,
+  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", unit = thresholdtype,
+                                         lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
+                                         selectyears = selectyears, iniyear = iniyear,
                                          yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
   # remove areas below chosen gainthreshold

@@ -5,8 +5,10 @@
 #' @param lpjml         LPJmL version used for yields
 #' @param climatetype   Climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param selectyears   Years to be returned by the function
-#' @param monetary      Yield improvement potential in tDM (FALSE, default) or
-#'                      priced yield improvement potential in USD05 (TRUE)
+#' @param unit          Unit of yield improvement potential to be returned:
+#'                      tDM (tons per dry matter),
+#'                      USD_ha (USD per hectare) for area return, or
+#'                      USD_m3 (USD per cubic meter) for volumetric return
 #' @param iniyear       initialization year for food price and cropmix area
 #' @param cropmix       cropmix for which irrigation yield improvement is calculated
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
@@ -30,7 +32,7 @@
 #' @importFrom magclass collapseNames getNames getCells getSets dimSums
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary,
+calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                                                iniyear, selectyears, cropmix, yieldcalib, multicropping) {
 
   # yield reduction parameters (share of yield potential that can be reached in second / third season):
@@ -45,20 +47,45 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary,
   # magpie crops
   croplist <- getNames(collapseNames(yields[, , "irrigated"]))
 
-  if (monetary) {
+  # read in crop output price in initialization year (USD05/tDM)
+  p        <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
+                         years = NULL, year = iniyear, aggregate = FALSE)
 
-    # Read in crop output price in initialization (USD05/tDM)
-    p        <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
-                              years = NULL, year = iniyear, aggregate = FALSE)
+  if (unit == "tDM") {
+
+    unit <- "tons per ha"
+
+  } else if (unit == "USD_ha") {
+
     croplist <- intersect(croplist, getNames(p))
 
     # Calculate monetary yield gain (in USD05/ha)
     yields   <- yields[, , croplist] * p[, , croplist]
     unit     <- "USD05 per ha"
 
-  } else {
+  } else if (unit == "USD_m3") {
 
-    unit     <- "tons per ha"
+    croplist <- intersect(croplist, getNames(p))
+
+    # Calculate monetary yield gain (in USD05/ha)
+    yields   <- yields[, , croplist] * p[, , croplist]
+
+    # Read in irrigation water requirements (withdrawals) for all crops
+    # (in m^3 per hectare per year) [smoothed and harmonized]
+    # Note: users would pay for consumption rather than withdrawals [D'Odorico et al. (2020)]
+    irrig_withdrawal <- calcOutput("IrrigWatRequirements", lpjml = lpjml,
+                                   climatetype = climatetype, selectyears = selectyears, aggregate = FALSE)
+    irrig_withdrawal <- collapseNames(irrig_withdrawal[, , "withdrawal"])
+    irrig_withdrawal <- irrig_withdrawal[, , intersect(gsub("[.].*", "", getNames(irrig_withdrawal)), getNames(yields))]
+
+    # Read in irrigation system area initialization
+    irrigation_system <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
+
+    # Calculate irrigation water requirements
+    IWR  <- dimSums((irrigation_system[, , ] * irrig_withdrawal[, , ]), dim = 3.1)
+    IWR  <- IWR[, , getNames(yields)]
+
+    unit <- "USD05 per m^3"
 
   }
 
@@ -118,7 +145,6 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary,
       description <- "Average yield improvement potential for selection of crop types"
 
     }
-
 
     # Account for multicropping potential
     mc   <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
@@ -197,10 +223,31 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, monetary,
   # set negative yield gains to 0
   yield_gain[yield_gain < 0] <- 0
 
+  if (unit == "USD_m3") {
+
+    # Correction of small yield gains and small IWR: where smaller (a) or (b) set to 0
+    # (a) 1 mm = l/m^2 = 10 m^3/ha
+    # (b) 10 USD /ha
+    setToZero <- IWR < 10 | yield_gain < 10
+
+    IWR[setToZero]        <- 0
+    yield_gain[setToZero] <- 0
+
+    # Calculate value of water (yield improvement per m^3)
+    yield_gain <- ifelse(IWR > 0, yield_gain / IWR, 0)
+
+  }
+
   # Check for NAs
   if (any(is.na(yield_gain))) {
     stop("Function YieldImprovementPotential produced NAs")
   }
+
+  # Check for negatives
+  if (any(round(yield_gain) < 0)) {
+    stop("Function YieldImprovementPotential produced negative values")
+  }
+
 
   return(list(x            = yield_gain,
               weight       = NULL,

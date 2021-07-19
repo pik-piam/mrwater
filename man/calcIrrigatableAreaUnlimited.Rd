@@ -40,8 +40,10 @@ calibrated (LPJmL yield potentials harmonized to baseline and calibrated for pro
 smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
 smoothed_calibrated (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)}
 
-\item{thresholdtype}{TRUE: monetary yield gain (USD05/ha),
-FALSE: yield gain in tDM/ha}
+\item{thresholdtype}{Unit of yield improvement potential used as threshold:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return}
 
 \item{gainthreshold}{Threshold of yield improvement potential
 (same unit as thresholdtype)}

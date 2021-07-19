@@ -37,7 +37,20 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     avl_wat_wc                     <- l_in$avl_wat_wc
 
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
-    allocationshare             <- 1 / (length(glocellrank[, 1, 1]) / 67420)
+    if (l_in$multicropping) {
+
+      # allocation share needs to be adjusted for multicropping length
+      tmp <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
+      tmp <- range(tmp)[2]
+
+      allocationshare           <- 1 / (length(glocellrank[, 1, 1]) / tmp / 67420)
+
+    } else {
+
+      # allocation share depends on chosen cellranking
+      allocationshare           <- 1 / (length(glocellrank[, 1, 1]) / 67420)
+
+    }
     I_required_wat_fullirrig_ww <- I_required_wat_fullirrig_ww * allocationshare
     I_required_wat_fullirrig_wc <- I_required_wat_fullirrig_wc * allocationshare
 
