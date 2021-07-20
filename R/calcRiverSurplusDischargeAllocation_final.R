@@ -37,7 +37,9 @@
 #' @param cropmix           cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
 #'                          or hist_irrig or hist_total for historical cropmix
-#' @param com_ag            if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential), if only_discharge: already irrigated areas are reserved in Human Water Use Accounting, but Algorithm can decide freely to use it or not
+#' @param com_ag            if TRUE: the currently already irrigated areas
+#'                                   in initialization year are reserved for irrigation,
+#'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @importFrom madrat calcOutput
@@ -79,7 +81,8 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
 
   # Minimum reserved flow requirements: Inaccessible discharge +
-  #                                     Environmental Flow Requirements (adjusted for part that is fulfilled by inaccessible water) +
+  #                                     Environmental Flow Requirements (adjusted for
+  #                                     part that is fulfilled by inaccessible water) +
   #                                     Reserved for Non-Agricultural Uses +
   #                                     [Reserved Committed Agricultural Uses, if activated] (in mio. m^3 / yr)
   required_wat_min_allocation <- calcOutput("RiverWatReserved", aggregate = FALSE,
@@ -114,7 +117,7 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   glocellrank     <- setYears(calcOutput("IrrigCellranking", cellrankyear = selectyears,
-                                         lpjml = lpjml, climatetype = climatetype, unit = rankmethod,
+                                         lpjml = lpjml, climatetype = climatetype, method = rankmethod,
                                          cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
                                          multicropping = multicropping, aggregate = FALSE),
                               selectyears)

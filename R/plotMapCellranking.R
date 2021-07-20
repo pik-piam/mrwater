@@ -43,7 +43,7 @@ plotMapCellranking <- function(lpjml, climatetype, selectyears, rankmethod,
     stop("Please select one year only for the map")
   }
 
-  glocellrank  <- calcOutput("IrrigCellranking", unit = rankmethod,
+  glocellrank  <- calcOutput("IrrigCellranking", method = rankmethod,
                              lpjml = lpjml, climatetype = climatetype, cellrankyear = selectyears,
                              cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
                              multicropping = multicropping, aggregate = FALSE)

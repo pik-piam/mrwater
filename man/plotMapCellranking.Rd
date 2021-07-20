@@ -27,8 +27,10 @@ Unit according to which rank is calculated:
 tDM (tons per dry matter),
 USD_ha (USD per hectare) for area return, or
 USD_m3 (USD per cubic meter) for volumetric return;
-and boolean indicating fullpotential (TRUE, i.e. cell receives full irrigation requirements in total area)
-or reduced potential (FALSE, reduced potential of cell receives at later stage in allocation algorithm);
+and boolean indicating fullpotential (TRUE, i.e. cell receives full irrigation
+                                            requirements in total area)
+or reduced potential (FALSE, reduced potential of cell receives
+                             at later stage in allocation algorithm);
 separated by ":"}
 
 \item{cropmix}{Cropmix for which irrigation yield improvement is calculated
@@ -51,7 +53,9 @@ magpie object in cellular resolution
 map of cellranking
 }
 \examples{
-\dontrun{ plotMapCellranking() }
+\dontrun{
+plotMapCellranking()
+}
 
 }
 \author{

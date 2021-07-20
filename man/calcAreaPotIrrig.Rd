@@ -4,7 +4,7 @@
 \alias{calcAreaPotIrrig}
 \title{calcAreaPotIrrig}
 \usage{
-calcAreaPotIrrig(selectyears, comagyear, avlland_scen)
+calcAreaPotIrrig(selectyears, comagyear, avlland_scen, multicropping)
 }
 \arguments{
 \item{selectyears}{years to be returned}
@@ -18,6 +18,8 @@ used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 201
 combination of land availability scenario and initialization year separated by ":".
 protection scenario separated by "_" (only relevant when potIrrig selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

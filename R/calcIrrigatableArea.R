@@ -92,7 +92,7 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
 
   ## Read in area that can potentially be irrigated
   # (including total potentially irrigatable area; defined by comagyear=NULL)
-  area_potirrig <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+  area_potirrig <- calcOutput("AreaPotIrrig", selectyears = selectyears, multicropping = multicropping,
                               avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
