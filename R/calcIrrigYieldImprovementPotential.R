@@ -178,32 +178,30 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
     yield_gain_add[, , "tt"] <- yld_shr_season3 * (collapseNames(yields[, , "irrigated"]) -
                                                      collapseNames(yields[, , "rainfed"]))
 
-    if (multicropping) {
+    # report seasonal gains for three seasons
+    yield_gain <- new.magpie(cells_and_regions = getCells(yields),
+                             years = getYears(yields),
+                             names = c("single", "double", "triple"),
+                             fill = 0)
 
-      # report seasonal gains for three seasons
-      yield_gain <- new.magpie(cells_and_regions = getCells(yields),
-                               years = getYears(yields),
-                               names = c("single", "double", "triple"),
-                               fill = 0)
+    if (multicropping) {
 
       yield_gain[, , "single"] <- collapseNames(yield_gain_add[, , "ss"])
       yield_gain[, , "single"] <- yield_gain[, , "single"] * (1 - i1r2) * (1 - i1r3)
 
       yield_gain[, , "double"] <- collapseNames(yield_gain_add[, , "ds"]) * i2r1 +
-        collapseNames(yield_gain_add[, , "dd"]) * i2r2 +
-        collapseNames(yield_gain_add[, , "dt"]) * i2r3
+                                  collapseNames(yield_gain_add[, , "dd"]) * i2r2 +
+                                  collapseNames(yield_gain_add[, , "dt"]) * i2r3
 
       yield_gain[, , "triple"] <- collapseNames(yield_gain_add[, , "ts"]) * i3r1 +
-        collapseNames(yield_gain_add[, , "td"]) * i3r2 +
-        collapseNames(yield_gain_add[, , "tt"]) * i3r3
+                                  collapseNames(yield_gain_add[, , "td"]) * i3r2 +
+                                  collapseNames(yield_gain_add[, , "tt"]) * i3r3
 
     } else {
 
       # yield gain through irrigation for each crop [in tons/ha]
-      yield_gain <- collapseNames(yield_gain_add[, , "ss"])
-      # (Note: irrigation may lead to shift in growing period -> can have negative values;
-      # also: under N-stress, irrigation may lead to lower yields,
-      # the latter is only relevant for limited-N-LPJmL version, default: unlimited N)
+      yield_gain[, , "single"] <- collapseNames(yield_gain_add[, , "ss"])
+      yield_gain[, , c("double", "triple")] <- 0
 
     }
 
@@ -222,6 +220,10 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
 
   # set negative yield gains to 0
   yield_gain[yield_gain < 0] <- 0
+  # (Note: irrigation may lead to shift in growing period -> can have negative values
+  # (in cropping calendar version);
+  # also: under N-stress, irrigation may lead to lower yields,
+  # (the latter is only relevant for limited-N-LPJmL version, default: unlimited N))
 
   if (unit == "USD_m3") {
 

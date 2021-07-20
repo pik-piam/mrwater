@@ -11,7 +11,6 @@
 #'                      combination of land availability scenario and initialization year separated by ":".
 #'                      protection scenario separated by "_" (only relevant when potIrrig selected):
 #'                      WDPA, BH, FF, CPD, LW, HalfEarth
-#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -25,7 +24,7 @@
 #' @importFrom magclass collapseNames getCells getYears getNames dimSums
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen, multicropping) {
+calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
 
   # retrieve function arguments
   iniyear      <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
@@ -116,14 +115,6 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen, multicropping
 
   # correct negative land availability due to mismatch of available land and protected land or rounding imprecision
   land[land < 0] <- 0
-
-  if (multicropping) {
-
-    mc   <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
-    mc   <- collapseNames(mc[, , "irrigated"])
-    land <- land * mc
-
-  }
 
   # Checks
   if (any(is.na(land))) {

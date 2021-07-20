@@ -90,9 +90,9 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
   wat_req_ww <- collapseNames(wat_req[, , "withdrawal"])
   wat_req_wc <- collapseNames(wat_req[, , "consumption"])
 
-  ## Read in area that can potentially be irrigated
+  # Read in area that can potentially be irrigated (in every season separately, i.e. multicropping = FALSE)
   # (including total potentially irrigatable area; defined by comagyear=NULL)
-  area_potirrig <- calcOutput("AreaPotIrrig", selectyears = selectyears, multicropping = multicropping,
+  area_potirrig <- calcOutput("AreaPotIrrig", selectyears = selectyears,
                               avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated

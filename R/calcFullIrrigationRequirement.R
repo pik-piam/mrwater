@@ -111,16 +111,29 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
   irrig_wat <- irrig_wat[, , getNames(croparea_shr)] * land
 
+  # add seasonality dimension
+  irrig_wat <- add_dimension(irrig_wat, dim = 3.1, add = "season", nm = "single")
+  irrig_wat <- add_columns(irrig_wat, dim = 3.1, addnm = c("double", "triple"))
+
   # Increase of water requirements where multicropping takes place
   if (multicropping) {
+
+    # water requirement reduction parameters (share of water requirement necessary in second / third season):
+    wat_shr_season2 <- 0.9    #-#-# FIND LITERATURE VALUES FOR THIS!!!! #-#-#
+    wat_shr_season3 <- 0.8    #-#-# FIND LITERATURE VALUES FOR THIS!!!! #-#-#
+
     # read in multiple cropping zones [3 layers: single, double, triple cropping]
     mc          <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
     mc          <- collapseNames(mc[, , "irrigated"])
-    # adjust multicropping factors as in case of yield!?!?!?
-    # mc[mc == 2] <- 1.5
-    # mc[mc == 3] <- 2
-    # correct yield potential for multicropping
-    irrig_wat   <- irrig_wat * mc
+
+    irrig_wat[, , "double"] <- irrig_wat[, , "single"] * wat_shr_season2
+    irrig_wat[, , "triple"] <- irrig_wat[, , "single"] * wat_shr_season3
+
+  } else {
+
+    # when multicropping is deactivated: only first season is considered
+    irrig_wat[, , c("double", "triple")] <- 0
+
   }
 
   # sum over crops
@@ -148,7 +161,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   }
 
   # Adjust dimension names
-  getSets(irrig_wat, fulldim = FALSE)[1] <- "x.y.iso"
+  getSets(irrig_wat, fulldim = FALSE) <- c("x.y.iso", "year", "season.irrig_type")
 
   # Checks
   if (any(is.na(irrig_wat))) {
