@@ -63,6 +63,10 @@ calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
 
     yield_gain <- mbind(single, double, triple)
 
+  } else {
+
+    yield_gain <- collapseNames(yield_gain[, , "single"])
+
   }
 
   # calculate rank (ties are solved by first occurrence)
