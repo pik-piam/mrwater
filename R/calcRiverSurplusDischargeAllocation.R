@@ -142,12 +142,12 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
       tmp <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
       tmp <- range(tmp)[2]
 
-      allocationshare           <- 1 / (length(glocellrank[, 1, 1]) / tmp / 67420)
+      allocationshare <- 1 / (length(glocellrank[, 1, 1]) / tmp / 67420)
 
     } else {
 
       # allocation share depends on chosen cellranking
-      allocationshare           <- 1 / (length(glocellrank[, 1, 1]) / 67420)
+      allocationshare <- 1 / (length(glocellrank[, 1, 1]) / 67420)
 
     }
     required_wat_fullirrig_ww <- required_wat_fullirrig_ww * allocationshare
@@ -179,6 +179,8 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
   avl_wat_ww                  <- as.array(.transformObject(0))
   avl_wat_wc                  <- as.array(.transformObject(0))
 
+  names <- getNames(IO_discharge)
+
   ################################################
   ####### River basin discharge allocation #######
   ################################################
@@ -194,11 +196,26 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
 
       for (o in (1:max(glocellrank[, y, ], na.rm = T))) {
 
-        # Extract the cell number (depending on type of cellranking)
-        if (!fullpotential) {
-          c <- rs$cells[rs$coordinates == paste(strsplit(gsub(".*_", "", names(which(glocellrank[, y, ] == o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[, y, ] == o))), "\\.")[[1]][2], sep = ".")]
+        # Extract the cell number
+        c <- rs$cells[rs$coordinates == paste(strsplit(gsub(".*_", "", names(which(glocellrank[, y, ] == o))), "\\.")[[1]][1],
+                                              strsplit(gsub(".*_", "", names(which(glocellrank[, y, ] == o))), "\\.")[[1]][2],
+                                              sep = ".")]
+
+        # Extract season
+        if (multicropping) {
+
+          if (grepl("S_", names(which(glocellrank[, y, ] == o)))) {
+            season <- paste(names, "single", sep = ".")
+          } else if (grepl("D_", names(which(glocellrank[, y, ] == o)))) {
+            season <- paste(names, "double", sep = ".")
+          } else if (grepl("T_", names(which(glocellrank[, y, ] == o)))) {
+            season <- paste(names, "triple", sep = ".")
+          } else {
+            stop("Object glocellrank does not have multicropping dimensions")
+          }
+
         } else {
-          c <- rs$cells[glocellrank[, y, ] == o]
+          season <- paste(names, "single", sep = ".")
         }
 
         # vector of downstreamcells of c
@@ -209,7 +226,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
         cc   <- rep(1:length(c), length(rs$downstreamcells[[c]]))
 
         # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
-        irriggain <- (irrig_yieldgainpotential[c, y, , drop = F] > gainthreshold)
+        irriggain <- (irrig_yieldgainpotential[c, y, season, drop = F] > gainthreshold)
 
         # available water for additional irrigation withdrawals
         avl_wat_ww[c, y, ][irriggain[, , , drop = F]] <- pmax(IO_discharge[c, y, , drop = F] -
@@ -217,17 +234,17 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
                                                               0)[irriggain[, , , drop = F]]
 
         # withdrawal constraint
-        ww_constraint   <- (required_wat_fullirrig_ww[c, y, , drop = F] > 0 & irriggain[, , , drop = F])
+        ww_constraint   <- (required_wat_fullirrig_ww[c, y, season, drop = F] > 0 & irriggain[, , , drop = F])
 
         # how much withdrawals can be fulfilled by available water
         frac_fullirrig[c, y, ][ww_constraint[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][ww_constraint[, , , drop = F]] /
-                                                                        required_wat_fullirrig_ww[c, y, , drop = F][ww_constraint[, , , drop = F]],
+                                                                        required_wat_fullirrig_ww[c, y, season, drop = F][ww_constraint[, , , drop = F]],
                                                                       1)
 
         if (length(down) > 0) {
 
           # consumption constraint
-          wc_constraint <- (required_wat_fullirrig_wc[c, y, , drop = F] > 0 & ww_constraint[, , , drop = F])
+          wc_constraint <- (required_wat_fullirrig_wc[c, y, season, drop = F] > 0 & ww_constraint[, , , drop = F])
 
           # available water for additional irrigation consumption (considering downstream availability)
           # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
@@ -237,74 +254,81 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
 
           # how much consumption can be fulfilled by available water
           frac_fullirrig[c, y, ][wc_constraint[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][wc_constraint[, , , drop = F]] /
-                                                                          required_wat_fullirrig_wc[c, y, , drop = F][wc_constraint[, , , drop = F]],
+                                                                          required_wat_fullirrig_wc[c, y, season, drop = F][wc_constraint[, , , drop = F]],
                                                                         frac_fullirrig[c, y, , drop = F][wc_constraint[, , , drop = F]])
         }
 
         # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
         IO_discharge[c(down, c), y, ][ww_constraint[c(cc, 1), , , drop = F]] <- (IO_discharge[c(down, c), y, , drop = F] -
-                                                                                   required_wat_fullirrig_wc[c(lc, c), y, , drop = F] * frac_fullirrig[c(lc, c), y, , drop = F])[ww_constraint[c(cc, 1), , , drop = F]]
+                                                                                   required_wat_fullirrig_wc[c(lc, c), y, season, drop = F] * frac_fullirrig[c(lc, c), y, , drop = F])[ww_constraint[c(cc, 1), , , drop = F]]
         # update minimum water required and previously committed water withdrawal in cell:
         required_wat_min_allocation[c, y, ][ww_constraint[, , , drop = F]] <- (required_wat_min_allocation[c, y, , drop = F] +
-                                                                                 frac_fullirrig[c, y, , drop = F] * required_wat_fullirrig_ww[c, y, , drop = F])[ww_constraint[, , , drop = F]]
+                                                                                 frac_fullirrig[c, y, , drop = F] * required_wat_fullirrig_ww[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
       }
 
     } else if (allocationrule == "upstreamfirst") {
 
-      # Allocate full irrigation requirements to most upstream cell first (calcorder)
-      for (o in 1:max(rs$calcorder)) {
-        cells <- which(rs$calcorder == o)
+      # Allocate first, then second, then third season
+      for (season in c("single", "double", "triple")) {
 
-        for (c in cells) {
+        season <- paste(names, "single", sep = ".")
 
-          # vector of downstreamcells of c
-          down <- unlist(rs$downstreamcells[[c]])
-          # vector of c in length of downstreamcells of c
-          lc   <- rep(c, length(rs$downstreamcells[[c]]))
-          # vector of 1 in length of downstreamcells of c
-          cc   <- rep(1:length(c), length(rs$downstreamcells[[c]]))
+        # Allocate full irrigation requirements to most upstream cell first (calcorder)
+        for (o in 1:max(rs$calcorder)) {
+          cells <- which(rs$calcorder == o)
 
-          # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
-          irriggain <- (irrig_yieldgainpotential[c, y, , drop = F] > gainthreshold)
+          for (c in cells) {
 
-          # available water for additional irrigation withdrawals
-          avl_wat_ww[c, y, ][irriggain[, , , drop = F]] <- pmax(IO_discharge[c, y, , drop = F] -
-                                                                  required_wat_min_allocation[c, y, , drop = F],
-                                                                0)[irriggain[, , , drop = F]]
+            # vector of downstreamcells of c
+            down <- unlist(rs$downstreamcells[[c]])
+            # vector of c in length of downstreamcells of c
+            lc   <- rep(c, length(rs$downstreamcells[[c]]))
+            # vector of 1 in length of downstreamcells of c
+            cc   <- rep(1:length(c), length(rs$downstreamcells[[c]]))
 
-          # withdrawal constraint
-          ww_constraint <- (required_wat_fullirrig_ww[c, y, , drop = F] > 0 & irriggain[, , , drop = F])
+            # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
+            irriggain <- (irrig_yieldgainpotential[c, y, season, drop = F] > gainthreshold)
 
-          # how much withdrawals can be fulfilled by available water
-          frac_fullirrig[c, y, ][ww_constraint[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][ww_constraint[, , , drop = F]] /
-                                                                          required_wat_fullirrig_ww[c, y, , drop = F][ww_constraint[, , , drop = F]],
-                                                                        1)
+            # available water for additional irrigation withdrawals
+            avl_wat_ww[c, y, ][irriggain[, , , drop = F]] <- pmax(IO_discharge[c, y, , drop = F] -
+                                                                    required_wat_min_allocation[c, y, , drop = F],
+                                                                  0)[irriggain[, , , drop = F]]
 
-          if (length(down) > 0) {
+            # withdrawal constraint
+            ww_constraint <- (required_wat_fullirrig_ww[c, y, season, drop = F] > 0 & irriggain[, , , drop = F])
 
-            # consumption constraint
-            wc_constraint <- (required_wat_fullirrig_wc[c, y, , drop = F] > 0 & ww_constraint[, , , drop = F])
+            # how much withdrawals can be fulfilled by available water
+            frac_fullirrig[c, y, ][ww_constraint[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][ww_constraint[, , , drop = F]] /
+                                                                            required_wat_fullirrig_ww[c, y, season, drop = F][ww_constraint[, , , drop = F]],
+                                                                          1)
 
-            # available water for additional irrigation consumption (considering downstream availability)
-            # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
-            avl_wat_wc[c, y, ][wc_constraint[, , , drop = F]]     <- pmax(apply(IO_discharge[down, y, , drop = F] -
-                                                                                  required_wat_min_allocation[down, y, , drop = F], MARGIN = 3, min),
-                                                                          0)[wc_constraint[, , , drop = F]]
+            if (length(down) > 0) {
 
-            # how much consumption can be fulfilled by available water
-            frac_fullirrig[c, y, ][wc_constraint[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][wc_constraint[, , , drop = F]] /
-                                                                            required_wat_fullirrig_wc[c, y, , drop = F][wc_constraint[, , , drop = F]],
-                                                                          frac_fullirrig[c, y, , drop = F][wc_constraint[, , , drop = F]])
+              # consumption constraint
+              wc_constraint <- (required_wat_fullirrig_wc[c, y, season, drop = F] > 0 & ww_constraint[, , , drop = F])
+
+              # available water for additional irrigation consumption (considering downstream availability)
+              # (downstream availability is constrained by EFRs and inaccessible discharge just as local withdrawal constraint above)
+              avl_wat_wc[c, y, ][wc_constraint[, , , drop = F]]     <- pmax(apply(IO_discharge[down, y, , drop = F] -
+                                                                                    required_wat_min_allocation[down, y, , drop = F], MARGIN = 3, min),
+                                                                            0)[wc_constraint[, , , drop = F]]
+
+              # how much consumption can be fulfilled by available water
+              frac_fullirrig[c, y, ][wc_constraint[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][wc_constraint[, , , drop = F]] /
+                                                                              required_wat_fullirrig_wc[c, y, season, drop = F][wc_constraint[, , , drop = F]],
+                                                                            frac_fullirrig[c, y, , drop = F][wc_constraint[, , , drop = F]])
+            }
+
+            # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
+            IO_discharge[c(down, c), y, ][ww_constraint[c(cc, 1), , , drop = F]] <- (IO_discharge[c(down, c), y, , drop = F] -
+                                                                                       required_wat_fullirrig_wc[c(lc, c), y, season, drop = F] * frac_fullirrig[c(lc, c), y, , drop = F])[ww_constraint[c(cc, 1), , , drop = F]]
+            # update minimum water required in cell:
+            required_wat_min_allocation[c, y, ][ww_constraint[, , , drop = F]] <- (required_wat_min_allocation[c, y, , drop = F] +
+                                                                                     frac_fullirrig[c, y, , drop = F] * required_wat_fullirrig_ww[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
           }
-
-          # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-          IO_discharge[c(down, c), y, ][ww_constraint[c(cc, 1), , , drop = F]] <- (IO_discharge[c(down, c), y, , drop = F] -
-                                                                                     required_wat_fullirrig_wc[c(lc, c), y, , drop = F] * frac_fullirrig[c(lc, c), y, , drop = F])[ww_constraint[c(cc, 1), , , drop = F]]
-          # update minimum water required in cell:
-          required_wat_min_allocation[c, y, ][ww_constraint[, , , drop = F]] <- (required_wat_min_allocation[c, y, , drop = F] +
-                                                                                   frac_fullirrig[c, y, , drop = F] * required_wat_fullirrig_ww[c, y, , drop = F])[ww_constraint[, , , drop = F]]
         }
       }
+
     } else {
       stop("Please choose allocation rule for river basin discharge allocation algorithm")
     }

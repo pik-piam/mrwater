@@ -62,11 +62,26 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
 
     for (o in (1:max(glocellrank[, y, ], na.rm = T))) { # test <- rs$cells[order(glocellrank[,y,])]
 
-      # Extract the cell number (depending on type of cellranking)
-      if (reducedpotential) {
-        c <- rs$cells[rs$coordinates == paste(strsplit(gsub(".*_", "", names(which(glocellrank[, y, ] == o))), "\\.")[[1]][1], strsplit(gsub(".*_", "", names(which(glocellrank[, y, ] == o))), "\\.")[[1]][2], sep = ".")]
+      # Extract the cell number
+      c <- rs$cells[rs$coordinates == paste(strsplit(gsub(".*_", "", names(which(glocellrank[, y, ] == o))), "\\.")[[1]][1],
+                                            strsplit(gsub(".*_", "", names(which(glocellrank[, y, ] == o))), "\\.")[[1]][2],
+                                            sep = ".")]
+
+      # Extract season
+      if (l_in$multicropping) {
+
+        if (grepl("S_", names(which(glocellrank[, y, ] == o)))) {
+          season <- paste(names, "single", sep = ".")
+        } else if (grepl("D_", names(which(glocellrank[, y, ] == o)))) {
+          season <- paste(names, "double", sep = ".")
+        } else if (grepl("T_", names(which(glocellrank[, y, ] == o)))) {
+          season <- paste(names, "triple", sep = ".")
+        } else {
+          stop("Object glocellrank does not have multicropping dimensions")
+        }
+
       } else {
-        c <- rs$cells[glocellrank[, y, ] == o]
+        season <- paste(names, "single", sep = ".")
       }
 
       ### Potential Function Improvements:
@@ -81,7 +96,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
       v_ones <- rep(1:length(c), length(rs$downstreamcells[[c]]))
 
       # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
-      is_gain <- (I_irrig_yieldgainpotential[c, y, , drop = F] > l_in$gainthreshold)
+      is_gain <- (I_irrig_yieldgainpotential[c, y, season, drop = F] > l_in$gainthreshold)
 
       # available water for additional irrigation withdrawals
       avl_wat_ww[c, y, ][is_gain[, , , drop = F]] <- pmax(IO_discharge[c, y, , drop = F] -
@@ -89,33 +104,34 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
                                                    0)[is_gain[, , , drop = F]]
 
       # withdrawal constraint (if there is water required for withdrawal in current grid cell)
-      is_req_ww   <- (I_required_wat_fullirrig_ww[c, y, , drop = F] > 0 & is_gain[, , , drop = F])
+      is_req_ww   <- (I_required_wat_fullirrig_ww[c, y, season, drop = F] > 0 & is_gain[, , , drop = F])
 
       # how much withdrawals can be fulfilled by available water
       IO_frac_fullirrig[c, y, ][is_req_ww[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][is_req_ww[, , , drop = F]] /
-                                                              I_required_wat_fullirrig_ww[c, y, , drop = F][is_req_ww[, , , drop = F]],
+                                                              I_required_wat_fullirrig_ww[c, y, season, drop = F][is_req_ww[, , , drop = F]],
                                                             1)
 
       if (length(v_down) > 0) {
         # consumption constraint (if there is water required for consumption in current grid cell)
-        is_req_wc <- (I_required_wat_fullirrig_wc[c, y, , drop = F] > 0 & is_req_ww[, , , drop = F])
+        is_req_wc <- (I_required_wat_fullirrig_wc[c, y, season, drop = F] > 0 & is_req_ww[, , , drop = F])
 
         # available water for additional irrigation consumption (considering downstream availability)
         avl_wat_wc[c, y, ][is_req_wc[, , , drop = F]] <- pmax(apply(IO_discharge[v_down, y, , drop = F] -
-                                                             IO_required_wat_min_allocation[v_down, y, , drop = F], MARGIN = 3, min),
-                                                       0)[is_req_wc[, , , drop = F]]
+                                                                    IO_required_wat_min_allocation[v_down, y, , drop = F], MARGIN = 3, min),
+                                                              0)[is_req_wc[, , , drop = F]]
 
         # how much consumption can be fulfilled by available water
         IO_frac_fullirrig[c, y, ][is_req_wc[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][is_req_wc[, , , drop = F]] /
-                                                                I_required_wat_fullirrig_wc[c, y, , drop = F][is_req_wc[, , , drop = F]],
-                                                              IO_frac_fullirrig[c, y, , drop = F][is_req_wc[, , , drop = F]])
+                                                                       I_required_wat_fullirrig_wc[c, y, season, drop = F][is_req_wc[, , , drop = F]],
+                                                                     IO_frac_fullirrig[c, y, , drop = F][is_req_wc[, , , drop = F]])
       }
 
       # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-      IO_discharge[c(v_down, c), y, ][is_req_ww[c(v_ones, 1), , , drop = F]] <- (IO_discharge[c(v_down, c), y, , drop = F] - I_required_wat_fullirrig_wc[c(v_cell, c), y, , drop = F] * IO_frac_fullirrig[c(v_cell, c), y, , drop = F])[is_req_ww[c(v_ones, 1), , , drop = F]]
+      IO_discharge[c(v_down, c), y, ][is_req_ww[c(v_ones, 1), , , drop = F]] <- (IO_discharge[c(v_down, c), y, , drop = F] -
+                                                                                 I_required_wat_fullirrig_wc[c(v_cell, c), y, season, drop = F] * IO_frac_fullirrig[c(v_cell, c), y, , drop = F])[is_req_ww[c(v_ones, 1), , , drop = F]]
       # update minimum water required in cell:
-      IO_required_wat_min_allocation[c, y, ][is_req_ww[, , , drop = F]]    <- (IO_required_wat_min_allocation[c, y, , drop = F] +
-                                                                          IO_frac_fullirrig[c, y, , drop = F] * I_required_wat_fullirrig_ww[c, y, , drop = F])[is_req_ww[, , , drop = F]]
+      IO_required_wat_min_allocation[c, y, ][is_req_ww[, , , drop = F]]      <- (IO_required_wat_min_allocation[c, y, , drop = F] +
+                                                                                 IO_frac_fullirrig[c, y, , drop = F] * I_required_wat_fullirrig_ww[c, y, season, drop = F])[is_req_ww[, , , drop = F]]
     }
 
     l_inout <- list(discharge = IO_discharge,
@@ -134,65 +150,71 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     IO_required_wat_min_allocation <- l_inout$required_wat_min_allocation
     IO_frac_fullirrig              <- l_inout$frac_fullirrig
 
-    for (o in 1:max(rs$calcorder)) {
-      cells <- which(rs$calcorder == o)
 
-      for (c in cells) {
-        ### Potential Function Improvements:
-        # (1) GENERALIZE: FLEXIBLE FOR YEARS AND CELLS
-        # (2) Allocation of certain share in first round (e.g. 75%); then filling up in second round if water left
+    # Allocate first, then second, then third season
+    for (season in c("single", "double", "triple")) {
 
-        # Helper vectors for subsetting of objects
-        # vector of downstreamcells of c
-        v_down <- unlist(rs$downstreamcells[[c]])
-        # vector of c in length of downstreamcells of c
-        v_cell <- rep(c, length(rs$downstreamcells[[c]]))
-        # vector of 1s in length of downstreamcells of c
-        v_ones <- rep(1:length(c), length(rs$downstreamcells[[c]]))
+      season <- paste(names, "single", sep = ".")
 
-        # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
-        is_gain <- (I_irrig_yieldgainpotential[c, y, , drop = F] > l_in$gainthreshold)
+      for (o in 1:max(rs$calcorder)) {
+        cells <- which(rs$calcorder == o)
 
-        # available water for additional irrigation withdrawals
-        avl_wat_ww[c, y, ][is_gain[, , , drop = F]] <- pmax(IO_discharge[c, y, , drop = F] -
-                                                       IO_required_wat_min_allocation[c, y, , drop = F],
-                                                     0)[is_gain[, , , drop = F]]
+        for (c in cells) {
+          ### Potential Function Improvements:
+          # (1) GENERALIZE: FLEXIBLE FOR YEARS AND CELLS
+          # (2) Allocation of certain share in first round (e.g. 75%); then filling up in second round if water left
 
-        # withdrawal constraint (if there is water required for withdrawal in current grid cell)
-        is_req_ww   <- (I_required_wat_fullirrig_ww[c, y, , drop = F] > 0 & is_gain[, , , drop = F])
+          # Helper vectors for subsetting of objects
+          # vector of downstreamcells of c
+          v_down <- unlist(rs$downstreamcells[[c]])
+          # vector of c in length of downstreamcells of c
+          v_cell <- rep(c, length(rs$downstreamcells[[c]]))
+          # vector of 1s in length of downstreamcells of c
+          v_ones <- rep(1:length(c), length(rs$downstreamcells[[c]]))
 
-        # how much withdrawals can be fulfilled by available water
-        IO_frac_fullirrig[c, y, ][is_req_ww[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][is_req_ww[, , , drop = F]] /
-                                                                I_required_wat_fullirrig_ww[c, y, , drop = F][is_req_ww[, , , drop = F]],
-                                                              1)
+          # Only cells where irrigation potential exceeds certain minimum threshold are (additionally) irrigated
+          is_gain <- (I_irrig_yieldgainpotential[c, y, season, drop = F] > l_in$gainthreshold)
 
-        if (length(v_down) > 0) {
-          # consumption constraint (if there is water required for consumption in current grid cell)
-          is_req_wc <- (I_required_wat_fullirrig_wc[c, y, , drop = F] > 0 & is_req_ww[, , , drop = F])
+          # available water for additional irrigation withdrawals
+          avl_wat_ww[c, y, ][is_gain[, , , drop = F]] <- pmax(IO_discharge[c, y, , drop = F] -
+                                                                IO_required_wat_min_allocation[c, y, , drop = F],
+                                                              0)[is_gain[, , , drop = F]]
 
-          # available water for additional irrigation consumption (considering downstream availability)
-          avl_wat_wc[c, y, ][is_req_wc[, , , drop = F]]     <- pmax(apply(IO_discharge[v_down, y, , drop = F] -
-                                                                     IO_required_wat_min_allocation[v_down, y, , drop = F], MARGIN = 3, min),
-                                                             0)[is_req_wc[, , , drop = F]]
+          # withdrawal constraint (if there is water required for withdrawal in current grid cell)
+          is_req_ww   <- (I_required_wat_fullirrig_ww[c, y, season, drop = F] > 0 & is_gain[, , , drop = F])
 
-          # how much consumption can be fulfilled by available water
-          IO_frac_fullirrig[c, y, ][is_req_wc[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][is_req_wc[, , , drop = F]] /
-                                                                  I_required_wat_fullirrig_wc[c, y, , drop = F][is_req_wc[, , , drop = F]],
-                                                                IO_frac_fullirrig[c, y, , drop = F][is_req_wc[, , , drop = F]])
+          # how much withdrawals can be fulfilled by available water
+          IO_frac_fullirrig[c, y, ][is_req_ww[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][is_req_ww[, , , drop = F]] /
+                                                                         I_required_wat_fullirrig_ww[c, y, season, drop = F][is_req_ww[, , , drop = F]],
+                                                                       1)
+
+          if (length(v_down) > 0) {
+            # consumption constraint (if there is water required for consumption in current grid cell)
+            is_req_wc <- (I_required_wat_fullirrig_wc[c, y, season, drop = F] > 0 & is_req_ww[, , , drop = F])
+
+            # available water for additional irrigation consumption (considering downstream availability)
+            avl_wat_wc[c, y, ][is_req_wc[, , , drop = F]]     <- pmax(apply(IO_discharge[v_down, y, , drop = F] -
+                                                                              IO_required_wat_min_allocation[v_down, y, , drop = F], MARGIN = 3, min),
+                                                                      0)[is_req_wc[, , , drop = F]]
+
+            # how much consumption can be fulfilled by available water
+            IO_frac_fullirrig[c, y, ][is_req_wc[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][is_req_wc[, , , drop = F]] /
+                                                                           I_required_wat_fullirrig_wc[c, y, season, drop = F][is_req_wc[, , , drop = F]],
+                                                                         IO_frac_fullirrig[c, y, , drop = F][is_req_wc[, , , drop = F]])
+          }
+
+          # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
+          IO_discharge[c(v_down, c), y, ][is_req_ww[c(v_ones, 1), , , drop = F]] <- (IO_discharge[c(v_down, c), y, , drop = F] -
+                                                                                       I_required_wat_fullirrig_wc[c(v_cell, c), y, season, drop = F] * IO_frac_fullirrig[c(v_cell, c), y, , drop = F])[is_req_ww[c(v_ones, 1), , , drop = F]]
+          # update minimum water required in cell:
+          IO_required_wat_min_allocation[c, y, ][is_req_ww[, , , drop = F]]    <- (IO_required_wat_min_allocation[c, y, , drop = F] +
+                                                                                     IO_frac_fullirrig[c, y, , drop = F] * I_required_wat_fullirrig_ww[c, y, season, drop = F])[is_req_ww[, , , drop = F]]
         }
 
-        # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-        IO_discharge[c(v_down, c), y, ][is_req_ww[c(v_ones, 1), , , drop = F]] <- (IO_discharge[c(v_down, c), y, , drop = F] -
-                                                                            I_required_wat_fullirrig_wc[c(v_cell, c), y, , drop = F] * IO_frac_fullirrig[c(v_cell, c), y, , drop = F])[is_req_ww[c(v_ones, 1), , , drop = F]]
-        # update minimum water required in cell:
-        IO_required_wat_min_allocation[c, y, ][is_req_ww[, , , drop = F]]    <- (IO_required_wat_min_allocation[c, y, , drop = F] +
-                                                                            IO_frac_fullirrig[c, y, , drop = F] * I_required_wat_fullirrig_ww[c, y, , drop = F])[is_req_ww[, , , drop = F]]
+        l_inout <- list(discharge = IO_discharge,
+                        required_wat_min_allocation = IO_required_wat_min_allocation,
+                        frac_fullirrig = IO_frac_fullirrig)
       }
-
-      l_inout <- list(discharge = IO_discharge,
-                      required_wat_min_allocation = IO_required_wat_min_allocation,
-                      frac_fullirrig = IO_frac_fullirrig)
-
     }
   }
 
