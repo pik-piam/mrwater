@@ -145,6 +145,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     I_irrig_yieldgainpotential     <- l_in$irrig_yieldgainpotential
     avl_wat_ww                     <- l_in$avl_wat_ww
     avl_wat_wc                     <- l_in$avl_wat_wc
+    scenarios                      <- l_in$scenarios
 
     IO_discharge                   <- l_inout$discharge
     IO_required_wat_min_allocation <- l_inout$required_wat_min_allocation
