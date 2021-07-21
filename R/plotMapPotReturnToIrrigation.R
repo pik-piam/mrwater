@@ -49,6 +49,7 @@ plotMapPotReturnToIrrigation <- function(selectyears, unit, iniyear, lpjml,
                          cropmix = cropmix, unit = "USD_ha", iniyear = iniyear,
                          yieldcalib = yieldcalib, multicropping = multicropping,
                          aggregate = FALSE)
+    return <- dimSums(return, dim = 3)
     limit <- 2000
 
   } else if (unit == "perm3") {
@@ -59,6 +60,7 @@ plotMapPotReturnToIrrigation <- function(selectyears, unit, iniyear, lpjml,
                          cropmix = cropmix, unit = "USD_m3", iniyear = iniyear,
                          yieldcalib = yieldcalib, multicropping = multicropping,
                          aggregate = FALSE)
+    return <- dimSums(return, dim = 3)
     limit <- 1
 
   } else {

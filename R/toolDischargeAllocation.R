@@ -29,12 +29,12 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
   if (allocationrule == "optimization") {
 
     # Retrieve arguments
-    reducedpotential               <- any(grepl("A_", getCells(glocellrank)))
     I_required_wat_fullirrig_ww    <- l_in$required_wat_fullirrig_ww
     I_required_wat_fullirrig_wc    <- l_in$required_wat_fullirrig_wc
     I_irrig_yieldgainpotential     <- l_in$irrig_yieldgainpotential
     avl_wat_ww                     <- l_in$avl_wat_ww
     avl_wat_wc                     <- l_in$avl_wat_wc
+    scenarios                      <- l_in$scenarios
 
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
     if (l_in$multicropping) {
@@ -71,17 +71,17 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
       if (l_in$multicropping) {
 
         if (grepl("S_", names(which(glocellrank[, y, ] == o)))) {
-          season <- paste(names, "single", sep = ".")
+          season <- paste(scenarios, "single", sep = ".")
         } else if (grepl("D_", names(which(glocellrank[, y, ] == o)))) {
-          season <- paste(names, "double", sep = ".")
+          season <- paste(scenarios, "double", sep = ".")
         } else if (grepl("T_", names(which(glocellrank[, y, ] == o)))) {
-          season <- paste(names, "triple", sep = ".")
+          season <- paste(scenarios, "triple", sep = ".")
         } else {
           stop("Object glocellrank does not have multicropping dimensions")
         }
 
       } else {
-        season <- paste(names, "single", sep = ".")
+        season <- paste(scenarios, "single", sep = ".")
       }
 
       ### Potential Function Improvements:
@@ -154,7 +154,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     # Allocate first, then second, then third season
     for (season in c("single", "double", "triple")) {
 
-      season <- paste(names, "single", sep = ".")
+      season <- paste(scenarios, "single", sep = ".")
 
       for (o in 1:max(rs$calcorder)) {
         cells <- which(rs$calcorder == o)

@@ -18,17 +18,25 @@
 #'                          tDM (tons per dry matter),
 #'                          USD_ha (USD per hectare) for area return, or
 #'                          USD_m3 (USD per cubic meter) for volumetric return;
-#'                          and boolean indicating fullpotential (TRUE, i.e. cell receives full irrigation requirements in total area)
-#'                          or reduced potential (FALSE, reduced potential of cell receives at later stage in allocation algorithm);
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell receives full
+#'                                                                irrigation requirements in total area)
+#'                          or reduced potential (FALSE, reduced potential of cell
+#'                                                receives at later stage in allocation algorithm);
 #'                          separated by ":"
-#' @param yieldcalib        FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)
-#' @param allocationrule    Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
+#' @param yieldcalib        FAO (LPJmL yields calibrated with current FAO yield) or
+#'                          calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+#'                          smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
+#'                          smoothed_calib
+#' @param allocationrule    Rule to be applied for river basin discharge allocation
+#'                          ("optimization" or "upstreamfirst")
 #' @param thresholdtype     Unit of yield improvement potential used as threshold:
 #'                          tDM (tons per dry matter),
 #'                          USD_ha (USD per hectare) for area return, or
 #'                          USD_m3 (USD per cubic meter) for volumetric return
-#' @param gainthreshold     Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
-#' @param irrigationsystem  Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
+#' @param gainthreshold     Threshold of yield improvement potential
+#'                          (same unit as thresholdtype)
+#' @param irrigationsystem  Irrigation system to be used for river basin discharge
+#'                          allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear           Initialization year of irrigation system
 #' @param avlland_scen      Land availability scenario (currCropland, currIrrig, potIrrig)
 #'                          combination of land availability scenario and initialization year separated by ":".
@@ -147,6 +155,8 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
   avl_wat_wc                  <- as.array(.transformObject(0))
   glocellrank                 <- as.array(glocellrank)
 
+  scenarios <- getNames(discharge)
+
   ################################################
   ####### River basin discharge allocation #######
   ################################################
@@ -167,7 +177,8 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
                   gainthreshold = gainthreshold,
                   avl_wat_ww = avl_wat_ww,
                   avl_wat_wc = avl_wat_wc,
-                  multicropping = multicropping)
+                  multicropping = multicropping,
+                  scenarios = scenarios)
 
   for (y in selectyears) {
 

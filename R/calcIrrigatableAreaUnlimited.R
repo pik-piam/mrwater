@@ -46,27 +46,31 @@ calcIrrigatableAreaUnlimited <- function(selectyears, avlland_scen, lpjml,
   iniyear       <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
   ## Area that can potentially be irrigated (including total potentially irrigatable area; defined by comagyear=NULL)
-  area_potirrig <- calcOutput("AreaPotIrrig", selectyears = selectyears,
-                              avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
+  potArea <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+                         avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
 
   # Yield gain potential through irrigation of proxy crops
-  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", unit = thresholdtype,
-                                         lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-                                         selectyears = selectyears, iniyear = iniyear,
-                                         yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+  potGain <- calcOutput("IrrigYieldImprovementPotential", unit = thresholdtype,
+                         lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
+                         selectyears = selectyears, iniyear = iniyear,
+                         yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+
+  # sum over all seasons
+  potGain <- dimSums(potGain, dim = 3)
 
   # remove areas below chosen gainthreshold
-  area_potirrig[irrig_yieldgainpotential < gainthreshold] <- 0
+  potArea[potGain < gainthreshold] <- 0
 
   # check for NAs and negative values
-  if (any(is.na(area_potirrig))) {
+  if (any(is.na(potArea))) {
     stop("produced NA irrigatable area")
   }
-  if (any(area_potirrig < 0)) {
+
+  if (any(potArea < 0)) {
     stop("produced negative irrigatable area")
   }
 
-  return(list(x            = area_potirrig,
+  return(list(x            = potArea,
               weight       = NULL,
               unit         = "mio. ha",
               description  = "Area that would be irrigated given chosen gainthreshold and land constraint",

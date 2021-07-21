@@ -75,6 +75,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
                                             lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                                             cropmix = cropmix, unit = thresholdtype, yieldcalib = yieldcalib,
                                             multicropping = multicropping, aggregate = FALSE)
+  irrig_yieldgainpotential <- dimSums(irrig_yieldgainpotential, dim = 3)
 
   # water available
   frac_fullirrig           <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
