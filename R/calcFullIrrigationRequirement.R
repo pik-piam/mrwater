@@ -36,14 +36,14 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
                                           irrigationsystem, avlland_scen, cropmix, multicropping) {
 
   # retrieve function arguments
-  iniyear <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
+  iniyear  <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
   # read in irrigation water requirements for each irrigation system
   # [in m^3 per hectare per year] (smoothed & harmonized)
-  irrig_wat <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
+  irrigWat <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                           lpjml = lpjml, climatetype = climatetype, aggregate = FALSE)
   # pasture is not irrigated in MAgPIE
-  irrig_wat <- irrig_wat[, , "pasture", invert = T]
+  irrigWat <- irrigWat[, , "pasture", invert = T]
 
   # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
   land <- calcOutput("AreaPotIrrig", selectyears = selectyears,
@@ -78,97 +78,101 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
     }
 
     # historical share of crop types in cropland per cell
-    croparea_shr <- croparea / dimSums(croparea, dim = 3)
+    cropareaShr <- croparea / dimSums(croparea, dim = 3)
     # correct NAs: where no current cropland available,
     # representative crops (maize, rapeseed, pulses) assumed as proxy
-    rep_crops    <- c("maiz", "rapeseed", "puls_pro")
-    other_crops  <- setdiff(getNames(croparea), rep_crops)
-    croparea_shr[, , rep_crops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
-    croparea_shr[, , other_crops][dimSums(croparea, dim = 3) == 0] <- 0
+    proxyCrops  <- c("maiz", "rapeseed", "puls_pro")
+    otherCrops  <- setdiff(getNames(croparea), proxyCrops)
+    cropareaShr[, , proxyCrops][dimSums(croparea, dim = 3) == 0] <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
+    cropareaShr[, , otherCrops][dimSums(croparea, dim = 3) == 0] <- 0
 
   } else {
 
     # equal crop area share for each proxycrop assumed
-    croparea_shr              <- new.magpie(cells_and_regions = getCells(land),
-                                            years = NULL,
-                                            names = cropmix,
-                                            sets = c("x.y.iso", "t", "data"))
-    croparea_shr[, , cropmix] <- 1 / length(cropmix)
+    cropareaShr              <- new.magpie(cells_and_regions = getCells(land),
+                                           years = NULL,
+                                           names = cropmix,
+                                           sets = c("x.y.iso", "t", "data"))
+    cropareaShr[, , cropmix] <- 1 / length(cropmix)
   }
 
   # Check
-  if (any(round(dimSums(croparea_shr, dim = 3)) != 1)) {
+  if (any(round(dimSums(cropareaShr, dim = 3)) != 1)) {
     stop("Croparea share does not sum up to 1 in calcFullIrrigationRequirement")
   }
 
   # land area per crop
-  land <- land * croparea_shr
+  land <- land * cropareaShr
 
   # water requirements for full irrigation in cell per crop accounting for cropshare (in mio. m^3)
   # Note on unit transformation:
   # land (mio ha -> ha): multiply with 1e6,
   # irrigation water requirements (m^3 per ha -> mio. m^3 per ha): divide by 1e6
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
-  irrig_wat <- irrig_wat[, , getNames(croparea_shr)] * land
+  irrigWat <- irrigWat[, , getNames(cropareaShr)] * land
 
   # add seasonality dimension
-  irrig_wat <- add_dimension(irrig_wat, dim = 3.1, add = "season", nm = "single")
-  irrig_wat <- add_columns(irrig_wat, dim = 3.1, addnm = c("double", "triple"))
+  irrigWat <- add_dimension(irrigWat, dim = 3.1, add = "season", nm = "single")
+  irrigWat <- add_columns(irrigWat,   dim = 3.1, addnm = c("double", "triple"))
 
   # Increase of water requirements where multicropping takes place
   if (multicropping) {
 
     # water requirement reduction parameters (share of water requirement necessary in second / third season):
-    wat_shr_season2 <- 0.9    #-#-# FIND LITERATURE VALUES FOR THIS!!!! #-#-#
-    wat_shr_season3 <- 0.8    #-#-# FIND LITERATURE VALUES FOR THIS!!!! #-#-#
+    watShr2 <- 0.9    #-#-# FIND LITERATURE VALUES FOR THIS!!!! #-#-#
+    watShr3 <- 0.8    #-#-# FIND LITERATURE VALUES FOR THIS!!!! #-#-#
 
     # read in multiple cropping zones [3 layers: single, double, triple cropping]
     mc          <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
     mc          <- collapseNames(mc[, , "irrigated"])
 
-    irrig_wat[, , "double"] <- irrig_wat[, , "single"] * wat_shr_season2
-    irrig_wat[, , "triple"] <- irrig_wat[, , "single"] * wat_shr_season3
+    irrigWat[, , "double"] <- irrigWat[, , "single"] * watShr2
+    irrigWat[, , "triple"] <- irrigWat[, , "single"] * watShr3
 
   } else {
 
     # when multicropping is deactivated: only first season is considered
-    irrig_wat[, , c("double", "triple")] <- 0
+    irrigWat[, , c("double", "triple")] <- 0
 
   }
 
   # sum over crops
-  irrig_wat <- dimSums(irrig_wat, dim = "crop")
+  irrigWat <- dimSums(irrigWat, dim = "crop")
 
   # calculate irrigation water requirements per crop [in mio. m^3 per year] given irrigation system share in use
   if (irrigationsystem == "initialization") {
 
     # read in irrigation system area initialization [share of AEI by system] and expand to all years
-    tmp                   <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
-    irrigation_system     <- new.magpie(cells_and_regions = getCells(irrig_wat),
-                                        years = getYears(irrig_wat),
-                                        names = getNames(tmp),
-                                        sets = c("x.y.iso", "year", "system"))
-    irrigation_system[, , ] <- tmp
+    tmp               <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
+    irrigSystem       <- new.magpie(cells_and_regions = getCells(irrigWat),
+                                    years = getYears(irrigWat),
+                                    names = getNames(tmp),
+                                    sets = c("x.y.iso", "year", "system"))
+    irrigSystem[, , ] <- tmp
 
     # every crop irrigated by same share of initialization irrigation system
-    irrig_wat <- dimSums(irrigation_system * irrig_wat, dim = "system")
+    irrigWat <- dimSums(irrigSystem * irrigWat, dim = "system")
 
   } else {
 
     # whole area irrigated by one system as selected in argument "irrigationsystem"
-    irrig_wat <- collapseNames(irrig_wat[, , irrigationsystem])
+    irrigWat <- collapseNames(irrigWat[, , irrigationsystem])
 
   }
 
-  # Adjust dimension names
-  getSets(irrig_wat, fulldim = FALSE) <- c("x.y.iso", "year", "season.irrig_type")
+  # Adjust dimension names and ordering of cells
+  getSets(irrigWat, fulldim = FALSE) <- c("x.y.iso", "year", "season.irrig_type")
+  order    <- paste(c(rep("single", 2), rep("double", 2), rep("triple", 2)),
+                    c("consumption", "withdrawal"),
+                    sep = ".")
+  irrigWat <- irrigWat[, , order]
 
   # Checks
-  if (any(is.na(irrig_wat))) {
+  if (any(is.na(irrigWat))) {
     stop("produced NA full irrigation requirements")
   }
 
-  return(list(x            = irrig_wat,
+  return(list(x            = irrigWat,
               weight       = NULL,
               unit         = "mio. m^3",
               description  = "Full irrigation requirements per cell for selected cropmix

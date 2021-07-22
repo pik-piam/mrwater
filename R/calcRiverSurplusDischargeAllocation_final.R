@@ -120,8 +120,9 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
   # Initialization of fraction of full irrigation requirements that can be fulfilled
   frac_fullirrig              <- new.magpie(cells_and_regions = getCells(discharge),
                                             years = getYears(discharge),
-                                            names = getNames(discharge), fill = 0,
-                                            sets = c("x.y.iso", "year", "EFP.scen"))
+                                            names = getNames(irrig_yieldgainpotential),
+                                            fill = 0,
+                                            sets = c("x.y.iso", "year", "EFP.scen.season"))
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   glocellrank     <- setYears(calcOutput("IrrigCellranking", cellrankyear = selectyears,
@@ -193,11 +194,13 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
     out         <- as.magpie(l_inout$discharge, spatial = 1)
     description <- "Cellular discharge after surplus discharge allocation algorithm"
 
-  } else if (output == "frac_fullirrig") {
+  } else if (output == "potIrrigWat") {
 
     # Main output for MAgPIE: water available for agricultural withdrawal
-    out         <- as.magpie(l_inout$frac_fullirrig, spatial = 1)
-    description <- "Fraction of full irrigation requirements that can be fulfilled"
+    frac        <- as.magpie(l_inout$frac_fullirrig, spatial = 1)
+    out         <- pmax(frac * required_wat_fullirrig, 0)
+
+    description <- "Full irrigation requirements that can be fulfilled (consumption and withdrawal)"
 
   } else {
     stop("specify outputtype")

@@ -107,7 +107,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
       is_req_ww   <- (I_required_wat_fullirrig_ww[c, y, season, drop = F] > 0 & is_gain[, , , drop = F])
 
       # how much withdrawals can be fulfilled by available water
-      IO_frac_fullirrig[c, y, ][is_req_ww[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][is_req_ww[, , , drop = F]] /
+      IO_frac_fullirrig[c, y, season][is_req_ww[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][is_req_ww[, , , drop = F]] /
                                                               I_required_wat_fullirrig_ww[c, y, season, drop = F][is_req_ww[, , , drop = F]],
                                                             1)
 
@@ -121,17 +121,17 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
                                                               0)[is_req_wc[, , , drop = F]]
 
         # how much consumption can be fulfilled by available water
-        IO_frac_fullirrig[c, y, ][is_req_wc[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][is_req_wc[, , , drop = F]] /
+        IO_frac_fullirrig[c, y, season][is_req_wc[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][is_req_wc[, , , drop = F]] /
                                                                        I_required_wat_fullirrig_wc[c, y, season, drop = F][is_req_wc[, , , drop = F]],
-                                                                     IO_frac_fullirrig[c, y, , drop = F][is_req_wc[, , , drop = F]])
+                                                                     IO_frac_fullirrig[c, y, season, drop = F][is_req_wc[, , , drop = F]])
       }
 
       # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
       IO_discharge[c(v_down, c), y, ][is_req_ww[c(v_ones, 1), , , drop = F]] <- (IO_discharge[c(v_down, c), y, , drop = F] -
-                                                                                 I_required_wat_fullirrig_wc[c(v_cell, c), y, season, drop = F] * IO_frac_fullirrig[c(v_cell, c), y, , drop = F])[is_req_ww[c(v_ones, 1), , , drop = F]]
+                                                                                 I_required_wat_fullirrig_wc[c(v_cell, c), y, season, drop = F] * IO_frac_fullirrig[c(v_cell, c), y, season, drop = F])[is_req_ww[c(v_ones, 1), , , drop = F]]
       # update minimum water required in cell:
       IO_required_wat_min_allocation[c, y, ][is_req_ww[, , , drop = F]]      <- (IO_required_wat_min_allocation[c, y, , drop = F] +
-                                                                                 IO_frac_fullirrig[c, y, , drop = F] * I_required_wat_fullirrig_ww[c, y, season, drop = F])[is_req_ww[, , , drop = F]]
+                                                                                 IO_frac_fullirrig[c, y, season, drop = F] * I_required_wat_fullirrig_ww[c, y, season, drop = F])[is_req_ww[, , , drop = F]]
     }
 
     l_inout <- list(discharge = IO_discharge,
@@ -185,7 +185,7 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
           is_req_ww   <- (I_required_wat_fullirrig_ww[c, y, season, drop = F] > 0 & is_gain[, , , drop = F])
 
           # how much withdrawals can be fulfilled by available water
-          IO_frac_fullirrig[c, y, ][is_req_ww[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][is_req_ww[, , , drop = F]] /
+          IO_frac_fullirrig[c, y, season][is_req_ww[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][is_req_ww[, , , drop = F]] /
                                                                          I_required_wat_fullirrig_ww[c, y, season, drop = F][is_req_ww[, , , drop = F]],
                                                                        1)
 
@@ -199,17 +199,17 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
                                                                       0)[is_req_wc[, , , drop = F]]
 
             # how much consumption can be fulfilled by available water
-            IO_frac_fullirrig[c, y, ][is_req_wc[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][is_req_wc[, , , drop = F]] /
+            IO_frac_fullirrig[c, y, season][is_req_wc[, , , drop = F]] <- pmin(avl_wat_wc[c, y, , drop = F][is_req_wc[, , , drop = F]] /
                                                                            I_required_wat_fullirrig_wc[c, y, season, drop = F][is_req_wc[, , , drop = F]],
-                                                                         IO_frac_fullirrig[c, y, , drop = F][is_req_wc[, , , drop = F]])
+                                                                         IO_frac_fullirrig[c, y, season, drop = F][is_req_wc[, , , drop = F]])
           }
 
           # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
           IO_discharge[c(v_down, c), y, ][is_req_ww[c(v_ones, 1), , , drop = F]] <- (IO_discharge[c(v_down, c), y, , drop = F] -
-                                                                                       I_required_wat_fullirrig_wc[c(v_cell, c), y, season, drop = F] * IO_frac_fullirrig[c(v_cell, c), y, , drop = F])[is_req_ww[c(v_ones, 1), , , drop = F]]
+                                                                                       I_required_wat_fullirrig_wc[c(v_cell, c), y, season, drop = F] * IO_frac_fullirrig[c(v_cell, c), y, season, drop = F])[is_req_ww[c(v_ones, 1), , , drop = F]]
           # update minimum water required in cell:
           IO_required_wat_min_allocation[c, y, ][is_req_ww[, , , drop = F]]    <- (IO_required_wat_min_allocation[c, y, , drop = F] +
-                                                                                     IO_frac_fullirrig[c, y, , drop = F] * I_required_wat_fullirrig_ww[c, y, season, drop = F])[is_req_ww[, , , drop = F]]
+                                                                                     IO_frac_fullirrig[c, y, season, drop = F] * I_required_wat_fullirrig_ww[c, y, season, drop = F])[is_req_ww[, , , drop = F]]
         }
 
         l_inout <- list(discharge = IO_discharge,
