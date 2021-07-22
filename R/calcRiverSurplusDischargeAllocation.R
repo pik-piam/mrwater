@@ -260,10 +260,10 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
         }
 
         # update fullfilled fullirrigation requirements (for withdrawal and consumption)
-        required_wat_fullirrig_ww[c, y, season, drop = F][ww_constraint[, , , drop = F]] <- (frac_fullirrig[c, y, season, drop = F] *
-                                                                                               required_wat_fullirrig_ww[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
-        required_wat_fullirrig_wc[c, y, season, drop = F][ww_constraint[, , , drop = F]] <- (frac_fullirrig[c, y, season, drop = F] *
-                                                                                               required_wat_fullirrig_wc[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
+        required_wat_fullirrig_ww[c, y, season][ww_constraint[, , , drop = F]] <- (frac_fullirrig[c, y, season, drop = F] *
+                                                                                     required_wat_fullirrig_ww[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
+        required_wat_fullirrig_wc[c, y, season][ww_constraint[, , , drop = F]] <- (frac_fullirrig[c, y, season, drop = F] *
+                                                                                     required_wat_fullirrig_wc[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
 
         # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
         IO_discharge[c(down, c), y, ][ww_constraint[c(cc, 1), , , drop = F]] <- (IO_discharge[c(down, c), y, , drop = F] -
@@ -327,10 +327,10 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype, selectyears,
             }
 
             # update fullfilled fullirrigation requirements (for withdrawal and consumption)
-            required_wat_fullirrig_ww[c, y, season, drop = F][ww_constraint[, , , drop = F]] <- (frac_fullirrig[c, y, season, drop = F] *
-                                                                                                   required_wat_fullirrig_ww[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
-            required_wat_fullirrig_wc[c, y, season, drop = F][ww_constraint[, , , drop = F]] <- (frac_fullirrig[c, y, season, drop = F] *
-                                                                                                   required_wat_fullirrig_wc[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
+            required_wat_fullirrig_ww[c, y, season][ww_constraint[, , , drop = F]] <- (frac_fullirrig[c, y, season, drop = F] *
+                                                                                           required_wat_fullirrig_ww[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
+            required_wat_fullirrig_wc[c, y, season][ww_constraint[, , , drop = F]] <- (frac_fullirrig[c, y, season, drop = F] *
+                                                                                           required_wat_fullirrig_wc[c, y, season, drop = F])[ww_constraint[, , , drop = F]]
 
             # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
             IO_discharge[c(down, c), y, ][ww_constraint[c(cc, 1), , , drop = F]] <- (IO_discharge[c(down, c), y, , drop = F] -
