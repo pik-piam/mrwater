@@ -100,16 +100,16 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
 
       # available water for additional irrigation withdrawals
       avl_wat_ww[c, y, ][is_gain[, , , drop = F]] <- pmax(IO_discharge[c, y, , drop = F] -
-                                                     IO_required_wat_min_allocation[c, y, , drop = F],
-                                                   0)[is_gain[, , , drop = F]]
+                                                          IO_required_wat_min_allocation[c, y, , drop = F],
+                                                     0)[is_gain[, , , drop = F]]
 
       # withdrawal constraint (if there is water required for withdrawal in current grid cell)
       is_req_ww   <- (I_required_wat_fullirrig_ww[c, y, season, drop = F] > 0 & is_gain[, , , drop = F])
 
       # how much withdrawals can be fulfilled by available water
       IO_frac_fullirrig[c, y, season][is_req_ww[, , , drop = F]] <- pmin(avl_wat_ww[c, y, , drop = F][is_req_ww[, , , drop = F]] /
-                                                              I_required_wat_fullirrig_ww[c, y, season, drop = F][is_req_ww[, , , drop = F]],
-                                                            1)
+                                                                         I_required_wat_fullirrig_ww[c, y, season, drop = F][is_req_ww[, , , drop = F]],
+                                                                    1)
 
       if (length(v_down) > 0) {
         # consumption constraint (if there is water required for consumption in current grid cell)
@@ -152,10 +152,17 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
     IO_frac_fullirrig              <- l_inout$frac_fullirrig
 
 
-    # Allocate first, then second, then third season
-    for (season in c("single", "double", "triple")) {
+    # Extract season
+    if (l_in$multicropping) {
+      s <- c("single", "double", "triple")
+    } else {
+      s <- "single"
+    }
 
-      season <- paste(scenarios, "single", sep = ".")
+    # Allocate first, then second, then third season
+    for (season in s) {
+
+      season <- paste(scenarios, season, sep = ".")
 
       for (o in 1:max(rs$calcorder)) {
         cells <- which(rs$calcorder == o)

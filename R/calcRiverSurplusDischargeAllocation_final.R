@@ -161,7 +161,6 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
   ################################################
   ####### River basin discharge allocation #######
   ################################################
-  out     <- NULL
   if (class(selectyears) == "numeric") {
     selectyears <- paste0("y", selectyears)
   }
@@ -198,12 +197,20 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
 
     # Main output for MAgPIE: water available for agricultural withdrawal
     frac        <- as.magpie(l_inout$frac_fullirrig, spatial = 1)
-    out         <- pmax(frac * required_wat_fullirrig, 0)
+    out         <- frac * required_wat_fullirrig
 
     description <- "Full irrigation requirements that can be fulfilled (consumption and withdrawal)"
 
   } else {
     stop("specify outputtype")
+  }
+
+  # check for NAs and negative values
+  if (any(is.na(out))) {
+    stop("calcRiverSurplusDischargeAllocation produced NAs")
+  }
+  if (any(out < 0)) {
+    stop("calcRiverSurplusDischargeAllocation produced negative values")
   }
 
   return(list(x            = out,
