@@ -76,7 +76,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
     irrig_withdrawal <- calcOutput("IrrigWatRequirements", lpjml = lpjml,
                                    climatetype = climatetype, selectyears = selectyears, aggregate = FALSE)
     irrig_withdrawal <- collapseNames(irrig_withdrawal[, , "withdrawal"])
-    irrig_withdrawal <- irrig_withdrawal[, , intersect(gsub("[.].*", "", getNames(irrig_withdrawal)), getNames(yields))]
+    irrig_withdrawal <- irrig_withdrawal[, , intersect(gsub("[.].*", "", getNames(irrig_withdrawal)), croplist)]
 
     # Read in irrigation system area initialization
     irrigation_system <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)

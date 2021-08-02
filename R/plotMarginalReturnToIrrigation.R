@@ -61,7 +61,13 @@ plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, region = "GLO",
   # Reference lines
   if (x_axis == "IrrigArea") {
     # Area that can be irrigated with committed agricultural uses
-    current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = FALSE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+    current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
+                                                  gainthreshold = 0, selectyears = selectyears, climatetype = climatetype,
+                                                  accessibilityrule = accessibilityrule, EFRmethod = EFRmethod, rankmethod = rankmethod,
+                                                  yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
+                                                  irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
+                                                  potential_wat = FALSE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+    current_fulfilled <- dimSums(current_fulfilled, dim = "season")
     current_LUH <- dimSums(calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell", physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
     #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
     map                            <- toolGetMappingCoord2Country()
@@ -69,7 +75,9 @@ plotMarginalReturnToIrrigation <- function(y_axis_range, x_axis, region = "GLO",
     names(dimnames(current_LUH))[1] <- "x.y.iso"
   } else {
     # Water already committed to irrigation
-    tmp    <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture", lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+    tmp    <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
+                         lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, selectyears = selectyears,
+                         iniyear = iniyear, aggregate = FALSE)
     current_fulfilled <- collapseNames(tmp[, , x_axis])
   }
 

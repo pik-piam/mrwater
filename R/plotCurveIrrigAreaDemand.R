@@ -49,7 +49,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
 
   ## Main data: with water constraint
   # on current cropland
-  inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub("*..\\.", "", scenario), region = region, output = "IrrigArea",
+  inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub("*..\\.", "", scenario), season = "single", region = region, output = "IrrigArea",
                        lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                        EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                        allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
@@ -70,7 +70,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
   names(df)[-1] <- paste(names(df)[-1], "CurrCropland", sep = ".")
 
   # on potential cropland
-  inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub("*..\\.", "", scenario), region = region, output = "IrrigArea",
+  inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub("*..\\.", "", scenario), season = "single", region = region, output = "IrrigArea",
                           lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                           EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                           allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
@@ -143,7 +143,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                       thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                       avlland_scen = "currCropland:2010", cropmix = cropmix, multicropping = multicropping,
-                                      potential_wat = FALSE, com_ag = TRUE, aggregate = FALSE)[, , "irrigatable"])
+                                      potential_wat = FALSE, com_ag = TRUE, aggregate = FALSE)[, , "irrigatable"][, , "single"])
   # Area that is irrigated according to LUH
   current_LUH <- dimSums(calcOutput("Croparea", years = iniyear, sectoral = "kcr",
                                     cells = "lpjcell", physical = TRUE, cellular = TRUE,

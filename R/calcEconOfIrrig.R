@@ -5,6 +5,7 @@
 #' @param region           regional resolution (can be country iso-code,
 #'                         region name and respective mapping "EUR:H12", "GLO" for global)
 #' @param scenario         non-agricultural water use scenario
+#' @param season           single, double, triple
 #' @param output           output to be displayed: irrigated area "IrrigArea" or
 #'                         available water volume "wat_ag_ww" "wat_ag_wc"
 #' @param GT_range         range of x-axis (gainthreshold) to be depicted on the curve
@@ -44,7 +45,7 @@
 #'
 #' @export
 
-calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
+calcEconOfIrrig <- function(region = "GLO", scenario, season, output, GT_range, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -60,7 +61,7 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                   avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat,
                                   com_ag = com_ag, multicropping = multicropping,
-                                  aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                  aggregate = FALSE)[, , "irrigatable"][, , scenario][, , season])
 
     d <- "Irrigatable Area for different gainthresholds"
     u <- "Mha"
@@ -71,7 +72,7 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
                                   rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear,
                                   avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag,
-                                  multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario])
+                                  multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario][, , season])
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)
     # (1 mio. = 1e+06)
@@ -115,7 +116,7 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
                                       thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                       avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat,
                                       com_ag = com_ag, multicropping = multicropping,
-                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                      aggregate = FALSE)[, , "irrigatable"][, , scenario][, , season])
     } else {
       tmp <- collapseNames(calcOutput("WaterPotUse", gainthreshold = gainthreshold,
                                       lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
@@ -123,7 +124,7 @@ calcEconOfIrrig <- function(region = "GLO", scenario, output, GT_range, lpjml, s
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                       thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear,
                                       avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag,
-                                      multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario])
+                                      multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario][, , season])
       tmp <- tmp / 1000
     }
 

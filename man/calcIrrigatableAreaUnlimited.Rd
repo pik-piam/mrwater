@@ -59,7 +59,7 @@ calculates area that can potentially be irrigated given chosen
 }
 \examples{
 \dontrun{
-calcOutput("IrrigatableArea", aggregate = FALSE)
+calcOutput("IrrigatableAreaUnlimited", aggregate = FALSE)
 }
 
 }

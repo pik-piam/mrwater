@@ -47,6 +47,7 @@ plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, ra
                                          EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                          allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                          avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+  irrigarea  <- dimSums(irrigarea, dim = "season")
   irrigarea[irrigarea == 0] <- NA
 
   out <- plotmap2(toolLPJcell2MAgPIEcell(irrigarea[, selectyears, scenario]), title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +

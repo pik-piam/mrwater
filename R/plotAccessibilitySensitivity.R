@@ -51,11 +51,18 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml,
   iniyear      <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
   if (output == "IrrigArea") {
-    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = "Q:0", EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears,
+                                  climatetype = climatetype, accessibilityrule = "Q:0", EFRmethod = EFRmethod,
+                                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+                                  thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+                                  avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag,
+                                  multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+    x <- dimSums(x, dim = "season")
     description <- "Irrigatable Area"
     unit        <- "Irrigatable Area (Mha)"
   } else {
     x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = "Q:0", EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
+    x <- dimSums(x, dim = "season")
     description <- paste0("Potential Water Use (", output, ")")
     unit        <- "Accessible Water (mio. m^3)"
   }
@@ -70,8 +77,10 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml,
   for (accessibilityrule in x_axis_range) {
     if (output == "IrrigArea") {
       x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"), EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+      x <- dimSums(x, dim = "season")
     } else {
       x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"), EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
+      x <- dimSums(x, dim = "season")
     }
     x <- as.data.frame(dimSums(x, dim = 1))
 

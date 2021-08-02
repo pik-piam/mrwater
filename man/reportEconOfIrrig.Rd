@@ -73,7 +73,8 @@ or hist_irrig or hist_total for historical cropmix}
 magpie object in cellular resolution
 }
 \description{
-reports potentially irrigated area depending on gainthreshold, land constraint and water constraint
+reports potentially irrigated area depending on gainthreshold,
+             land constraint and water constraint
 }
 \examples{
 \dontrun{

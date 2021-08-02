@@ -7,6 +7,7 @@
 calcEconOfIrrig(
   region = "GLO",
   scenario,
+  season,
   output,
   GT_range,
   lpjml,
@@ -31,6 +32,8 @@ calcEconOfIrrig(
 region name and respective mapping "EUR:H12", "GLO" for global)}
 
 \item{scenario}{non-agricultural water use scenario}
+
+\item{season}{single, double, triple}
 
 \item{output}{output to be displayed: irrigated area "IrrigArea" or
 available water volume "wat_ag_ww" "wat_ag_wc"}

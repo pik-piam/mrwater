@@ -119,12 +119,13 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod,
   watTotWW <- watNonAgWW + watAgWW
   watTotWC <- watNonAgWC + watAgWC
 
-  watAgWW  <- add_dimension(watAgWW, dim = 3.3, add = "wat_pot", nm = "wat_ag_ww")
-  watAgWC  <- add_dimension(watAgWC, dim = 3.3, add = "wat_pot", nm = "wat_ag_wc")
-  watTotWW <- add_dimension(watTotWW, dim = 3.3, add = "wat_pot", nm = "wat_tot_ww")
-  watTotWC <- add_dimension(watTotWC, dim = 3.3, add = "wat_pot", nm = "wat_tot_wc")
+  watAgWW  <- add_dimension(watAgWW, dim = 3.4, add = "type", nm = "wat_ag_ww")
+  watAgWC  <- add_dimension(watAgWC, dim = 3.4, add = "type", nm = "wat_ag_wc")
+  watTotWW <- add_dimension(watTotWW, dim = 3.4, add = "type", nm = "wat_tot_ww")
+  watTotWC <- add_dimension(watTotWC, dim = 3.4, add = "type", nm = "wat_tot_wc")
 
   out <- mbind(watAgWW, watAgWC, watTotWW, watTotWC)
+  getSets(out) <- c("x", "y", "iso", "year", "EFP", "scen", "season", "type")
 
   return(list(x            = out,
               weight       = NULL,

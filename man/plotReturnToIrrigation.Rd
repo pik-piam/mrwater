@@ -70,7 +70,8 @@ or hist_irrig or hist_total for historical cropmix}
 magpie object in cellular resolution
 }
 \description{
-plot monetary yield gain achieved on irrigated area (USD) or irrigatable area (Mha) dependent on water accessibility
+plot monetary yield gain achieved on irrigated area (USD) or
+             irrigatable area (Mha) dependent on water accessibility
 }
 \examples{
 \dontrun{

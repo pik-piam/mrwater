@@ -41,7 +41,12 @@ plotMapUnsusIrrig <- function(scenario, lpjml, climatetype, selectyears, rankmet
     stop("Please select one year only for the map")
   }
 
-  irrigarea  <- calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+  irrigarea  <- dimSums(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears,
+                           climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                           rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+                           thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+                           avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag,
+                           multicropping = multicropping, aggregate = FALSE), dim = "season")
 
   diff <- irrigarea[, , "off"] - irrigarea[, , "on"]
   diff[diff > 0] <- 1

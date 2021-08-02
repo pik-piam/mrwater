@@ -60,36 +60,44 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
   irrigarea <- dimSums(croparea[, , "irrigated"], dim = 3)
   croparea  <- dimSums(croparea, dim = 3)
 
-  irrigatablearea <- collapseNames(calcOutput("IrrigatableArea", selectyears = selectyears,
+  irrigatableArea <- collapseNames(calcOutput("IrrigatableArea", selectyears = selectyears,
                                               climatetype = climatetype, lpjml = lpjml,
                                               gainthreshold = gainthreshold, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                               allocationrule = allocationrule,  thresholdtype = thresholdtype,
                                               irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
                                               cropmix = cropmix, potential_wat = TRUE,
                                               accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
-                                              com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+                                              com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"])
+  # sum over seasons (harvested area throughout the year)
+  irrigatableArea <- dimSums(irrigatableArea, dim = "season")
 
-  # Reference data
+  ### Reference data ###
   # yield gain > threshold
-  irrig_yieldgainpotential <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
+  potIrrigGain <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                                             lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                                             cropmix = cropmix, unit = thresholdtype, yieldcalib = yieldcalib,
                                             multicropping = multicropping, aggregate = FALSE)
-  irrig_yieldgainpotential <- dimSums(irrig_yieldgainpotential, dim = 3)
+  potIrrigGain <- dimSums(potIrrigGain, dim = 3)
 
-  # water available
-  frac_fullirrig           <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
-                                                     output = "potIrrigWat", selectyears = selectyears,
-                                                     lpjml = lpjml, climatetype = climatetype,
-                                                     EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
-                                                     rankmethod = rankmethod, yieldcalib = yieldcalib,
-                                                     allocationrule = allocationrule, thresholdtype = thresholdtype,
-                                                     gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
-                                                     iniyear = iniyear, avlland_scen = avlland_scen,
-                                                     cropmix = cropmix, com_ag = FALSE,
-                                                     multicropping = multicropping, aggregate = FALSE))[, , scenario]
+  # fraction of fullirrigation requirement that can be fulfilled
+  watAvlAg  <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
+                                         output = "potIrrigWat", selectyears = selectyears,
+                                         lpjml = lpjml, climatetype = climatetype,
+                                         EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                         allocationrule = allocationrule, thresholdtype = thresholdtype,
+                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+                                         iniyear = iniyear, avlland_scen = avlland_scen,
+                                         cropmix = cropmix, com_ag = FALSE,
+                                         multicropping = multicropping, aggregate = FALSE)[, , scenario])
 
-  #### this no longer contains fraction AND it has a different dimensionality now... ADJUST FUNCTION!!!!
+  fullirrigReq  <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
+                               lpjml = lpjml, climatetype = climatetype, comagyear = NULL,
+                               irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+                               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
+
+  fracfullirrig <- watAvlAg / fullirrigReq
+  fracfullirrig[fullirrigReq == 0] <- 0
 
   # regionmapping
   mapping        <- toolGetMappingCoord2Country()
@@ -101,25 +109,25 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
 
   df <- data.frame(coord = mapping$coords,
                    irrigarea = as.data.frame(irrigarea[mapping$coords, , ])$Value,
-                   irrigatablearea = as.data.frame(irrigatablearea[mapping$coords, , ])$Value,
-                   fracfullirrig = as.data.frame(frac_fullirrig[mapping$coords, , ])$Value,
-                   gainpotential = as.data.frame(irrig_yieldgainpotential[mapping$coords, , ])$Value,
+                   irrigatableArea = as.data.frame(irrigatableArea[mapping$coords, , ])$Value,
+                   fracfullirrig = as.data.frame(fracfullirrig[mapping$coords, , ])$Value,
+                   gainpotential = as.data.frame(potIrrigGain[mapping$coords, , ])$Value,
                    region = mapping$reg)
   df1 <- df2 <- df3 <- df
-  df1$irrigatablearea[df1$fracfullirrig <= 0] <- NA
-  df2$irrigatablearea[df2$fracfullirrig <= 0] <- NA
-  df3$irrigatablearea[df3$fracfullirrig > 0] <- NA
-  df1$irrigatablearea[df1$gainpotential < gainthreshold] <- NA
-  df2$irrigatablearea[df2$gainpotential > gainthreshold] <- NA
-  df3$irrigatablearea[df3$gainpotential < gainthreshold] <- NA
+  df1$irrigatableArea[df1$fracfullirrig <= 0] <- NA
+  df2$irrigatableArea[df2$fracfullirrig <= 0] <- NA
+  df3$irrigatableArea[df3$fracfullirrig > 0]  <- NA
+  df1$irrigatableArea[df1$gainpotential < gainthreshold] <- NA
+  df2$irrigatableArea[df2$gainpotential > gainthreshold] <- NA
+  df3$irrigatableArea[df3$gainpotential < gainthreshold] <- NA
 
   if (region != "GLO") {
     df  <- df[df$region == region, ]
-    modelstat <- lm(irrigatablearea ~ irrigarea, data = df, na.action = na.omit)
+    modelstat <- lm(irrigatableArea ~ irrigarea, data = df, na.action = na.omit)
     rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
 
     df1  <- df1[df1$region == region, ]
-    p1 <- ggplot(df1, aes(x = irrigarea, y = irrigatablearea)) +
+    p1 <- ggplot(df1, aes(x = irrigarea, y = irrigatableArea)) +
       geom_point(size = 0.1, color = "black", na.rm = TRUE) +
       geom_abline(intercept = c(0, 0), slope = 1, color = "grey") +
       # geom_smooth(method = lm, na.rm = TRUE) +
@@ -133,7 +141,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
       ggtitle(paste0("Rsquared: ", rsquared))
 
     df2  <- df2[df2$region == region, ]
-    p2 <- ggplot(df2, aes(x = irrigarea, y = irrigatablearea)) +
+    p2 <- ggplot(df2, aes(x = irrigarea, y = irrigatableArea)) +
       geom_point(size = 0.1, color = "green", na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
@@ -145,7 +153,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
       ggtitle(paste0("Rsquared: ", rsquared))
 
     df3  <- df3[df3$region == region, ]
-    p3 <- ggplot(df3, aes(x = irrigarea, y = irrigatablearea)) +
+    p3 <- ggplot(df3, aes(x = irrigarea, y = irrigatableArea)) +
       geom_point(size = 0.1, color = "red", na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
@@ -160,9 +168,9 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
 
 
   } else {
-    # modelstat <- lm(irrigatablearea ~ irrigarea, data = df)
+    # modelstat <- lm(irrigatableArea ~ irrigarea, data = df)
     # rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
-    # out <- ggplot(df, aes(x = irrigarea, y = irrigatablearea, color = region)) +
+    # out <- ggplot(df, aes(x = irrigarea, y = irrigatableArea, color = region)) +
     #   geom_point(size = 0.05, na.rm = TRUE) +
     #   geom_smooth(method = lm, na.rm = TRUE) +
     #   coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
@@ -173,10 +181,10 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
     #   theme_bw() +
     #   ggtitle(paste0("Rsquared: ", rsquared, " for region: ", region))
 
-    modelstat <- lm(irrigatablearea ~ irrigarea, data = df, na.action = na.omit)
+    modelstat <- lm(irrigatableArea ~ irrigarea, data = df, na.action = na.omit)
     rsquared  <- round(summary(modelstat)$r.squared, digits = 3)
 
-    p1 <- ggplot(df1, aes(x = irrigarea, y = irrigatablearea)) +
+    p1 <- ggplot(df1, aes(x = irrigarea, y = irrigatableArea)) +
       geom_point(size = 0.1, color = "black", na.rm = TRUE) +
       geom_abline(intercept = c(0, 0), slope = 1, color = "grey") +
       # geom_smooth(method = lm, na.rm = TRUE) +
@@ -189,7 +197,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
             strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white")) +
       ggtitle(paste0("Rsquared: ", rsquared))
 
-    p2 <- ggplot(df2, aes(x = irrigarea, y = irrigatablearea)) +
+    p2 <- ggplot(df2, aes(x = irrigarea, y = irrigatableArea)) +
       geom_point(size = 0.1, color = "green", na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
@@ -200,7 +208,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
             strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white")) +
       ggtitle(paste0("Rsquared: ", rsquared))
 
-    p3 <- ggplot(df3, aes(x = irrigarea, y = irrigatablearea)) +
+    p3 <- ggplot(df3, aes(x = irrigarea, y = irrigatableArea)) +
       geom_point(size = 0.1, color = "red", na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +

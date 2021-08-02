@@ -63,7 +63,6 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
 
   thresholdtype <- strsplit(rankmethod, ":")[[1]][1]
 
-
   # Cellular yield improvement potential for all crops (in USD/ha)
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                           lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
@@ -90,6 +89,8 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                      avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE,
                                      com_ag = FALSE, multicropping = multicropping,
                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
+    # sum over seasons (yearly irrigated area harvested)
+    area <- dimSums(area, dim = "season")
     d    <- "Potentially Irrigated Area considering land and water constraints"
 
   }

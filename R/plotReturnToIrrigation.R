@@ -1,5 +1,6 @@
 #' @title       plotReturnToIrrigation
-#' @description plot monetary yield gain achieved on irrigated area (USD) or irrigatable area (Mha) dependent on water accessibility
+#' @description plot monetary yield gain achieved on irrigated area (USD) or
+#'              irrigatable area (Mha) dependent on water accessibility
 #'
 #' @param y_axis_range     range of y-axis (monetary irrigation gain) to be depicted on the curve
 #' @param x_axis           x_axis type to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"
@@ -46,11 +47,23 @@ plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, select
 
   iniyear <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
-  x     <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = "Q0", EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+  x     <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold,
+                                    selectyears = selectyears, climatetype = climatetype,
+                                    accessibilityrule = "Q0", EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                    avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag,
+                                    multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+  x     <- dimSums(x, dim = "season")
   x     <- as.data.frame(dimSums(x, dim = 1))
   tmp1A <- data.frame(EFP = x$Data1, Scen = x$Data2, Irrigarea_GT0 = x$Value, stringsAsFactors = F)
 
-  x     <- collapseNames(calcOutput("WaterPotUse",      lpjml = lpjml, gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = "Q0", EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , x_axis])
+  x     <- collapseNames(calcOutput("WaterPotUse",      lpjml = lpjml, gainthreshold = gainthreshold,
+                                    selectyears = selectyears, climatetype = climatetype, accessibilityrule = "Q0",
+                                    EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                    iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag,
+                                    multicropping = multicropping, aggregate = FALSE)[, , x_axis])
+  x     <- dimSums(x, dim = "season")
   # transform from mio. m^3 to km^3:
   x     <- x / 1000
   x     <- as.data.frame(dimSums(x, dim = 1))
@@ -62,13 +75,25 @@ plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, select
 
   for (accessibilityrule in y_axis_range) {
 
-    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"), EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears,
+                                  climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"),
+                                  EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+                                  thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+                                  avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag,
+                                  multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+    x <- dimSums(x, dim = "season")
     x <- as.data.frame(dimSums(x, dim = 1))
     tmp1B              <- data.frame(EFP = x$Data1, Scen = x$Data2, Value = x$Value)
     names(tmp1B)[3]    <- paste0("Q", accessibilityrule)
     tmp1A              <- merge(tmp1A, tmp1B)
 
-    x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"), EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , x_axis])
+    x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                                  accessibilityrule = paste("Q", accessibilityrule, sep = ":"), EFRmethod = EFRmethod,
+                                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+                                  thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+                                  iniyear = iniyear, avlland_scen = avlland_scen, cropmix = cropmix, com_ag = com_ag,
+                                  multicropping = multicropping, aggregate = FALSE)[, , x_axis])
+    x <- dimSums(x, dim = "season")
     x <- x / 1000
     x <- as.data.frame(dimSums(x, dim = 1))
     tmp2B              <- data.frame(EFP = x$Data1, Scen = x$Data2, Value = x$Value)

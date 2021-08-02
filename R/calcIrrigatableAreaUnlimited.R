@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("IrrigatableArea", aggregate = FALSE)
+#' calcOutput("IrrigatableAreaUnlimited", aggregate = FALSE)
 #' }
 #'
 #' @import magclass

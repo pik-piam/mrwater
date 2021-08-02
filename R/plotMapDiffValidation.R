@@ -41,17 +41,17 @@ plotMapDiffValidation <- function(reference, scenario, lpjml, climatetype, selec
     stop("Please select one year only for the map")
   }
 
-  x1000 <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold,
+  x1000 <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold,
     selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
     EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
     thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
-    cropmix = cropmix, potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+    cropmix = cropmix, potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")]), dim = "season")
   if (reference == "committed") {
-    xC  <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears,
+    xC  <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears,
       climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
       irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = FALSE,
-      com_ag = TRUE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")])
+      com_ag = TRUE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")]), dim = "season")
   } else if (reference == "LUH") {
     xC <- dimSums(calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
       physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
@@ -64,8 +64,7 @@ plotMapDiffValidation <- function(reference, scenario, lpjml, climatetype, selec
     stop("Please choose the reference scenario for difference map: committed or LUH")
   }
 
-
-  diff <- x1000 - xC
+  diff          <- x1000 - xC
   diff[xC == 0] <- NA
 
   out <- plotmap2(toolLPJcell2MAgPIEcell(diff[, , "off"]), midcol = "white", midpoint = 0, highcol = "darkblue", lowcol = "darkred", legendname = "Mha") +
@@ -73,20 +72,6 @@ plotMapDiffValidation <- function(reference, scenario, lpjml, climatetype, selec
       panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
       strip.background = element_rect(fill = "transparent", colour = NA), strip.text = element_text(color = "white"))
-
-  # irrigarea_pot  <- calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, cropmix=cropmix, potential_wat=TRUE, com_ag="discharge_only", aggregate=FALSE)
-  # irrigarea_act  <- calcOutput("IrrigatableArea", lpjml=lpjml, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod, accessibilityrule=accessibilityrule, rankmethod=rankmethod, yieldcalib=yieldcalib, allocationrule=allocationrule, thresholdtype=thresholdtype, gainthreshold=gainthreshold, irrigationsystem=irrigationsystem, avlland_scen=avlland_scen, cropmix=cropmix, potential_wat=TRUE, com_ag=TRUE, aggregate=FALSE)
-  #
-  # diff <- irrigarea_pot[,,"off"] - irrigarea_act[,,"off"]
-  # diff <- collapseNames(diff[,,"irrigatable"])
-  #
-  # out <- plotmap2(toolLPJcell2MAgPIEcell(diff[,selectyears,scenario]), legendname = "Mha",
-  #                 lowcol = "darkred", midcol = "white", highcol = "darkblue", midpoint = 0,
-  #                 title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +
-  #   theme(title=element_blank(),
-  #         panel.background = element_rect(fill="transparent", colour=NA),  plot.background = element_rect(fill = "transparent", colour = NA),
-  #         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-  #         strip.background = element_rect(fill="transparent", colour=NA), strip.text = element_text(color="white"))
 
   return(out)
 }
