@@ -83,7 +83,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
 
     # Calculate irrigation water requirements
     IWR  <- dimSums((irrigationSystem[, , ] * irrigReqWW[, , ]), dim = 3.1)
-    IWR  <- IWR[, , getNames(yields)]
+    IWR  <- IWR[, , croplist]
 
     # Correction of small IWR: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
     IWR[IWR < 10] <- 10
@@ -91,7 +91,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
     tmp <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
                       lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                       iniyear = iniyear, selectyears = selectyears, yieldcalib = yieldcalib,
-                      multicropping = multicropping)
+                      multicropping = multicropping, aggregate = FALSE)
     IWR[dimSums(tmp, dim = 3) < 10] <- 0
     # Yields in USD/m^3
     yields <- ifelse(IWR > 0, yields / IWR, 0)
