@@ -79,7 +79,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
 
   # water available
   frac_fullirrig           <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
-                                                     output = "frac_fullirrig", selectyears = selectyears,
+                                                     output = "potIrrigWat", selectyears = selectyears,
                                                      lpjml = lpjml, climatetype = climatetype,
                                                      EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
                                                      rankmethod = rankmethod, yieldcalib = yieldcalib,
@@ -88,6 +88,8 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
                                                      iniyear = iniyear, avlland_scen = avlland_scen,
                                                      cropmix = cropmix, com_ag = FALSE,
                                                      multicropping = multicropping, aggregate = FALSE))[, , scenario]
+
+  #### this no longer contains fraction AND it has a different dimensionality now... ADJUST FUNCTION!!!!
 
   # regionmapping
   mapping        <- toolGetMappingCoord2Country()

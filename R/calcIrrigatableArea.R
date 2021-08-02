@@ -64,7 +64,7 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
 
   ## Read in water available for irrigation
   if (potential_wat) {
-    wat_avl         <- calcOutput("WaterPotUse", selectyears = selectyears,
+    avlWat         <- calcOutput("WaterPotUse", selectyears = selectyears,
                                   lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
                                   accessibilityrule = accessibilityrule, rankmethod = rankmethod,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
@@ -72,42 +72,42 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
                                   irrigationsystem = irrigationsystem, iniyear = iniyear,
                                   avlland_scen = avlland_scen, cropmix = cropmix,
                                   com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
-    wat_avl_irrig_c <- collapseNames(wat_avl[, , "wat_ag_wc"])
-    wat_avl_irrig_w <- collapseNames(wat_avl[, , "wat_ag_ww"])
+    avlWat_irrig_c <- collapseNames(avlWat[, , "wat_ag_wc"])
+    avlWat_irrig_w <- collapseNames(avlWat[, , "wat_ag_ww"])
   } else {
-    wat_avl         <- calcOutput("RiverHumanUses", selectyears = selectyears,
+    avlWat         <- calcOutput("RiverHumanUses", selectyears = selectyears,
                                   lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                                   EFRmethod = EFRmethod, humanuse = "committed_agriculture", aggregate = FALSE)
-    wat_avl_irrig_c <- collapseNames(wat_avl[, , "currHuman_wc"])
-    wat_avl_irrig_w <- collapseNames(wat_avl[, , "currHuman_ww"])
+    avlWat_irrig_c <- collapseNames(avlWat[, , "currHuman_wc"])
+    avlWat_irrig_w <- collapseNames(avlWat[, , "currHuman_ww"])
   }
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
-  wat_req    <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
-                           lpjml = lpjml, climatetype = climatetype,
-                           irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
-                           cropmix = cropmix, multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
-  wat_req_ww <- collapseNames(wat_req[, , "withdrawal"])
-  wat_req_wc <- collapseNames(wat_req[, , "consumption"])
+  watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
+                          lpjml = lpjml, climatetype = climatetype,
+                          irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+                          cropmix = cropmix, multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
+  watReqWW <- collapseNames(watReq[, , "withdrawal"])
+  watReqWC <- collapseNames(watReq[, , "consumption"])
 
   # Read in area that can potentially be irrigated (in every season separately, i.e. multicropping = FALSE)
   # (including total potentially irrigatable area; defined by comagyear=NULL)
-  area_potirrig <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+  areaPotIrrig <- calcOutput("AreaPotIrrig", selectyears = selectyears,
                               avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
-  irrigarea_ww <- pmin(wat_avl_irrig_w / wat_req_ww, 1) * area_potirrig
-  irrigarea_ww[wat_req_ww == 0] <- 0      # cells with no water requirements also get no irrigated area assigned
-  irrigarea_ww <- add_dimension(irrigarea_ww, dim = 3.3, add = "data", nm = "irrigatable_ww")
+  irrigareaWW <- pmin(avlWat_irrig_w / watReqWW, 1) * areaPotIrrig
+  irrigareaWW[watReqWW == 0] <- 0      # cells with no water requirements also get no irrigated area assigned
+  irrigareaWW <- add_dimension(irrigareaWW, dim = 3.4, add = "data", nm = "irrigatable_ww")
 
-  irrigarea_wc <- pmin(wat_avl_irrig_c / wat_req_wc, 1) * area_potirrig
-  irrigarea_wc[wat_req_wc == 0] <- 0
-  irrigarea_wc <- add_dimension(irrigarea_wc, dim = 3.3, add = "data", nm = "irrigatable_wc")
+  irrigareaWC <- pmin(avlWat_irrig_c / watReqWC, 1) * areaPotIrrig
+  irrigareaWC[watReqWC == 0] <- 0
+  irrigareaWC <- add_dimension(irrigareaWC, dim = 3.4, add = "data", nm = "irrigatable_wc")
 
-  irrigatable_area <- pmin(collapseNames(irrigarea_ww), collapseNames(irrigarea_wc))
-  irrigatable_area <- add_dimension(irrigatable_area, dim = 3.3, add = "data", nm = "irrigatable")
+  irrigatableArea <- pmin(collapseNames(irrigareaWW), collapseNames(irrigareaWC))
+  irrigatableArea <- add_dimension(irrigatableArea, dim = 3.4, add = "data", nm = "irrigatable")
 
-  out <- mbind(irrigatable_area, irrigarea_ww, irrigarea_wc)
+  out <- mbind(irrigatableArea, irrigareaWW, irrigareaWC)
 
   # check for NAs and negative values
   if (any(is.na(out))) {

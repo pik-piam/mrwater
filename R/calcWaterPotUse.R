@@ -43,7 +43,7 @@
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears
+#' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears add_dimension new.magpie
 #' @importFrom stringr str_split
 #'
 #' @return magpie object in cellular resolution
@@ -66,63 +66,65 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod,
          iniyear and avlland_scen should have same initialization year")
   }
 
+  # Water potentially available for irrigation (accounting for previously committed agricultural uses)
+  watAvlAg    <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
+                                        output = "potIrrigWat", selectyears = selectyears,
+                                        lpjml = lpjml, climatetype = climatetype,
+                                        EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                                        rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                        allocationrule = allocationrule, thresholdtype = thresholdtype,
+                                        gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+                                        iniyear = iniyear, avlland_scen = avlland_scen,
+                                        cropmix = cropmix, com_ag = com_ag,
+                                        multicropping = multicropping, aggregate = FALSE))
+  watAvlAgWW <- collapseNames(watAvlAg[, , "withdrawal"])
+  watAvlAgWC <- collapseNames(watAvlAg[, , "consumption"])
+
+
+  watNonAgWW <- watNonAgWC <- currHumanWW <- currHumanWC <- new.magpie(cells_and_regions = getCells(watAvlAgWW),
+                         years = getYears(watAvlAgWW),
+                         names = getNames(watAvlAgWW),
+                         fill = 0)
+
   # Water use for non-agricultural purposes
-  non_ag    <- calcOutput("RiverHumanUses", humanuse = "non_agriculture", lpjml = lpjml, climatetype = climatetype,
-                          EFRmethod = EFRmethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
-  non_ag_ww <- collapseNames(non_ag[, , "currHuman_ww"])
-  non_ag_wc <- collapseNames(non_ag[, , "currHuman_wc"])
+  watNonAg <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
+                                      lpjml = lpjml, climatetype = climatetype,
+                                      EFRmethod = EFRmethod, selectyears = selectyears,
+                                      iniyear = iniyear, aggregate = FALSE)
+  watNonAgWW[, , "single"] <- collapseNames(watNonAg[, , "currHuman_ww"])
+  watNonAgWC[, , "single"] <- collapseNames(watNonAg[, , "currHuman_wc"])
 
   if (com_ag == TRUE) {
 
     # Water already committed to irrigation
-    currHuman    <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
-                               lpjml = lpjml, climatetype = climatetype,
-                               EFRmethod = EFRmethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
-    currHuman_ww <- collapseNames(currHuman[, , "currHuman_ww"])
-    currHuman_wc <- collapseNames(currHuman[, , "currHuman_wc"])
-    comagyear    <- iniyear
+    currHuman <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
+                             lpjml = lpjml, climatetype = climatetype,
+                             EFRmethod = EFRmethod, selectyears = selectyears,
+                             iniyear = iniyear, aggregate = FALSE)
 
   } else {
 
     # No water is previously committed
-    currHuman       <- non_ag
+    currHuman       <- watNonAg
     currHuman[, , ] <- 0
-    currHuman_ww    <- collapseNames(currHuman[, , "currHuman_ww"])
-    currHuman_wc    <- collapseNames(currHuman[, , "currHuman_wc"])
-    comagyear       <- NULL
 
   }
 
-  # Water potentially available for irrigation (accounting for previously committed agricultural uses)
-  frac_fullirrig         <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
-                                                     output = "frac_fullirrig", selectyears = selectyears,
-                                                     lpjml = lpjml, climatetype = climatetype,
-                                                     EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
-                                                     rankmethod = rankmethod, yieldcalib = yieldcalib,
-                                                     allocationrule = allocationrule, thresholdtype = thresholdtype,
-                                                     gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
-                                                     iniyear = iniyear, avlland_scen = avlland_scen,
-                                                     cropmix = cropmix, com_ag = com_ag,
-                                                     multicropping = multicropping, aggregate = FALSE))
-  required_wat_fullirrig <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
-                                       lpjml = lpjml, climatetype = climatetype, comagyear = comagyear,
-                                       irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
-                                       cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
-  wat_avl_agr_ww         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[, , "withdrawal"]),  0)
-  wat_avl_agr_wc         <- frac_fullirrig * pmax(collapseNames(required_wat_fullirrig[, , "consumption"]), 0)
+  currHumanWW[, , "single"] <- collapseNames(currHuman[, , "currHuman_ww"])
+  currHumanWC[, , "single"] <- collapseNames(currHuman[, , "currHuman_wc"])
 
   # Function outputs
-  water_ag_ww  <- currHuman_ww + wat_avl_agr_ww
-  water_ag_wc  <- currHuman_wc + wat_avl_agr_wc
-  water_tot_ww <- water_ag_ww + non_ag_ww
-  water_tot_wc <- water_ag_wc + non_ag_wc
+  watAgWW  <- watAvlAgWW + currHumanWW
+  watAgWC  <- watAvlAgWC + currHumanWC
+  watTotWW <- watNonAgWW + watAgWW
+  watTotWC <- watNonAgWC + watAgWC
 
-  water_ag_ww  <- add_dimension(water_ag_ww, dim = 3.3, add = "wat_pot", nm = "wat_ag_ww")
-  water_ag_wc  <- add_dimension(water_ag_wc, dim = 3.3, add = "wat_pot", nm = "wat_ag_wc")
-  water_tot_ww <- add_dimension(water_tot_ww, dim = 3.3, add = "wat_pot", nm = "water_tot_ww")
-  water_tot_wc <- add_dimension(water_tot_wc, dim = 3.3, add = "wat_pot", nm = "water_tot_wc")
+  watAgWW  <- add_dimension(watAgWW, dim = 3.3, add = "wat_pot", nm = "wat_ag_ww")
+  watAgWC  <- add_dimension(watAgWC, dim = 3.3, add = "wat_pot", nm = "wat_ag_wc")
+  watTotWW <- add_dimension(watTotWW, dim = 3.3, add = "wat_pot", nm = "wat_tot_ww")
+  watTotWC <- add_dimension(watTotWC, dim = 3.3, add = "wat_pot", nm = "wat_tot_wc")
 
-  out <- mbind(water_ag_ww, water_ag_wc, water_tot_ww, water_tot_wc)
+  out <- mbind(watAgWW, watAgWC, watTotWW, watTotWC)
 
   return(list(x            = out,
               weight       = NULL,
