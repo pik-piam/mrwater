@@ -97,6 +97,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
 
   fracfullirrig <- watAvlAg / fullirrigReq
   fracfullirrig[fullirrigReq == 0] <- 0
+  fracfullirrig <- dimSums(pmin(collapseNames(fracfullirrig[,,"consumption"]), collapseNames(fracfullirrig[,,"withdrawal"])), dim = 3)
 
   # regionmapping
   mapping        <- toolGetMappingCoord2Country()
@@ -219,7 +220,6 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
       ggtitle(paste0("Rsquared: ", rsquared))
 
     out <- cowplot::ggdraw() + cowplot::draw_plot(p1) + cowplot::draw_plot(p3) + cowplot::draw_plot(p2)
-
 
   }
 

@@ -21,7 +21,9 @@ This function calculates irrigation water requirements based on
              LPJmL blue water consumption of plants and considering irrigation efficiencies
 }
 \examples{
-\dontrun{ calcOutput("IrrigWatRequirements", aggregate=FALSE) }
+\dontrun{
+calcOutput("IrrigWatRequirements", aggregate = FALSE)
+}
 
 }
 \author{
