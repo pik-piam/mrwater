@@ -94,8 +94,9 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                       multicropping = multicropping, aggregate = FALSE)
     IWR[dimSums(tmp, dim = 3) < 10] <- 0
     # Yields in USD/m^3
-    yields <- ifelse(IWR > 0, yields / IWR, 0)
-    unit   <- "USD05 per m^3"
+    yields           <- yields / IWR
+    yields[IWR <= 0] <- 0
+    unit             <- "USD05 per m^3"
 
   }
 
@@ -131,17 +132,17 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
       }
 
       # historical share of crop types in cropland per cell
-      croparea_shr <- croparea / dimSums(croparea, dim = 3)
+      cropareaShr <- croparea / dimSums(croparea, dim = 3)
       # correct NAs: where no current cropland available,
       # representative crops (maize, rapeseed, pulses) assumed as proxy
-      rep_crops    <- c("maiz", "rapeseed", "puls_pro")
-      other_crops  <- setdiff(getNames(croparea), rep_crops)
-      croparea_shr[, , rep_crops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
-      croparea_shr[, , other_crops][dimSums(croparea, dim = 3) == 0] <- 0
+      repCrops    <- c("maiz", "rapeseed", "puls_pro")
+      otherCrops  <- setdiff(getNames(croparea), repCrops)
+      cropareaShr[, , repCrops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
+      cropareaShr[, , otherCrops][dimSums(croparea, dim = 3) == 0] <- 0
 
       # average (rf/irr) yields over historical crops weighted with their croparea share
-      croplist <- intersect(croplist, getNames(croparea_shr))
-      yields   <- dimSums(yields[, , croplist] * croparea_shr[, , croplist], dim = "MAG")
+      croplist <- intersect(croplist, getNames(cropareaShr))
+      yields   <- dimSums(yields[, , croplist] * cropareaShr[, , croplist], dim = "MAG")
 
       description <- "Average yield improvement potential for crop types weighted with historical croparea share"
 
@@ -219,7 +220,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
 
     if (!multicropping) {
 
-      yieldGain  <- collapseNames(yields[, , "irrigated"]) - collapseNames(yields[, , "rainfed"])
+      yieldGain   <- collapseNames(yields[, , "irrigated"]) - collapseNames(yields[, , "rainfed"])
       description <- "Yield improvement potential by irrigation for all different crop types"
 
     } else {
@@ -244,7 +245,6 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   if (any(round(yieldGain) < 0)) {
     stop("Function YieldImprovementPotential produced negative values")
   }
-
 
   return(list(x            = yieldGain,
               weight       = NULL,

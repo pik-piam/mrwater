@@ -49,7 +49,6 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
   # retrieve function arguments
   iniyear   <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
-
   croparea  <- calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
                            physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
   #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
@@ -74,9 +73,9 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
   ### Reference data ###
   # yield gain > threshold
   potIrrigGain <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
-                                            lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
-                                            cropmix = cropmix, unit = thresholdtype, yieldcalib = yieldcalib,
-                                            multicropping = multicropping, aggregate = FALSE)
+                              lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
+                              cropmix = cropmix, unit = thresholdtype, yieldcalib = yieldcalib,
+                              multicropping = multicropping, aggregate = FALSE)
   potIrrigGain <- dimSums(potIrrigGain, dim = 3)
 
   # fraction of fullirrigation requirement that can be fulfilled
