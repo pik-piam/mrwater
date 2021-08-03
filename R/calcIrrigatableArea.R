@@ -97,8 +97,13 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
                           lpjml = lpjml, climatetype = climatetype,
                           irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
                           cropmix = cropmix, multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
-  watReqWW <- collapseNames(watReq[, , "withdrawal"])
-  watReqWC <- collapseNames(watReq[, , "consumption"])
+  watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWat_irrig_w),
+                         years = getYears(avlWat_irrig_w),
+                         names = getNames(avlWat_irrig_w),
+                         fill = NA)
+
+  watReqWW[, , ] <- collapseNames(watReq[, , "withdrawal"])
+  watReqWC[, , ] <- collapseNames(watReq[, , "consumption"])
 
   # Read in area that can potentially be irrigated (in every season separately, i.e. multicropping = FALSE)
   # (including total potentially irrigatable area; defined by comagyear=NULL)
