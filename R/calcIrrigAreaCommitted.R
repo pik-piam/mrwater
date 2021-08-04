@@ -40,34 +40,36 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   if (class(selectyears) == "character") {
     selectyears <- as.numeric(gsub("y", "", selectyears))
   }
+  if (class(iniyear) == "character") {
+    iniyear <- as.numeric(gsub("y", "", iniyear))
+  }
 
-  irrig_area <- new.magpie(getCells(tmp), seq(iniyear, tail(selectyears, 1), by = 1),
+  irrigArea <- new.magpie(getCells(tmp), seq(iniyear, tail(selectyears, 1), by = 1),
                            getNames(tmp), sets = c("x.y.iso", "year", "data"))
 
   # Each year certain share (parameter: "depreciation") of irrigated cropland is lost
   # Note: Depreciation in yearly time-steps!
   for (y in (iniyear:tail(selectyears, 1))) {
     # irrigated area in respective year
-    irrig_area[, y, ] <- tmp
+    irrigArea[, y, ] <- tmp
     # depreciation of irrigated area
-    tmp               <- tmp * (1 - depreciation)
+    tmp              <- tmp * (1 - depreciation)
   }
 
   # select years to be returned
-  irrig_area <- irrig_area[, selectyears, ]
+  irrigArea <- irrigArea[, selectyears, ]
 
   # check for NAs and negative values
-  if (any(is.na(irrig_area))) {
+  if (any(is.na(irrigArea))) {
     stop("produced NA irrigation water requirements")
   }
-  if (any(irrig_area < 0)) {
+  if (any(irrigArea < 0)) {
     stop("produced negative irrigation water requirements")
   }
 
-  return(list(
-    x            = irrig_area,
-    weight       = NULL,
-    unit         = "mio. ha",
-    description  = "Cropland area reserved for irrigation per crop",
-    isocountries = FALSE))
+  return(list(x            = irrigArea,
+              weight       = NULL,
+              unit         = "mio. ha",
+              description  = "Cropland area reserved for irrigation per crop",
+              isocountries = FALSE))
 }
