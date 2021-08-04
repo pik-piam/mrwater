@@ -84,10 +84,15 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
 
     # Currently Irrigated Area [total, sustainable, unsustainable]
     currIrr <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
-                                        gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                        EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                        thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010",
-                                        cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                        gainthreshold = gainthreshold, selectyears = selectyears,
+                                        climatetype = climatetype, accessibilityrule = accessibilityrule,
+                                        EFRmethod = EFRmethod, rankmethod = rankmethod,
+                                        yieldcalib = yieldcalib, allocationrule = allocationrule,
+                                        thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                        avlland_scen = "currCropland:2010",
+                                        cropmix = cropmix, potential_wat = FALSE,
+                                        com_ag = TRUE, multicropping = multicropping,
+                                        aggregate = FALSE)[, , "irrigatable"][, , scenario])
     currIrr           <- dimSums(currIrr, dim = "season")
     getSets(currIrr)  <- c("x", "y", "iso", "year", "type")
     currIrrSus             <- currIrr[, , "on"]
@@ -99,10 +104,15 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
 
     # Potentially Irrigated Area (on current Cropland) [total, sustainable, unsustainable]
     potIrrcurr <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
-                                           gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                        EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                        thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010",
-                                        cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                           gainthreshold = gainthreshold, selectyears = selectyears,
+                                           climatetype = climatetype, accessibilityrule = accessibilityrule,
+                                        EFRmethod = EFRmethod, rankmethod = rankmethod,
+                                        yieldcalib = yieldcalib, allocationrule = allocationrule,
+                                        thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                        avlland_scen = "currCropland:2010",
+                                        cropmix = cropmix, potential_wat = TRUE,
+                                        com_ag = com_ag, multicropping = multicropping,
+                                        aggregate = FALSE)[, , "irrigatable"][, , scenario])
     potIrrcurr           <- dimSums(potIrrcurr, dim = "season")
     getSets(potIrrcurr)  <- c("x", "y", "iso", "year", "type")
     potIrrcurrSus             <- potIrrcurr[, , "on"]
@@ -114,10 +124,14 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
 
     # Potentially Irrigated Area (on potential Cropland) [total, sustainable, unsustainable]
     potIrrpot <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
-                                          gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                          EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                          thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010",
-                                          cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                          gainthreshold = gainthreshold, selectyears = selectyears,
+                                          climatetype = climatetype, accessibilityrule = accessibilityrule,
+                                          EFRmethod = EFRmethod, rankmethod = rankmethod,
+                                          yieldcalib = yieldcalib, allocationrule = allocationrule,
+                                          thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                          avlland_scen = "potIrrig_HalfEarth:2010",
+                                          cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping,
+                                          aggregate = FALSE)[, , "irrigatable"][, , scenario])
     potIrrpot           <- dimSums(potIrrpot, dim = "season")
     getSets(potIrrpot)  <- c("x", "y", "iso", "year", "type")
     potIrrpotSus             <- potIrrpot[, , "on"]
@@ -126,6 +140,11 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getNames(potIrrpotUnsus) <- "curr_irrig_potCropland_unsus"
     potIrrpotTot             <- dimSums(potIrrpot, dim = 3)
     getNames(potIrrpotTot)   <- "curr_irrig_potCropland_tot"
+
+    # Combine to one MAgPIE object
+    x <- mbind(currLUH, currIrrSus,    currIrrUnsus,    currIrrTot,
+               potIrrcurrSus, potIrrcurrUnsus, potIrrcurrTot,
+               potIrrpotSus,  potIrrpotUnsus,  potIrrpotTot)
 
     d <- "Irrigated Area"
     u <- "Mha"
@@ -152,7 +171,8 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     currIrr <- collapseNames(calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                             lpjml = lpjml, climatetype = climatetype,
                             EFRmethod = EFRmethod, selectyears = selectyears,
-                            iniyear = iniyear, aggregate = FALSE)[, , scenario][, , paste0("currHuman_", gsub("(.*)_", "", output))])
+                            iniyear = iniyear,
+                            aggregate = FALSE)[, , scenario][, , paste0("currHuman_", gsub("(.*)_", "", output))])
     getSets(currIrr)  <- c("x", "y", "iso", "year", "type")
     currIrrSus             <- currIrr[, , "on"]
     getNames(currIrrSus)   <- "curr_irrig_sus"
@@ -163,10 +183,14 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
 
     # Potential Irrigation Water (on current Cropland) [total, sustainable, unsustainable]
     potIrrcurr <- collapseNames(calcOutput("WaterPotUse", lpjml = lpjml,
-                                           gainthreshold = gainthreshold, selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                           EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                           thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, avlland_scen = "currCropland:2010",
-                                           cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario])
+                                           gainthreshold = gainthreshold, selectyears = selectyears,
+                                           climatetype = climatetype, accessibilityrule = accessibilityrule,
+                                           EFRmethod = EFRmethod, rankmethod = rankmethod,
+                                           yieldcalib = yieldcalib, allocationrule = allocationrule,
+                                           thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                           iniyear = iniyear, avlland_scen = "currCropland:2010",
+                                           cropmix = cropmix, com_ag = com_ag, multicropping = multicropping,
+                                           aggregate = FALSE)[, , output][, , scenario])
     potIrrcurr           <- dimSums(potIrrcurr, dim = "season")
     getSets(potIrrcurr)  <- c("x", "y", "iso", "year", "type")
     potIrrcurrSus             <- potIrrcurr[, , "on"]
@@ -184,7 +208,8 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                           allocationrule = allocationrule, thresholdtype = thresholdtype,
                                           irrigationsystem = irrigationsystem, iniyear = iniyear,
                                           avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix,
-                                          com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario])
+                                          com_ag = com_ag, multicropping = multicropping,
+                                          aggregate = FALSE)[, , output][, , scenario])
     potIrrpot           <- dimSums(potIrrpot, dim = "season")
     getSets(potIrrpot)  <- c("x", "y", "iso", "year", "type")
     potIrrpotSus             <- potIrrpot[, , "on"]
