@@ -46,7 +46,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' reportCountryResults(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
+#' reportCountryResults()
 #' }
 #'
 #' @importFrom madrat calcOutput
@@ -103,8 +103,6 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                         EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                         thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010",
                                         cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"][, , scenario])
-    potIrrcurr <- dimSums(potIrrcurr, dim = "season")
-
     potIrrcurr           <- dimSums(potIrrcurr, dim = "season")
     getSets(potIrrcurr)  <- c("x", "y", "iso", "year", "type")
     potIrrcurrSus             <- potIrrcurr[, , "on"]
@@ -120,8 +118,6 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                           EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                           thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010",
                                           cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"][, , scenario])
-    potIrrpot <- dimSums(potIrrpot, dim = "season")
-
     potIrrpot           <- dimSums(potIrrpot, dim = "season")
     getSets(potIrrpot)  <- c("x", "y", "iso", "year", "type")
     potIrrpotSus             <- potIrrpot[, , "on"]

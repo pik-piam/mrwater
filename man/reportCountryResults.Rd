@@ -21,27 +21,51 @@ reportCountryResults(
 )
 }
 \arguments{
-\item{output}{output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"}
+\item{output}{Output to be displayed: irrigated area "IrrigArea" or
+available water volume "wat_ag_ww" "wat_ag_wc"}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Switch between different climate scenarios or
+historical baseline "GSWP3-W5E5:historical"}
 
 \item{gainthreshold}{gainthreshold chosen for reporting}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{EFRmethod}{EFR method used including selected strictness of EFRs
+(e.g. Smakhtin:good, VMF:fair)}
 
-\item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
+\item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
+combined with scalar value defining the strictness of accessibility restriction:
+discharge that is exceeded x percent of the time on average throughout a year
+(Qx, e.g. Q75: 0.25, Q50: 0.5)
+or base value for exponential curve separated by : (CV:2)}
 
-\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{rankmethod}{Rank and optimization method consisting of
+Unit according to which rank is calculated:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return;
+and boolean indicating fullpotential
+(TRUE, i.e. cell receives full irrigation requirements in total area)
+or reduced potential
+(FALSE, reduced potential of cell receives at later stage in allocation algorithm);
+separated by ":"}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or none (smoothed LPJmL yield potentials, not harmonized, not calibrated)}
+\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
+calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
+smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
+smoothed_calibrated}
 
-\item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
+\item{allocationrule}{Rule to be applied for river basin discharge allocation
+across cells of river basin ("optimization", "upstreamfirst")}
 
-\item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
+\item{thresholdtype}{Unit of yield improvement potential used as threshold:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return}
 
-\item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
+\item{irrigationsystem}{Irrigation system to be used for river basin discharge
+allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
 \item{cropmix}{cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain
@@ -57,7 +81,7 @@ reports country-values (irrigated area or irrigation water availability)
 }
 \examples{
 \dontrun{
-reportCountryResults(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
+reportCountryResults()
 }
 
 }
