@@ -97,9 +97,9 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getSets(currIrr)  <- c("x", "y", "iso", "year", "type")
     currIrrSus             <- currIrr[, , "on"]
     getNames(currIrrSus)   <- "curr_irrig_sus"
-    currIrrUnsus           <- currIrr[, , "off"]
+    currIrrUnsus           <- collapseNames(currIrr[, , "off"]) - collapseNames(currIrr[, , "on"])
     getNames(currIrrUnsus) <- "curr_irrig_unsus"
-    currIrrTot             <- dimSums(currIrr, dim = 3)
+    currIrrTot             <- currIrr[, , "off"]
     getNames(currIrrTot)   <- "curr_irrig_tot"
 
     # Potentially Irrigated Area (on current Cropland) [total, sustainable, unsustainable]
@@ -117,9 +117,9 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getSets(potIrrcurr)  <- c("x", "y", "iso", "year", "type")
     potIrrcurrSus             <- potIrrcurr[, , "on"]
     getNames(potIrrcurrSus)   <- "curr_irrig_currCropland_sus"
-    potIrrcurrUnsus           <- potIrrcurr[, , "off"]
+    potIrrcurrUnsus           <- collapseNames(potIrrcurr[, , "off"]) - collapseNames(potIrrcurr[, , "on"])
     getNames(potIrrcurrUnsus) <- "curr_irrig_currCropland_unsus"
-    potIrrcurrTot             <- dimSums(potIrrcurr, dim = 3)
+    potIrrcurrTot             <- potIrrcurr[, , "off"]
     getNames(potIrrcurrTot)   <- "curr_irrig_currCropland_tot"
 
     # Potentially Irrigated Area (on potential Cropland) [total, sustainable, unsustainable]
@@ -130,15 +130,16 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                           yieldcalib = yieldcalib, allocationrule = allocationrule,
                                           thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                           avlland_scen = "potIrrig_HalfEarth:2010",
-                                          cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping,
+                                          cropmix = cropmix, potential_wat = TRUE,
+                                          com_ag = com_ag, multicropping = multicropping,
                                           aggregate = FALSE)[, , "irrigatable"][, , scenario])
     potIrrpot           <- dimSums(potIrrpot, dim = "season")
     getSets(potIrrpot)  <- c("x", "y", "iso", "year", "type")
     potIrrpotSus             <- potIrrpot[, , "on"]
     getNames(potIrrpotSus)   <- "curr_irrig_potCropland_sus"
-    potIrrpotUnsus           <- potIrrpot[, , "off"]
+    potIrrpotUnsus           <- collapseNames(potIrrpot[, , "off"]) - collapseNames(potIrrpot[, , "on"])
     getNames(potIrrpotUnsus) <- "curr_irrig_potCropland_unsus"
-    potIrrpotTot             <- dimSums(potIrrpot, dim = 3)
+    potIrrpotTot             <- potIrrpot[, , "off"]
     getNames(potIrrpotTot)   <- "curr_irrig_potCropland_tot"
 
     # Combine to one MAgPIE object
@@ -176,9 +177,9 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getSets(currIrr)  <- c("x", "y", "iso", "year", "type")
     currIrrSus             <- currIrr[, , "on"]
     getNames(currIrrSus)   <- "curr_irrig_sus"
-    currIrrUnsus           <- currIrr[, , "off"]
+    currIrrUnsus           <- collapseNames(currIrr[, , "off"]) - collapseNames(currIrr[, , "on"])
     getNames(currIrrUnsus) <- "curr_irrig_unsus"
-    currIrrTot             <- dimSums(currIrr, dim = 3)
+    currIrrTot             <- currIrr[, , "off"]
     getNames(currIrrTot)   <- "curr_irrig_tot"
 
     # Potential Irrigation Water (on current Cropland) [total, sustainable, unsustainable]
@@ -195,9 +196,9 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getSets(potIrrcurr)  <- c("x", "y", "iso", "year", "type")
     potIrrcurrSus             <- potIrrcurr[, , "on"]
     getNames(potIrrcurrSus)   <- "curr_irrig_currCropland_sus"
-    potIrrcurrUnsus           <- potIrrcurr[, , "off"]
+    potIrrcurrUnsus           <- collapseNames(potIrrcurr[, , "off"]) - collapseNames(potIrrcurr[, , "on"])
     getNames(potIrrcurrUnsus) <- "curr_irrig_currCropland_unsus"
-    potIrrcurrTot             <- dimSums(potIrrcurr, dim = 3)
+    potIrrcurrTot             <- potIrrcurr[, , "off"]
     getNames(potIrrcurrTot)   <- "curr_irrig_currCropland_tot"
 
     # Potentially Irrigated Area (on potential Cropland) [total, sustainable, unsustainable]
@@ -214,9 +215,9 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getSets(potIrrpot)  <- c("x", "y", "iso", "year", "type")
     potIrrpotSus             <- potIrrpot[, , "on"]
     getNames(potIrrpotSus)   <- "curr_irrig_potCropland_sus"
-    potIrrpotUnsus           <- potIrrpot[, , "off"]
+    potIrrpotUnsus           <- collapseNames(potIrrpot[, , "off"]) - collapseNames(potIrrpot[, , "on"])
     getNames(potIrrpotUnsus) <- "curr_irrig_potCropland_unsus"
-    potIrrpotTot             <- dimSums(potIrrpot, dim = 3)
+    potIrrpotTot             <- potIrrpot[, , "off"]
     getNames(potIrrpotTot)   <- "curr_irrig_potCropland_tot"
 
     # Combine to one MAgPIE object
