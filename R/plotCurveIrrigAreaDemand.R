@@ -62,14 +62,14 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                             EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                             allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                             avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
-    tmp <- as.data.frame(inputdata)
+    tmp <- as.data.frame(tmp)
 
     tmp2 <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "triple", region = region, output = "IrrigArea",
                       lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                       EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                       allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                       avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
-    tmp2 <- as.data.frame(inputdata)
+    tmp2 <- as.data.frame(tmp2)
 
 
     df <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
@@ -102,14 +102,14 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                       EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                       allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                       avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
-    tmp <- as.data.frame(inputdata)
+    tmp <- as.data.frame(tmp)
 
     tmp2 <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "triple", region = region, output = "IrrigArea",
                        lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                        EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                        allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                        avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
-    tmp2 <- as.data.frame(inputdata)
+    tmp2 <- as.data.frame(tmp2)
 
 
     df <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
@@ -132,21 +132,21 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
   ## Reference data: without water constraint
   # current cropland
   inputdata <- calcOutput("YieldgainArea", region = region, GT_range = y_axis_range, lpjml = lpjml,
-                              selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
-                              yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "currCropland:2010",
-                              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
+                          selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
+                          yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "currCropland:2010",
+                          cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
   inputdata <- as.data.frame(inputdata)
 
-  #if (multicropping) {
-  #  tmp <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
-   #                   scen = as.character(inputdata$Data2),
-    #                  YieldGainArea = inputdata$Value, stringsAsFactors = FALSE)
-    #tmp <- reshape(tmp, idvar = "GT", timevar = "scen", direction = "wide")
-
-  #} else {
+  if (multicropping) {
+    tmp <- data.frame(GT = as.numeric(as.character(levels(inputdata$Data1[inputdata$Data2 == 1]))),
+                      YieldGainArea1 = inputdata$Value[inputdata$Data2 == "addMC0"],
+                      YieldGainArea2 = inputdata$Value[inputdata$Data2 == "addMC1"],
+                      YieldGainArea3 = inputdata$Value[inputdata$Data2 == "addMC2"],
+                      stringsAsFactors = FALSE)
+  } else {
     tmp <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
                       YieldGainArea = inputdata$Value, stringsAsFactors = FALSE)
-  #}
+  }
 
   names(tmp)[-1] <- paste(names(tmp)[-1], "CurrCropland", sep = ".")
   df             <- merge(df, tmp)
@@ -158,16 +158,16 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
   inputdata <- as.data.frame(inputdata)
 
-  #if (multicropping) {
-    #tmp <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
-    #                  scen = as.character(inputdata$Data2),
-     #                 YieldGainArea = inputdata$Value, stringsAsFactors = FALSE)
-    #tmp <- reshape(tmp, idvar = "GT", timevar = "scen", direction = "wide")
-
-  #} else {
+  if (multicropping) {
+    tmp <- data.frame(GT = as.numeric(as.character(levels(inputdata$Data1[inputdata$Data2 == 1]))),
+                      YieldGainArea1 = inputdata$Value[inputdata$Data2 == "addMC0"],
+                      YieldGainArea2 = inputdata$Value[inputdata$Data2 == "addMC1"],
+                      YieldGainArea3 = inputdata$Value[inputdata$Data2 == "addMC2"],
+                      stringsAsFactors = FALSE)
+  } else {
     tmp <- data.frame(GT = as.numeric(as.character(inputdata$Data1)),
                       YieldGainArea = inputdata$Value, stringsAsFactors = FALSE)
-  #}
+  }
 
   names(tmp)[-1] <- paste(names(tmp)[-1], "PotCropland", sep = ".")
   df <- merge(df, tmp)
@@ -203,6 +203,14 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
         geom_line(aes_string(x = paste("IrrigArea1", gsub("\\..*", "", scenario), "CurrCropland", sep = ".")), color = "darkgreen", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
         geom_line(aes_string(x = paste("IrrigArea2", gsub("\\..*", "", scenario), "CurrCropland", sep = ".")), color = "darkblue", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
         geom_line(aes_string(x = paste("IrrigArea3", gsub("\\..*", "", scenario), "CurrCropland", sep = ".")), color = "black", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
+
+        geom_line(aes_string(x = paste("YieldGainArea1", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea1", "CurrCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("YieldGainArea2", "CurrCropland", sep = ".")), color = "darkblue", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea2", "CurrCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("YieldGainArea3", "CurrCropland", sep = ".")), color = "black", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea3", "CurrCropland", sep = "."))) +
+
         theme_bw() +
         scale_x_continuous(expand = c(0, 0), breaks = seq(0, 1400, by = 100)) +
         scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
@@ -218,6 +226,16 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
         geom_line(aes_string(x = paste("IrrigArea1", gsub("\\..*", "", scenario), "PotCropland", sep = ".")), color = "darkgreen", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
         geom_line(aes_string(x = paste("IrrigArea2", gsub("\\..*", "", scenario), "PotCropland", sep = ".")), color = "darkblue", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
         geom_line(aes_string(x = paste("IrrigArea3", gsub("\\..*", "", scenario), "PotCropland", sep = ".")), color = "black", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
+
+
+        geom_line(aes_string(x = paste("YieldGainArea1", "PotCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea1", "PotCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("YieldGainArea2", "PotCropland", sep = ".")), color = "darkblue", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea2", "PotCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("YieldGainArea3", "PotCropland", sep = ".")), color = "black", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea3", "PotCropland", sep = "."))) +
+
+
         theme_bw() +
         scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100)) +
         scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
@@ -237,8 +255,10 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
     if (display == "currCropland") {
 
       out <- ggplot(data = df, aes_string(y = "GT")) +
-        geom_line(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = ".")), color = "darkgreen", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
-        geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = ".")), color = "darkgreen", size = 1.1) +
+        geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = "."))) +
         theme_bw() +
         scale_x_continuous(expand = c(0, 0), breaks = seq(0, 1400, by = 100)) +
         scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
@@ -251,8 +271,10 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
     } else if (display == "potCropland") {
 
       out <- ggplot(data = df, aes_string(y = "GT")) +
-        geom_line(aes_string(x = paste("IrrigArea",  gsub("\\..*", "", scenario), "PotCropland", sep = ".")), color = "darkred", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "PotCropland", sep = "."))) +
-        geom_line(aes_string(x = paste("YieldGainArea", "PotCropland", sep = ".")), color = "darkred", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("YieldGainArea", "PotCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("IrrigArea",  gsub("\\..*", "", scenario), "PotCropland", sep = ".")), color = "darkred", size = 1.1) +
+        geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "PotCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("YieldGainArea", "PotCropland", sep = ".")), color = "darkred", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea", "PotCropland", sep = "."))) +
         theme_bw() +
         scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100)) +
         scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +
@@ -265,10 +287,14 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
     } else if (display == "curr+potCropland") {
 
       out <- ggplot(data = df, aes_string(y = "GT")) +
-        geom_line(aes_string(x = paste("IrrigArea",  gsub("\\..*", "", scenario), "CurrCropland", sep = ".")), color = "darkgreen", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
-        geom_line(aes_string(x = paste("IrrigArea",  gsub("\\..*", "", scenario), "PotCropland", sep = ".")), color = "darkred", size = 1.1) + geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "PotCropland", sep = "."))) +
-        geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = "."))) +
-        geom_line(aes_string(x = paste("YieldGainArea", "PotCropland", sep = ".")), color = "darkred", linetype = "twodash", size = 1.1) + geom_point(aes_string(x = paste("YieldGainArea", "PotCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("IrrigArea",  gsub("\\..*", "", scenario), "CurrCropland", sep = ".")), color = "darkgreen", size = 1.1) +
+        geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "CurrCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("IrrigArea",  gsub("\\..*", "", scenario), "PotCropland", sep = ".")), color = "darkred", size = 1.1) +
+        geom_point(aes_string(x = paste("IrrigArea", gsub("\\..*", "", scenario), "PotCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = ".")), color = "darkgreen", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea", "CurrCropland", sep = "."))) +
+        geom_line(aes_string(x = paste("YieldGainArea", "PotCropland", sep = ".")), color = "darkred", linetype = "twodash", size = 1.1) +
+        geom_point(aes_string(x = paste("YieldGainArea", "PotCropland", sep = "."))) +
         theme_bw() +
         scale_x_continuous(expand = c(0, 0), breaks = seq(0, 4000, by = 100)) +
         scale_y_continuous(expand = c(0, 0), limits = c(0, 3000)) +

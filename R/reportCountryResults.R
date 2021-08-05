@@ -239,9 +239,9 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
   mapping          <- toolGetMappingCoord2Country()
   mapping$coords   <- paste(mapping$coords, mapping$iso, sep = ".")
 
-  x <- toolAggregate(x, rel = mapping, from = "coords", to = "iso", dim = 1)
-  x <- toolCountryFill(x, fill = NA)
-  # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing
+  x    <- toolAggregate(x, rel = mapping, from = "coords", to = "iso", dim = 1)
+  xGLO <- dimSums(x, dim = 1)
+  x    <- mbind(x, xGLO)
 
   # Transform to data frame
   out <- as.data.frame(x)

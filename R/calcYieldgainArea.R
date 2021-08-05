@@ -66,6 +66,10 @@ calcYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
     x3[mc != 2] <- 0
     x3 <- add_dimension(x3, dim = 3.1, add = "MC", nm = "addMC2")
 
+    # calculate harvested area
+    x2 <- 2 * x2
+    x3 <- 3 * x3
+
     x <- mbind(x1, x2, x3)
 
   }
@@ -96,6 +100,10 @@ calcYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
       tmp2 <- add_dimension(tmp2, dim = 3.1, add = "MC", nm = "addMC1")
       tmp3[mc != 2] <- 0
       tmp3 <- add_dimension(tmp3, dim = 3.1, add = "MC", nm = "addMC2")
+
+      # calculate harvested area
+      tmp2 <- 2 * tmp2
+      tmp3 <- 3 * tmp3
 
       tmp <- mbind(tmp1, tmp2, tmp3)
 
