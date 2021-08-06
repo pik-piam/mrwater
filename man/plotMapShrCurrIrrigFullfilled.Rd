@@ -14,23 +14,27 @@ plotMapShrCurrIrrigFullfilled(
 )
 }
 \arguments{
-\item{scenario}{EFP and non-agricultural water use scenario separated by "." (e.g. "on.ssp2")}
+\item{scenario}{EFP and non-agricultural water use scenario
+separated by "." (e.g. "on.ssp2")}
 
-\item{iniyear}{initialization year}
+\item{iniyear}{Initialization year}
 
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+\item{lpjml}{LPJmL version used}
 
-\item{selectyears}{years for which irrigatable area is calculated}
+\item{selectyears}{Years to be returned}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Switch between different climate scenarios or
+historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{EFRmethod}{EFR method used including selected strictness of EFRs
+(e.g. Smakhtin:good, VMF:fair)}
 }
 \value{
 map of magpie cells
 }
 \description{
-plot map of share of current irrigation that can be fulfilled given surface water availability of the algorithm
+plot map of share of current irrigation that can be fulfilled
+             given renewable water availability of the algorithm
 }
 \examples{
 \dontrun{ plotMapShrCurrIrrigFullfilled() }
