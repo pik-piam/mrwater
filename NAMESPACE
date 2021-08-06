@@ -3,6 +3,7 @@
 export(calcEconOfIrrig)
 export(calcYieldgainArea)
 export(calcYieldgainPotential)
+export(fullWaterOutputs)
 export(plotAccessibilitySensitivity)
 export(plotCurveIrrigAreaDemand)
 export(plotEconOfIrrig)

@@ -44,6 +44,7 @@
 #'
 #' @author Felicitas Beier
 #'
+#' @export
 
 fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
                              allocationrule = "optimization", rankmethod = "USD_ha:TRUE",

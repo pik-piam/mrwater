@@ -33,8 +33,10 @@ Unit according to which rank is calculated:
 tDM (tons per dry matter),
 USD_ha (USD per hectare) for area return, or
 USD_m3 (USD per cubic meter) for volumetric return;
-and boolean indicating fullpotential (TRUE, i.e. cell receives full irrigation requirements in total area)
-or reduced potential (FALSE, reduced potential of cell receives at later stage in allocation algorithm);
+and boolean indicating fullpotential (TRUE, i.e. cell
+receives full irrigation requirements in total area)
+or reduced potential (FALSE, reduced potential of cell
+receives at later stage in allocation algorithm);
 separated by ":"}
 
 \item{thresholdtype}{Unit of yield improvement potential used as threshold:
@@ -47,13 +49,17 @@ water allocation in upstreamfirst algorithm
 (in same unit as thresholdtype)}
 
 \item{avlland_scen}{Land availability scenario: current or potential;
-optional additionally: protection scenario in case of potential (when left empty: no protection)
+optional additionally: protection scenario in case of potential
+(when left empty: no protection)
 and initialization year of cropland area
 combination of land availability scenario and initialization year separated by ":".
-land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture),
+land availability scenario: currIrrig (only currently
+irrigated cropland available for irrigated agriculture),
 currCropland (only current cropland areas available for irrigated agriculture),
-potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth}
+potIrrig (suitable land is available for irrigated agriculture,
+potentially land restrictions activated through protect_scen argument)
+protection scenario separated by "_" (only relevant when potIrrig selected):
+WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{multicropping}{Boolean of multiple cropping per year (TRUE, FALSE)}
 }
