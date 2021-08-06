@@ -1,0 +1,92 @@
+#' @title fullWaterOutputs
+#' @description Function that produces the objects for water outputs that can
+#'              be plotted with the mrwaterPlots functions.
+#'
+#' @param EFRmethod         EFR method used including selected strictness of EFRs
+#'                          (Smakhtin:good, VMF:fair)
+#' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
+#'                          combined with scalar value defining the strictness of accessibility restriction:
+#'                          discharge that is exceeded x percent of the time on average throughout a year
+#'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
+#'                          or base value for exponential curve separated by : (CV:2)
+#' @param allocationrule    Rule to be applied for river basin discharge allocation
+#'                          across cells of river basin ("optimization", "upstreamfirst")
+#' @param rankmethod        Rank and optimization method consisting of
+#'                          Unit according to which rank is calculated:
+#'                          tDM (tons per dry matter),
+#'                          USD_ha (USD per hectare) for area return, or
+#'                          USD_m3 (USD per cubic meter) for volumetric return;
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell
+#'                          receives full irrigation requirements in total area)
+#'                          or reduced potential (FALSE, reduced potential of cell
+#'                          receives at later stage in allocation algorithm);
+#'                          separated by ":"
+#' @param thresholdtype     Unit of yield improvement potential used as threshold:
+#'                          tDM (tons per dry matter),
+#'                          USD_ha (USD per hectare) for area return, or
+#'                          USD_m3 (USD per cubic meter) for volumetric return
+#' @param gainthreshold     Threshold of yield improvement potential required for
+#'                          water allocation in upstreamfirst algorithm
+#'                          (in same unit as thresholdtype)
+#' @param avlland_scen      Land availability scenario: current or potential;
+#'                          optional additionally: protection scenario in case of potential
+#'                          (when left empty: no protection)
+#'                          and initialization year of cropland area
+#'                          combination of land availability scenario and initialization year separated by ":".
+#'                          land availability scenario: currIrrig (only currently
+#'                          irrigated cropland available for irrigated agriculture),
+#'                          currCropland (only current cropland areas available for irrigated agriculture),
+#'                          potIrrig (suitable land is available for irrigated agriculture,
+#'                          potentially land restrictions activated through protect_scen argument)
+#'                          protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                          WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param multicropping     Boolean of multiple cropping per year (TRUE, FALSE)
+#'
+#' @author Felicitas Beier
+#'
+
+fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
+                             allocationrule = "optimization", rankmethod = "USD_ha:TRUE",
+                             thresholdtype = "USD_ha", gainthreshold = 500,
+                             avlland_scen = "currCropland:2010",
+                             multicropping = FALSE) {
+
+  # Standard settings
+  iniyear          <- 2010
+  selectyears      <- c(2010, 2050)
+
+  lpjml            <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de+oldGSWP3",
+                        crop = "ggcmi_phase3_nchecks_9ca735cb+oldGSWP3")
+  #* #*#*# @KRISTINE: which version is the best as standard for my case? what's the most recent we have?
+  climatetype      <- "GFDL-ESM4:ssp126"
+  #* #*#*# @KRISTINE/JENS: which GCM and scenario should I use for the paper?
+
+  irrigationsystem <- "initialization"
+  yieldcalib       <- "calibrated" # or: "FAO"
+  #* #*#*# @KRISTINE: can we discuss the yield calibration together? what makes most sense for my application?
+  cropmix          <- "hist_total"
+  #* #*#*# @KRISTINE/JENS/BENNI: Does is make sense to use "hist_total" everywhere or should I use "hist_irrig" sometimes (e.g. for committed uses) or would that create mismatch?
+  #* #*#*# @JENS/BENNI: We'll only use the proxycrops version for MAgPIE runs, not for the stand-alone-paper, right?
+
+  # Multiple Cropping Zones
+  calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE,
+             file = "multicroppingZones.mz")
+
+  # LUH croparea
+  calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell",
+             physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE,
+             file = "cropareaLUH.mz")
+
+  ### Main Outputs ###
+  # Potentially irrigated area
+  calcOutput("IrrigatableArea", selectyears = selectyears,
+             climatetype = climatetype, lpjml = lpjml,
+             gainthreshold = gainthreshold, rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,  thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+             cropmix = cropmix, potential_wat = TRUE, com_ag = FALSE,
+             accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+             multicropping = multicropping, aggregate = FALSE,
+             file = "irrigatableArea_potential.mz")
+
+}
