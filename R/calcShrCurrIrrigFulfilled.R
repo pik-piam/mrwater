@@ -1,4 +1,4 @@
-#' @title       calcShrCurrIrrigFullfilled
+#' @title       calcShrCurrIrrigFulfilled
 #' @description calculates of share of current irrigation that can be fulfilled
 #'              given renewable water availability of the algorithm
 #'
@@ -15,14 +15,14 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcShrCurrIrrigFullfilled()
+#' calcShrCurrIrrigFulfilled()
 #' }
 #'
 #' @importFrom magclass collapseNames dimSums
 #'
 #' @export
 
-calcShrCurrIrrigFullfilled <- function(lpjml, climatetype,
+calcShrCurrIrrigFulfilled <- function(lpjml, climatetype,
                                        selectyears, iniyear, EFRmethod) {
 
   ### Reasons for not-fulfilled actually observed irrigation:
@@ -31,12 +31,6 @@ calcShrCurrIrrigFullfilled <- function(lpjml, climatetype,
   # - deficit irrigation is in place (e.g. Southern Spain), but not accounted for in the river routing
   # - water reuse is not accounted for in the river routing
 
-  # Committed Agricultural Water (in mio. m^3)
-  actCAU   <- calcOutput("WaterUseCommittedAg", lpjml = lpjml, climatetype = climatetype,
-                         selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
-  actCAUww <- collapseNames(dimSums(actCAU[, , "withdrawal"], dim = 3))
-  actCAUwc <- collapseNames(dimSums(actCAU[, , "consumption"], dim = 3))
-
   # Water Committed to Agriculture after Routing (in mio. m^3)
   fulfilledCAU   <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                                lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
@@ -44,11 +38,21 @@ calcShrCurrIrrigFullfilled <- function(lpjml, climatetype,
   fulfilledCAUww <- collapseNames(fulfilledCAU[, , "currHuman_ww"])
   fulfilledCAUwc <- collapseNames(fulfilledCAU[, , "currHuman_wc"])
 
+  # Committed Agricultural Water (in mio. m^3)
+  actCAU   <- calcOutput("WaterUseCommittedAg", lpjml = lpjml, climatetype = climatetype,
+                         selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+  actCAUww <- actCAUwc <- new.magpie(cells_and_regions = getCells(fulfilledCAUww),
+                                     years = getYears(fulfilledCAUww),
+                                     names = getNames(fulfilledCAUww),
+                                     fill = NA)
+  actCAUww[, , ] <- collapseNames(dimSums(actCAU[, , "withdrawal"], dim = 3))
+  actCAUwc[, , ] <- collapseNames(dimSums(actCAU[, , "consumption"], dim = 3))
+
   wwShr <- fulfilledCAUww / actCAUww
-  wwShr[actCAUww == 0 & fulfilledCAUww == 0] <- 0
+  wwShr[actCAUww == 0 & fulfilledCAUww == 0] <- NA
   wwShr[actCAUww == 0] <- NA
   wcShr <- fulfilledCAUwc / actCAUwc
-  wcShr[actCAUwc == 0 & fulfilledCAUwc == 0] <- 0
+  wcShr[actCAUwc == 0 & fulfilledCAUwc == 0] <- NA
   wcShr[actCAUwc == 0] <- NA
 
   fulfilledShr <- pmin(wcShr, wwShr)

@@ -1,4 +1,4 @@
-#' @title       plotMapShrCurrIrrigFullfilled
+#' @title       plotMapShrCurrIrrigFulfilled
 #' @description plot map of share of current irrigation that can be fulfilled
 #'              given renewable water availability of the algorithm
 #'
@@ -17,21 +17,21 @@
 #'
 #' @examples
 #' \dontrun{
-#' plotMapShrCurrIrrigFullfilled()
+#' plotMapShrCurrIrrigFulfilled()
 #' }
 #'
 #' @importFrom luplot plotmap2
 #'
 #' @export
 
-plotMapShrCurrIrrigFullfilled <- function(scenario, iniyear, lpjml, selectyears, climatetype, EFRmethod) {
+plotMapShrCurrIrrigFulfilled <- function(scenario, iniyear, lpjml, selectyears, climatetype, EFRmethod) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Map depicting the share of current irrigation
          that can be fulfilled given renewable water availability of the algorithm")
   }
 
-  fulfilledShr <- calcOutput("ShrCurrIrrigFullfilled",
+  fulfilledShr <- calcOutput("ShrCurrIrrigFulfilled",
                              lpjml = lpjml, climatetype = climatetype,
                              selectyears = selectyears, iniyear = iniyear,
                              EFRmethod = EFRmethod, aggregate = FALSE)

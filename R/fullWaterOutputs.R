@@ -79,7 +79,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "cropareaLUH.mz")
 
   # Share current irrigation water that can be fulfilled by available water resources
-  calcOutput("ShrCurrIrrigFullfilled", lpjml = lpjml, climatetype = climatetype,
+  calcOutput("ShrCurrIrrigFulfilled", lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              EFRmethod = EFRmethod, aggregate = FALSE,
              file = "shrCurrIrrigFulfilled.mz")

@@ -45,13 +45,13 @@ plotMapDiffValidation <- function(reference, scenario, lpjml, climatetype, selec
     selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
     EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
     thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
-    cropmix = cropmix, potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")]), dim = "season")
+    cropmix = cropmix, potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"]), dim = "season")
   if (reference == "committed") {
     xC  <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears,
       climatetype = climatetype, accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
       irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = FALSE,
-      com_ag = TRUE, multicropping = multicropping, aggregate = FALSE)[, , paste(scenario, "irrigatable", sep = ".")]), dim = "season")
+      com_ag = TRUE, multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"]), dim = "season")
   } else if (reference == "LUH") {
     xC <- dimSums(calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
       physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
