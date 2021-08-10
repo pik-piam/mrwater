@@ -104,21 +104,21 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
              irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
-             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping,
+             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
              file = "DemandCurve_single.mz")
   calcOutput("EconOfIrrig", scenario = ssp, season = "double", output = "IrrigArea",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
              irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
-             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping,
+             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
              file = "DemandCurve_double.mz")
   calcOutput("EconOfIrrig", scenario = ssp, season = "triple", output = "IrrigArea",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
              irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
-             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping,
+             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
              file = "DemandCurve_triple.mz")
 
 
