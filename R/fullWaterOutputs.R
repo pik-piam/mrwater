@@ -55,6 +55,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   # Standard settings
   iniyear          <- 2010
   selectyears      <- c(2010, 2050)
+  plotyear         <- 2010
   ssp              <- "ssp2"
 
   lpjml            <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de+oldGSWP3",
@@ -99,21 +100,21 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
 
   # Potentially irrigated area for different thresholds
   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
-             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = selectyears,
+             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
              irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping,
              file = "DemandCurve_single.mz")
   calcOutput("EconOfIrrig", scenario = ssp, season = "double", output = "IrrigArea",
-             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = selectyears,
+             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
              irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping,
              file = "DemandCurve_double.mz")
   calcOutput("EconOfIrrig", scenario = ssp, season = "triple", output = "IrrigArea",
-             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = selectyears,
+             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
              irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
