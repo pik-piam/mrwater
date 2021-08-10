@@ -2,8 +2,6 @@
 #' @description calculates potentially irrigated area for different gainthresholds
 #'              subject to land and water constraints
 #'
-#' @param region           regional resolution (can be country iso-code,
-#'                         region name and respective mapping "EUR:H12", "GLO" for global)
 #' @param scenario         non-agricultural water use scenario
 #' @param season           single, double, triple
 #' @param output           output to be displayed: irrigated area "IrrigArea" or
@@ -36,7 +34,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcEconOfIrrig(region = "GLO", aggregate = FALSE)
+#' calcEconOfIrrig(aggregate = FALSE)
 #' }
 #'
 #' @importFrom madrat calcOutput
@@ -45,7 +43,7 @@
 #'
 #' @export
 
-calcEconOfIrrig <- function(region = "GLO", scenario, season, output, GT_range, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
+calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -98,8 +96,8 @@ calcEconOfIrrig <- function(region = "GLO", scenario, season, output, GT_range, 
 
   }
 
-  # sum up over regional dimension and create data frame
-  x <- toolRegionSums(x = x, region = region)
+  # sum up over regional dimension
+  #x <- toolRegionSums(x = x, region = region)
   x <- add_dimension(x, dim = 3.1, add = "GT", nm = "0")
 
   if (GT_range[1] == 0) {
@@ -144,20 +142,20 @@ calcEconOfIrrig <- function(region = "GLO", scenario, season, output, GT_range, 
     }
 
     # sum up over regional dimension and create data frame
-    tmp <- toolRegionSums(x = tmp, region = region)
+   # tmp <- toolRegionSums(x = tmp, region = region)
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
 
     x   <- mbind(x, tmp)
   }
 
-  out <- x
+  out <- collapseNames(x)
 
-  if (multicropping) {
-    getSets(out) <- c("region", "year", "GT", "MC", "EFP")
+  #if (multicropping) {
+   # getSets(out) <- c("region", "year", "GT", "MC", "EFP")
 
-  } else {
-    getSets(out) <- c("region", "year", "GT", "EFP")
-  }
+  #} else {
+ #   getSets(out) <- c("x", "y", "iso", "year", "GT", "EFP")
+  #}
 
   return(list(x            = out,
               weight       = NULL,

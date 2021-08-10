@@ -2,7 +2,8 @@
 #' @description plot minimum monetary yield gain per ha achieved
 #'              on related potentially irrigated area
 #'
-#' @param region           regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)
+#' @param region           regional resolution (can be country iso-code,
+#'                         region name and respective mapping "EUR:H12", "GLO" for global)
 #' @param y_axis_range     range of y-axis (monetary irrigation gain) to be depicted on the curve
 #' @param scenario         combination of EFP and non-agricultural water use scenario
 #'                         to be displayed in plot separated by "."
@@ -54,6 +55,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                        EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                        allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                        avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+  inputdata <- toolRegionSums(x = inputdata, region = region)
   inputdata <- as.data.frame(inputdata)
 
   if (multicropping) {
@@ -62,6 +64,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                             EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                             allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                             avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+    tmp <- toolRegionSums(x = tmp, region = region)
     tmp <- as.data.frame(tmp)
 
     tmp2 <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "triple", region = region, output = "IrrigArea",
@@ -69,6 +72,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                       EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                       allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                       avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+    tmp2 <- toolRegionSums(x = tmp2, region = region)
     tmp2 <- as.data.frame(tmp2)
 
 
@@ -94,6 +98,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                           EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                           allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                           avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+  inputdata <- toolRegionSums(x = inputdata, region = region)
   inputdata <- as.data.frame(inputdata)
 
   if (multicropping) {
@@ -102,6 +107,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                       EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                       allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                       avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+    tmp <- toolRegionSums(x = tmp, region = region)
     tmp <- as.data.frame(tmp)
 
     tmp2 <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "triple", region = region, output = "IrrigArea",
@@ -109,6 +115,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                        EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = FALSE,
                        allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                        avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+    tmp2 <- toolRegionSums(x = tmp2, region = region)
     tmp2 <- as.data.frame(tmp2)
 
 

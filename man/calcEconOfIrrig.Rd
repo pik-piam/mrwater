@@ -5,7 +5,6 @@
 \title{calcEconOfIrrig}
 \usage{
 calcEconOfIrrig(
-  region = "GLO",
   scenario,
   season,
   output,
@@ -28,9 +27,6 @@ calcEconOfIrrig(
 )
 }
 \arguments{
-\item{region}{regional resolution (can be country iso-code,
-region name and respective mapping "EUR:H12", "GLO" for global)}
-
 \item{scenario}{non-agricultural water use scenario}
 
 \item{season}{single, double, triple}
@@ -85,7 +81,7 @@ calculates potentially irrigated area for different gainthresholds
 }
 \examples{
 \dontrun{
-calcEconOfIrrig(region = "GLO", aggregate = FALSE)
+calcEconOfIrrig(aggregate = FALSE)
 }
 
 }
