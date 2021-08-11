@@ -5,7 +5,6 @@
 \title{calcYieldgainArea}
 \usage{
 calcYieldgainArea(
-  region = "GLO",
   GT_range,
   lpjml,
   selectyears,
@@ -19,9 +18,6 @@ calcYieldgainArea(
 )
 }
 \arguments{
-\item{region}{Regional resolution (can be country iso-code, "GLO" for global, or
-region name and respective mapping "EUR:H12")}
-
 \item{GT_range}{Range of gainthreshold for calculation of potentially
 irrigated areas}
 

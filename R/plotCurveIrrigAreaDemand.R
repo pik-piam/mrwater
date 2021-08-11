@@ -142,6 +142,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                           selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
                           yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "currCropland:2010",
                           cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
+  inputdata <- toolRegionSums(x = inputdata, region = region)
   inputdata <- as.data.frame(inputdata)
 
   if (multicropping) {
@@ -163,6 +164,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                               selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
                               yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "potIrrig_HalfEarth:2010",
                               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
+  inputdata <- toolRegionSums(x = inputdata, region = region)
   inputdata <- as.data.frame(inputdata)
 
   if (multicropping) {

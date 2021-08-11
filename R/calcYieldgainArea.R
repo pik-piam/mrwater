@@ -2,8 +2,6 @@
 #' @description reports potentially irrigated area depending on gainthreshold
 #'              and land constraint only
 #'
-#' @param region        Regional resolution (can be country iso-code, "GLO" for global, or
-#'                      region name and respective mapping "EUR:H12")
 #' @param GT_range      Range of gainthreshold for calculation of potentially
 #'                      irrigated areas
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
@@ -38,9 +36,9 @@
 #'
 #' @export
 
-calcYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
-                                climatetype, EFRmethod, yieldcalib, thresholdtype,
-                                avlland_scen, cropmix, multicropping) {
+calcYieldgainArea <- function(GT_range, lpjml, selectyears,
+                              climatetype, EFRmethod, yieldcalib, thresholdtype,
+                              avlland_scen, cropmix, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -74,10 +72,7 @@ calcYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
 
   }
 
-  # sum up over regional dimension
-  x <- toolRegionSums(x = x, region = region)
   x <- add_dimension(x, dim = 3.1, add = "GT", nm = "0")
-
 
   if (GT_range[1] == 0) {
     GT_range <- GT_range[-1]
@@ -109,8 +104,6 @@ calcYieldgainArea <- function(region = "GLO", GT_range, lpjml, selectyears,
 
     }
 
-    # sum up over regional dimension
-    tmp <- toolRegionSums(x = tmp, region = region)
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
 
     x   <- mbind(x, tmp)

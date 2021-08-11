@@ -103,26 +103,57 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
+             irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010", cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
-             file = "DemandCurve_single.mz")
+             file = "DemandCurve_curr_single.mz")
   calcOutput("EconOfIrrig", scenario = ssp, season = "double", output = "IrrigArea",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
+             irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010", cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
-             file = "DemandCurve_double.mz")
+             file = "DemandCurve_curr_double.mz")
   calcOutput("EconOfIrrig", scenario = ssp, season = "triple", output = "IrrigArea",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix,
+             irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010", cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
-             file = "DemandCurve_triple.mz")
+             file = "DemandCurve_curr_triple.mz")
 
+  calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
+             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix,
+             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
+             file = "DemandCurve_pot_single.mz")
+  calcOutput("EconOfIrrig", scenario = ssp, season = "double", output = "IrrigArea",
+             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix,
+             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
+             file = "DemandCurve_pot_double.mz")
+  calcOutput("EconOfIrrig", scenario = ssp, season = "triple", output = "IrrigArea",
+             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix,
+             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
+             file = "DemandCurve_pot_triple.mz")
 
+  # Reference data
+  calcOutput("YieldgainArea", GT_range = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
+             selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "currCropland:2010",
+             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
+             file = "yieldgainarea_curr.mz")
 
-
+  calcOutput("YieldgainArea", GT_range = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
+             selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "potIrrig_HalfEarth:2010",
+             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
+             file = "yieldgainarea_pot.mz")
 
 }
