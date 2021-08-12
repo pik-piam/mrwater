@@ -56,7 +56,7 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
                                                         cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag,
                                                         multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"]), dim = "season")
   x0[x0 == 0]       <- NA
-  x500              <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 250,
+  x500              <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 500,
                                                         selectyears = selectyears, climatetype = climatetype,
                                                         accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
                                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
@@ -65,7 +65,7 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
                                                         cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag,
                                                         multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"]), dim = "season")
   x500[x500 == 0]   <- NA
-  x1000             <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 1500,
+  x1000             <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 1000,
                                                         selectyears = selectyears, climatetype = climatetype,
                                                         accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
                                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
