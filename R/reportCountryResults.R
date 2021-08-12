@@ -252,15 +252,16 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
   out <- reshape(out, idvar = "Region", timevar = "Variable", direction = "wide")
   names(out) <- c("Country",
                   "Irrigated Area (as reported by LUH)",
-                  "Currently irrigated area (total), our study",
                   "Currently irrigated area (sustainable), our study",
                   "Currently irrigated area (unsustainable), our study",
-                  "Potentially irrigated area (total) on current cropland, our study",
+                  "Currently irrigated area (total), our study",
                   "Potentially irrigated area (sustainable) on current cropland, our study",
                   "Potentially irrigated area (unsustainable) on current cropland, our study",
-                  "Potentially irrigated area (total) on potential cropland, our study",
+                  "Potentially irrigated area (total) on current cropland, our study",
                   "Potentially irrigated area (sustainable) on potential cropland, our study",
-                  "Potentially irrigated area (unsustainable) on potential cropland, our study")
+                  "Potentially irrigated area (unsustainable) on potential cropland, our study",
+                  "Potentially irrigated area (total) on potential cropland, our study")
+
   out <- out[order(out$Country), ]
 
   return(list(data        = out,

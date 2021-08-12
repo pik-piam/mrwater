@@ -145,13 +145,13 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
 
   # Reference data
   calcOutput("YieldgainArea", GT_range = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-             selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
+             selectyears = plotyear, climatetype = climatetype, EFRmethod = EFRmethod,
              yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "currCropland:2010",
              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
              file = "yieldgainarea_curr.mz")
 
   calcOutput("YieldgainArea", GT_range = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-             selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
+             selectyears = plotyear, climatetype = climatetype, EFRmethod = EFRmethod,
              yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "potIrrig_HalfEarth:2010",
              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
              file = "yieldgainarea_pot.mz")
