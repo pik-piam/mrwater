@@ -76,7 +76,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "multicroppingZones.mz")
 
   # LUH croparea
-  calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell",
+  calcOutput("CropareaAdjusted", years = iniyear, sectoral = "kcr", cells = "lpjcell",
              physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE,
              file = "cropareaLUH.mz")
 

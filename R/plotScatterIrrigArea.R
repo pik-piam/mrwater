@@ -49,13 +49,8 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
   # retrieve function arguments
   iniyear   <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
 
-  croparea  <- calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
+  croparea  <- calcOutput("CropareaAdjusted", years = selectyears, sectoral = "kcr", cells = "lpjcell",
                            physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
-  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-  map                          <- toolGetMappingCoord2Country()
-  getCells(croparea)           <- paste(map$coords, map$iso, sep = ".")
-  names(dimnames(croparea))[1] <- "x.y.iso"
-  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
   irrigarea <- dimSums(croparea[, , "irrigated"], dim = 3)
   croparea  <- dimSums(croparea, dim = 3)
 
@@ -97,7 +92,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
 
   fracfullirrig <- watAvlAg / fullirrigReq
   fracfullirrig[fullirrigReq == 0] <- 0
-  fracfullirrig <- dimSums(pmin(collapseNames(fracfullirrig[,,"consumption"]), collapseNames(fracfullirrig[,,"withdrawal"])), dim = 3)
+  fracfullirrig <- dimSums(pmin(collapseNames(fracfullirrig[, , "consumption"]), collapseNames(fracfullirrig[, , "withdrawal"])), dim = 3)
 
   # regionmapping
   mapping        <- toolGetMappingCoord2Country()

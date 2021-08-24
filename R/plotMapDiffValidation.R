@@ -53,13 +53,9 @@ plotMapDiffValidation <- function(reference, scenario, lpjml, climatetype, selec
       irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = FALSE,
       com_ag = TRUE, multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"]), dim = "season")
   } else if (reference == "LUH") {
-    xC <- dimSums(calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
-      physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-    map                    <- toolGetMappingCoord2Country()
-    getCells(xC)           <- paste(map$coords, map$iso, sep = ".")
-    names(dimnames(xC))[1] <- "x.y.iso"
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+    xC <- dimSums(calcOutput("CropareaAdjusted", years = selectyears,
+                             sectoral = "kcr", cells = "lpjcell", physical = TRUE,
+                             cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
   } else {
     stop("Please choose the reference scenario for difference map: committed or LUH")
   }

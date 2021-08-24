@@ -67,11 +67,9 @@ plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "G
                                                   cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE, multicropping = multicropping,
                                                   aggregate = FALSE)[, , "irrigatable"])
     current_fulfilled <- dimSums(current_fulfilled, dim = "season")
-    current_LUH <- dimSums(calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell", physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-    map                            <- toolGetMappingCoord2Country()
-    getCells(current_LUH)           <- paste(map$coords, map$iso, sep = ".")
-    names(dimnames(current_LUH))[1] <- "x.y.iso"
+    current_LUH <- dimSums(calcOutput("CropareaAdjusted", years = iniyear,
+                                      sectoral = "kcr", cells = "lpjcell", physical = TRUE,
+                                      cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
   } else {
     # Water already committed to irrigation
     tmp    <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture", lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)

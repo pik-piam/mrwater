@@ -50,15 +50,11 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
   if (yieldcalib == "FAO") {
 
     # read in total (irrigated + rainfed) croparea
-    croparea <- setYears(calcOutput("Croparea", years = iniyear, sectoral = "kcr",
-                                    cells = "lpjcell", physical = TRUE, cellular = TRUE,
+    croparea <- setYears(calcOutput("CropareaAdjusted", years = iniyear,
+                                    sectoral = "kcr", physical = TRUE,
+                                    cells = "lpjcell", cellular = TRUE,
                                     irrigation = TRUE, aggregate = FALSE),
                          NULL)
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-    map                          <- toolGetMappingCoord2Country()
-    getCells(croparea)           <- paste(map$coords, map$iso, sep = ".")
-    names(dimnames(croparea))[1] <- "x.y.iso"
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
     croparea_total <- dimSums(croparea, dim = "irrigation")
 
     # LPJmL production on currently irrigated and rainfed area in initialization year

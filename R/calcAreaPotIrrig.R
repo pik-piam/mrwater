@@ -66,8 +66,9 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
     # Total current cropland per cell:
     if (avlland_scen == "currCropland") {
 
-      land <- dimSums(calcOutput("Croparea", years = iniyear, sectoral = "kcr",
-                                 cells = "lpjcell", physical = TRUE, cellular = TRUE,
+      land <- dimSums(calcOutput("CropareaAdjusted", years = iniyear,
+                                 sectoral = "kcr", cells = "lpjcell",
+                                 physical = TRUE, cellular = TRUE,
                                  irrigation = FALSE, aggregate = FALSE),
                       dim = 3)
 
@@ -75,18 +76,12 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
 
     # Total irrigated cropland per cell:
     if (avlland_scen == "currIrrig") {
-      land <- dimSums(collapseNames(calcOutput("Croparea", years = iniyear,
+      land <- dimSums(collapseNames(calcOutput("CropareaAdjusted", years = iniyear,
                                                sectoral = "kcr", cells = "lpjcell",
                                                physical = TRUE, cellular = TRUE,
                                                irrigation = TRUE, aggregate = FALSE)[, , "irrigated"]),
                       dim = 3)
     }
-
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-    map                      <- toolGetMappingCoord2Country()
-    getCells(land)           <- paste(map$coords, map$iso, sep = ".")
-    names(dimnames(land))[1] <- "x.y.iso"
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
 
   } else {
     stop("Please choose an appropriate available land scenario in avlland_scen argument:

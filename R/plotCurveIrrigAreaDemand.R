@@ -191,14 +191,9 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                                       avlland_scen = "currCropland:2010", cropmix = cropmix, multicropping = multicropping,
                                       potential_wat = FALSE, com_ag = TRUE, aggregate = FALSE)[, , "irrigatable"][, , "single"])
   # Area that is irrigated according to LUH
-  current_LUH <- dimSums(calcOutput("Croparea", years = iniyear, sectoral = "kcr",
+  current_LUH <- dimSums(calcOutput("CropareaAdjusted", years = iniyear, sectoral = "kcr",
                                     cells = "lpjcell", physical = TRUE, cellular = TRUE,
                                     irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
-  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-  map                             <- toolGetMappingCoord2Country()
-  getCells(current_LUH)           <- paste(map$coords, map$iso, sep = ".")
-  names(dimnames(current_LUH))[1] <- "x.y.iso"
-  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
 
   # sum up over regional dimension
   current_fulfilled <- toolRegionSums(x = current_fulfilled, region = region)

@@ -25,13 +25,9 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   depreciation <- 0.1
 
   # Read in data: crop- and water supply type specific croparea (in Mha) in initialization year:
-  tmp <- calcOutput("Croparea", years = iniyear, sectoral = "kcr", cells = "lpjcell",
-                    physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
-  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-  map                     <- toolGetMappingCoord2Country()
-  getCells(tmp)           <- paste(map$coords, map$iso, sep = ".")
-  names(dimnames(tmp))[1] <- "x.y.iso"
-  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+  tmp <- calcOutput("CropareaAdjusted", years = iniyear,
+                    sectoral = "kcr", physical = TRUE,
+                    cells = "lpjcell", cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
 
   # Retrieve irrigated area (per crop)
   tmp <- collapseNames(tmp[, , "irrigated"])

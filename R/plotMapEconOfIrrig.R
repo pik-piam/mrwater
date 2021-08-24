@@ -167,13 +167,9 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
 
     out <- cowplot::ggdraw() + cowplot::draw_plot(p3) + cowplot::draw_plot(p2) + cowplot::draw_plot(p1) + cowplot::draw_plot(pC)
   } else if (reference == "LUH") {
-    xC <- dimSums(calcOutput("Croparea", years = selectyears, sectoral = "kcr", cells = "lpjcell",
-      physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-    map                    <- toolGetMappingCoord2Country()
-    getCells(xC)           <- paste(map$coords, map$iso, sep = ".")
-    names(dimnames(xC))[1] <- "x.y.iso"
-    #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+    xC <- dimSums(calcOutput("CropareaAdjusted", years = selectyears,
+                             sectoral = "kcr", cells = "lpjcell", physical = TRUE,
+                             cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
     xC[xC > 0]        <- TRUE
     xC[xC == 0]       <- FALSE
 
