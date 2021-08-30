@@ -90,7 +90,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
              unit = "USD_ha", iniyear = iniyear, selectyears = selectyears,
              cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping,
-             aggreage = FALSE, file = "yieldgain_USDha.mz")
+             aggregate = FALSE, file = "yieldgain_USDha.mz")
 
   ### Main Outputs ###
   # Potentially irrigated area
