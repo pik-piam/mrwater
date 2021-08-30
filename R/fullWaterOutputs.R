@@ -86,6 +86,12 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              EFRmethod = EFRmethod, aggregate = FALSE,
              file = "shrCurrIrrigFulfilled.mz")
 
+  # Yield gain through irrigation in USD per hectare
+  calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
+             unit = "USD_ha", iniyear = iniyear, selectyears = selectyears,
+             cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping,
+             aggreage = FALSE, file = "yieldgain_USDha.mz")
+
   ### Main Outputs ###
   # Potentially irrigated area
   calcOutput("IrrigatableArea", selectyears = selectyears,
@@ -155,5 +161,10 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "potIrrig_HalfEarth:2010",
              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
              file = "yieldgainarea_pot.mz")
+
+  # Area that is potentially available for irrigated agriculture
+  calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL,
+             avlland_scen = "potIrrig_HalfEarth:2010", aggregate = FALSE,
+             file = "avlIrrigarea_pot.mz")
 
 }

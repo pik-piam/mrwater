@@ -22,7 +22,9 @@ magpie object in cellular resolution
 This function calculates actual irrigation water requirements per cell given a certain irrigation system
 }
 \examples{
-\dontrun{ calcOutput("ActualIrrigWatRequirements", aggregate=FALSE) }
+\dontrun{
+calcOutput("ActualIrrigWatRequirements", aggregate = FALSE)
+}
 
 }
 \seealso{
