@@ -167,4 +167,39 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              avlland_scen = "potIrrig_HalfEarth:2010", aggregate = FALSE,
              file = "avlIrrigarea_pot.mz")
 
+  # Physical Potential considering committed uses
+  # Potentially irrigated area
+  calcOutput("IrrigatableArea", selectyears = selectyears,
+             climatetype = climatetype, lpjml = lpjml,
+             gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,  thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010",
+             cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
+             accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+             multicropping = multicropping, aggregate = FALSE,
+             file = "irrigArea_currCropland_comag.mz")
+
+  # Potentially irrigated area
+  calcOutput("IrrigatableArea", selectyears = selectyears,
+             climatetype = climatetype, lpjml = lpjml,
+             gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,  thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010",
+             cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
+             accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+             multicropping = multicropping, aggregate = FALSE,
+             file = "irrigArea_potCropland_comag.mz")
+
+  # LUH fulfilled
+  calcOutput("IrrigatableArea", selectyears = selectyears,
+             climatetype = climatetype, lpjml = lpjml,
+             gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,  thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010",
+             cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE,
+             accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+             multicropping = multicropping, aggregate = FALSE,
+             file = "LUHfulfilled_comag.mz")
+
+
 }
