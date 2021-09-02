@@ -65,7 +65,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   #* #*#*# @KRISTINE/JENS: which GCM and scenario should I use for the paper?
 
   irrigationsystem <- "initialization"
-  yieldcalib       <- "calibrated" # or: "FAO"
+  yieldcalib       <- "FAO" # or: "FAO", "calibrated"
   #* #*#*# @KRISTINE: can we discuss the yield calibration together? what makes most sense for my application?
   cropmix          <- "hist_total"
   #* #*#*# @KRISTINE/JENS/BENNI: Does is make sense to use "hist_total" everywhere or should I use "hist_irrig" sometimes (e.g. for committed uses) or would that create mismatch?
@@ -88,7 +88,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
 
   # Yield gain through irrigation in USD per hectare
   calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
-             unit = "USD_ha", iniyear = iniyear, selectyears = selectyears,
+             unit = "USD_ha", iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping,
              aggregate = FALSE, file = "yieldgain_USDha.mz")
 
@@ -163,13 +163,13 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "yieldgainarea_pot.mz")
 
   # Area that is potentially available for irrigated agriculture
-  calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL,
+  calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
              avlland_scen = "potIrrig_HalfEarth:2010", aggregate = FALSE,
              file = "avlIrrigarea_pot.mz")
 
   # Physical Potential considering committed uses
   # Potentially irrigated area
-  calcOutput("IrrigatableArea", selectyears = selectyears,
+  calcOutput("IrrigatableArea", selectyears = plotyear,
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
@@ -180,7 +180,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "irrigArea_currCropland_comag.mz")
 
   # Potentially irrigated area
-  calcOutput("IrrigatableArea", selectyears = selectyears,
+  calcOutput("IrrigatableArea", selectyears = plotyear,
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
@@ -191,7 +191,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "irrigArea_potCropland_comag.mz")
 
   # LUH fulfilled
-  calcOutput("IrrigatableArea", selectyears = selectyears,
+  calcOutput("IrrigatableArea", selectyears = plotyear,
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
