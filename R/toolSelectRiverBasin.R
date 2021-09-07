@@ -11,17 +11,18 @@
 toolSelectRiverBasin <- function(basinname) {
 
   # River structure attributes
-  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
+  rs     <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
+  rs$iso <- readRDS(system.file("extdata/mapCoords2Country.rds", package = "mrcommons"))$iso
 
   # Read in basin name - endcell mapping
   basinMap <- read.csv(system.file("extdata/RiverBasinMapping.csv", package = "mrwater"))
 
   # Select cells that belong to selected basin
   c     <- basinMap$Endcell[basinMap$Basin.Name == basinname]
-  cell  <- rs$cells[rs$endcell == c]
+  iso   <- rs$iso[rs$endcell == c]
   coord <- rs$coordinates[rs$endcell == c]
 
-  out <- paste(coord, gsub("[^::A-Z::]","", cell), sep = ".")
+  out <- paste(coord, iso, sep = ".")
 
   return(out)
 }
