@@ -58,8 +58,8 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype) {
                                        years = years,
                                        names = sort(paste(systemnames, rep(cropnames, 3), sep = ".")),
                                        sets = c("x.y.iso", "year", "system.crop"))
-  convEff[, , "drip"]      <- 0.95
-  convEff[, , "sprinkler"] <- 0.95
+  convEff[, , "drip"]      <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
+  convEff[, , "sprinkler"] <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
   convEff[, , "surface"]   <- 0.7
   #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
 
@@ -77,7 +77,9 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype) {
   convLoss   <- watWW * (1 - convEff)
 
   # consumptive irrigation water = consumptive plant transpiration + evaporative conveyance loss
-  # (Note: According to Rost et al. (2007) 50% of conveyance loss are evaporative)
+  # (Note: According to Rost et al. (2008) 50% of conveyance loss are evaporative)
+  # ["Half of conveyance losses are assumed to occur due to evaporation from open
+  # water bodies and the remainder is added to the return flow as drainage." (Schaphoff 2018)]
   watWC      <- bwc + 0.5 * convLoss
 
   # Output: irrigation water requirements (consumption and withdrawals)
