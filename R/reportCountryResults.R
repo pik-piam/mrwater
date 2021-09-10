@@ -14,10 +14,10 @@
 #'                          discharge that is exceeded x percent of the time on average throughout a year
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
-#' @param yieldcalib        FAO (LPJmL yields calibrated with current FAO yield) or
-#'                          calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-#'                          smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-#'                          smoothed_calibrated
+#' @param yieldcalib        Calibrated (LPJmL yield potentials smoothed and harmonized
+#'                          to baseline and calibrated with global FAO calibration factor
+#'                          for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+#'                          FAO (LPJmL yields calibrated with current FAO yield)
 #' @param rankmethod        Rank and optimization method consisting of
 #'                          Unit according to which rank is calculated:
 #'                          tDM (tons per dry matter),

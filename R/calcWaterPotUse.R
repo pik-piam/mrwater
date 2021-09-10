@@ -17,10 +17,10 @@
 #'                          and fullpotentail TRUE/FALSE separated by ":"
 #'                          (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
 #'                          FALSE: reduced potential of cell receives at later stage in allocation algorithm)
-#' @param yieldcalib        FAO (LPJmL yields calibrated with current FAO yield) or
-#'                          calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-#'                          smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-#'                          smoothed_calibrated
+#' @param yieldcalib        Calibrated (LPJmL yield potentials smoothed and harmonized
+#'                          to baseline and calibrated with global FAO calibration factor
+#'                          for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+#'                          FAO (LPJmL yields calibrated with current FAO yield)
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
 #' @param thresholdtype     Thresholdtype of yield improvement:

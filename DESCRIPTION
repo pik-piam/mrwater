@@ -1,7 +1,7 @@
 Package: mrwater
 Type: Package
 Title: madrat based MAgPIE Input Data Library
-Version: 0.5.219
+Version: 0.5.220
 Date: 2021-09-10
 Authors@R: c(person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = c("aut","cre")),
              person("Jens", "Heinke", email = "heinke@pik-potsdam.de", role = "aut"),
@@ -11,6 +11,7 @@ Description: Provides functions for MAgPIE cellular input data generation and st
 Depends:
     R(>= 2.10.0),
     madrat(>= 1.72),
+    magclass(>= 6.0.0),
     mrcommons,
     mrmagpie
 Imports:
@@ -19,7 +20,6 @@ Imports:
     luplot,
     stringr,
     raster,
-    magclass(>= 3.17),
     magpiesets,
     mstools, 
     ggplot2,

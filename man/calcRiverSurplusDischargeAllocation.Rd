@@ -83,10 +83,10 @@ protection scenario separated by "_" (only relevant when potIrrig selected): WDP
 can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
-calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-smoothed_calibrated}
+\item{yieldcalib}{Calibrated (LPJmL yield potentials smoothed and harmonized
+to baseline and calibrated with global FAO calibration factor
+for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+FAO (LPJmL yields calibrated with current FAO yield)}
 
 \item{com_ag}{if TRUE: the currently already irrigated areas in
          initialization year are reserved for irrigation,

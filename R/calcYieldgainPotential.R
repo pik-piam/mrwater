@@ -20,10 +20,10 @@
 #'                          USD_ha (USD per hectare) for area return, or
 #'                          USD_m3 (USD per cubic meter) for volumetric return;
 #'                          and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
-#' @param yieldcalib        FAO (LPJmL yields calibrated with current FAO yield) or
-#'                          calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-#'                          smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-#'                          smoothed_calib (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)
+#' @param yieldcalib        Calibrated (LPJmL yield potentials smoothed and harmonized
+#'                          to baseline and calibrated with global FAO calibration factor
+#'                          for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+#'                          FAO (LPJmL yields calibrated with current FAO yield)
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
 #' @param gainthreshold     Threshold of yield improvement potential required
@@ -120,26 +120,26 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
     }
 
     # historical share of crop types in cropland per cell
-    croparea_shr <- croparea / dimSums(croparea, dim = 3)
+    cropareaShr <- croparea / dimSums(croparea, dim = 3)
     # correct NAs: where no current cropland available,
     # representative crops (maize, rapeseed, pulses) assumed as proxy
-    rep_crops    <- c("maiz", "rapeseed", "puls_pro")
-    other_crops  <- setdiff(getNames(croparea), rep_crops)
-    croparea_shr[, , rep_crops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
-    croparea_shr[, , other_crops][dimSums(croparea, dim = 3) == 0] <- 0
+    proxycrops   <- c("maiz", "rapeseed", "puls_pro")
+    other_crops  <- setdiff(getNames(croparea), proxycrops)
+    cropareaShr[, , proxycrops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
+    cropareaShr[, , other_crops][dimSums(croparea, dim = 3) == 0] <- 0
 
   } else {
 
     # equal crop area share for each proxycrop assumed
-    croparea_shr              <- new.magpie(cells_and_regions = getCells(area),
+    cropareaShr              <- new.magpie(cells_and_regions = getCells(area),
                                             years = NULL,
                                             names = cropmix,
                                             sets = c("x.y.iso", "t", "data"))
-    croparea_shr[, , cropmix] <- 1 / length(cropmix)
+    cropareaShr[, , cropmix] <- 1 / length(cropmix)
   }
 
   # Potential area by croptype (in Mha)
-  area <- croparea_shr * area
+  area <- cropareaShr * area
 
   # Potential yield gain per cell (in mio. USD)
   x <- dimSums(yieldGain * area, dim = "MAG")

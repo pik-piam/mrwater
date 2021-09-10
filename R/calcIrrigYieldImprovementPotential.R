@@ -14,10 +14,10 @@
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
 #'                      or hist_irrig or hist_total for historical cropmix
 #'                      NULL returns all crops individually
-#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or
-#'                      calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-#'                      smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-#'                      smoothed_calib (not harmonized, but calibrated)
+#' @param yieldcalib    Calibrated (LPJmL yield potentials smoothed and harmonized
+#'                      to baseline and calibrated with global FAO calibration factor
+#'                      for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+#'                      FAO (LPJmL yields calibrated with current FAO yield)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
@@ -82,20 +82,20 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
     irrigationSystem <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
 
     # Calculate irrigation water requirements
-    IWR  <- dimSums((irrigationSystem[, , ] * irrigReqWW[, , ]), dim = 3.1)
-    IWR  <- IWR[, , croplist]
+    irrigWatReq  <- dimSums((irrigationSystem[, , ] * irrigReqWW[, , ]), dim = 3.1)
+    irrigWatReq  <- irrigWatReq[, , croplist]
 
-    # Correction of small IWR: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
-    IWR[IWR < 10] <- 10
+    # Correction of small irrigWatReq: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
+    irrigWatReq[irrigWatReq < 10] <- 10
     # Correction of very small yields: where < 10 USD/ha: 0
     tmp <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
                       lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                       iniyear = iniyear, selectyears = selectyears, yieldcalib = yieldcalib,
                       multicropping = multicropping, aggregate = FALSE)
-    IWR[dimSums(tmp, dim = 3) < 10] <- 0
+    irrigWatReq[dimSums(tmp, dim = 3) < 10] <- 0
     # Yields in USD/m^3
-    yields           <- yields / IWR
-    yields[IWR <= 0] <- 0
+    yields           <- yields / irrigWatReq
+    yields[irrigWatReq <= 0] <- 0
     unit             <- "USD05 per m^3"
 
   }

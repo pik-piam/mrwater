@@ -20,8 +20,10 @@
 #'                          tDM (tons per dry matter),
 #'                          USD_ha (USD per hectare) for area return, or
 #'                          USD_m3 (USD per cubic meter) for volumetric return;
-#'                          and boolean indicating fullpotential (TRUE, i.e. cell receives full irrigation requirements in total area)
-#'                          or reduced potential (FALSE, reduced potential of cell receives at later stage in allocation algorithm);
+#'                          and boolean indicating fullpotential
+#'                          (TRUE, i.e. cell receives full irrigation requirements in total area)
+#'                          or reduced potential
+#'                          (FALSE, reduced potential of cell receives at later stage in allocation algorithm);
 #'                          separated by ":"
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst")
@@ -46,10 +48,10 @@
 #' @param cropmix           cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
 #'                          or hist_irrig or hist_total for historical cropmix
-#' @param yieldcalib        FAO (LPJmL yields calibrated with current FAO yield) or
-#'                          calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-#'                          smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-#'                          smoothed_calibrated
+#' @param yieldcalib        Calibrated (LPJmL yield potentials smoothed and harmonized
+#'                          to baseline and calibrated with global FAO calibration factor
+#'                          for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+#'                          FAO (LPJmL yields calibrated with current FAO yield)
 #' @param com_ag            if TRUE: the currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)

@@ -17,10 +17,10 @@
 #'                          and fullpotentail TRUE/FALSE separated by ":"
 #'                          (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
 #'                          FALSE: reduced potential of cell receives at later stage in allocation algorithm)
-#' @param yieldcalib        FAO (LPJmL yields calibrated with current FAO yield) or
-#'                          calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-#'                          smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-#'                          smoothed_calibrated
+#' @param yieldcalib        Calibrated (LPJmL yield potentials smoothed and harmonized
+#'                          to baseline and calibrated with global FAO calibration factor
+#'                          for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+#'                          FAO (LPJmL yields calibrated with current FAO yield)
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
 #' @param thresholdtype     Thresholdtype of yield improvement:
@@ -73,8 +73,8 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
                                   irrigationsystem = irrigationsystem, iniyear = iniyear,
                                   avlland_scen = avlland_scen, cropmix = cropmix,
                                   com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
-    avlWat_irrig_c <- collapseNames(avlWat[, , "wat_ag_wc"])
-    avlWat_irrig_w <- collapseNames(avlWat[, , "wat_ag_ww"])
+    avlWatWWC <- collapseNames(avlWat[, , "wat_ag_wc"])
+    avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
 
   } else {
 
@@ -87,8 +87,8 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
     avlWat         <- add_columns(avlWat, dim = 3.3, addnm = "triple")
     avlWat[, , c("double", "triple")] <- 0
 
-    avlWat_irrig_c <- collapseNames(avlWat[, , "currHuman_wc"])
-    avlWat_irrig_w <- collapseNames(avlWat[, , "currHuman_ww"])
+    avlWatWWC <- collapseNames(avlWat[, , "currHuman_wc"])
+    avlWatWW <- collapseNames(avlWat[, , "currHuman_ww"])
 
   }
 
@@ -97,9 +97,9 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
                           lpjml = lpjml, climatetype = climatetype,
                           irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
                           cropmix = cropmix, multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
-  watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWat_irrig_w),
-                         years = getYears(avlWat_irrig_w),
-                         names = getNames(avlWat_irrig_w),
+  watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWatWW),
+                         years = getYears(avlWatWW),
+                         names = getNames(avlWatWW),
                          fill = NA)
 
   watReqWW[, , ] <- collapseNames(watReq[, , "withdrawal"])
@@ -111,11 +111,11 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
                               avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
-  irrigareaWW <- pmin(avlWat_irrig_w / watReqWW, 1) * areaPotIrrig
+  irrigareaWW <- pmin(avlWatWW / watReqWW, 1) * areaPotIrrig
   irrigareaWW[watReqWW == 0] <- 0      # cells with no water requirements also get no irrigated area assigned
   irrigareaWW <- add_dimension(irrigareaWW, dim = 3.4, add = "type", nm = "irrigatable_ww")
 
-  irrigareaWC <- pmin(avlWat_irrig_c / watReqWC, 1) * areaPotIrrig
+  irrigareaWC <- pmin(avlWatWWC / watReqWC, 1) * areaPotIrrig
   irrigareaWC[watReqWC == 0] <- 0
   irrigareaWC <- add_dimension(irrigareaWC, dim = 3.4, add = "type", nm = "irrigatable_wc")
 

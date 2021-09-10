@@ -8,10 +8,10 @@
 #' @param selectyears   Years for which irrigatable area is calculated
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param EFRmethod     EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
-#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or
-#'                      calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-#'                      smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-#'                      smoothed_calib (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)
+#' @param yieldcalib    Calibrated (LPJmL yield potentials smoothed and harmonized
+#'                      to baseline and calibrated with global FAO calibration factor
+#'                      for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+#'                      FAO (LPJmL yields calibrated with current FAO yield)
 #' @param thresholdtype TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param avlland_scen  Land availability scenario (currCropland, currIrrig, potIrrig)
 #'                      combination of land availability scenario and initialization year separated by ":".

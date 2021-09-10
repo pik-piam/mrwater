@@ -29,8 +29,10 @@ or perm3 for irrigation water value in USD05/m^3)}
 
 \item{climatetype}{Climate scenario for return to irrigation}
 
-\item{yieldcalib}{yieldcalib for return to irrigation (FAO, calibrated,
-smoothed, smoothed_calib)}
+\item{yieldcalib}{Calibrated (LPJmL yield potentials smoothed and harmonized
+to baseline and calibrated with global FAO calibration factor
+for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+FAO (LPJmL yields calibrated with current FAO yield)}
 
 \item{multicropping}{multicropping for return to irrigation (TRUE or FALSE)}
 

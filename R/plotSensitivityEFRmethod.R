@@ -21,10 +21,10 @@
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx).
 #'                          Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
-#' @param yieldcalib       FAO (LPJmL yields calibrated with current FAO yield) or
-#'                         calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-#'                         smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-#'                         smoothed_calib (smoothed, not harmonized, calibrated for proxycrops)
+#' @param yieldcalib    Calibrated (LPJmL yield potentials smoothed and harmonized
+#'                      to baseline and calibrated with global FAO calibration factor
+#'                      for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+#'                      FAO (LPJmL yields calibrated with current FAO yield)
 #' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm:
 #'                         TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")

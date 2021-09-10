@@ -17,10 +17,10 @@
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
 #'                      or hist_irrig or hist_total for historical cropmix
 #' @param iniyear       Initialization year for price
-#' @param yieldcalib    FAO (LPJmL yields calibrated with current FAO yield) or
-#'                      calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-#'                      smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated)
-#'                      smoothed_calibrated
+#' @param yieldcalib    Calibrated (LPJmL yield potentials smoothed and harmonized
+#'                      to baseline and calibrated with global FAO calibration factor
+#'                      for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+#'                      FAO (LPJmL yields calibrated with current FAO yield)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
@@ -38,39 +38,39 @@ calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
   unit          <- strsplit(method, ":")[[1]][1]
 
   # Read in average potential yield gain per cell (USD05 per ha)
-  yield_gain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
+  yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
                            selectyears = cellrankyear, iniyear = iniyear, lpjml = lpjml, climatetype = climatetype,
                            cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
   if (!fullpotential) {
 
-    yield_gain_reduced   <- 0.75 * yield_gain
-    getCells(yield_gain) <- paste0("A_", getCells(yield_gain))
-    getCells(yield_gain_reduced) <- paste0("B_", getCells(yield_gain_reduced))
+    yieldGain_reduced   <- 0.75 * yieldGain
+    getCells(yieldGain) <- paste0("A_", getCells(yieldGain))
+    getCells(yieldGain_reduced) <- paste0("B_", getCells(yieldGain_reduced))
 
-    yield_gain <- mbind(yield_gain, yield_gain_reduced)
+    yieldGain <- mbind(yieldGain, yieldGain_reduced)
 
   }
 
   if (multicropping) {
 
-    single           <- collapseNames(yield_gain[, , "single"])
+    single           <- collapseNames(yieldGain[, , "single"])
     getCells(single) <- paste0("S_", getCells(single))
-    double           <- collapseNames(yield_gain[, , "double"])
+    double           <- collapseNames(yieldGain[, , "double"])
     getCells(double) <- paste0("D_", getCells(double))
-    triple           <- collapseNames(yield_gain[, , "triple"])
+    triple           <- collapseNames(yieldGain[, , "triple"])
     getCells(triple) <- paste0("T_", getCells(triple))
 
-    yield_gain <- mbind(single, double, triple)
+    yieldGain <- mbind(single, double, triple)
 
   } else {
 
-    yield_gain <- collapseNames(yield_gain[, , "single"])
+    yieldGain <- collapseNames(yieldGain[, , "single"])
 
   }
 
   # calculate rank (ties are solved by first occurrence)
-  glocellrank <- apply(-yield_gain, c(2, 3), rank, ties.method = "first")
+  glocellrank <- apply(-yieldGain, c(2, 3), rank, ties.method = "first")
 
   # transform to magpie object
   glocellrank <- as.magpie(glocellrank, spatial = 1)

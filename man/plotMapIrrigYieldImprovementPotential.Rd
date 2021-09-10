@@ -26,10 +26,10 @@ plotMapIrrigYieldImprovementPotential(
 \item{climatetype}{Switch between different climate scenarios or
 historical baseline "GSWP3-W5E5:historical"}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
-calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-smoothed_calib (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)}
+\item{yieldcalib}{Calibrated (LPJmL yield potentials smoothed and harmonized
+to baseline and calibrated with global FAO calibration factor
+for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+FAO (LPJmL yields calibrated with current FAO yield)}
 
 \item{unit}{Unit of yield improvement potential to be returned:
 tDM (tons per dry matter),

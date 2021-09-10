@@ -60,13 +60,10 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
 
   lpjml            <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de+oldGSWP3",
                         crop = "ggcmi_phase3_nchecks_9ca735cb+oldGSWP3")
-  #* #*#*# @KRISTINE: which version is the best as standard for my case? what's the most recent we have?
   climatetype      <- "GFDL-ESM4:ssp126"
-  #* #*#*# @KRISTINE/JENS: which GCM and scenario should I use for the paper?
 
   irrigationsystem <- "initialization"
-  yieldcalib       <- "FAO" # or: "FAO", "calibrated"
-  #* #*#*# @KRISTINE: can we discuss the yield calibration together? what makes most sense for my application?
+  yieldcalib       <- "FAO"
   cropmix          <- "hist_total"
   #* #*#*# @KRISTINE/JENS/BENNI: Does is make sense to use "hist_total" everywhere or should I use "hist_irrig" sometimes (e.g. for committed uses) or would that create mismatch?
   #* #*#*# @JENS/BENNI: We'll only use the proxycrops version for MAgPIE runs, not for the stand-alone-paper, right?

@@ -29,10 +29,10 @@ irrigated areas}
 
 \item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
-\item{yieldcalib}{FAO (LPJmL yields calibrated with current FAO yield) or
-calibrated (LPJmL yield potentials harmonized to baseline and calibrated for proxycrops) or
-smoothed (smoothed LPJmL yield potentials, not harmonized, not calibrated) or
-smoothed_calib (smoothed LPJmL yield potentials, not harmonized, calibrated for proxycrops)}
+\item{yieldcalib}{Calibrated (LPJmL yield potentials smoothed and harmonized
+to baseline and calibrated with global FAO calibration factor
+for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
+FAO (LPJmL yields calibrated with current FAO yield)}
 
 \item{thresholdtype}{TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
