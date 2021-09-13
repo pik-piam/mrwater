@@ -99,8 +99,6 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
 
   }
 
-  # sum up over regional dimension
-  # x <- toolRegionSums(x = x, region = region)
   x <- add_dimension(x, dim = 3.1, add = "GT", nm = "0")
 
   if (GT_range[1] == 0) {
@@ -144,8 +142,6 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
 
     }
 
-    # sum up over regional dimension and create data frame
-   # tmp <- toolRegionSums(x = tmp, region = region)
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
 
     x   <- mbind(x, tmp)

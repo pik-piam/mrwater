@@ -8,7 +8,9 @@
 #' @return       magpie object with regional sum
 #' @author       Felicitas Beier
 #'
-#' @importFrom madrat toolGetMapping
+#' @importFrom madrat toolGetMapping toolAggregate
+#' @importFrom magclass dimSums
+#' @importFrom stringr str_split
 #'
 #' @export
 
@@ -24,9 +26,7 @@ toolRegionSums <- function(x, region) {
     region <- str_split(region, ":")[[1]][1]
 
     # aggregate to iso-countries
-    mapping        <- toolGetMappingCoord2Country()
-    mapping$coords <- paste(mapping$coords, mapping$iso, sep = ".")
-    x <- toolAggregate(x, rel = mapping, from = "coords", to = "iso", dim = 1)
+    x <- dimSums(x, dim = c(1.1, 1.2))
     x <- toolCountryFill(x, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT"
                                       # "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM"
                                       # "VAT" "VGB" missing in LPJmL cells

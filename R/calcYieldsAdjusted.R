@@ -54,16 +54,16 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
     totalCroparea <- dimSums(croparea, dim = "irrigation")
 
     # LPJmL production on currently irrigated and rainfed area in initialization year
-    LPJmLproduction <- setYears(dimSums(croparea[, , croplist] * yields[, iniyear, croplist],
+    productionLPJmL <- setYears(dimSums(croparea[, , croplist] * yields[, iniyear, croplist],
                                          dim = "irrigation"),
                                  NULL)
 
     # LPJmL iso-country yields
-    LPJmLproduction <- dimSums(LPJmLproduction, dim = c(1.1, 1.2))
+    productionLPJmL <- dimSums(productionLPJmL, dim = c(1.1, 1.2))
     totalCroparea   <- dimSums(totalCroparea, dim = c(1.1, 1.2))
 
-    LPJmLyields     <- ifelse(totalCroparea[, , croplist] > 0, LPJmLproduction[, , croplist] / totalCroparea[, , croplist], 0)
-    LPJmLyields     <- toolCountryFill(LPJmLyields, fill = 0) # Note: "ABW" "AND" "ATA" "BES" "BLM" "BVT" "GIB" "LIE" "MAC" "MAF" "MCO" "SMR" "SXM" "VAT" "VGB" missing in LPJmL cells
+    yieldsLPJmL     <- ifelse(totalCroparea[, , croplist] > 0, productionLPJmL[, , croplist] / totalCroparea[, , croplist], 0)
+    yieldsLPJmL     <- toolCountryFill(yieldsLPJmL, fill = 0)
 
     # FAO iso-country yields
     FAOyields <- setYears(calcOutput("FAOYield", physical = TRUE, attributes = "dm",
@@ -75,8 +75,8 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
     # is implicitly included
 
     # Calibration Factor:
-    Calib      <- FAOyields[getCells(LPJmLyields), , croplist] / LPJmLyields[, , croplist]
-    Calib[LPJmLyields[, , croplist] == 0] <- 0
+    Calib      <- FAOyields[getCells(yieldsLPJmL), , croplist] / yieldsLPJmL[, , croplist]
+    Calib[yieldsLPJmL[, , croplist] == 0] <- 0
     Calib[Calib[, , croplist] > 1.5]       <- 1.5
     names(dimnames(Calib))[1]              <- "iso"
 
@@ -88,8 +88,8 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
 
   } else if (yieldcalib == "FAO_Kristine") {
     ### NOTE: This is only for testing until it will be fully integrated instead of the FAO calibration above
-    yields <- calcOutput("CalibratedYields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
-                         climatetype = climatetype, refYear = "y1995")
+    yields <- setYears(calcOutput("CalibratedYields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
+                         climatetype = climatetype, refYear = "y1995"), NULL)
 
     description <- "LPJmL yields calibrated to FAO yield levels for all different (MAgPIE) crop types"
     unit        <- "tDM per ha"
