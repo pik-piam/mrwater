@@ -8,10 +8,7 @@
 #'                      historical baseline "GSWP3-W5E5:historical" for yields
 #' @param selectyears   Years to be returned by the function
 #' @param iniyear       Year to be used for cropland of yield calibration
-#' @param yieldcalib    Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                      to baseline and calibrated with global FAO calibration factor
-#'                      for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                      FAO (LPJmL yields calibrated with current FAO yield)
+#' @param yieldcalib    If "FAO": LPJmL yields calibrated with current FAO yield
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -36,8 +33,6 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
   yields     <- yields[, , "pasture", invert = T]
   # set correct dimension names
   getSets(yields)[c("d3.1", "d3.2")] <- c("MAG", "irrigation")
-  #* #*#*# @KRISTINE: Glaubst du, es kann potenziell ein Problem sein, dass yields MAG.irrigation ist und croparea irrigation.MAG oder sind die MAgPIE-Objekte dafür ausreichend fool-proof? #*#*#*ä
-  #* #*#*# @KRISTINE: Ist das mit dem getSets() ok so, oder hätte ich da potenziell das Problem, dass sich die Funktion ändert und das mit d3.1 d3.2 nicht mehr zusammen passt bzw. sich die Anzahl der Dimenstionen in calcYields ändert o.Ä.?
 
   croplist    <- getNames(collapseNames(yields[, , "irrigated"]))
   description <- "LPJmL yields for all different (MAgPIE) crop types"
@@ -76,22 +71,28 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
     # (rather than harvested area) -> cropping intensity (multicropping and
     # fallow land) is implicitly included
 
-    # Calibration Factor:
-    Calib <- yieldsFAO[getCells(yieldsLPJmL), , croplist] / yieldsLPJmL[, , croplist]
-    Calib[yieldsLPJmL[, , croplist] == 0]  <- 0
-    Calib[Calib[, , croplist] > 1.5]       <- 1.5
-    names(dimnames(Calib))[1]              <- "iso"
+    # calibration Factor:
+    calib <- yieldsFAO[getCells(yieldsLPJmL), , croplist] / yieldsLPJmL[, , croplist]
+    calib[yieldsLPJmL[, , croplist] == 0]  <- 0
+    calib[calib[, , croplist] > 1.5]       <- 1.5
+    names(dimnames(calib))[1]              <- "iso"
 
-    yields      <- yields[, , croplist] * Calib[intersect(unique(gsub(".*\\.", "",
+    yields      <- yields[, , croplist] * calib[intersect(unique(gsub(".*\\.", "",
                                                                       getCells(yields))),
-                                                          getCells(Calib)), , croplist]
+                                                          getCells(calib)), , croplist]
     description <- "LPJmL yields calibrated to FAO yield levels for all different (MAgPIE) crop types"
     unit        <- "tDM per ha"
 
   } else if (yieldcalib == "FAO_Kristine") {
     ### NOTE: This is only for testing until it will be fully integrated instead of the FAO calibration above
-    yields <- calcOutput("CalibratedYields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
-                         climatetype = climatetype, refYear = "y1995", aggregate = FALSE)[, selectyears, ]
+    yields <- calcOutput("calibratedYields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
+                         climatetype = climatetype, refYear = iniyear,
+                         cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
+
+    # only crops (pasture is not irrigated)
+    yields     <- yields[, , "pasture", invert = T]
+    # set correct dimension names
+    getSets(yields)[c("d3.1", "d3.2")] <- c("MAG", "irrigation")
 
     description <- "LPJmL yields calibrated to FAO yield levels for all different (MAgPIE) crop types"
     unit        <- "tDM per ha"
