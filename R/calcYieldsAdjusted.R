@@ -85,7 +85,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
 
   } else if (yieldcalib == "FAO_Kristine") {
     ### NOTE: This is only for testing until it will be fully integrated instead of the FAO calibration above
-    yields <- calcOutput("calibratedYields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
+    yields <- calcOutput("CalibratedYields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
                          climatetype = climatetype, refYear = iniyear,
                          cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
 
