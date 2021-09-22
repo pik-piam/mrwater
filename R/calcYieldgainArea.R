@@ -2,16 +2,14 @@
 #' @description reports potentially irrigated area depending on gainthreshold
 #'              and land constraint only
 #'
-#' @param GT_range      Range of gainthreshold for calculation of potentially
+#' @param rangeGT      Range of gainthreshold for calculation of potentially
 #'                      irrigated areas
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years for which irrigatable area is calculated
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param EFRmethod     EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
-#' @param yieldcalib    Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                      to baseline and calibrated with global FAO calibration factor
-#'                      for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                      FAO (LPJmL yields calibrated with current FAO yield)
+#' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param thresholdtype TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param avlland_scen  Land availability scenario (currCropland, currIrrig, potIrrig)
 #'                      combination of land availability scenario and initialization year separated by ":".
@@ -27,7 +25,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcYieldgainArea(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
+#' calcYieldgainArea(rangeGT = seq(0, 10000, by = 100), scenario = "ssp2")
 #' }
 #'
 #' @importFrom madrat calcOutput
@@ -36,7 +34,7 @@
 #'
 #' @export
 
-calcYieldgainArea <- function(GT_range, lpjml, selectyears,
+calcYieldgainArea <- function(rangeGT, lpjml, selectyears,
                               climatetype, EFRmethod, yieldcalib, thresholdtype,
                               avlland_scen, cropmix, multicropping) {
 
@@ -74,11 +72,11 @@ calcYieldgainArea <- function(GT_range, lpjml, selectyears,
 
   x <- add_dimension(x, dim = 3.1, add = "GT", nm = "0")
 
-  if (GT_range[1] == 0) {
-    GT_range <- GT_range[-1]
+  if (rangeGT[1] == 0) {
+    rangeGT <- rangeGT[-1]
   }
 
-  for (gainthreshold in GT_range) {
+  for (gainthreshold in rangeGT) {
 
     tmp <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = gainthreshold,
                     selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,

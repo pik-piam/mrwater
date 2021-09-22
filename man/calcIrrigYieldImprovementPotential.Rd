@@ -34,10 +34,8 @@ can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix
 NULL returns all crops individually}
 
-\item{yieldcalib}{Calibrated (LPJmL yield potentials smoothed and harmonized
-to baseline and calibrated with global FAO calibration factor
-for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-FAO (LPJmL yields calibrated with current FAO yield)}
+\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+If FALSE: uncalibrated LPJmL yields are used}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }

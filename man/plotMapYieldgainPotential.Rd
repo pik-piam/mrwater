@@ -46,10 +46,8 @@ historical baseline "GSWP3-W5E5:historical"}
 discharge that is exceeded x percent of the time on average throughout a year (Qx).
 (e.g. Q75: 0.25, Q50: 0.5)}
 
-\item{yieldcalib}{Calibrated (LPJmL yield potentials smoothed and harmonized
-to baseline and calibrated with global FAO calibration factor
-for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-FAO (LPJmL yields calibrated with current FAO yield)}
+\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+If FALSE: uncalibrated LPJmL yields are used}
 
 \item{rankmethod}{Method of calculating the rank:
 "meancellrank": mean over cellrank of proxy crops,

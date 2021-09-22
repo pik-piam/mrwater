@@ -23,10 +23,8 @@
 #'                          or reduced potential (FALSE, reduced potential of cell
 #'                                                receives at later stage in allocation algorithm);
 #'                          separated by ":"
-#' @param yieldcalib        Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                          to baseline and calibrated with global FAO calibration factor
-#'                          for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                          FAO (LPJmL yields calibrated with current FAO yield)
+#' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          ("optimization" or "upstreamfirst")
 #' @param thresholdtype     Unit of yield improvement potential used as threshold:

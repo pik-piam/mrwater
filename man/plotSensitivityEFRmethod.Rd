@@ -56,10 +56,8 @@ and fullpotentail TRUE/FALSE separated by ":"
 (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
 FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
-\item{yieldcalib}{Calibrated (LPJmL yield potentials smoothed and harmonized
-to baseline and calibrated with global FAO calibration factor
-for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-FAO (LPJmL yields calibrated with current FAO yield)}
+\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+If FALSE: uncalibrated LPJmL yields are used}
 
 \item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm:
 TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}

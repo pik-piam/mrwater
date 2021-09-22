@@ -14,25 +14,23 @@
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx).
 #'                          Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
-#' @param yieldcalib        Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                          to baseline and calibrated with global FAO calibration factor
-#'                          for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                          FAO (LPJmL yields calibrated with current FAO yield)
-#' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm:
-#'                         TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
-#' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param avlland_scen     Land availability scenario: current or potential;
-#'                         optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-#'                         combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-#'                         protection scenario separated by "_" (only relevant when potIrrig selected):
-#'                         WDPA, BH, FF, CPD, LW, HalfEarth
-#' @param cropmix       cropmix for which irrigation yield improvement is calculated
-#'                      can be selection of proxycrop(s) for calculation of average yield gain
-#'                      or hist_irrig or hist_total for historical cropmix
-#' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
-#' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
-#'                         FALSE: no irrigation areas reserved (irrigation potential)
-#' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
+#' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                          If FALSE: uncalibrated LPJmL yields are used
+#' @param thresholdtype     Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm:
+#'                          TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
+#' @param irrigationsystem  Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
+#' @param avlland_scen      Land availability scenario: current or potential;
+#'                          optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
+#'                          combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
+#'                          protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                          WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param cropmix           Cropmix for which irrigation yield improvement is calculated
+#'                          can be selection of proxycrop(s) for calculation of average yield gain
+#'                          or hist_irrig or hist_total for historical cropmix
+#' @param potential_wat     if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
+#' @param com_ag            if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
+#'                          FALSE: no irrigation areas reserved (irrigation potential)
+#' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier

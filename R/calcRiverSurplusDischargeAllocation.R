@@ -48,10 +48,8 @@
 #' @param cropmix           cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
 #'                          or hist_irrig or hist_total for historical cropmix
-#' @param yieldcalib        Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                          to baseline and calibrated with global FAO calibration factor
-#'                          for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                          FAO (LPJmL yields calibrated with current FAO yield)
+#' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param com_ag            if TRUE: the currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)

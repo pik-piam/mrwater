@@ -13,10 +13,8 @@
 #'                    or hist_irrig or hist_total for historical cropmix
 #' @param thresholdtype Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
-#' @param yieldcalib    Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                      to baseline and calibrated with global FAO calibration factor
-#'                      for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                      FAO (LPJmL yields calibrated with current FAO yield)
+#' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                      If FALSE: uncalibrated LPJmL yields are used
 #' @return map of magpie cells
 #' @author Felicitas Beier
 #'

@@ -63,7 +63,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   climatetype      <- "GFDL-ESM4:ssp126"
 
   irrigationsystem <- "initialization"
-  yieldcalib       <- "FAO"
+  yieldcalib       <- TRUE
   cropmix          <- "hist_total"
   #* #*#*# @KRISTINE/JENS/BENNI: Does is make sense to use "hist_total" everywhere or should I use "hist_irrig" sometimes (e.g. for committed uses) or would that create mismatch?
   #* #*#*# @JENS/BENNI: We'll only use the proxycrops version for MAgPIE runs, not for the stand-alone-paper, right?

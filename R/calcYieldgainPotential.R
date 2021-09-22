@@ -20,10 +20,8 @@
 #'                          USD_ha (USD per hectare) for area return, or
 #'                          USD_m3 (USD per cubic meter) for volumetric return;
 #'                          and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
-#' @param yieldcalib        Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                          to baseline and calibrated with global FAO calibration factor
-#'                          for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                          FAO (LPJmL yields calibrated with current FAO yield)
+#' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
 #' @param gainthreshold     Threshold of yield improvement potential required
@@ -124,9 +122,9 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
     # correct NAs: where no current cropland available,
     # representative crops (maize, rapeseed, pulses) assumed as proxy
     proxycrops   <- c("maiz", "rapeseed", "puls_pro")
-    other_crops  <- setdiff(getNames(croparea), proxycrops)
+    otherCrops   <- setdiff(getNames(croparea), proxycrops)
     cropareaShr[, , proxycrops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
-    cropareaShr[, , other_crops][dimSums(croparea, dim = 3) == 0] <- 0
+    cropareaShr[, , otherCrops][dimSums(croparea, dim = 3) == 0] <- 0
 
   } else {
 

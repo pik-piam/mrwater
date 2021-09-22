@@ -47,10 +47,8 @@ available water volume "wat_ag_ww" "wat_ag_wc"}
 discharge that is exceeded x percent of the time on average throughout a year (Qx).
 Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
 
-\item{yieldcalib}{Calibrated (LPJmL yield potentials smoothed and harmonized
-to baseline and calibrated with global FAO calibration factor
-for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-FAO (LPJmL yields calibrated with current FAO yield)}
+\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+If FALSE: uncalibrated LPJmL yields are used}
 
 \item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm:
 TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
@@ -63,7 +61,7 @@ combination of land availability scenario and initialization year separated by "
 protection scenario separated by "_" (only relevant when potIrrig selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
-\item{cropmix}{cropmix for which irrigation yield improvement is calculated
+\item{cropmix}{Cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix}
 

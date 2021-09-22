@@ -16,7 +16,8 @@ historical baseline "GSWP3-W5E5:historical" for yields}
 
 \item{selectyears}{Years to be returned by the function}
 
-\item{yieldcalib}{If "FAO": LPJmL yields calibrated with current FAO yield}
+\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+If FALSE: uncalibrated LPJmL yields are used}
 }
 \value{
 magpie object in cellular resolution

@@ -11,11 +11,13 @@
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param EFRmethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
-#' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
-#' @param yieldcalib    Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                      to baseline and calibrated with global FAO calibration factor
-#'                      for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                      FAO (LPJmL yields calibrated with current FAO yield)
+#' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
+#'                          combined with scalar value defining the strictness of accessibility restriction:
+#'                          discharge that is exceeded x percent of the time on average throughout a year
+#'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
+#'                          or base value for exponential curve separated by : (CV:2)
+#' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param rankmethod       method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
 #' @param allocationrule   Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
 #' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha

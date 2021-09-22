@@ -9,10 +9,8 @@
 #' @param lpjml            LPJmL version required for return to irrigation
 #' @param iniyear          Initialization year for return to irrigation
 #' @param climatetype      Climate scenario for return to irrigation
-#' @param yieldcalib       Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                         to baseline and calibrated with global FAO calibration factor
-#'                         for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                         FAO (LPJmL yields calibrated with current FAO yield)
+#' @param yieldcalib       If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                         If FALSE: uncalibrated LPJmL yields are used
 #' @param multicropping    multicropping for return to irrigation (TRUE or FALSE)
 #' @param cropmix          cropmix for calculation of return to irrigation
 #'                         (proxycrop(s) or hist_irrig or hist_total)

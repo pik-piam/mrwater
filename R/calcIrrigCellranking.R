@@ -17,10 +17,8 @@
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
 #'                      or hist_irrig or hist_total for historical cropmix
 #' @param iniyear       Initialization year for price
-#' @param yieldcalib    Calibrated (LPJmL yield potentials smoothed and harmonized
-#'                      to baseline and calibrated with global FAO calibration factor
-#'                      for proxycrops where LPJmL crops mapped multiple times to MAgPIE crops) or
-#'                      FAO (LPJmL yields calibrated with current FAO yield)
+#' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
@@ -44,11 +42,11 @@ calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
 
   if (!fullpotential) {
 
-    yieldGain_reduced   <- 0.75 * yieldGain
-    getCells(yieldGain) <- paste0("A_", getCells(yieldGain))
-    getCells(yieldGain_reduced) <- paste0("B_", getCells(yieldGain_reduced))
+    yieldGainReduced           <- 0.75 * yieldGain
+    getCells(yieldGain)        <- paste0("A_", getCells(yieldGain))
+    getCells(yieldGainReduced) <- paste0("B_", getCells(yieldGainReduced))
 
-    yieldGain <- mbind(yieldGain, yieldGain_reduced)
+    yieldGain <- mbind(yieldGain, yieldGainReduced)
 
   }
 
