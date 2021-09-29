@@ -139,7 +139,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
 
   ## Reference data: without water constraint
   # current cropland
-  inputdata <- calcOutput("YieldgainArea", GT_range = y_axis_range, lpjml = lpjml,
+  inputdata <- calcOutput("YieldgainArea", rangeGT = y_axis_range, lpjml = lpjml,
                           selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
                           yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "currCropland:2010",
                           cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
@@ -161,7 +161,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
   df             <- merge(df, tmp)
 
   # potential cropland
-  inputdata  <- calcOutput("YieldgainArea", GT_range = y_axis_range, lpjml = lpjml,
+  inputdata  <- calcOutput("YieldgainArea", rangeGT = y_axis_range, lpjml = lpjml,
                               selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod,
                               yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = "potIrrig_HalfEarth:2010",
                               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)

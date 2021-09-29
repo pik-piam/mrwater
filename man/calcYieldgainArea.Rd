@@ -5,7 +5,7 @@
 \title{calcYieldgainArea}
 \usage{
 calcYieldgainArea(
-  GT_range,
+  rangeGT,
   lpjml,
   selectyears,
   climatetype,
@@ -18,7 +18,7 @@ calcYieldgainArea(
 )
 }
 \arguments{
-\item{GT_range}{Range of gainthreshold for calculation of potentially
+\item{rangeGT}{Range of gainthreshold for calculation of potentially
 irrigated areas}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
@@ -54,7 +54,7 @@ reports potentially irrigated area depending on gainthreshold
 }
 \examples{
 \dontrun{
-calcYieldgainArea(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
+calcYieldgainArea(rangeGT = seq(0, 10000, by = 100), scenario = "ssp2")
 }
 
 }

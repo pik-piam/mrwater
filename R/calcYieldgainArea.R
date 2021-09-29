@@ -2,7 +2,7 @@
 #' @description reports potentially irrigated area depending on gainthreshold
 #'              and land constraint only
 #'
-#' @param rangeGT      Range of gainthreshold for calculation of potentially
+#' @param rangeGT       Range of gainthreshold for calculation of potentially
 #'                      irrigated areas
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years for which irrigatable area is calculated

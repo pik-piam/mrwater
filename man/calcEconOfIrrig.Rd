@@ -44,7 +44,11 @@ available water volume "wat_ag_ww" "wat_ag_wc"}
 
 \item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
-\item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
+\item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
+combined with scalar value defining the strictness of accessibility restriction:
+discharge that is exceeded x percent of the time on average throughout a year
+(Qx, e.g. Q75: 0.25, Q50: 0.5)
+or base value for exponential curve separated by : (CV:2)}
 
 \item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
