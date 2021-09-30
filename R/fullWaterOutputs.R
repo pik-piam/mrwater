@@ -58,8 +58,8 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   plotyear         <- 2010
   ssp              <- "ssp2"
 
-  lpjml            <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de+oldGSWP3",
-                        crop = "ggcmi_phase3_nchecks_9ca735cb+oldGSWP3")
+  lpjml            <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
+                        crop = "ggcmi_phase3_nchecks_9ca735cb")
   climatetype      <- "GFDL-ESM4:ssp126"
 
   irrigationsystem <- "initialization"
@@ -198,5 +198,44 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              multicropping = multicropping, aggregate = FALSE,
              file = "LUHfulfilled_comag.mz")
 
+  # Validation
+
+  for (EFRmethod in c("VMF:fair", "Smakhtin:fair", "Smakhtin:good")) {
+    for (accessibilityrule in c("CV:2", "Q:95", "Q:90", "Q:75")) {
+
+      calcOutput("IrrigatableArea", selectyears = plotyear,
+                 climatetype = climatetype, lpjml = lpjml,
+                 gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
+                 allocationrule = allocationrule,  thresholdtype = thresholdtype,
+                 irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010",
+                 cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
+                 accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+                 multicropping = multicropping, aggregate = FALSE,
+                 file = paste0(EFRmethod, accessibilityrule, "irrigArea_currCropland_comag.mz"))
+
+      # Potentially irrigated area
+      calcOutput("IrrigatableArea", selectyears = plotyear,
+                 climatetype = climatetype, lpjml = lpjml,
+                 gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
+                 allocationrule = allocationrule,  thresholdtype = thresholdtype,
+                 irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010",
+                 cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
+                 accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+                 multicropping = multicropping, aggregate = FALSE,
+                 file = paste0(EFRmethod, accessibilityrule, "irrigArea_potCropland_comag.mz"))
+
+      # LUH fulfilled
+      calcOutput("IrrigatableArea", selectyears = plotyear,
+                 climatetype = climatetype, lpjml = lpjml,
+                 gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
+                 allocationrule = allocationrule,  thresholdtype = thresholdtype,
+                 irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010",
+                 cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE,
+                 accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+                 multicropping = multicropping, aggregate = FALSE,
+                 file = paste0(EFRmethod, accessibilityrule, "LUHfulfilled_comag.mz"))
+
+    }
+  }
 
 }
