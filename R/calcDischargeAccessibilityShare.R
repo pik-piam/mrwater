@@ -12,7 +12,8 @@
 #' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
 #'                          combined with scalar value defining the strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year
-#'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
+#'                          is inaccessible (e.g. Q:1 all discharge accessible,
+#'                          Q:0.75 0.75-quantile is accessible everything that is more variable inaccessible)
 #'                          or base value for exponential curve, separated by : (CV:2)
 #'
 #' @importFrom magclass collapseNames getYears setYears as.magpie mbind
@@ -36,12 +37,12 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
   method <- as.list(strsplit(accessibilityrule, split = ":"))[[1]][1]
 
   # Monthly Discharge from LPJmL (raw: including variation)
-  monthly_discharge_lpjml <- calcOutput("LPJmL_new", subtype = "mdischarge",
+  monthlyDischargeLPJmL <- calcOutput("LPJmL_new", subtype = "mdischarge",
                                         version = lpjml["natveg"], climatetype = climatetype,
                                         stage = "raw", aggregate = FALSE)
 
   # Extract years
-  years         <- getYears(monthly_discharge_lpjml, as.integer = TRUE)
+  years         <- getYears(monthlyDischargeLPJmL, as.integer = TRUE)
   if (class(selectyears) != "numeric") {
     selectyears <- as.numeric(gsub("y", "", selectyears))
   }
@@ -51,40 +52,40 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
 
     # Long-term reference time frame for discharge variability calculation
     if ((y - 30) > years[1]) {
-      longterm_period <- seq(y - 30, y, by = 1)
+      longtermPeriod <- seq(y - 30, y, by = 1)
     } else {
-      longterm_period <- seq(1980, 2010, by = 1)
+      longtermPeriod <- seq(1980, 2010, by = 1)
     }
-    monthly_discharge <- monthly_discharge_lpjml[, longterm_period, ]
+    monthlyDischarge <- monthlyDischargeLPJmL[, longtermPeriod, ]
 
     # Transform to array (faster calculation)
-    monthly_discharge <- as.array(collapseNames(monthly_discharge))
+    monthlyDischarge <- as.array(collapseNames(monthlyDischarge))
 
     # Variability Accessibility Method:
     if (method == "Q") {
 
       ### Quantile Variability Threshold ###
       # Get the variability discharge quantile (across selected long-term reference time period) with selected threshold
-      Discharge_quant   <- apply(monthly_discharge, MARGIN = c(1), quantile, probs = coeff)
+      Discharge_quant   <- apply(monthlyDischarge, MARGIN = c(1), quantile, probs = coeff)
 
       # Share of monthly discharge that is accessible for human use
-      x <- apply(pmin(monthly_discharge, Discharge_quant), MARGIN = 1, sum) /
-           apply(monthly_discharge, MARGIN = 1, sum)
-      x[apply(monthly_discharge, MARGIN = 1, sum) == 0] <- 0
+      x <- apply(pmin(monthlyDischarge, Discharge_quant), MARGIN = 1, sum) /
+           apply(monthlyDischarge, MARGIN = 1, sum)
+      x[apply(monthlyDischarge, MARGIN = 1, sum) == 0] <- 0
 
     } else if (method == "CV") {
 
       ### Variation Coefficient Method ###
       # Mean and standard deviation of discharge
-      mean_discharge <- apply(monthly_discharge, MARGIN = 1, mean)
-      std_discharge  <- apply(monthly_discharge, MARGIN = 1, sd)
+      meanDischarge <- apply(monthlyDischarge, MARGIN = 1, mean)
+      stdDischarge  <- apply(monthlyDischarge, MARGIN = 1, sd)
 
       # Coefficient of Variation
-      CV <- ifelse(mean_discharge > 0, std_discharge / mean_discharge, 0)
+      cv <- ifelse(meanDischarge > 0, stdDischarge / meanDischarge, 0)
 
       # Functional form: The higher the variability, the harder it is to access the water
       # Accessibility coefficient (share of discharge that is accessible) decreases with variability
-      x  <- coeff^(-CV)
+      x  <- coeff^(-cv)
 
     } else {
       stop("Please select an accessibility rule defining the method of variability

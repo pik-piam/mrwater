@@ -201,7 +201,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   # Validation
 
   for (EFRmethod in c("VMF:fair", "Smakhtin:fair", "Smakhtin:good")) {
-    for (accessibilityrule in c("CV:2", "Q:0.05", "Q:0.1", "Q:0.25")) {
+    for (accessibilityrule in c("CV:2", "Q:1", "Q:0.9", "Q:0.75", "Q:0.5")) {
 
       calcOutput("IrrigatableArea", selectyears = plotyear,
                  climatetype = climatetype, lpjml = lpjml,
