@@ -22,8 +22,9 @@ or historical baseline "GSWP3-W5E5:historical"}
 
 \item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
 combined with scalar value defining the strictness of accessibility restriction:
-discharge that is exceeded x percent of the time on average throughout a year is inaccessible
-(Qx, e.g. Q:1 all discharge accessible, Q:0.75 0.75-quantile is accessible everything that is more variable inaccessible)
+discharge that is exceeded x percent of the time on average throughout a year
+is inaccessible (e.g. Q:1 all discharge accessible,
+Q:0.75 0.75-quantile is accessible everything that is more variable inaccessible)
 or base value for exponential curve, separated by : (CV:2)}
 }
 \value{

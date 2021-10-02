@@ -203,39 +203,24 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   for (EFRmethod in c("VMF:fair", "Smakhtin:fair", "Smakhtin:good")) {
     for (accessibilityrule in c("CV:2", "Q:1", "Q:0.9", "Q:0.75", "Q:0.5")) {
 
-      calcOutput("IrrigatableArea", selectyears = plotyear,
-                 climatetype = climatetype, lpjml = lpjml,
-                 gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule,  thresholdtype = thresholdtype,
-                 irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010",
-                 cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
-                 accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
-                 multicropping = multicropping, aggregate = FALSE,
-                 file = paste0("irrigArea_currCropland_comag", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
+      calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
+                 GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+                 lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                 rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+                 thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                 avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE,
+                 com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
+                 file = paste0("ValidCurrcropland", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
 
       # Potentially irrigated area
-      calcOutput("IrrigatableArea", selectyears = plotyear,
-                 climatetype = climatetype, lpjml = lpjml,
-                 gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule,  thresholdtype = thresholdtype,
-                 irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010",
-                 cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
-                 accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
-                 multicropping = multicropping, aggregate = FALSE,
-                 file = paste0("irrigArea_potCropland_comag", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
-
-      # LUH fulfilled
-      calcOutput("IrrigatableArea", selectyears = plotyear,
-                 climatetype = climatetype, lpjml = lpjml,
-                 gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule,  thresholdtype = thresholdtype,
-                 irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010",
-                 cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE,
-                 accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
-                 multicropping = multicropping, aggregate = FALSE,
-                 file = paste0("LUHfulfilled_comag", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
-
+      calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
+                 GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+                 lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                 rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+                 thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                 avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE,
+                 com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
+                 file = paste0("ValidPotcropland", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
     }
   }
-
 }
