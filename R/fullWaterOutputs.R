@@ -211,7 +211,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
                  cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
                  accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
                  multicropping = multicropping, aggregate = FALSE,
-                 file = paste0(EFRmethod, accessibilityrule, "irrigArea_currCropland_comag.mz"))
+                 file = paste0("irrigArea_currCropland_comag", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
 
       # Potentially irrigated area
       calcOutput("IrrigatableArea", selectyears = plotyear,
@@ -222,7 +222,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
                  cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
                  accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
                  multicropping = multicropping, aggregate = FALSE,
-                 file = paste0(EFRmethod, accessibilityrule, "irrigArea_potCropland_comag.mz"))
+                 file = paste0("irrigArea_potCropland_comag", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
 
       # LUH fulfilled
       calcOutput("IrrigatableArea", selectyears = plotyear,
@@ -233,7 +233,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
                  cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE,
                  accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
                  multicropping = multicropping, aggregate = FALSE,
-                 file = paste0(EFRmethod, accessibilityrule, "LUHfulfilled_comag.mz"))
+                 file = paste0("LUHfulfilled_comag", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
 
     }
   }

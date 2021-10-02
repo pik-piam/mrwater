@@ -1,8 +1,8 @@
 Package: mrwater
 Type: Package
 Title: madrat based MAgPIE Input Data Library
-Version: 0.5.228
-Date: 2021-10-01
+Version: 0.5.229
+Date: 2021-10-02
 Authors@R: c(person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = c("aut","cre")),
              person("Jens", "Heinke", email = "heinke@pik-potsdam.de", role = "aut"),
              person("Kristine", "Karstens", email = "karstens@pik-potsdam.de", role = "aut"),
@@ -27,7 +27,7 @@ Imports:
 License: LGPL-3 | file LICENSE
 LazyData: no
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: 
     knitr,
     rmarkdown,
