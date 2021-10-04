@@ -83,6 +83,15 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              EFRmethod = EFRmethod, aggregate = FALSE,
              file = "shrCurrIrrigFulfilled.mz")
 
+  calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
+             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+             selectyears = selectyears, iniyear = iniyear, aggregate = FALSE,
+             file = "fulfilledComAg.mz")
+
+  calcOutput("WaterUseCommittedAg", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear, aggregate = FALSE,
+             file = "ComAg.mz")
+
   # Yield gain through irrigation in USD per hectare
   calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
              unit = "USD_ha", iniyear = iniyear, selectyears = plotyear,
@@ -163,6 +172,9 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
              avlland_scen = "potIrrig_HalfEarth:2010", aggregate = FALSE,
              file = "avlIrrigarea_pot.mz")
+  calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
+             avlland_scen = "currCropland:2010", aggregate = FALSE,
+             file = "avlIrrigarea_curr.mz")
 
   # Physical Potential considering committed uses
   # Potentially irrigated area
