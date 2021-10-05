@@ -19,7 +19,8 @@ calcWaterUseCommittedAg(lpjml, climatetype, selectyears, iniyear)
 magpie object in cellular resolution
 }
 \description{
-This function calculates committed agricultural water uses that are used in the river routing algorithm for distributing available water across the basin
+This function calculates committed agricultural water uses that
+             are used in the river routing algorithm for distributing available water across the basin
 }
 \examples{
 \dontrun{ calcOutput("WaterUseCommittedAg", aggregate = FALSE) }

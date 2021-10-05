@@ -92,6 +92,16 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              selectyears = selectyears, iniyear = iniyear, aggregate = FALSE,
              file = "ComAg.mz")
 
+  calcOutput("WaterPotUse", selectyears = selectyears,
+             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+             accessibilityrule = accessibilityrule, rankmethod = rankmethod,
+             yieldcalib = yieldcalib, allocationrule = allocationrule,
+             thresholdtype = thresholdtype, gainthreshold = gainthreshold,
+             irrigationsystem = irrigationsystem, iniyear = iniyear,
+             avlland_scen = avlland_scen, cropmix = cropmix,
+             com_ag = TRUE, multicropping = multicropping, aggregate = FALSE,
+             file = "WatPotUse.mz")
+
   # Yield gain through irrigation in USD per hectare
   calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
              unit = "USD_ha", iniyear = iniyear, selectyears = plotyear,
