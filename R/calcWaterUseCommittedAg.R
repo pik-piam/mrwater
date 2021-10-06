@@ -33,13 +33,13 @@ calcWaterUseCommittedAg <- function(lpjml, climatetype, selectyears, iniyear) {
   irrigWater <- irrigWater[, , "pasture", invert = T]
 
   # Withdrawal requirements per crop
-  irrigReqW   <- collapseNames(irrigWater[, , "withdrawal"])
+  irrigReqW  <- collapseNames(irrigWater[, , "withdrawal"])
   # Consumption requirements per crop
   irrigReqC  <- collapseNames(irrigWater[, , "consumption"])
 
   ## Read in cropland area (by crop) from crop area initialization (in mio. ha)
-  grownCrops        <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
-                                  iniyear = iniyear, aggregate = FALSE)
+  grownCrops <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
+                            iniyear = iniyear, aggregate = FALSE)
 
   ##############################
   ######## Calculations ########
