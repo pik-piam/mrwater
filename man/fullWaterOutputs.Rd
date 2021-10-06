@@ -11,8 +11,7 @@ fullWaterOutputs(
   rankmethod = "USD_ha:TRUE",
   thresholdtype = "USD_ha",
   gainthreshold = 500,
-  avlland_scen = "currCropland:2010",
-  multicropping = FALSE
+  avlland_scen = "currCropland:2010"
 )
 }
 \arguments{
@@ -60,8 +59,6 @@ potIrrig (suitable land is available for irrigated agriculture,
 potentially land restrictions activated through protect_scen argument)
 protection scenario separated by "_" (only relevant when potIrrig selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
-
-\item{multicropping}{Boolean of multiple cropping per year (TRUE, FALSE)}
 }
 \description{
 Function that produces the objects for water outputs that can
