@@ -98,7 +98,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              yieldcalib = yieldcalib, allocationrule = allocationrule,
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
-             avlland_scen = avlland_scen, cropmix = cropmix,
+             avlland_scen = "currCropland:2010", cropmix = cropmix,
              com_ag = TRUE, multicropping = multicropping, aggregate = FALSE,
              file = "WatPotUse_curr.mz")
 
@@ -108,7 +108,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              yieldcalib = yieldcalib, allocationrule = allocationrule,
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
-             avlland_scen = avlland_scen, cropmix = cropmix,
+             avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix,
              com_ag = TRUE, multicropping = multicropping, aggregate = FALSE,
              file = "WatPotUse_pot.mz")
 
