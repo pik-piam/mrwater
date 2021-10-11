@@ -29,23 +29,35 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
   # retrieve function arguments
   iniyear      <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
   avlland_scen <- as.list(strsplit(avlland_scen, split = ":"))[[1]][1]
-  protect_scen <- as.list(strsplit(avlland_scen, split = "_"))[[1]][2]
+  protectSCEN <- as.list(strsplit(avlland_scen, split = "_"))[[1]][2]
 
   if (grepl("potIrrig", avlland_scen)) {
-    # read in suitable land [in mio. ha]
-    land <- collapseNames(calcOutput("AvlLandSi", aggregate = FALSE, cells = "lpjcell")[, , "si0"])
+
+    if (grepl("Ramankutty", avlland_scen)) {
+
+      # read in suitable land [in mio. ha]
+      land <- collapseNames(calcOutput("AvlLandSi", aggregate = FALSE, cells = "lpjcell")[, , "si0"])
+
+    } else if (grepl("Zabel", avlland_scen)) {
+
+      # read in suitable land based on Zabel [in mio. ha]
+      land <- calcOutput("AvlCropland", aggregate = FALSE, cells = "lpjcell")[, , "q33_marginal"]
+
+    } else {
+      stop("Please specify Cropland Availability data set used to determine potential cropland: Ramankutty or Zabel")
+    }
 
     # No irrigation in protected areas (if protection scenario is activated) [in mio. ha]
-    if (!is.na(protect_scen)) {
+    if (!is.na(protectSCEN)) {
       # read in protected area of selected scenario
-      tmp <- collapseNames(calcOutput("ProtectArea", aggregate = FALSE)[, , protect_scen])
+      tmp <- collapseNames(calcOutput("ProtectArea", aggregate = FALSE)[, , protectSCEN])
       #### expand to 67k cells (temporarily until read/calcProtectArea is adjusted) ####
       tmp <- collapseDim(addLocation(tmp), dim = c("region", "cell"))
-      protect_area                    <- new.magpie(cells_and_regions = getCells(collapseDim(land, dim = "iso")),
+      protectArea                    <- new.magpie(cells_and_regions = getCells(collapseDim(land, dim = "iso")),
                                                     years = getYears(tmp),
                                                     names = getNames(tmp), fill = 0,
                                                     sets = c("x.y.iso", "t", "data"))
-      protect_area[getCells(tmp), , ] <- tmp
+      protectArea[getCells(tmp), , ] <- tmp
       #### expand to 67k cells (temporarily until read/calcProtectArea is adjusted) ####
 
       # total land area (Note: constant over the years.)
@@ -56,7 +68,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
       landarea <- dimSums(landarea, dim = 3)
 
       # area available for cropland
-      avl_cropland <- landarea - protect_area
+      avl_cropland <- landarea - protectArea
       # land suitable for (sustainable) (irrigated) agriculture
       land         <- pmin(avl_cropland, land)
     }
@@ -102,10 +114,10 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
   if (!is.null(comagyear)) {
     # subtract area already reserved for irrigation by committed agricultural uses
     # (to avoid double accounting)
-    irrig_area_com  <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
+    comIrrigArea  <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
                                   iniyear = comagyear, aggregate = FALSE)
-    irrig_area_com  <- collapseNames(dimSums(irrig_area_com, dim = 3))
-    land            <- land - irrig_area_com
+    comIrrigArea  <- collapseNames(dimSums(comIrrigArea, dim = 3))
+    land            <- land - comIrrigArea
   }
 
   # correct negative land availability due to mismatch of available land and protected land or rounding imprecision
