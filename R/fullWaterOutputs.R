@@ -150,7 +150,7 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix,
+             irrigationsystem = irrigationsystem, avlland_scen = potland, cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
              file = "DemandCurve_pot_single.mz")
 
@@ -168,7 +168,8 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "yieldgainarea_pot.mz")
   calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
              selectyears = plotyear, climatetype = climatetype, EFRmethod = EFRmethod,
-             yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear),
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear),
              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
              file = "yieldgainarea_pot_Unprotect.mz")
 
