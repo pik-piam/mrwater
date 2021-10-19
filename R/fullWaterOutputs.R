@@ -57,7 +57,6 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   yieldcalib       <- TRUE
   cropmix          <- "hist_total"
   #* #*#*# @KRISTINE/JENS/BENNI: Does is make sense to use "hist_total" everywhere or should I use "hist_irrig" sometimes (e.g. for committed uses) or would that create mismatch?
-  #* #*#*# @JENS/BENNI: We'll only use the proxycrops version for MAgPIE runs, not for the stand-alone-paper, right?
 
   # Multiple Cropping Zones
   calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE,
@@ -218,8 +217,12 @@ fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              multicropping = multicropping, aggregate = FALSE,
              file = "LUHfulfilled_comag.mz")
 
+  # Accessibility graph
+  calcOutput("LPJmL_new", subtype = "mdischarge",
+                                        version = lpjml["natveg"], climatetype = climatetype,
+                                        stage = "raw", aggregate = FALSE,
+                                        file = "LPJmL_monthlyDischarge")
   # Validation
-
   for (EFRmethod in c("VMF:fair", "Smakhtin:fair", "Smakhtin:good")) {
     for (accessibilityrule in c("CV:2", "Q:1", "Q:0.9", "Q:0.75", "Q:0.5")) {
 
