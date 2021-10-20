@@ -1,4 +1,4 @@
-#' @title fullWaterOutputs
+#' @title fullWATER
 #' @description Function that produces the objects for water outputs that can
 #'              be plotted with the mrwaterPlots functions.
 #'
@@ -37,7 +37,7 @@
 #'
 #' @export
 
-fullWaterOutputs <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
+fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
                              allocationrule = "optimization", rankmethod = "USD_ha:TRUE",
                              thresholdtype = "USD_ha", gainthreshold = 500,
                              currland = "currCropland:2010", potland = "potIrrigRamankutty_HalfEarth:2010") {
