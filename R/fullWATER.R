@@ -217,11 +217,16 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              multicropping = multicropping, aggregate = FALSE,
              file = "LUHfulfilled_comag.mz")
 
+  # Environmental flow requirements
+  calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
+             climatetype = climatetype, EFRmethod = EFRmethod, aggregate = FALSE,
+             file = "EFR.mz")
+
   # Accessibility graph
   calcOutput("LPJmL_new", subtype = "mdischarge",
                                         version = lpjml["natveg"], climatetype = climatetype,
                                         stage = "raw", aggregate = FALSE,
-                                        file = "LPJmL_monthlyDischarge")
+                                        file = "LPJmL_monthlyDischarge.mz")
   # Validation
   for (EFRmethod in c("VMF:fair", "Smakhtin:fair", "Smakhtin:good")) {
     for (accessibilityrule in c("CV:2", "Q:1", "Q:0.9", "Q:0.75", "Q:0.5")) {
