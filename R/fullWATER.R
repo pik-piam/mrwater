@@ -38,9 +38,9 @@
 #' @export
 
 fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
-                             allocationrule = "optimization", rankmethod = "USD_ha:TRUE",
-                             thresholdtype = "USD_ha", gainthreshold = 500,
-                             currland = "currCropland:2010", potland = "potIrrigRamankutty_HalfEarth:2010") {
+                      allocationrule = "optimization", rankmethod = "USD_ha:TRUE",
+                      thresholdtype = "USD_ha", gainthreshold = 500,
+                      currland = "currCropland:2010", potland = "potIrrigRamankutty_HalfEarth:2010") {
 
   # Standard settings
   iniyear          <- 2010
