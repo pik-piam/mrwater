@@ -1,6 +1,6 @@
-#' @title       calcBasinViolations
-#' @description This function calculates basins that violate environmental flow
-#'              requirements
+#' @title       calcEFRviolations
+#' @description This function calculates grid cell specific violation of
+#'              environmental flow requirements
 #'
 #' @param lpjml             LPJmL version used
 #' @param selectyears       Years for which irrigatable area is calculated
@@ -52,10 +52,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("BasinViolations", aggregate = FALSE)
+#' calcOutput("EFRviolations", aggregate = FALSE)
 #' }
 #'
-calcBasinViolations <- function(lpjml, selectyears, climatetype, EFRmethod,
+calcEFRviolations <- function(lpjml, selectyears, climatetype, EFRmethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             thresholdtype, gainthreshold, irrigationsystem, iniyear,
                             avlland_scen, cropmix, com_ag, multicropping,
@@ -97,11 +97,9 @@ calcBasinViolations <- function(lpjml, selectyears, climatetype, EFRmethod,
   getItems(violation, dim = "basin", maindim = 1) <- as.character(rs$endcell)
   violation <- dimSums(violation, dim = c(1.1, 1.2, 1.3))
 
-  out <- length(violation[violation != 0]) / length(violation) * 100
-
-  return(list(x            = out,
+  return(list(x            = violation,
               weight       = NULL,
-              unit         = "percent",
-              description  = "percent of basins that have EFR violations",
+              unit         = "km^3 per year",
+              description  = "violation of environmental flow requirements per grid cell",
               isocountries = FALSE))
 }
