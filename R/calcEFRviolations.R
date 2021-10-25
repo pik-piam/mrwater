@@ -44,8 +44,7 @@
 #'                          separated by "."
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears add_dimension new.magpie
-#' @importFrom stringr str_split
+#' @importFrom magclass collapseNames getCells getItems
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Benjamin Leon Bodirsky

@@ -223,7 +223,7 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   #            file = "EFR.mz")
 
   # Basin violations
-  calcOutput("BasinViolations", lpjml = lpjml, selectyears = plotyear,
+  calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
              climatetype = climatetype, EFRmethod = EFRmethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
@@ -232,7 +232,7 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              avlland_scen = potland, cropmix = cropmix, com_ag = TRUE, multicropping = FALSE,
              scenario = "off.ssp2", file = "basinViolation_LANDPROTECT_comag.mz")
 
-  calcOutput("BasinViolations", lpjml = lpjml, selectyears = plotyear,
+  calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
              climatetype = climatetype, EFRmethod = EFRmethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
@@ -241,7 +241,7 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              avlland_scen = potland, cropmix = cropmix, com_ag = FALSE, multicropping = FALSE,
              scenario = "off.ssp2", file = "basinViolation_LANDPROTECT.mz")
 
-  calcOutput("BasinViolations", lpjml = lpjml, selectyears = plotyear,
+  calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
              climatetype = climatetype, EFRmethod = EFRmethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
@@ -251,7 +251,7 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              cropmix = cropmix, com_ag = TRUE, multicropping = FALSE,
              scenario = "off.ssp2", file = "basinViolation_comag.mz")
 
-  calcOutput("BasinViolations", lpjml = lpjml, selectyears = plotyear,
+  calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
              climatetype = climatetype, EFRmethod = EFRmethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
