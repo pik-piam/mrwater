@@ -230,7 +230,8 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
              avlland_scen = potland, cropmix = cropmix, com_ag = TRUE, multicropping = FALSE,
-             scenario = "off.ssp2", file = "basinViolation_LANDPROTECT_comag.mz")
+             scenario = "off.ssp2", aggregate = FALSE,
+             file = "basinViolation_LANDPROTECT_comag.mz")
 
   calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
              climatetype = climatetype, EFRmethod = EFRmethod,
@@ -239,7 +240,8 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
              avlland_scen = potland, cropmix = cropmix, com_ag = FALSE, multicropping = FALSE,
-             scenario = "off.ssp2", file = "basinViolation_LANDPROTECT.mz")
+             scenario = "off.ssp2", aggregate = FALSE,
+             file = "basinViolation_LANDPROTECT.mz")
 
   calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
              climatetype = climatetype, EFRmethod = EFRmethod,
@@ -249,7 +251,8 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              irrigationsystem = irrigationsystem, iniyear = iniyear,
              avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear),
              cropmix = cropmix, com_ag = TRUE, multicropping = FALSE,
-             scenario = "off.ssp2", file = "basinViolation_comag.mz")
+             scenario = "off.ssp2", aggregate = FALSE,
+             file = "basinViolation_comag.mz")
 
   calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
              climatetype = climatetype, EFRmethod = EFRmethod,
@@ -259,7 +262,8 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              irrigationsystem = irrigationsystem, iniyear = iniyear,
              avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear),
              cropmix = cropmix, com_ag = FALSE, multicropping = FALSE,
-             scenario = "off.ssp2", file = "basinViolation.mz")
+             scenario = "off.ssp2", aggregate = FALSE,
+             file = "basinViolation.mz")
 
   # Accessibility graph
   calcOutput("LPJmL_new", subtype = "mdischarge",
