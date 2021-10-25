@@ -218,9 +218,48 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "LUHfulfilled_comag.mz")
 
   # Environmental flow requirements
-  calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
-             climatetype = climatetype, EFRmethod = EFRmethod, aggregate = FALSE,
-             file = "EFR.mz")
+  # calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
+  #            climatetype = climatetype, EFRmethod = EFRmethod, aggregate = FALSE,
+  #            file = "EFR.mz")
+
+  # Basin violations
+  calcOutput("BasinViolations", lpjml = lpjml, selectyears = plotyear,
+             climatetype = climatetype, EFRmethod = EFRmethod,
+             accessibilityrule = accessibilityrule, rankmethod = rankmethod,
+             yieldcalib = yieldcalib, allocationrule = allocationrule,
+             thresholdtype = thresholdtype, gainthreshold = gainthreshold,
+             irrigationsystem = irrigationsystem, iniyear = iniyear,
+             avlland_scen = potland, cropmix = cropmix, com_ag = TRUE, multicropping = FALSE,
+             scenario = "off.ssp2", file = "basinViolation_LANDPROTECT_comag.mz")
+
+  calcOutput("BasinViolations", lpjml = lpjml, selectyears = plotyear,
+             climatetype = climatetype, EFRmethod = EFRmethod,
+             accessibilityrule = accessibilityrule, rankmethod = rankmethod,
+             yieldcalib = yieldcalib, allocationrule = allocationrule,
+             thresholdtype = thresholdtype, gainthreshold = gainthreshold,
+             irrigationsystem = irrigationsystem, iniyear = iniyear,
+             avlland_scen = potland, cropmix = cropmix, com_ag = FALSE, multicropping = FALSE,
+             scenario = "off.ssp2", file = "basinViolation_LANDPROTECT.mz")
+
+  calcOutput("BasinViolations", lpjml = lpjml, selectyears = plotyear,
+             climatetype = climatetype, EFRmethod = EFRmethod,
+             accessibilityrule = accessibilityrule, rankmethod = rankmethod,
+             yieldcalib = yieldcalib, allocationrule = allocationrule,
+             thresholdtype = thresholdtype, gainthreshold = gainthreshold,
+             irrigationsystem = irrigationsystem, iniyear = iniyear,
+             avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear),
+             cropmix = cropmix, com_ag = TRUE, multicropping = FALSE,
+             scenario = "off.ssp2", file = "basinViolation_comag.mz")
+
+  calcOutput("BasinViolations", lpjml = lpjml, selectyears = plotyear,
+             climatetype = climatetype, EFRmethod = EFRmethod,
+             accessibilityrule = accessibilityrule, rankmethod = rankmethod,
+             yieldcalib = yieldcalib, allocationrule = allocationrule,
+             thresholdtype = thresholdtype, gainthreshold = gainthreshold,
+             irrigationsystem = irrigationsystem, iniyear = iniyear,
+             avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear),
+             cropmix = cropmix, com_ag = FALSE, multicropping = FALSE,
+             scenario = "off.ssp2", file = "basinViolation.mz")
 
   # Accessibility graph
   calcOutput("LPJmL_new", subtype = "mdischarge",

@@ -39,6 +39,9 @@
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
+#' @param scenario          Combination of EFP ("on", "off") and
+#'                          non-ag. water use scenario ("ssp2", "ISIMIP", ...)
+#'                          separated by "."
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears add_dimension new.magpie
@@ -55,7 +58,8 @@
 calcBasinViolations <- function(lpjml, selectyears, climatetype, EFRmethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             thresholdtype, gainthreshold, irrigationsystem, iniyear,
-                            avlland_scen, cropmix, com_ag, multicropping) {
+                            avlland_scen, cropmix, com_ag, multicropping,
+                            scenario) {
 
   # Check
   if (!is.na(as.list(strsplit(avlland_scen, split = ":"))[[1]][2]) &&
@@ -64,96 +68,40 @@ calcBasinViolations <- function(lpjml, selectyears, climatetype, EFRmethod,
          iniyear and avlland_scen should have same initialization year")
   }
 
+  # River structure attributes
+  rs     <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
+  rs$iso <- readRDS(system.file("extdata/mapCoords2Country.rds", package = "mrcommons"))$iso
+
 
   discharge <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
-                                          output = "discharge", selectyears = selectyears,
-                                          lpjml = lpjml, climatetype = climatetype,
-                                          EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
-                                          rankmethod = rankmethod, yieldcalib = yieldcalib,
-                                          allocationrule = allocationrule, thresholdtype = thresholdtype,
-                                          gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
-                                          iniyear = iniyear, avlland_scen = avlland_scen,
-                                          cropmix = cropmix, com_ag = com_ag,
-                                          multicropping = multicropping, aggregate = FALSE))
+                                        output = "discharge", selectyears = selectyears,
+                                        lpjml = lpjml, climatetype = climatetype,
+                                        EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                                        rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                        allocationrule = allocationrule, thresholdtype = thresholdtype,
+                                        gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+                                        iniyear = iniyear, avlland_scen = avlland_scen,
+                                        cropmix = cropmix, com_ag = com_ag,
+                                        multicropping = multicropping, aggregate = FALSE)[, , scenario])
 
-  envFlow   <- calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
-                          climatetype = climatetype, EFRmethod = EFRmethod, aggregate = FALSE)
-
-
+  envFlow   <- collapseNames(calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
+                             climatetype = climatetype, EFRmethod = EFRmethod, aggregate = FALSE)[, , "EFR"])
 
   violation <- discharge - envFlow
   violation[violation > 0] <- 0
+
+  # Check correct cell order:
+  if (any(getCells(violation) != paste(rs$coordinates, rs$iso, sep = "."))) {
+    stop("Wrong cell order!")
+  }
+  getItems(violation, dim = "basin", maindim = 1) <- as.character(rs$endcell)
   violation <- dimSums(violation, dim = c(1.1, 1.2, 1.3))
 
-  length(violation[violation != 0])
-
-  out <- violation
-
-#
-#   # Water potentially available for irrigation (accounting for previously committed agricultural uses)
-#   watAvlAg    <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
-#                                         output = "potIrrigWat", selectyears = selectyears,
-#                                         lpjml = lpjml, climatetype = climatetype,
-#                                         EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
-#                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
-#                                         allocationrule = allocationrule, thresholdtype = thresholdtype,
-#                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
-#                                         iniyear = iniyear, avlland_scen = avlland_scen,
-#                                         cropmix = cropmix, com_ag = com_ag,
-#                                         multicropping = multicropping, aggregate = FALSE))
-#   watAvlAgWW <- collapseNames(watAvlAg[, , "withdrawal"])
-#   watAvlAgWC <- collapseNames(watAvlAg[, , "consumption"])
-#
-#
-#   watNonAgWW <- watNonAgWC <- currHumanWW <- currHumanWC <- new.magpie(cells_and_regions = getCells(watAvlAgWW),
-#                          years = getYears(watAvlAgWW),
-#                          names = getNames(watAvlAgWW),
-#                          fill = 0)
-#
-#   # Water use for non-agricultural purposes
-#   watNonAg <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
-#                                       lpjml = lpjml, climatetype = climatetype,
-#                                       EFRmethod = EFRmethod, selectyears = selectyears,
-#                                       iniyear = iniyear, aggregate = FALSE)
-#   watNonAgWW[, , "single"] <- collapseNames(watNonAg[, , "currHuman_ww"])
-#   watNonAgWC[, , "single"] <- collapseNames(watNonAg[, , "currHuman_wc"])
-#
-#   if (com_ag == TRUE) {
-#
-#     # Water already committed to irrigation
-#     currHuman <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
-#                              lpjml = lpjml, climatetype = climatetype,
-#                              EFRmethod = EFRmethod, selectyears = selectyears,
-#                              iniyear = iniyear, aggregate = FALSE)
-#
-#   } else {
-#
-#     # No water is previously committed
-#     currHuman       <- watNonAg
-#     currHuman[, , ] <- 0
-#
-#   }
-#
-#   currHumanWW[, , "single"] <- collapseNames(currHuman[, , "currHuman_ww"])
-#   currHumanWC[, , "single"] <- collapseNames(currHuman[, , "currHuman_wc"])
-#
-#   # Function outputs
-#   watAgWW  <- watAvlAgWW + currHumanWW
-#   watAgWC  <- watAvlAgWC + currHumanWC
-#   watTotWW <- watNonAgWW + watAgWW
-#   watTotWC <- watNonAgWC + watAgWC
-#
-#   watAgWW  <- add_dimension(watAgWW, dim = 3.4, add = "type", nm = "wat_ag_ww")
-#   watAgWC  <- add_dimension(watAgWC, dim = 3.4, add = "type", nm = "wat_ag_wc")
-#   watTotWW <- add_dimension(watTotWW, dim = 3.4, add = "type", nm = "wat_tot_ww")
-#   watTotWC <- add_dimension(watTotWC, dim = 3.4, add = "type", nm = "wat_tot_wc")
-
-  # out <- mbind(watAgWW, watAgWC, watTotWW, watTotWC)
- # getSets(out) <- c("x", "y", "iso", "year", "EFP", "scen", "season", "type")
+  out <- length(violation[violation != 0]) / length(violation) * 100
 
   return(list(x            = out,
               weight       = NULL,
-              unit         = "mio. m^3",
-              description  = "basin violations",
+              unit         = "percent",
+              description  = "percent of basins that have EFR violations",
               isocountries = FALSE))
 }

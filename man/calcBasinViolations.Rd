@@ -20,7 +20,8 @@ calcBasinViolations(
   avlland_scen,
   cropmix,
   com_ag,
-  multicropping
+  multicropping,
+  scenario
 )
 }
 \arguments{
@@ -76,6 +77,10 @@ or hist_irrig or hist_total for historical cropmix}
 if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
+
+\item{scenario}{Combination of EFP ("on", "off") and
+non-ag. water use scenario ("ssp2", "ISIMIP", ...)
+separated by "."}
 }
 \value{
 magpie object in cellular resolution
