@@ -42,6 +42,8 @@
 #' @param scenario          Combination of EFP ("on", "off") and
 #'                          non-ag. water use scenario ("ssp2", "ISIMIP", ...)
 #'                          separated by "."
+#' @param cellular          If TRUE: cellular data returned.
+#'                          If FALSE: aggregated to basins
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getCells getItems
@@ -58,7 +60,7 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, EFRmethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             thresholdtype, gainthreshold, irrigationsystem, iniyear,
                             avlland_scen, cropmix, com_ag, multicropping,
-                            scenario) {
+                            scenario, cellular = TRUE) {
 
   # Check
   if (!is.na(as.list(strsplit(avlland_scen, split = ":"))[[1]][2]) &&
@@ -94,7 +96,10 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, EFRmethod,
     stop("Wrong cell order!")
   }
   getItems(violation, dim = "basin", maindim = 1) <- as.character(rs$endcell)
+
+  if (!cellular) {
   violation <- dimSums(violation, dim = c(1.1, 1.2, 1.3))
+  }
 
   return(list(x            = violation,
               weight       = NULL,

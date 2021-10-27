@@ -21,7 +21,8 @@ calcEFRviolations(
   cropmix,
   com_ag,
   multicropping,
-  scenario
+  scenario,
+  cellular = TRUE
 )
 }
 \arguments{
@@ -81,6 +82,9 @@ if FALSE: no irrigation areas reserved (irrigation potential)}
 \item{scenario}{Combination of EFP ("on", "off") and
 non-ag. water use scenario ("ssp2", "ISIMIP", ...)
 separated by "."}
+
+\item{cellular}{If TRUE: cellular data returned.
+If FALSE: aggregated to basins}
 }
 \value{
 magpie object in cellular resolution
