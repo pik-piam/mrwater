@@ -13,7 +13,7 @@ plotMapPotReturnToIrrigation(
   yieldcalib,
   multicropping,
   cropmix,
-  land
+  landScen
 )
 }
 \arguments{
@@ -37,12 +37,11 @@ If FALSE: uncalibrated LPJmL yields are used}
 \item{cropmix}{cropmix for calculation of return to irrigation
 (proxycrop(s) or hist_irrig or hist_total)}
 
-\item{land}{land area to be displayed
-combination of land availability scenario and initialization year separated by ":"
-land availability scenario: currIrrig, currCropland, potIrrig
-protection scenario separated by "_" (only relevant when potIrrig selected):
-WDPA, BH, FF, CPD, LW, HalfEarth
-(e.g. "potIrrig_HalfEarth:1995", currCropland:2010)}
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
+combination of land availability scenario and initialization year separated by ":".
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
+WDPA, BH, FF, CPD, LW, HalfEarth}
 }
 \value{
 map of magpie cells

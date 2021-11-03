@@ -12,14 +12,14 @@ plotEconOfIrrig(
   lpjml,
   selectyears,
   climatetype,
-  EFRmethod,
+  efrMethod,
   accessibilityrule,
   rankmethod,
   yieldcalib,
   allocationrule,
   thresholdtype,
   irrigationsystem,
-  avlland_scen,
+  landScen,
   cropmix,
   potential_wat = TRUE,
   com_ag,
@@ -41,7 +41,7 @@ plotEconOfIrrig(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
 \item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
 
@@ -56,9 +56,10 @@ If FALSE: uncalibrated LPJmL yields are used}
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
-\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
 combination of land availability scenario and initialization year separated by ":".
-protection scenario separated by "_" (only relevant when potIrrig selected):
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{cropmix}{cropmix for which irrigation yield improvement is calculated

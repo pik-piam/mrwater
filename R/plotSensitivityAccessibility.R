@@ -10,7 +10,7 @@
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param yieldcalib       If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                         If FALSE: uncalibrated LPJmL yields are used
 #' @param rankmethod       method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops,
@@ -24,11 +24,11 @@
 #' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm:
 #'                         TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param avlland_scen     Land availability scenario: current or potential;
-#'                         optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-#'                         combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-#'                         protection scenario separated by "_" (only relevant when potIrrig selected):
-#'                         WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param landScen  Land availability scenario (currCropland, currIrrig, potCropland)
+#'                  combination of land availability scenario and initialization year separated by ":".
+#'                  Initialization year only relevant for curr scenarios.
+#'                  protection scenario separated by "_" (only relevant when potCropland selected):
+#'                  WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix       cropmix for which irrigation yield improvement is calculated
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
 #'                      or hist_irrig or hist_total for historical cropmix
@@ -50,41 +50,41 @@
 #'
 #' @export
 
-plotSensitivityAccessibility <- function(x_axis_range, region = "GLO", output, scenario, lpjml, selectyears, climatetype, EFRmethod, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
+plotSensitivityAccessibility <- function(x_axis_range, region = "GLO", output, scenario, lpjml, selectyears, climatetype, efrMethod, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, landScen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
 
   Q100  <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-    EFRmethod = EFRmethod, accessibilityrule = "Q:1", rankmethod = rankmethod, yieldcalib = yieldcalib,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+    efrMethod = efrMethod, accessibilityrule = "Q:1", rankmethod = rankmethod, yieldcalib = yieldcalib,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
     cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)$data
   Q100$Accessibility <- rep("Q100", length(Q100$GT))
 
   Q075  <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-    EFRmethod = EFRmethod, accessibilityrule = "Q:0.75", rankmethod = rankmethod, yieldcalib = yieldcalib,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+    efrMethod = efrMethod, accessibilityrule = "Q:0.75", rankmethod = rankmethod, yieldcalib = yieldcalib,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
     cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)$data
   Q075$Accessibility <- rep("Q075", length(Q075$GT))
 
   Q050  <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-    EFRmethod = EFRmethod, accessibilityrule = "Q:0.5", rankmethod = rankmethod, yieldcalib = yieldcalib,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+    efrMethod = efrMethod, accessibilityrule = "Q:0.5", rankmethod = rankmethod, yieldcalib = yieldcalib,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
     cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)$data
   Q050$Accessibility <- rep("Q050", length(Q050$GT))
 
   Q025  <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-    EFRmethod = EFRmethod, accessibilityrule = "Q:0.25", rankmethod = rankmethod, yieldcalib = yieldcalib,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+    efrMethod = efrMethod, accessibilityrule = "Q:0.25", rankmethod = rankmethod, yieldcalib = yieldcalib,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
     cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)$data
   Q025$Accessibility <- rep("Q025", length(Q025$GT))
 
   Q000  <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-    EFRmethod = EFRmethod, accessibilityrule = "Q:0", rankmethod = rankmethod, yieldcalib = yieldcalib,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+    efrMethod = efrMethod, accessibilityrule = "Q:0", rankmethod = rankmethod, yieldcalib = yieldcalib,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
     cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)$data
   Q000$Accessibility <- rep("Q000", length(Q000$GT))
 
   CV2   <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-    EFRmethod = EFRmethod, accessibilityrule = "CV:2", rankmethod = rankmethod, yieldcalib = yieldcalib,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+    efrMethod = efrMethod, accessibilityrule = "CV:2", rankmethod = rankmethod, yieldcalib = yieldcalib,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
     cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)$data
   CV2$Accessibility <- rep("CV2", length(CV2$GT))
 
@@ -103,7 +103,7 @@ plotSensitivityAccessibility <- function(x_axis_range, region = "GLO", output, s
     theme(legend.position = c(0.95, 0.9), text = element_text(size = 20)) +
     scale_x_continuous(expand = c(0, 0), breaks = df$GT) + scale_y_continuous(breaks = seq(0, 1000, by = 100), expand = c(0, 0)) +
     scale_color_brewer(palette = "Dark2") +
-    ggtitle(paste0("Irrigatable Area for yieldcalib = ", yieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab("Irrigatable Area (Mha)")
+    ggtitle(paste0("Irrigatable Area for yieldcalib = ", yieldcalib, " on ", landScen)) + xlab("Irrigation Costs (USD/ha)") + ylab("Irrigatable Area (Mha)")
 
   return(out)
 }

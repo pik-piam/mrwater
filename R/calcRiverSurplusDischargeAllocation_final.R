@@ -7,7 +7,7 @@
 #'                          (Note: does not affect years of harmonization or smoothing)
 #' @param output            Output to be reported
 #' @param climatetype       Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
 #'                          combined with scalar value defining the strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year
@@ -36,9 +36,10 @@
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge
 #'                          allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear           Initialization year of irrigation system
-#' @param avlland_scen      Land availability scenario (currCropland, currIrrig, potIrrig)
+#' @param landScen          Land availability scenario (currCropland, currIrrig, potCropland)
 #'                          combination of land availability scenario and initialization year separated by ":".
-#'                          protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                          Initialization year only relevant for curr scenarios.
+#'                          protection scenario separated by "_" (only relevant when potCropland selected):
 #'                          WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix           cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
@@ -61,16 +62,16 @@
 #' }
 #'
 calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
-                                                      selectyears, output, EFRmethod, accessibilityrule,
+                                                      selectyears, output, efrMethod, accessibilityrule,
                                                       rankmethod, yieldcalib, allocationrule, thresholdtype,
-                                                      gainthreshold, irrigationsystem, iniyear, avlland_scen,
+                                                      gainthreshold, irrigationsystem, iniyear, landScen,
                                                       cropmix, com_ag, multicropping) {
 
   # Check
-  if (!is.na(as.list(strsplit(avlland_scen, split = ":"))[[1]][2]) &&
-      iniyear != as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])) {
+  if (!is.na(as.list(strsplit(landScen, split = ":"))[[1]][2]) &&
+      iniyear != as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])) {
     stop("Initialization year in calcRiverSurplusDischargeAllocation does not match:
-         iniyear and avlland_scen should have same initialization year")
+         iniyear and landScen should have same initialization year")
   }
 
   # Retrieve arguments
@@ -94,17 +95,17 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
   required_wat_min_allocation <- calcOutput("RiverWatReserved", aggregate = FALSE,
                                             selectyears = selectyears, iniyear = iniyear,
                                             lpjml = lpjml, climatetype = climatetype, com_ag = com_ag,
-                                            EFRmethod = EFRmethod, accessibilityrule = accessibilityrule)
+                                            efrMethod = efrMethod, accessibilityrule = accessibilityrule)
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
   discharge                   <- calcOutput("RiverDischargeNatAndHuman", selectyears = selectyears, iniyear = iniyear,
-                                            lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+                                            lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
                                             com_ag = com_ag, aggregate = FALSE)
 
   # Required water for full irrigation per cell (in mio. m^3)
   required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
                                             lpjml = lpjml, climatetype = climatetype, comagyear = comagyear,
-                                            irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+                                            irrigationsystem = irrigationsystem, landScen = landScen,
                                             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
   required_wat_fullirrig_ww   <- pmax(collapseNames(required_wat_fullirrig[, , "withdrawal"]), 0)
   required_wat_fullirrig_wc   <- pmax(collapseNames(required_wat_fullirrig[, , "consumption"]), 0)

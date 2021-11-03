@@ -7,7 +7,7 @@
 #'                         historical baseline "GSWP3-W5E5:historical"
 #' @param selectyears      Years to be returned
 #' @param iniyear          Initialization year
-#' @param EFRmethod        EFR method used including selected strictness of EFRs
+#' @param efrMethod        EFR method used including selected strictness of EFRs
 #'                         (e.g. Smakhtin:good, VMF:fair)
 #'
 #' @return cellular magpie object
@@ -23,7 +23,7 @@
 #' @export
 
 calcShrCurrIrrigFulfilled <- function(lpjml, climatetype,
-                                       selectyears, iniyear, EFRmethod) {
+                                       selectyears, iniyear, efrMethod) {
 
   ### Reasons for not-fulfilled actually observed irrigation:
   # - fossil groundwater is used for irrigation (e.g. Northern India), but not accounted for in the river routing
@@ -33,7 +33,7 @@ calcShrCurrIrrigFulfilled <- function(lpjml, climatetype,
 
   # Water Committed to Agriculture after Routing (in mio. m^3)
   fulfilledCAU   <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
-                               lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+                               lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
                                selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
   fulfilledCAUww <- collapseNames(fulfilledCAU[, , "currHuman_ww"])
   fulfilledCAUwc <- collapseNames(fulfilledCAU[, , "currHuman_wc"])

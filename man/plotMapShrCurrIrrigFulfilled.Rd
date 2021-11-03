@@ -10,7 +10,7 @@ plotMapShrCurrIrrigFulfilled(
   lpjml,
   selectyears,
   climatetype,
-  EFRmethod
+  efrMethod
 )
 }
 \arguments{
@@ -26,7 +26,7 @@ separated by "." (e.g. "on.ssp2")}
 \item{climatetype}{Switch between different climate scenarios or
 historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs
+\item{efrMethod}{EFR method used including selected strictness of EFRs
 (e.g. Smakhtin:good, VMF:fair)}
 }
 \value{

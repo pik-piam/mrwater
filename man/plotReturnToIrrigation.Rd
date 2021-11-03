@@ -11,14 +11,14 @@ plotReturnToIrrigation(
   lpjml,
   selectyears,
   climatetype,
-  EFRmethod,
+  efrMethod,
   rankmethod,
   yieldcalib,
   allocationrule,
   thresholdtype,
   gainthreshold,
   irrigationsystem,
-  avlland_scen,
+  landScen,
   cropmix,
   com_ag,
   multicropping,
@@ -38,7 +38,7 @@ plotReturnToIrrigation(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
 \item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
@@ -53,9 +53,11 @@ If FALSE: uncalibrated LPJmL yields are used}
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
-\item{avlland_scen}{Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.}
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
+combination of land availability scenario and initialization year separated by ":".
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
+WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{cropmix}{cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain

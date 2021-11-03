@@ -11,7 +11,7 @@
 #' @param iniyear           Initialization year
 #' @param climatetype       Switch between different climate scenarios or
 #'                          historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod         EFR method used including selected strictness of EFRs
+#' @param efrMethod         EFR method used including selected strictness of EFRs
 #'                          (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx).
@@ -34,10 +34,11 @@
 #'                          (same unit as thresholdtype)
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
-#' @param avlland_scen      Land availability scenario (currCropland, currIrrig, potIrrig)
-#'                          combination of land availability scenario and initialization year separated by ":".
-#'                          protection scenario separated by "_" (only relevant when potIrrig selected):
-#'                          WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param landScen  Land availability scenario (currCropland, currIrrig, potCropland)
+#'                  combination of land availability scenario and initialization year separated by ":".
+#'                  Initialization year only relevant for curr scenarios.
+#'                  protection scenario separated by "_" (only relevant when potCropland selected):
+#'                  WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix           Cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
 #'                          or hist_irrig or hist_total for historical cropmix
@@ -57,9 +58,9 @@
 #' @export
 
 plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lpjml,
-                                      climatetype, EFRmethod, accessibilityrule,
+                                      climatetype, efrMethod, accessibilityrule,
                                       yieldcalib, rankmethod, thresholdtype, gainthreshold,
-                                      allocationrule, irrigationsystem, multicropping, cropmix, avlland_scen) {
+                                      allocationrule, irrigationsystem, multicropping, cropmix, landScen) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Yield Gain Potential ")
@@ -67,18 +68,18 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
 
   unlim <- calcOutput("YieldgainPotential", scenario = scenario, selectyears = selectyears,
                   iniyear = iniyear, lpjml = lpjml, climatetype = climatetype,
-                  EFRmethod = EFRmethod, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
+                  efrMethod = efrMethod, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
                   accessibilityrule = accessibilityrule, rankmethod = rankmethod,
                   gainthreshold = gainthreshold,
-                  allocationrule = allocationrule, avlland_scen = avlland_scen,
+                  allocationrule = allocationrule, landScen = landScen,
                   cropmix = cropmix, multicropping = multicropping, unlimited = TRUE, aggregate = FALSE)
 
   lim <- calcOutput("YieldgainPotential", scenario = scenario, selectyears = selectyears,
                       iniyear = iniyear, lpjml = lpjml, climatetype = climatetype,
-                      EFRmethod = EFRmethod, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
+                      efrMethod = efrMethod, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
                       accessibilityrule = accessibilityrule, rankmethod = rankmethod,
                       gainthreshold = gainthreshold,
-                      allocationrule = allocationrule, avlland_scen = avlland_scen,
+                      allocationrule = allocationrule, landScen = landScen,
                       cropmix = cropmix, multicropping = multicropping, unlimited = FALSE, aggregate = FALSE)
 
   if (output == "limited") {
@@ -107,7 +108,7 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
 
   # relevant map area
   area         <- calcOutput("AreaPotIrrig", selectyears = selectyears,
-                              comagyear = NULL, avlland_scen = avlland_scen, aggregate = FALSE)
+                              comagyear = NULL, landScen = landScen, aggregate = FALSE)
   x[area == 0] <- NA
 
   yieldGain   <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,

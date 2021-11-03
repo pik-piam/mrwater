@@ -2,50 +2,40 @@
 #' @description This function calculates land that is potentially available
 #'              for irrigated agriculture
 #'
-#' @param selectyears   years to be returned
-#' @param comagyear     if NULL: total potential croparea is used;
-#'                      if !NULL: already irrigated area is subtracted;
-#'                      year specified here is the year of the initialization
-#'                      used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)
-#' @param avlland_scen  Land availability scenario (currCropland, currIrrig, potIrrig)
-#'                      combination of land availability scenario and initialization year separated by ":".
-#'                      protection scenario separated by "_" (only relevant when potIrrig selected):
-#'                      WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param selectyears years to be returned
+#' @param comagyear   if NULL: total potential croparea is used;
+#'                    if !NULL: already irrigated area is subtracted;
+#'                    year specified here is the year of the initialization
+#'                    used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)
+#' @param landScen    Land availability scenario (currCropland, currIrrig, potCropland)
+#'                    combination of land availability scenario and initialization year separated by ":".
+#'                    Initialization year only relevant for curr scenarios.
+#'                    protection scenario separated by "_" (only relevant when potCropland selected):
+#'                    WDPA, BH, FF, CPD, LW, HalfEarth
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("AreaPotIrrig", aggregate = FALSE)
+#' calcOutput("AreapotCropland", aggregate = FALSE)
 #' }
 #'
 #' @importFrom madrat calcOutput toolSplitSubtype
 #' @importFrom magclass collapseNames getCells getYears getNames dimSums
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
+calcAreaPotIrrig <- function(selectyears, comagyear, landScen) {
 
   # retrieve function arguments
-  iniyear      <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
-  avlland_scen <- as.list(strsplit(avlland_scen, split = ":"))[[1]][1]
-  protectSCEN <- as.list(strsplit(avlland_scen, split = "_"))[[1]][2]
+  iniyear     <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
+  landScen    <- as.list(strsplit(landScen, split = ":"))[[1]][1]
+  protectSCEN <- as.list(strsplit(landScen, split = "_"))[[1]][2]
 
-  if (grepl("potIrrig", avlland_scen)) {
+  if (grepl("potCropland", landScen)) {
 
-    if (grepl("Ramankutty", avlland_scen)) {
-
-      # read in suitable land [in mio. ha]
-      land <- collapseNames(calcOutput("AvlLandSi", aggregate = FALSE, cells = "lpjcell")[, , "si0"])
-
-    } else if (grepl("Zabel", avlland_scen)) {
-
-      # read in suitable land based on Zabel [in mio. ha]
-      land <- calcOutput("AvlCropland", aggregate = FALSE, cells = "lpjcell")[, , "q33_marginal"]
-
-    } else {
-      stop("Please specify Cropland Availability data set used to determine potential cropland: Ramankutty or Zabel")
-    }
+    # read in suitable land based on Zabel [in mio. ha]
+    land <- calcOutput("AvlCropland", aggregate = FALSE, cells = "lpjcell")[, , "q33_marginal"]
 
     # No irrigation in protected areas (if protection scenario is activated) [in mio. ha]
     if (!is.na(protectSCEN)) {
@@ -54,9 +44,9 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
       #### expand to 67k cells (temporarily until read/calcProtectArea is adjusted) ####
       tmp <- collapseDim(addLocation(tmp), dim = c("region", "cell"))
       protectArea                    <- new.magpie(cells_and_regions = getCells(collapseDim(land, dim = "iso")),
-                                                    years = getYears(tmp),
-                                                    names = getNames(tmp), fill = 0,
-                                                    sets = c("x.y.iso", "t", "data"))
+                                                   years = getYears(tmp),
+                                                   names = getNames(tmp), fill = 0,
+                                                   sets = c("x.y.iso", "t", "data"))
       protectArea[getCells(tmp), , ] <- tmp
       #### expand to 67k cells (temporarily until read/calcProtectArea is adjusted) ####
 
@@ -68,15 +58,15 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
       landarea <- dimSums(landarea, dim = 3)
 
       # area available for cropland
-      avl_cropland <- landarea - protectArea
+      avlCropland <- landarea - protectArea
       # land suitable for (sustainable) (irrigated) agriculture
-      land         <- pmin(avl_cropland, land)
+      land        <- pmin(avlCropland, land)
     }
 
-  } else if (grepl("curr", avlland_scen)) {
+  } else if (grepl("curr", landScen)) {
 
     # Total current cropland per cell:
-    if (avlland_scen == "currCropland") {
+    if (landScen == "currCropland") {
 
       land <- dimSums(calcOutput("CropareaAdjusted", years = iniyear,
                                  sectoral = "kcr", cells = "lpjcell",
@@ -87,7 +77,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
     }
 
     # Total irrigated cropland per cell:
-    if (avlland_scen == "currIrrig") {
+    if (landScen == "currIrrig") {
       land <- dimSums(collapseNames(calcOutput("CropareaAdjusted", years = iniyear,
                                                sectoral = "kcr", cells = "lpjcell",
                                                physical = TRUE, cellular = TRUE,
@@ -96,10 +86,10 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
     }
 
   } else {
-    stop("Please choose an appropriate available land scenario in avlland_scen argument:
+    stop("Please choose an appropriate available land scenario in landScen argument:
          currIrrig (only currently irrigated cropland available for irrigated agriculture),
          currCropland (only current cropland areas available for irrigated agriculture),
-         potIrrig (suitable land is available for irrigated agriculture,
+         potCropland (suitable land is available for irrigated agriculture,
          potentially land protection activated through addition of protection scen in this argument)")
   }
 
@@ -115,9 +105,9 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
     # subtract area already reserved for irrigation by committed agricultural uses
     # (to avoid double accounting)
     comIrrigArea  <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
-                                  iniyear = comagyear, aggregate = FALSE)
+                                 iniyear = comagyear, aggregate = FALSE)
     comIrrigArea  <- collapseNames(dimSums(comIrrigArea, dim = 3))
-    land            <- land - comIrrigArea
+    land          <- land - comIrrigArea
   }
 
   # correct negative land availability due to mismatch of available land and protected land or rounding imprecision
@@ -125,11 +115,11 @@ calcAreaPotIrrig <- function(selectyears, comagyear, avlland_scen) {
 
   # Checks
   if (any(is.na(land))) {
-    stop("Function AreaPotIrrig produced NA values")
+    stop("Function AreapotCropland produced NA values")
   }
 
   if (any(round(land) < 0)) {
-    stop("Function AreaPotIrrig produced negative values")
+    stop("Function AreapotCropland produced negative values")
   }
 
   return(list(x            = land,

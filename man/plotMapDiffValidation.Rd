@@ -14,12 +14,12 @@ plotMapDiffValidation(
   rankmethod,
   cropmix,
   yieldcalib,
-  EFRmethod,
+  efrMethod,
   accessibilityrule,
   allocationrule,
   thresholdtype,
   irrigationsystem,
-  avlland_scen,
+  landScen,
   multicropping
 )
 }
@@ -45,7 +45,7 @@ or hist_irrig or hist_total for historical cropmix}
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 If FALSE: uncalibrated LPJmL yields are used}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
 \item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
 
@@ -55,9 +55,10 @@ If FALSE: uncalibrated LPJmL yields are used}
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
-\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
 combination of land availability scenario and initialization year separated by ":".
-protection scenario separated by "_" (only relevant when potIrrig selected):
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}

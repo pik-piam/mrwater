@@ -8,7 +8,7 @@ calcEnvmtlFlowRequirementsConstraint(
   lpjml,
   selectyears,
   climatetype,
-  EFRmethod,
+  efrMethod,
   accessibilityrule
 )
 }
@@ -21,7 +21,7 @@ calcEnvmtlFlowRequirementsConstraint(
 \item{climatetype}{Switch between different climate scenarios
 or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs
+\item{efrMethod}{EFR method used including selected strictness of EFRs
 (Smakhtin:good, VMF:fair)}
 
 \item{accessibilityrule}{Method used: Quantile method (Q) or

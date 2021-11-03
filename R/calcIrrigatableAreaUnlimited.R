@@ -3,12 +3,10 @@
 #'              land scenario and gainthreshold
 #'
 #' @param selectyears   years for which irrigatable area is calculated
-#' @param avlland_scen  Land availability scenario: current or potential;
-#'                      optional additionally: protection scenario in case of potential
-#'                      and initialization year of cropland area
-#'                      combination of land availability scenario and initialization year separated by ":"
-#'                      land availability scenario: currIrrig, currCropland, potIrrig
-#'                      protection scenario separated by "_" (only relevant when potIrrig selected):
+#' @param landScen      Land availability scenario (currCropland, currIrrig, potCropland)
+#'                      combination of land availability scenario and initialization year separated by ":".
+#'                      Initialization year only relevant for curr scenarios.
+#'                      protection scenario separated by "_" (only relevant when potCropland selected):
 #'                      WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
@@ -36,16 +34,16 @@
 #' @import magclass
 #' @import magpiesets
 
-calcIrrigatableAreaUnlimited <- function(selectyears, avlland_scen, lpjml,
+calcIrrigatableAreaUnlimited <- function(selectyears, landScen, lpjml,
                                          climatetype, cropmix, yieldcalib,
                                          thresholdtype, gainthreshold, multicropping) {
 
   # Retrieve function arguments
-  iniyear       <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
+  iniyear       <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
 
   ## Area that can potentially be irrigated (including total potentially irrigatable area; defined by comagyear=NULL)
   potArea <- calcOutput("AreaPotIrrig", selectyears = selectyears,
-                         avlland_scen = avlland_scen, comagyear = NULL, aggregate = FALSE)
+                         landScen = landScen, comagyear = NULL, aggregate = FALSE)
 
   # Yield gain potential through irrigation of proxy crops
   potGain <- calcOutput("IrrigYieldImprovementPotential", unit = thresholdtype,

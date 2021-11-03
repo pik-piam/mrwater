@@ -67,7 +67,7 @@ natQ <- calcOutput("RiverNaturalFlows", selectyears = 2010, climatetype = "GFDL-
 The required arguments are ``selectyears`` (determining the year(s) for which the output shall be generated), ``climatetype`` (selecting the GCM data and scenario underlying the process-based vegetation model), and ``lpjml`` (selecting the LPJmL model versions used for natural vegetation (``natveg``) input data and management (``crop``) input data)
 
 Environmental flow requirements (EFRs) and accessible discharge are also calculated based on hydrological LPJmL data only. Both are based on monthly discharge. 
-The calculation method and strictness of EFR can be selected via the ``EFRmethod`` argument (e.g. "Smakhtin:good", "VMF:fair").
+The calculation method and strictness of EFR can be selected via the ``efrMethod`` argument (e.g. "Smakhtin:good", "VMF:fair").
 Inaccessible discharge is based on the assumption that the higher the long-term seasonal variability of discharge is, the harder it is to access the water by humans and bring it into productive use. Different accessibility rules can be selected via the ``accessibilityrule`` argument (e.g. "CV:2" stands for the coefficient of variation approach to a base of 2; "Q:75" stands for a quantile approach where discharge that exceeds the 75th quantile is inaccessible to humans).
 
 ```{r EFRs}
@@ -75,7 +75,7 @@ selectyears <- 2010
 lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb")
 climatetype <- "GFDL-ESM4:ssp126"
 
-efr <- calcOutput("EnvmtlFlowRequirements", EFRmethod = "VMF:fair", 
+efr <- calcOutput("EnvmtlFlowRequirements", efrMethod = "VMF:fair", 
                   selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
                   aggregate = FALSE)[, , "EFR"]
 
@@ -83,7 +83,7 @@ inaccessibleQ <- calcOutput("DischargeInaccessible", accessibilityrule = "CV:2",
                             selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
                             aggregate = FALSE)
 
-EFRmethod         <- "VMF:fair"
+efrMethod         <- "VMF:fair"
 accessibilityrule <- "CV:2"
 ```
 
@@ -97,7 +97,7 @@ Human water abstractions are considered in consecutive river routing iterations 
 ```{r HumanDischarge}
 humanQ <- calcOutput("RiverDischargeNatAndHuman", iniyear = 2010, com_ag = TRUE,
                      selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
-                     EFRmethod = EFRmethod, aggregate = FALSE)
+                     efrMethod = efrMethod, aggregate = FALSE)
 
 iniyear <- 2010
 com_ag  <- TRUE
@@ -132,12 +132,12 @@ Finally, the function ``calcRiverSurplusDischargeAllocation`` determines the all
 ```{r AllocationAlgorithm}
 iwp <- calcOutput("RiverSurplusDischargeAllocation", output = "potIrrigWat", 
                    selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
-                   EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                   efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                    iniyear = iniyear, com_ag = com_ag,
                    allocationrule = "optimization", 
                    rankmethod = "USD_ha:TRUE", yieldcalib = TRUE, cropmix = "hist_total",
                    thresholdtype = "USD_ha", gainthreshold = 500,
-                   avlland_scen = "potIrrigRamankutty_HalfEarth:2010",
+                   landScen = "potCropland_HalfEarth:2010",
                    irrigationsystem = "initialization", multicropping = FALSE, aggregate = FALSE)
 ```
 
@@ -175,8 +175,8 @@ This implementation is still work-in-progress and will be updated soon.
 
 ### Cropland extent
 
-The irrigation potentials can be calculated for various scenarios of potential cropland cover that are set via the ``avlland_scen`` argument. It consists of three parts: (1) a selection of current cropland (currCropland) or potential cropland (potIrrig); (2) a protection component (only relevant for the cropland expansion case, i.e. potIrrig) separated by "_" from (1). WDPA, BH, FF, CPD, LW, HalfEarth can be selected as protection scenario; (3) initialization year of cropland area, separated by ":".
-For example ``avlland_scen = "currCropland:2010"`` selects current cropland extent as of the year 2010; ``avlland_scen = "potIrrigRamankutty_HalfEarth:2010"`` is potential cropland while respecting a Half Earth land protection scenario. The year argument is ignored for the case of potIrrig. It is only relevant for the currCropland case.
+The irrigation potentials can be calculated for various scenarios of potential cropland cover that are set via the ``landScen`` argument. It consists of three parts: (1) a selection of current cropland (currCropland) or potential cropland (potCropland); (2) a protection component (only relevant for the cropland expansion case, i.e. potCropland) separated by "_" from (1). WDPA, BH, FF, CPD, LW, HalfEarth can be selected as protection scenario; (3) initialization year of cropland area, separated by ":".
+For example ``landScen = "currCropland:2010"`` selects current cropland extent as of the year 2010; ``landScen = "potIrrigRamankutty_HalfEarth:2010"`` is potential cropland while respecting a Half Earth land protection scenario. The year argument is ignored for the case of potCropland. It is only relevant for the currCropland case.
 
 
 ### Irrigation Area Potential (IAP)
@@ -190,15 +190,15 @@ yieldcalib       <- TRUE
 cropmix          <- "hist_total"
 thresholdtype    <- "USD_ha"
 gainthreshold    <- 500
-avlland_scen     <- "potIrrigRamankutty_HalfEarth:2010"
+landScen         <- "potCropland_HalfEarth:2010"
 irrigationsystem <- "initialization"
 multicropping    <- FALSE
 
 iap <- calcOutput("IrrigatableArea", selectyears = selectyears, lpjml = lpjml, climatetype = climatetype, 
-                   EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                   efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                    rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                    thresholdtype = thresholdtype, gainthreshold = gainthreshold, 
-                   irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+                   irrigationsystem = irrigationsystem, landScen = landScen,
                    cropmix = cropmix, com_ag = com_ag, 
                    potential_wat = TRUE, multicropping = FALSE, aggregate = FALSE)
 ```
@@ -215,10 +215,10 @@ The generated data can be used to create irrigation area demand curves and/or ag
 ```{r EconOfIrrig}
 iad <- calcOutput("EconOfIrrig", scenario = "ssp2", season = "single", output = "IrrigArea",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = 2010,
-             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+             lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = currland, cropmix = cropmix,
+             irrigationsystem = irrigationsystem, landScen = currland, cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = FALSE, aggregate = FALSE)
 ```
 

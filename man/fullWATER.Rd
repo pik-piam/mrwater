@@ -5,18 +5,18 @@
 \title{fullWATER}
 \usage{
 fullWATER(
-  EFRmethod = "VMF:fair",
+  efrMethod = "VMF:fair",
   accessibilityrule = "CV:2",
   allocationrule = "optimization",
   rankmethod = "USD_ha:TRUE",
   thresholdtype = "USD_ha",
   gainthreshold = 500,
   currland = "currCropland:2010",
-  potland = "potIrrigRamankutty_HalfEarth:2010"
+  potland = "potIrrig_HalfEarth:2010"
 )
 }
 \arguments{
-\item{EFRmethod}{EFR method used including selected strictness of EFRs
+\item{efrMethod}{EFR method used including selected strictness of EFRs
 (Smakhtin:good, VMF:fair)}
 
 \item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
@@ -52,7 +52,7 @@ water allocation in upstreamfirst algorithm
 
 \item{potland}{Potential land availability scenario: specify suitability (Ramankutty or Zabel),
 protection scenario and initialization year after potIrrig
-(e.g. potIrrigRamankutty_HalfEarth:2010)}
+(e.g. potCropland_HalfEarth:2010)}
 }
 \description{
 Function that produces the objects for water outputs that can

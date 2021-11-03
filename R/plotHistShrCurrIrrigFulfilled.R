@@ -9,7 +9,7 @@
 #' @param selectyears Year of plot (Note: one single year must be selected)
 #' @param iniyear     Initialization year for committed agricultural uses
 #' @param climatetype Switch between different climate models or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod   EFR method used including selected strictness of EFRs (e.g. Smakhtin:fair)
+#' @param efrMethod   EFR method used including selected strictness of EFRs (e.g. Smakhtin:fair)
 #'
 #' @return map of magpie cells
 #' @author Felicitas Beier
@@ -19,7 +19,7 @@
 #'
 #' @export
 
-plotHistShrCurrIrrigFulfilled <- function(scenario, iniyear, lpjml, selectyears, climatetype, EFRmethod) {
+plotHistShrCurrIrrigFulfilled <- function(scenario, iniyear, lpjml, selectyears, climatetype, efrMethod) {
 
   if (!requireNamespace("plotrix", quietly = TRUE)) stop("The package plotrix is required for plotting plotHistShrCurrIrrigFulfilled!")
 
@@ -33,7 +33,7 @@ plotHistShrCurrIrrigFulfilled <- function(scenario, iniyear, lpjml, selectyears,
   act_wc     <- collapseNames(dimSums(CAU_magpie[, , "consumption"], dim = 3))
 
   # Water Committed to Agriculture after Routing (in mio. m^3)
-  ComAg_wat <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture", lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+  ComAg_wat <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture", lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
   com_ww    <- collapseNames(ComAg_wat[, , "currHuman_ww"])
   com_wc    <- collapseNames(ComAg_wat[, , "currHuman_wc"])
 

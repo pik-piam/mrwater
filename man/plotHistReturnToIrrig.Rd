@@ -10,7 +10,7 @@ plotHistReturnToIrrig(
   lpjml,
   selectyears,
   climatetype,
-  EFRmethod,
+  efrMethod,
   cropmix,
   thresholdtype,
   multicropping,
@@ -29,7 +29,7 @@ plotHistReturnToIrrig(
 
 \item{climatetype}{Switch between different climate models or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
 \item{cropmix}{cropmix for which irrigation yield improvement is calculated
 can be selection of proxycrop(s) for calculation of average yield gain

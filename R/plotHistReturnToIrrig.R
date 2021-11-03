@@ -7,7 +7,7 @@
 #' @param selectyears Year of plot (Note: one single year must be selected)
 #' @param iniyear     Initialization year for committed agricultural uses
 #' @param climatetype Switch between different climate models or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod   EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod   EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param cropmix     cropmix for which irrigation yield improvement is calculated
 #'                    can be selection of proxycrop(s) for calculation of average yield gain
 #'                    or hist_irrig or hist_total for historical cropmix
@@ -25,7 +25,7 @@
 #'
 #' @export
 
-plotHistReturnToIrrig <- function(scenario, iniyear, lpjml, selectyears, climatetype, EFRmethod, cropmix, thresholdtype, multicropping, yieldcalib) {
+plotHistReturnToIrrig <- function(scenario, iniyear, lpjml, selectyears, climatetype, efrMethod, cropmix, thresholdtype, multicropping, yieldcalib) {
 
   if (!requireNamespace("plotrix", quietly = TRUE)) stop("The package plotrix is required for plotting plotHistShrCurrIrrigFulfilled!")
 

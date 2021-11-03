@@ -9,7 +9,7 @@
 #' @param iniyear           Initialization year
 #' @param climatetype       Switch between different climate scenarios or
 #'                          historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod         EFR method used including selected strictness of EFRs
+#' @param efrMethod         EFR method used including selected strictness of EFRs
 #'                          (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx).
@@ -28,9 +28,10 @@
 #'                          (same unit as thresholdtype)
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
-#' @param avlland_scen      Land availability scenario (currCropland, currIrrig, potIrrig)
+#' @param landScen          Land availability scenario (currCropland, currIrrig, potCropland)
 #'                          combination of land availability scenario and initialization year separated by ":".
-#'                          protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                          Initialization year only relevant for curr scenarios.
+#'                          protection scenario separated by "_" (only relevant when potCropland selected):
 #'                          WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix           Cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
@@ -54,10 +55,10 @@
 #' @export
 
 calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climatetype,
-                                   EFRmethod, yieldcalib, irrigationsystem,
+                                   efrMethod, yieldcalib, irrigationsystem,
                                    accessibilityrule, rankmethod,
                                    gainthreshold, allocationrule,
-                                   avlland_scen, cropmix, multicropping, unlimited) {
+                                   landScen, cropmix, multicropping, unlimited) {
 
   thresholdtype <- strsplit(rankmethod, ":")[[1]][1]
 
@@ -72,7 +73,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
 
     # Area that can potentially be irrigated without water limitation
     area <- calcOutput("AreaPotIrrig", selectyears = selectyears,
-                        avlland_scen = avlland_scen, comagyear = NULL,
+                        landScen = landScen, comagyear = NULL,
                         aggregate = FALSE)
     d    <- "Potentially Irrigated Area only considering land constraint"
 
@@ -81,10 +82,10 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
     # Area that can potentially be irrigated given land and water constraints
     area <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = gainthreshold,
                                      selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
-                                     accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+                                     accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                      rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                      thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                     avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE,
+                                     landScen = landScen, cropmix = cropmix, potential_wat = TRUE,
                                      com_ag = FALSE, multicropping = multicropping,
                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
     # sum over seasons (yearly irrigated area harvested)

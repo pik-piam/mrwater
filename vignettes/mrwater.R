@@ -1,23 +1,23 @@
-## ----Setup, echo = FALSE----------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----Setup, echo = FALSE-----------------------------------------------------------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>")
 
-## ----Libraries--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----Libraries---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  library(madrat)
 #  library(magclass)
 #  library(mrcommons)
 #  library(mrland)
 #  library(mrmagpie)
 
-## ----NatDischarge-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----NatDischarge------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  natQ <- calcOutput("RiverNaturalFlows", selectyears = 2010, climatetype = "GFDL-ESM4:ssp126",
 #                     lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb"), aggregate = FALSE)[, , "discharge_nat"]
 
-## ----EFRs-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----EFRs--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  selectyears <- 2010
 #  lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb")
 #  climatetype <- "GFDL-ESM4:ssp126"
 #  
-#  efr <- calcOutput("EnvmtlFlowRequirements", EFRmethod = "VMF:fair",
+#  efr <- calcOutput("EnvmtlFlowRequirements", efrMethod = "VMF:fair",
 #                    selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
 #                    aggregate = FALSE)[, , "EFR"]
 #  
@@ -25,62 +25,62 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>"
 #                              selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
 #                              aggregate = FALSE)
 #  
-#  EFRmethod         <- "VMF:fair"
+#  efrMethod         <- "VMF:fair"
 #  accessibilityrule <- "CV:2"
 
-## ----HumanDischarge---------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----HumanDischarge----------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  humanQ <- calcOutput("RiverDischargeNatAndHuman", iniyear = 2010, com_ag = TRUE,
 #                       selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
-#                       EFRmethod = EFRmethod, aggregate = FALSE)
+#                       efrMethod = efrMethod, aggregate = FALSE)
 #  
 #  iniyear <- 2010
 #  com_ag  <- TRUE
 
-## ----Landuse----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----Landuse-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  croparea <- calcOutput("Croparea", years = iniyear, sectoral = "kcr", physical = TRUE, cells = "lpjcell", cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
 
-## ----AllocationAlgorithm----------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----AllocationAlgorithm-----------------------------------------------------------------------------------------------------------------------------------------------------------
 #  iwp <- calcOutput("RiverSurplusDischargeAllocation", output = "potIrrigWat",
 #                     selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
-#                     EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+#                     efrMethod = efrMethod, accessibilityrule = accessibilityrule,
 #                     iniyear = iniyear, com_ag = com_ag,
 #                     allocationrule = "optimization",
 #                     rankmethod = "USD_ha:TRUE", yieldcalib = TRUE, cropmix = "hist_total",
 #                     thresholdtype = "USD_ha", gainthreshold = 500,
-#                     avlland_scen = "potIrrigRamankutty_HalfEarth:2010",
+#                     landScen = "potCropland_HalfEarth:2010",
 #                     irrigationsystem = "initialization", multicropping = FALSE, aggregate = FALSE)
 
-## ----YieldValueGain---------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----YieldValueGain----------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
 #                          selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, iniyear = iniyear,
 #                          cropmix = "hist_total", yieldcalib = TRUE,
 #                          multicropping = FALSE, aggregate = FALSE)
 
-## ----IAP--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----IAP---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  allocationrule   <- "optimization"
 #  rankmethod       <- "USD_ha:TRUE"
 #  yieldcalib       <- TRUE
 #  cropmix          <- "hist_total"
 #  thresholdtype    <- "USD_ha"
 #  gainthreshold    <- 500
-#  avlland_scen     <- "potIrrigRamankutty_HalfEarth:2010"
+#  landScen         <- "potCropland_HalfEarth:2010"
 #  irrigationsystem <- "initialization"
 #  multicropping    <- FALSE
 #  
 #  iap <- calcOutput("IrrigatableArea", selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,
-#                     EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+#                     efrMethod = efrMethod, accessibilityrule = accessibilityrule,
 #                     rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
 #                     thresholdtype = thresholdtype, gainthreshold = gainthreshold,
-#                     irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+#                     irrigationsystem = irrigationsystem, landScen = landScen,
 #                     cropmix = cropmix, com_ag = com_ag,
 #                     potential_wat = TRUE, multicropping = FALSE, aggregate = FALSE)
 
-## ----EconOfIrrig------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----EconOfIrrig-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  iad <- calcOutput("EconOfIrrig", scenario = "ssp2", season = "single", output = "IrrigArea",
 #               GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = 2010,
-#               lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+#               lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
 #               rankmethod = rankmethod, yieldcalib = yieldcalib,
 #               allocationrule = allocationrule, thresholdtype = thresholdtype,
-#               irrigationsystem = irrigationsystem, avlland_scen = currland, cropmix = cropmix,
+#               irrigationsystem = irrigationsystem, landScen = currland, cropmix = cropmix,
 #               potential_wat = TRUE, com_ag = FALSE, multicropping = FALSE, aggregate = FALSE)
 

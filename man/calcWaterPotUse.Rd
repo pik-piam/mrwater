@@ -8,7 +8,7 @@ calcWaterPotUse(
   lpjml,
   selectyears,
   climatetype,
-  EFRmethod,
+  efrMethod,
   accessibilityrule,
   rankmethod,
   yieldcalib,
@@ -17,7 +17,7 @@ calcWaterPotUse(
   gainthreshold,
   irrigationsystem,
   iniyear,
-  avlland_scen,
+  landScen,
   cropmix,
   com_ag,
   multicropping
@@ -30,7 +30,7 @@ calcWaterPotUse(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
 \item{accessibilityrule}{Strictness of accessibility restriction:
 discharge that is exceeded x percent of the time on average throughout a year (Qx).
@@ -62,9 +62,10 @@ TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
 combination of land availability scenario and initialization year separated by ":".
-protection scenario separated by "_" (only relevant when potIrrig selected):
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{cropmix}{Cropmix for which irrigation yield improvement is calculated

@@ -4,7 +4,7 @@
 \alias{calcEnvmtlFlowRequirementsShare}
 \title{calcEnvmtlFlowRequirementsShare}
 \usage{
-calcEnvmtlFlowRequirementsShare(lpjml, climatetype, EFRmethod)
+calcEnvmtlFlowRequirementsShare(lpjml, climatetype, efrMethod)
 }
 \arguments{
 \item{lpjml}{LPJmL version used for monthly discharge}
@@ -12,7 +12,7 @@ calcEnvmtlFlowRequirementsShare(lpjml, climatetype, EFRmethod)
 \item{climatetype}{Switch between different climate scenarios
 or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs
+\item{efrMethod}{EFR method used including selected strictness of EFRs
 (e.g. Smakhtin:good, VMF:fair)}
 }
 \value{

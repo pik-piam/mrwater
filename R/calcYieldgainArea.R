@@ -7,13 +7,14 @@
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years for which irrigatable area is calculated
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod     EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod     EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param thresholdtype TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
-#' @param avlland_scen  Land availability scenario (currCropland, currIrrig, potIrrig)
+#' @param landScen      Land availability scenario (currCropland, currIrrig, potCropland)
 #'                      combination of land availability scenario and initialization year separated by ":".
-#'                      protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                      Initialization year only relevant for curr scenarios.
+#'                      protection scenario separated by "_" (only relevant when potCropland selected):
 #'                      WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix       Cropmix for which irrigation yield improvement is calculated
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
@@ -35,8 +36,8 @@
 #' @export
 
 calcYieldgainArea <- function(rangeGT, lpjml, selectyears,
-                              climatetype, EFRmethod, yieldcalib, thresholdtype,
-                              avlland_scen, cropmix, multicropping) {
+                              climatetype, efrMethod, yieldcalib, thresholdtype,
+                              landScen, cropmix, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -46,7 +47,7 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears,
                   selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,
                   cropmix = cropmix, yieldcalib = yieldcalib,
                   thresholdtype = thresholdtype, multicropping = multicropping,
-                  avlland_scen = avlland_scen, aggregate = FALSE)
+                  landScen = landScen, aggregate = FALSE)
   d <- "Potentially Irrigated Area only considering land constraint"
   u <- "Mha"
 
@@ -82,7 +83,7 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears,
                     selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,
                     cropmix = cropmix, yieldcalib = yieldcalib,
                     thresholdtype = thresholdtype, multicropping = multicropping,
-                    avlland_scen = avlland_scen, aggregate = FALSE)
+                    landScen = landScen, aggregate = FALSE)
 
     if (multicropping) {
 

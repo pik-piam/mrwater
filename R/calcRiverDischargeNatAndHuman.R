@@ -5,7 +5,7 @@
 #' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear     Initialization year of irrigation system
-#' @param EFRmethod   EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod   EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param com_ag      if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
 #'
 #' @importFrom madrat calcOutput
@@ -19,7 +19,7 @@
 #' \dontrun{ calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE) }
 #'
 
-calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatetype, EFRmethod, com_ag) {
+calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatetype, efrMethod, com_ag) {
 
   #######################################
   ###### Read in Required Inputs ########
@@ -28,11 +28,11 @@ calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatety
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package="mrwater"))
 
   # Non-agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, lpjml=lpjml, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod)[,,"currHuman_wc"])
+  NAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="non_agriculture",       aggregate=FALSE, lpjml=lpjml, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, efrMethod=efrMethod)[,,"currHuman_wc"])
 
   if (com_ag) {
     # Committed agricultural human consumption that can be fulfilled by available water determined in previous river routings
-    CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, lpjml=lpjml, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, EFRmethod=EFRmethod)[,,"currHuman_wc"])
+    CAg_wc <- collapseNames(calcOutput("RiverHumanUses", humanuse="committed_agriculture", aggregate=FALSE, lpjml=lpjml, iniyear=iniyear, selectyears=selectyears, climatetype=climatetype, efrMethod=efrMethod)[,,"currHuman_wc"])
   } else {
     CAg_wc <- new.magpie(getCells(NAg_wc), getYears(NAg_wc), getNames(NAg_wc), fill=0)
   }

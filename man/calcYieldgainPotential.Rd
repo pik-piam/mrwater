@@ -10,14 +10,14 @@ calcYieldgainPotential(
   iniyear,
   lpjml,
   climatetype,
-  EFRmethod,
+  efrMethod,
   yieldcalib,
   irrigationsystem,
   accessibilityrule,
   rankmethod,
   gainthreshold,
   allocationrule,
-  avlland_scen,
+  landScen,
   cropmix,
   multicropping,
   unlimited
@@ -36,7 +36,7 @@ by "." (e.g. "on.ssp2")}
 \item{climatetype}{Switch between different climate scenarios or
 historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs
+\item{efrMethod}{EFR method used including selected strictness of EFRs
 (e.g. Smakhtin:good, VMF:fair)}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
@@ -62,9 +62,10 @@ and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst", "equality")}
 
-\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
 combination of land availability scenario and initialization year separated by ":".
-protection scenario separated by "_" (only relevant when potIrrig selected):
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{cropmix}{Cropmix for which irrigation yield improvement is calculated

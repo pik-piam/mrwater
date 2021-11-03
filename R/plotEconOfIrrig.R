@@ -8,7 +8,7 @@
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                          If FALSE: uncalibrated LPJmL yields are used
@@ -16,10 +16,11 @@
 #' @param allocationrule    Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
 #' @param thresholdtype     Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param avlland_scen      Land availability scenario (currCropland, currIrrig, potIrrig)
-#'                          combination of land availability scenario and initialization year separated by ":".
-#'                          protection scenario separated by "_" (only relevant when potIrrig selected):
-#'                          WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param landScen  Land availability scenario (currCropland, currIrrig, potCropland)
+#'                  combination of land availability scenario and initialization year separated by ":".
+#'                  Initialization year only relevant for curr scenarios.
+#'                  protection scenario separated by "_" (only relevant when potCropland selected):
+#'                  WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix           cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
 #'                          or hist_irrig or hist_total for historical cropmix
@@ -39,10 +40,10 @@
 #'
 #' @export
 
-plotEconOfIrrig <- function(region = "GLO", x_axis_range, output, scenario, lpjml, selectyears, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, avlland_scen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
+plotEconOfIrrig <- function(region = "GLO", x_axis_range, output, scenario, lpjml, selectyears, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, landScen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
 
-  inputdata   <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
+  inputdata   <- reportEconOfIrrig(GT_range = x_axis_range, region = region, output = output, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen, cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
   df          <- inputdata$data
   description <- inputdata$description
   unit        <- inputdata$unit
@@ -51,7 +52,7 @@ plotEconOfIrrig <- function(region = "GLO", x_axis_range, output, scenario, lpjm
     geom_line(aes_string(y = paste("IrrigArea", "on", scenario, sep = ".")),  color = "darkblue")                    + geom_point(aes_string(y = paste("IrrigArea", "on", scenario, sep = "."))) +
     geom_line(aes_string(y = paste("IrrigArea", "off", scenario, sep = ".")), color = "darkred", linetype = "twodash") + geom_point(aes_string(y = paste("IrrigArea", "off", scenario, sep = "."))) +
     theme_bw() +
-    ggtitle(paste0(description, " for yieldcalib = ", yieldcalib, " on ", avlland_scen)) + xlab("Irrigation Costs (USD/ha)") + ylab(unit)
+    ggtitle(paste0(description, " for yieldcalib = ", yieldcalib, " on ", landScen)) + xlab("Irrigation Costs (USD/ha)") + ylab(unit)
 
   return(out)
 }

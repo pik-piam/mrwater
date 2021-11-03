@@ -9,7 +9,7 @@
 #' @param climatetype       Switch between different climate scenarios
 #'                          or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear           Initialization year of irrigation system
-#' @param EFRmethod         EFR method used including selected strictness of EFRs
+#' @param efrMethod         EFR method used including selected strictness of EFRs
 #'                          (Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
 #'                          combined with scalar value defining the strictness of accessibility restriction:
@@ -33,7 +33,7 @@
 #' }
 #'
 calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
-                                 EFRmethod, accessibilityrule, com_ag) {
+                                 efrMethod, accessibilityrule, com_ag) {
 
   # Discharge that is inaccessible to human uses (mio m^3)
   inaccessibleDischarge <- calcOutput("DischargeInaccessible", selectyears = selectyears,
@@ -48,23 +48,23 @@ calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
                                        sets = c("x.y.iso", "year", "EFR"))
   reservedEFR[, , "on"]  <- calcOutput("EnvmtlFlowRequirementsConstraint", selectyears = selectyears,
                                        lpjml = lpjml, climatetype = climatetype,
-                                       EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, aggregate = FALSE)
+                                       efrMethod = efrMethod, accessibilityrule = accessibilityrule, aggregate = FALSE)
 
   # Full volume of EFRs (in mio. m^3) [used for Actual Use Accounting]
   fullEFR[, , "on"]      <- collapseNames(calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
-                                                     climatetype = climatetype, lpjml = lpjml, EFRmethod = EFRmethod,
+                                                     climatetype = climatetype, lpjml = lpjml, efrMethod = efrMethod,
                                                      aggregate = FALSE)[, , "EFR"])
 
   # Water reserved from previous river routing (including full EFRs)
   if (com_ag) {
 
     reservedRiverrouting <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
-                                       lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+                                       lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
                                        selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
   } else {
 
     reservedRiverrouting <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
-                                       lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+                                       lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
                                        selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
   }
 

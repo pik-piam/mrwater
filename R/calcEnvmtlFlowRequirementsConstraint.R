@@ -10,7 +10,7 @@
 #'                          (Note: does not affect years of harmonization or smoothing)
 #' @param climatetype       Switch between different climate scenarios
 #'                          or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod         EFR method used including selected strictness of EFRs
+#' @param efrMethod         EFR method used including selected strictness of EFRs
 #'                          (Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Method used: Quantile method (Q) or
 #'                          Coefficient of Variation (CV)
@@ -30,11 +30,11 @@
 #' }
 #'
 calcEnvmtlFlowRequirementsConstraint <- function(lpjml, selectyears, climatetype,
-                                                 EFRmethod, accessibilityrule) {
+                                                 efrMethod, accessibilityrule) {
 
   # Read in full volume of EFRs (in mio. m^3) including HFRs and LFRs
-  EFR <- calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
-                    climatetype = climatetype, lpjml = lpjml, EFRmethod = EFRmethod,
+  efr <- calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
+                    climatetype = climatetype, lpjml = lpjml, efrMethod = efrMethod,
                     aggregate = FALSE)
 
   # Read in Inaccessible discharge (in mio. m^3)
@@ -43,10 +43,10 @@ calcEnvmtlFlowRequirementsConstraint <- function(lpjml, selectyears, climatetype
                                   accessibilityrule = accessibilityrule, aggregate = FALSE)
 
   # Calculate HFRs that exceed inaccessible discharge
-  constrainingHFR <- pmax(collapseNames(EFR[, , "HFR"]) - dischargeInaccess, 0)
+  constrainingHFR <- pmax(collapseNames(efr[, , "HFR"]) - dischargeInaccess, 0)
 
   # Calculate EFRs (mio. m^3 / yr)
-  out <- collapseNames(EFR[, , "LFR"]) + constrainingHFR
+  out <- collapseNames(efr[, , "LFR"]) + constrainingHFR
 
   # Check for NAs
   if (any(is.na(out))) {

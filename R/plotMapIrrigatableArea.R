@@ -5,7 +5,7 @@
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #' @param rankmethod        Method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)
@@ -15,10 +15,11 @@
 #' @param thresholdtype     Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param gainthreshold     Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param avlland_scen  Land availability scenario (currCropland, currIrrig, potIrrig)
-#'                      combination of land availability scenario and initialization year separated by ":".
-#'                      protection scenario separated by "_" (only relevant when potIrrig selected):
-#'                      WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param landScen  Land availability scenario (currCropland, currIrrig, potCropland)
+#'                  combination of land availability scenario and initialization year separated by ":".
+#'                  Initialization year only relevant for curr scenarios.
+#'                  protection scenario separated by "_" (only relevant when potCropland selected):
+#'                  WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix       cropmix for which irrigation yield improvement is calculated
 #'                      can be selection of proxycrop(s) for calculation of average yield gain
 #'                      or hist_irrig or hist_total for historical cropmix
@@ -38,16 +39,16 @@
 #'
 #' @export
 
-plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, rankmethod, cropmix, yieldcalib, EFRmethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, avlland_scen, potential_wat, com_ag, multicropping) {
+plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, rankmethod, cropmix, yieldcalib, efrMethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, landScen, potential_wat, com_ag, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for the map")
   }
 
   irrigarea  <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-                                         EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                         efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                          allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
-                                         avlland_scen = avlland_scen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+                                         landScen = landScen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
   irrigarea  <- dimSums(irrigarea, dim = "season")
   irrigarea[irrigarea == 0] <- NA
 

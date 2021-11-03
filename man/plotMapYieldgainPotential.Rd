@@ -11,7 +11,7 @@ plotMapYieldgainPotential(
   iniyear,
   lpjml,
   climatetype,
-  EFRmethod,
+  efrMethod,
   accessibilityrule,
   yieldcalib,
   rankmethod,
@@ -21,7 +21,7 @@ plotMapYieldgainPotential(
   irrigationsystem,
   multicropping,
   cropmix,
-  avlland_scen
+  landScen
 )
 }
 \arguments{
@@ -39,7 +39,7 @@ by "." (e.g. "on.ssp2")}
 \item{climatetype}{Switch between different climate scenarios or
 historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs
+\item{efrMethod}{EFR method used including selected strictness of EFRs
 (e.g. Smakhtin:good, VMF:fair)}
 
 \item{accessibilityrule}{Strictness of accessibility restriction:
@@ -76,9 +76,10 @@ across cells of river basin ("optimization", "upstreamfirst", "equality")}
 can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix}
 
-\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
 combination of land availability scenario and initialization year separated by ":".
-protection scenario separated by "_" (only relevant when potIrrig selected):
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 }
 \value{

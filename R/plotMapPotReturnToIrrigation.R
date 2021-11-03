@@ -14,12 +14,11 @@
 #' @param multicropping    multicropping for return to irrigation (TRUE or FALSE)
 #' @param cropmix          cropmix for calculation of return to irrigation
 #'                         (proxycrop(s) or hist_irrig or hist_total)
-#' @param land             land area to be displayed
-#'                         combination of land availability scenario and initialization year separated by ":"
-#'                         land availability scenario: currIrrig, currCropland, potIrrig
-#'                         protection scenario separated by "_" (only relevant when potIrrig selected):
-#'                         WDPA, BH, FF, CPD, LW, HalfEarth
-#'                         (e.g. "potIrrig_HalfEarth:1995", currCropland:2010)
+#' @param landScen  Land availability scenario (currCropland, currIrrig, potCropland)
+#'                  combination of land availability scenario and initialization year separated by ":".
+#'                  Initialization year only relevant for curr scenarios.
+#'                  protection scenario separated by "_" (only relevant when potCropland selected):
+#'                  WDPA, BH, FF, CPD, LW, HalfEarth
 #'
 #' @return map of magpie cells
 #' @author Felicitas Beier
@@ -35,7 +34,7 @@
 #' @export
 
 plotMapPotReturnToIrrigation <- function(selectyears, unit, iniyear, lpjml,
-                                         climatetype, yieldcalib, multicropping, cropmix, land) {
+                                         climatetype, yieldcalib, multicropping, cropmix, landScen) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Map of return to irrigation")
@@ -70,7 +69,7 @@ plotMapPotReturnToIrrigation <- function(selectyears, unit, iniyear, lpjml,
 
   # relevant map area
   area              <- calcOutput("AreaPotIrrig", selectyears = selectyears,
-                                  comagyear = NULL, avlland_scen = land, aggregate = FALSE)
+                                  comagyear = NULL, landScen = landScen, aggregate = FALSE)
   return[area == 0] <- NA
 
   out <- plotmap2(toolLPJcell2MAgPIEcell(pmin(return, limit)),

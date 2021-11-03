@@ -10,7 +10,7 @@
 #' @param climatetype Switch between different climate scenarios
 #'                    or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear     Initialization year of irrigation system
-#' @param EFRmethod   EFR method used including selected strictness of EFRs
+#' @param efrMethod   EFR method used including selected strictness of EFRs
 #'                    (Smakhtin:good, VMF:fair)
 #'
 #' @importFrom madrat calcOutput
@@ -27,7 +27,7 @@
 #' }
 #'
 calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
-                               iniyear, EFRmethod) {
+                               iniyear, efrMethod) {
 
   ### Read in river structure
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
@@ -101,7 +101,7 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
                                               names = c("on", "off"),
                                               fill = 0)
     IO_required_wat_min[, , "on"] <- calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
-                                              climatetype = climatetype, EFRmethod = EFRmethod,
+                                              climatetype = climatetype, efrMethod = efrMethod,
                                               aggregate = FALSE)[, , "EFR"]
     # Bring to correct object size
     IO_required_wat_min <- as.array(.transformObject(IO_required_wat_min))
@@ -118,7 +118,7 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   } else if (humanuse == "committed_agriculture") {
 
     prevHuman_routing <- calcOutput("RiverHumanUses", lpjml = lpjml, climatetype = climatetype,
-                                    EFRmethod = EFRmethod, selectyears = selectyears,
+                                    efrMethod = efrMethod, selectyears = selectyears,
                                     iniyear = iniyear, humanuse = "non_agriculture", aggregate = FALSE)
 
     # Minimum flow requirements determined by previous river routing:

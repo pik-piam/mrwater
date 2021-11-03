@@ -6,7 +6,7 @@
 \usage{
 calcIrrigatableAreaUnlimited(
   selectyears,
-  avlland_scen,
+  landScen,
   lpjml,
   climatetype,
   cropmix,
@@ -19,12 +19,10 @@ calcIrrigatableAreaUnlimited(
 \arguments{
 \item{selectyears}{years for which irrigatable area is calculated}
 
-\item{avlland_scen}{Land availability scenario: current or potential;
-optional additionally: protection scenario in case of potential
-and initialization year of cropland area
-combination of land availability scenario and initialization year separated by ":"
-land availability scenario: currIrrig, currCropland, potIrrig
-protection scenario separated by "_" (only relevant when potIrrig selected):
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
+combination of land availability scenario and initialization year separated by ":".
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}

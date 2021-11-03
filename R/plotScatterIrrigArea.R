@@ -6,7 +6,7 @@
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                          If FALSE: uncalibrated LPJmL yields are used
@@ -15,9 +15,11 @@
 #' @param thresholdtype     Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param gainthreshold     Gainthreshold for allocation algorithm
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param avlland_scen      Land availability scenario: current or potential; optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-#'                          combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-#'                          protection scenario separated by "_" (only relevant when potIrrig selected): WDPA, BH, FF, CPD, LW, HalfEarth. Areas where no irrigation water withdrawals are allowed due to biodiversity protection.
+#' @param landScen  Land availability scenario (currCropland, currIrrig, potCropland)
+#'                  combination of land availability scenario and initialization year separated by ":".
+#'                  Initialization year only relevant for curr scenarios.
+#'                  protection scenario separated by "_" (only relevant when potCropland selected):
+#'                  WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix           cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
 #'                          or hist_irrig or hist_total for historical cropmix
@@ -39,16 +41,16 @@
 #' @export
 
 plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatetype,
-                                 EFRmethod, accessibilityrule, rankmethod, yieldcalib,
+                                 efrMethod, accessibilityrule, rankmethod, yieldcalib,
                                  allocationrule, gainthreshold, thresholdtype,
-                                 irrigationsystem, avlland_scen, cropmix, multicropping) {
+                                 irrigationsystem, landScen, cropmix, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
   # retrieve function arguments
-  iniyear   <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
+  iniyear   <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
 
   croparea  <- calcOutput("CropareaAdjusted", years = selectyears, sectoral = "kcr", cells = "lpjcell",
                            physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
@@ -59,9 +61,9 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
                                               climatetype = climatetype, lpjml = lpjml,
                                               gainthreshold = gainthreshold, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                               allocationrule = allocationrule,  thresholdtype = thresholdtype,
-                                              irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+                                              irrigationsystem = irrigationsystem, landScen = landScen,
                                               cropmix = cropmix, potential_wat = TRUE,
-                                              accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+                                              accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                               com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"])
   # sum over seasons (harvested area throughout the year)
   irrigatableArea <- dimSums(irrigatableArea, dim = "season")
@@ -78,17 +80,17 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
   watAvlAg  <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
                                          output = "potIrrigWat", selectyears = selectyears,
                                          lpjml = lpjml, climatetype = climatetype,
-                                         EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                                         efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                                          rankmethod = rankmethod, yieldcalib = yieldcalib,
                                          allocationrule = allocationrule, thresholdtype = thresholdtype,
                                          gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
-                                         iniyear = iniyear, avlland_scen = avlland_scen,
+                                         iniyear = iniyear, landScen = landScen,
                                          cropmix = cropmix, com_ag = FALSE,
                                          multicropping = multicropping, aggregate = FALSE)[, , scenario])
 
   fullirrigReq  <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
                                lpjml = lpjml, climatetype = climatetype, comagyear = NULL,
-                               irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+                               irrigationsystem = irrigationsystem, landScen = landScen,
                                cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
 
   fracfullirrig <- watAvlAg / fullirrigReq
@@ -129,7 +131,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
       # geom_smooth(method = lm, na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
-      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", landScen)) +
       theme_bw() +
       theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -141,7 +143,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
       geom_point(size = 0.1, color = "green", na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
-      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", landScen)) +
       theme_bw() +
       theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -153,7 +155,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
       geom_point(size = 0.1, color = "red", na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
-      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", landScen)) +
       theme_bw() +
       theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -171,7 +173,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
     #   geom_smooth(method = lm, na.rm = TRUE) +
     #   coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
     #   xlab("Actually Irrigated Area according to LUH (in Mha)") +
-    #   ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+    #   ylab(paste0("Projected Irrigated Area according to Algorithm on ", landScen)) +
     #   scale_color_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#ffff99", "#b15928")) +
     #   guides(colour = guide_legend(override.aes = list(size = 5))) +
     #   theme_bw() +
@@ -186,7 +188,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
       # geom_smooth(method = lm, na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
-      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", landScen)) +
       theme_bw() +
       theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -197,7 +199,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
       geom_point(size = 0.1, color = "green", na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
-      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", landScen)) +
       theme_bw() +
       theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -208,7 +210,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
       geom_point(size = 0.1, color = "red", na.rm = TRUE) +
       coord_equal(xlim = c(0, 0.3), ylim = c(0, 0.3)) +
       xlab("Actually Irrigated Area according to LUH (in Mha)") +
-      ylab(paste0("Projected Irrigated Area according to Algorithm on ", avlland_scen)) +
+      ylab(paste0("Projected Irrigated Area according to Algorithm on ", landScen)) +
       theme_bw() +
       theme(panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA),
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(),

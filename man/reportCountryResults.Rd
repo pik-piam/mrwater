@@ -9,7 +9,7 @@ reportCountryResults(
   lpjml,
   climatetype,
   gainthreshold,
-  EFRmethod,
+  efrMethod,
   accessibilityrule,
   rankmethod,
   yieldcalib,
@@ -31,7 +31,7 @@ historical baseline "GSWP3-W5E5:historical"}
 
 \item{gainthreshold}{gainthreshold chosen for reporting}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs
+\item{efrMethod}{EFR method used including selected strictness of EFRs
 (e.g. Smakhtin:good, VMF:fair)}
 
 \item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)

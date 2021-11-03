@@ -10,7 +10,7 @@ calcRiverHumanUses(
   climatetype,
   selectyears,
   iniyear,
-  EFRmethod
+  efrMethod
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ or historical baseline "GSWP3-W5E5:historical"}
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs
+\item{efrMethod}{EFR method used including selected strictness of EFRs
 (Smakhtin:good, VMF:fair)}
 }
 \value{

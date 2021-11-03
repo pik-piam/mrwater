@@ -22,16 +22,6 @@
 calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
 
   ### Read in river structure
-  # Note: river structure derived from LPJmL input (drainage) [maybe later: implement readDrainage function]
-  # Information contained:
-  ## upstreamcells:   all cells that are upstream of current cell (list of cells)
-  ## downstreamcells: all cells that are downstream of current cell (list of cells)
-  ## nextcell:        cell to which discharge of current cell flows (exactly 1 cell)
-  ## endcell:         estuary cell of current cell,
-  ##                  i.e. last cell of the river of which current cell is part of (exactly 1 cell)
-  ## calcorder:       ordering of cells for calculation from upstream to downstream
-  ## cells:           LPJmL cell ordering with ISO code
-  ## coordinates:     coordinate data of cells
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
 
   ### Read in input data already time-smoothed and for climate scenarios harmonized to the baseline

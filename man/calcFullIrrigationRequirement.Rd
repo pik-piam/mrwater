@@ -10,7 +10,7 @@ calcFullIrrigationRequirement(
   selectyears,
   comagyear,
   irrigationsystem,
-  avlland_scen,
+  landScen,
   cropmix,
   multicropping
 )
@@ -30,9 +30,10 @@ used for cropland area initialization in calcIrrigatedArea}
 \item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}
 
-\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
 combination of land availability scenario and initialization year separated by ":".
-protection scenario separated by "_" (only relevant when potIrrig selected):
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{cropmix}{Cropmix for which irrigation yield improvement is calculated

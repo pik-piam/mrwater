@@ -5,7 +5,7 @@
 #' @param lpjml             LPJmL version used
 #' @param selectyears       Years for which irrigatable area is calculated
 #' @param climatetype       Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx).
 #'                          (e.g. Q75: 0.25, Q50: 0.5)
@@ -28,9 +28,10 @@
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear           Initialization year of irrigation system
-#' @param avlland_scen      Land availability scenario (currCropland, currIrrig, potIrrig)
+#' @param landScen          Land availability scenario (currCropland, currIrrig, potCropland)
 #'                          combination of land availability scenario and initialization year separated by ":".
-#'                          protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                          Initialization year only relevant for curr scenarios.
+#'                          protection scenario separated by "_" (only relevant when potCropland selected):
 #'                          WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix           Cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
@@ -52,27 +53,27 @@
 #' calcOutput("WaterPotUse", aggregate = FALSE)
 #' }
 #'
-calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod,
+calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             thresholdtype, gainthreshold, irrigationsystem, iniyear,
-                            avlland_scen, cropmix, com_ag, multicropping) {
+                            landScen, cropmix, com_ag, multicropping) {
 
   # Check
-  if (!is.na(as.list(strsplit(avlland_scen, split = ":"))[[1]][2]) &&
-      iniyear != as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])) {
+  if (!is.na(as.list(strsplit(landScen, split = ":"))[[1]][2]) &&
+      iniyear != as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])) {
     stop("Initialization year in calcWaterPotUse does not match:
-         iniyear and avlland_scen should have same initialization year")
+         iniyear and landScen should have same initialization year")
   }
 
   # Water potentially available for irrigation (accounting for previously committed agricultural uses)
   watAvlAg    <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
                                         output = "potIrrigWat", selectyears = selectyears,
                                         lpjml = lpjml, climatetype = climatetype,
-                                        EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                                        efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
                                         allocationrule = allocationrule, thresholdtype = thresholdtype,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
-                                        iniyear = iniyear, avlland_scen = avlland_scen,
+                                        iniyear = iniyear, landScen = landScen,
                                         cropmix = cropmix, com_ag = com_ag,
                                         multicropping = multicropping, aggregate = FALSE))
   watAvlAgWW <- collapseNames(watAvlAg[, , "withdrawal"])
@@ -87,7 +88,7 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod,
   # Water use for non-agricultural purposes
   watNonAg <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
                                       lpjml = lpjml, climatetype = climatetype,
-                                      EFRmethod = EFRmethod, selectyears = selectyears,
+                                      efrMethod = efrMethod, selectyears = selectyears,
                                       iniyear = iniyear, aggregate = FALSE)
   watNonAgWW[, , "single"] <- collapseNames(watNonAg[, , "currHuman_ww"])
   watNonAgWC[, , "single"] <- collapseNames(watNonAg[, , "currHuman_wc"])
@@ -97,7 +98,7 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, EFRmethod,
     # Water already committed to irrigation
     currHuman <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                              lpjml = lpjml, climatetype = climatetype,
-                             EFRmethod = EFRmethod, selectyears = selectyears,
+                             efrMethod = efrMethod, selectyears = selectyears,
                              iniyear = iniyear, aggregate = FALSE)
 
   } else {

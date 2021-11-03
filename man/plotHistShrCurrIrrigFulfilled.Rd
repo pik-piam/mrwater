@@ -10,7 +10,7 @@ plotHistShrCurrIrrigFulfilled(
   lpjml,
   selectyears,
   climatetype,
-  EFRmethod
+  efrMethod
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ plotHistShrCurrIrrigFulfilled(
 
 \item{climatetype}{Switch between different climate models or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:fair)}
+\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:fair)}
 }
 \value{
 map of magpie cells

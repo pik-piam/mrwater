@@ -12,10 +12,11 @@
 #'                          tDM (tons per dry matter),
 #'                          USD_ha (USD per hectare) for area return, or
 #'                          USD_m3 (USD per cubic meter) for volumetric return
-#' @param avlland_scen      Land availability scenario (currCropland, currIrrig, potIrrig)
-#'                          combination of land availability scenario and initialization year separated by ":".
-#'                          protection scenario separated by "_" (only relevant when potIrrig selected):
-#'                          WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param landScen  Land availability scenario (currCropland, currIrrig, potCropland)
+#'                  combination of land availability scenario and initialization year separated by ":".
+#'                  Initialization year only relevant for curr scenarios.
+#'                  protection scenario separated by "_" (only relevant when potCropland selected):
+#'                  WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix           Cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
 #'                          or hist_irrig or hist_total for historical cropmix
@@ -35,7 +36,7 @@
 #' @export
 
 plotMapIrrigYieldImprovementPotential <- function(selectyears, iniyear, lpjml, climatetype,
-                                      yieldcalib, unit, multicropping, cropmix, avlland_scen) {
+                                      yieldcalib, unit, multicropping, cropmix, landScen) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Yield Gain Potential ")
@@ -50,7 +51,7 @@ plotMapIrrigYieldImprovementPotential <- function(selectyears, iniyear, lpjml, c
 
   # relevant map area
   area         <- calcOutput("AreaPotIrrig", selectyears = selectyears,
-                              comagyear = NULL, avlland_scen = avlland_scen, aggregate = FALSE)
+                              comagyear = NULL, landScen = landScen, aggregate = FALSE)
   x[area == 0] <- NA
 
   if (unit == "USD_ha") {

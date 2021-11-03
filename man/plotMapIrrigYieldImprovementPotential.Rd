@@ -13,7 +13,7 @@ plotMapIrrigYieldImprovementPotential(
   unit,
   multicropping,
   cropmix,
-  avlland_scen
+  landScen
 )
 }
 \arguments{
@@ -40,9 +40,10 @@ USD_m3 (USD per cubic meter) for volumetric return}
 can be selection of proxycrop(s) for calculation of average yield gain
 or hist_irrig or hist_total for historical cropmix}
 
-\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
 combination of land availability scenario and initialization year separated by ":".
-protection scenario separated by "_" (only relevant when potIrrig selected):
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 }
 \value{

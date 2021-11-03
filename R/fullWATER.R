@@ -2,7 +2,7 @@
 #' @description Function that produces the objects for water outputs that can
 #'              be plotted with the mrwaterPlots functions.
 #'
-#' @param EFRmethod         EFR method used including selected strictness of EFRs
+#' @param efrMethod         EFR method used including selected strictness of EFRs
 #'                          (Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
 #'                          combined with scalar value defining the strictness of accessibility restriction:
@@ -31,16 +31,16 @@
 #' @param currland          Current land availability scenario: land scenario and initialization year
 #' @param potland           Potential land availability scenario: specify suitability (Ramankutty or Zabel),
 #'                          protection scenario and initialization year after potIrrig
-#'                          (e.g. potIrrigRamankutty_HalfEarth:2010)
+#'                          (e.g. potCropland_HalfEarth:2010)
 #'
 #' @author Felicitas Beier
 #'
 #' @export
 
-fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
+fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
                       allocationrule = "optimization", rankmethod = "USD_ha:TRUE",
                       thresholdtype = "USD_ha", gainthreshold = 500,
-                      currland = "currCropland:2010", potland = "potIrrigRamankutty_HalfEarth:2010") {
+                      currland = "currCropland:2010", potland = "potIrrig_HalfEarth:2010") {
 
   # Standard settings
   iniyear          <- 2010
@@ -70,11 +70,11 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   # Share current irrigation water that can be fulfilled by available water resources
   calcOutput("ShrCurrIrrigFulfilled", lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             EFRmethod = EFRmethod, aggregate = FALSE,
+             efrMethod = efrMethod, aggregate = FALSE,
              file = "shrCurrIrrigFulfilled.mz")
 
   calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
-             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+             lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
              selectyears = selectyears, iniyear = iniyear, aggregate = FALSE,
              file = "fulfilledComAg.mz")
 
@@ -83,43 +83,33 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "ComAg.mz")
 
   calcOutput("WaterPotUse", selectyears = selectyears,
-             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+             lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
-             avlland_scen = currland, cropmix = cropmix,
+             landScen = currland, cropmix = cropmix,
              com_ag = TRUE, multicropping = multicropping, aggregate = FALSE,
              file = "WatPotUse_curr.mz")
 
   calcOutput("WaterPotUse", selectyears = selectyears,
-             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+             lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
-             avlland_scen = potland, cropmix = cropmix,
+             landScen = potland, cropmix = cropmix,
              com_ag = TRUE, multicropping = multicropping, aggregate = FALSE,
              file = "WatPotUse_pot.mz")
   calcOutput("WaterPotUse", selectyears = selectyears,
-             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod,
+             lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
-             avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear), cropmix = cropmix,
+             landScen = paste0(gsub("_.*", "", potland), ":", iniyear), cropmix = cropmix,
              com_ag = TRUE, multicropping = multicropping, aggregate = FALSE,
              file = "WatPotUse_pot_Unprotect.mz")
-
-  # Yield gain through irrigation
-  calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
-             unit = "USD_ha", iniyear = iniyear, selectyears = plotyear,
-             cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping,
-             aggregate = FALSE, file = "yieldgain_USDha.mz")
-  calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
-             unit = "USD_m3", iniyear = iniyear, selectyears = plotyear,
-             cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping,
-             aggregate = FALSE, file = "yieldgain_USDm3.mz")
 
   ### Main Outputs ###
   # Potentially irrigated area
@@ -127,9 +117,9 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = gainthreshold, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = currland,
+             irrigationsystem = irrigationsystem, landScen = currland,
              cropmix = cropmix, potential_wat = TRUE, com_ag = FALSE,
-             accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
              multicropping = multicropping, aggregate = FALSE,
              file = "irrigatableArea_potential.mz")
 
@@ -137,50 +127,62 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
   # (only for sustainable scenario and only for multicropping = FALSE!)
   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
-             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+             lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = currland, cropmix = cropmix,
+             irrigationsystem = irrigationsystem, landScen = currland, cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
              file = "DemandCurve_curr_single.mz")
 
   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
-             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+             lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = potland, cropmix = cropmix,
+             irrigationsystem = irrigationsystem, landScen = potland, cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
              file = "DemandCurve_pot_single.mz")
 
   # Reference data
-  calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-             selectyears = plotyear, climatetype = climatetype, EFRmethod = EFRmethod,
-             yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = currland,
-             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
-             file = "yieldgainarea_curr.mz")
+  for (y in c(TRUE, FALSE)) {
+    calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
+               selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
+               yieldcalib = y, thresholdtype = thresholdtype, landScen = currland,
+               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
+               file = paste0("yieldgainarea_curr", y, ".mz"))
 
-  calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-             selectyears = plotyear, climatetype = climatetype, EFRmethod = EFRmethod,
-             yieldcalib = yieldcalib, thresholdtype = thresholdtype, avlland_scen = potland,
-             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
-             file = "yieldgainarea_pot.mz")
-  calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-             selectyears = plotyear, climatetype = climatetype, EFRmethod = EFRmethod,
-             yieldcalib = yieldcalib, thresholdtype = thresholdtype,
-             avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear),
-             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
-             file = "yieldgainarea_pot_Unprotect.mz")
+    calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
+               selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
+               yieldcalib = y, thresholdtype = thresholdtype, landScen = potland,
+               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
+               file = paste0("yieldgainarea_pot", y, ".mz"))
+    calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
+               selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
+               yieldcalib = y, thresholdtype = thresholdtype,
+               landScen = paste0(gsub("_.*", "", potland), ":", iniyear),
+               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
+               file = paste0("yieldgainarea_pot_Unprotect", y, ".mz"))
+
+    # Yield gain through irrigation
+    calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
+               unit = "USD_ha", iniyear = iniyear, selectyears = plotyear,
+               cropmix = cropmix, yieldcalib = y, multicropping = multicropping,
+               aggregate = FALSE, file = paste0("yieldgain_USDha", y, ".mz"))
+    calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
+               unit = "USD_m3", iniyear = iniyear, selectyears = plotyear,
+               cropmix = cropmix, yieldcalib = y, multicropping = multicropping,
+               aggregate = FALSE, file = paste0("yieldgain_USDm3", y, ".mz"))
+  }
 
   # Area that is potentially available for irrigated agriculture
   calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
-             avlland_scen = potland, aggregate = FALSE,
+             landScen = potland, aggregate = FALSE,
              file = "avlIrrigarea_pot.mz")
   calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
-             avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear), aggregate = FALSE,
+             landScen = paste0(gsub("_.*", "", potland), ":", iniyear), aggregate = FALSE,
              file = "avlIrrigarea_pot_Unprotect.mz")
   calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
-             avlland_scen = currland, aggregate = FALSE,
+             landScen = currland, aggregate = FALSE,
              file = "avlIrrigarea_curr.mz")
 
   # Physical Potential considering committed uses
@@ -189,9 +191,9 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = currland,
+             irrigationsystem = irrigationsystem, landScen = currland,
              cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
-             accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
              multicropping = multicropping, aggregate = FALSE,
              file = "irrigArea_currCropland_comag.mz")
 
@@ -200,9 +202,9 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = potland,
+             irrigationsystem = irrigationsystem, landScen = potland,
              cropmix = cropmix, potential_wat = TRUE, com_ag = TRUE,
-             accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
              multicropping = multicropping, aggregate = FALSE,
              file = "irrigArea_potCropland_comag.mz")
 
@@ -211,56 +213,56 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, avlland_scen = potland,
+             irrigationsystem = irrigationsystem, landScen = potland,
              cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE,
-             accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
              multicropping = multicropping, aggregate = FALSE,
              file = "LUHfulfilled_comag.mz")
 
   # Environmental flow requirements
   # calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
-  #            climatetype = climatetype, EFRmethod = EFRmethod, aggregate = FALSE,
+  #            climatetype = climatetype, efrMethod = efrMethod, aggregate = FALSE,
   #            file = "EFR.mz")
 
   # Basin violations
   calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
-             climatetype = climatetype, EFRmethod = EFRmethod,
+             climatetype = climatetype, efrMethod = efrMethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
-             avlland_scen = potland, cropmix = cropmix, com_ag = TRUE, multicropping = FALSE,
+             landScen = potland, cropmix = cropmix, com_ag = TRUE, multicropping = FALSE,
              scenario = "off.ssp2", aggregate = FALSE,
              file = "basinViolation_LANDPROTECT_comag.mz")
 
   calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
-             climatetype = climatetype, EFRmethod = EFRmethod,
+             climatetype = climatetype, efrMethod = efrMethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
-             avlland_scen = potland, cropmix = cropmix, com_ag = FALSE, multicropping = FALSE,
+             landScen = potland, cropmix = cropmix, com_ag = FALSE, multicropping = FALSE,
              scenario = "off.ssp2", aggregate = FALSE,
              file = "basinViolation_LANDPROTECT.mz")
 
   calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
-             climatetype = climatetype, EFRmethod = EFRmethod,
+             climatetype = climatetype, efrMethod = efrMethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
-             avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear),
+             landScen = paste0(gsub("_.*", "", potland), ":", iniyear),
              cropmix = cropmix, com_ag = TRUE, multicropping = FALSE,
              scenario = "off.ssp2", aggregate = FALSE,
              file = "basinViolation_comag.mz")
 
   calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,
-             climatetype = climatetype, EFRmethod = EFRmethod,
+             climatetype = climatetype, efrMethod = efrMethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
-             avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear),
+             landScen = paste0(gsub("_.*", "", potland), ":", iniyear),
              cropmix = cropmix, com_ag = FALSE, multicropping = FALSE,
              scenario = "off.ssp2", aggregate = FALSE,
              file = "basinViolation.mz")
@@ -271,37 +273,41 @@ fullWATER <- function(EFRmethod = "VMF:fair", accessibilityrule = "CV:2",
                                         stage = "raw", aggregate = FALSE,
                                         file = "LPJmL_monthlyDischarge.mz")
   # Validation
-  for (EFRmethod in c("VMF:fair", "Smakhtin:fair", "Smakhtin:good")) {
+  for (efrMethod in c("VMF:fair", "Smakhtin:fair", "Smakhtin:good")) {
     for (accessibilityrule in c("CV:2", "Q:1", "Q:0.9", "Q:0.75", "Q:0.5")) {
 
       calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
                  GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
-                 lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                 lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                  thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                 avlland_scen = currland, cropmix = cropmix, potential_wat = TRUE,
+                 landScen = currland, cropmix = cropmix, potential_wat = TRUE,
                  com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
-                 file = paste0("ValidCurrcropland", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
+                 file = paste0("ValidCurrcropland", gsub(":", "", efrMethod), gsub(":", "", accessibilityrule), ".mz"))
 
       # Potentially irrigated area
       calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
                  GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
-                 lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                 lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                  thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                 avlland_scen = potland, cropmix = cropmix, potential_wat = TRUE,
+                 landScen = potland, cropmix = cropmix, potential_wat = TRUE,
                  com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
-                 file = paste0("ValidPotcropland", gsub(":", "", EFRmethod), gsub(":", "", accessibilityrule), ".mz"))
+                 file = paste0("ValidPotcropland", gsub(":", "", efrMethod), gsub(":", "", accessibilityrule), ".mz"))
 
       calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
                  GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
-                 lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                 lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                  thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                 avlland_scen = paste0(gsub("_.*", "", potland), ":", iniyear), cropmix = cropmix, potential_wat = TRUE,
+                 landScen = paste0(gsub("_.*", "", potland), ":", iniyear), cropmix = cropmix, potential_wat = TRUE,
                  com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
-                 file = paste0("ValidPotcropland_Unprotect", gsub(":", "", EFRmethod),
+                 file = paste0("ValidPotcropland_Unprotect", gsub(":", "", efrMethod),
                                gsub(":", "", accessibilityrule), ".mz"))
     }
   }
+
+  # Half-Earth protection map
+  calcOutput("ProtectArea", aggregate = FALSE, file = "protectedAreas.mz")
+
 }

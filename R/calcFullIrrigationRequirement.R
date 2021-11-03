@@ -11,9 +11,10 @@
 #'                         used for cropland area initialization in calcIrrigatedArea
 #' @param irrigationsystem Irrigation system used: system share as in initialization year,
 #'                         or drip, surface, sprinkler for full irrigation by selected system
-#' @param avlland_scen     Land availability scenario (currCropland, currIrrig, potIrrig)
+#' @param landScen         Land availability scenario (currCropland, currIrrig, potCropland)
 #'                         combination of land availability scenario and initialization year separated by ":".
-#'                         protection scenario separated by "_" (only relevant when potIrrig selected):
+#'                         Initialization year only relevant for curr scenarios.
+#'                         protection scenario separated by "_" (only relevant when potCropland selected):
 #'                         WDPA, BH, FF, CPD, LW, HalfEarth
 #' @param cropmix          Cropmix for which irrigation yield improvement is calculated
 #'                         can be selection of proxycrop(s) for calculation of average yield gain
@@ -33,21 +34,21 @@
 #' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
 
 calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear,
-                                          irrigationsystem, avlland_scen, cropmix, multicropping) {
+                                          irrigationsystem, landScen, cropmix, multicropping) {
 
   # retrieve function arguments
-  iniyear  <- as.numeric(as.list(strsplit(avlland_scen, split = ":"))[[1]][2])
+  iniyear  <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
 
   # read in irrigation water requirements for each irrigation system
   # [in m^3 per hectare per year] (smoothed & harmonized)
   irrigWat <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                           lpjml = lpjml, climatetype = climatetype, aggregate = FALSE)
   # pasture is not irrigated in MAgPIE
-  irrigWat <- irrigWat[, , "pasture", invert = T]
+  irrigWat <- irrigWat[, , "pasture", invert = TRUE]
 
   # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
   land <- calcOutput("AreaPotIrrig", selectyears = selectyears,
-                     comagyear = comagyear, avlland_scen = avlland_scen, aggregate = FALSE)
+                     comagyear = comagyear, landScen = landScen, aggregate = FALSE)
 
   # share of corp area by crop type
   if (length(cropmix) == 1 && grepl("hist", cropmix)) {

@@ -7,7 +7,7 @@
 #' @param lpjml             LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype       Switch between different climate scenarios or
 #'                          historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod         EFR method used including selected strictness of EFRs
+#' @param efrMethod         EFR method used including selected strictness of EFRs
 #'                          (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
 #'                          combined with scalar value defining the strictness of accessibility restriction:
@@ -54,7 +54,7 @@
 #' @export
 
 reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
-                                 EFRmethod, accessibilityrule, rankmethod, yieldcalib,
+                                 efrMethod, accessibilityrule, rankmethod, yieldcalib,
                                  allocationrule, thresholdtype, irrigationsystem, cropmix,
                                  multicropping) {
   # Set arguments
@@ -84,10 +84,10 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     currIrr <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
                                         gainthreshold = gainthreshold, selectyears = selectyears,
                                         climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                        EFRmethod = EFRmethod, rankmethod = rankmethod,
+                                        efrMethod = efrMethod, rankmethod = rankmethod,
                                         yieldcalib = yieldcalib, allocationrule = allocationrule,
                                         thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                        avlland_scen = "currCropland:2010",
+                                        landScen = "currCropland:2010",
                                         cropmix = cropmix, potential_wat = FALSE,
                                         com_ag = TRUE, multicropping = multicropping,
                                         aggregate = FALSE)[, , "irrigatable"][, , scenario])
@@ -104,10 +104,10 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     potIrrcurr <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
                                            gainthreshold = gainthreshold, selectyears = selectyears,
                                            climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                        EFRmethod = EFRmethod, rankmethod = rankmethod,
+                                        efrMethod = efrMethod, rankmethod = rankmethod,
                                         yieldcalib = yieldcalib, allocationrule = allocationrule,
                                         thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                        avlland_scen = "currCropland:2010",
+                                        landScen = "currCropland:2010",
                                         cropmix = cropmix, potential_wat = TRUE,
                                         com_ag = com_ag, multicropping = multicropping,
                                         aggregate = FALSE)[, , "irrigatable"][, , scenario])
@@ -124,10 +124,10 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     potIrrpot <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
                                           gainthreshold = gainthreshold, selectyears = selectyears,
                                           climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                          EFRmethod = EFRmethod, rankmethod = rankmethod,
+                                          efrMethod = efrMethod, rankmethod = rankmethod,
                                           yieldcalib = yieldcalib, allocationrule = allocationrule,
                                           thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                          avlland_scen = "potIrrig_HalfEarth:2010",
+                                          landScen = "potCropland_HalfEarth:2010",
                                           cropmix = cropmix, potential_wat = TRUE,
                                           com_ag = com_ag, multicropping = multicropping,
                                           aggregate = FALSE)[, , "irrigatable"][, , scenario])
@@ -169,7 +169,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     # Current Irrigation Water Use [total, sustainable, unsustainable]
     currIrr <- collapseNames(calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                             lpjml = lpjml, climatetype = climatetype,
-                            EFRmethod = EFRmethod, selectyears = selectyears,
+                            efrMethod = efrMethod, selectyears = selectyears,
                             iniyear = iniyear,
                             aggregate = FALSE)[, , scenario][, , paste0("currHuman_", gsub("(.*)_", "", output))])
     getSets(currIrr)  <- c("x", "y", "iso", "year", "type")
@@ -184,10 +184,10 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     potIrrcurr <- collapseNames(calcOutput("WaterPotUse", lpjml = lpjml,
                                            gainthreshold = gainthreshold, selectyears = selectyears,
                                            climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                           EFRmethod = EFRmethod, rankmethod = rankmethod,
+                                           efrMethod = efrMethod, rankmethod = rankmethod,
                                            yieldcalib = yieldcalib, allocationrule = allocationrule,
                                            thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                           iniyear = iniyear, avlland_scen = "currCropland:2010",
+                                           iniyear = iniyear, landScen = "currCropland:2010",
                                            cropmix = cropmix, com_ag = com_ag, multicropping = multicropping,
                                            aggregate = FALSE)[, , output][, , scenario])
     potIrrcurr           <- dimSums(potIrrcurr, dim = "season")
@@ -203,10 +203,10 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     potIrrpot <- collapseNames(calcOutput("WaterPotUse", lpjml = lpjml,
                                           climatetype = climatetype, selectyears = selectyears,
                                           gainthreshold = gainthreshold, accessibilityrule = accessibilityrule,
-                                          EFRmethod = EFRmethod, rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                          efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                           allocationrule = allocationrule, thresholdtype = thresholdtype,
                                           irrigationsystem = irrigationsystem, iniyear = iniyear,
-                                          avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix,
+                                          landScen = "potCropland_HalfEarth:2010", cropmix = cropmix,
                                           com_ag = com_ag, multicropping = multicropping,
                                           aggregate = FALSE)[, , output][, , scenario])
     potIrrpot           <- dimSums(potIrrpot, dim = "season")

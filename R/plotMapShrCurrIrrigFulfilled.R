@@ -9,7 +9,7 @@
 #'                         historical baseline "GSWP3-W5E5:historical"
 #' @param selectyears      Years to be returned
 #' @param iniyear          Initialization year
-#' @param EFRmethod        EFR method used including selected strictness of EFRs
+#' @param efrMethod        EFR method used including selected strictness of EFRs
 #'                         (e.g. Smakhtin:good, VMF:fair)
 #'
 #' @return map of magpie cells
@@ -24,7 +24,7 @@
 #'
 #' @export
 
-plotMapShrCurrIrrigFulfilled <- function(scenario, iniyear, lpjml, selectyears, climatetype, EFRmethod) {
+plotMapShrCurrIrrigFulfilled <- function(scenario, iniyear, lpjml, selectyears, climatetype, efrMethod) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Map depicting the share of current irrigation
@@ -34,7 +34,7 @@ plotMapShrCurrIrrigFulfilled <- function(scenario, iniyear, lpjml, selectyears, 
   fulfilledShr <- calcOutput("ShrCurrIrrigFulfilled",
                              lpjml = lpjml, climatetype = climatetype,
                              selectyears = selectyears, iniyear = iniyear,
-                             EFRmethod = EFRmethod, aggregate = FALSE)
+                             efrMethod = efrMethod, aggregate = FALSE)
 
   out <- plotmap2(toolLPJcell2MAgPIEcell(fulfilledShr[, selectyears, scenario]),
                   title = element_blank(), labs = FALSE, sea = FALSE, land_colour = "transparent") +

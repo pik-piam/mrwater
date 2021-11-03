@@ -9,7 +9,7 @@ calcRiverSurplusDischargeAllocation_final(
   climatetype,
   selectyears,
   output,
-  EFRmethod,
+  efrMethod,
   accessibilityrule,
   rankmethod,
   yieldcalib,
@@ -18,7 +18,7 @@ calcRiverSurplusDischargeAllocation_final(
   gainthreshold,
   irrigationsystem,
   iniyear,
-  avlland_scen,
+  landScen,
   cropmix,
   com_ag,
   multicropping
@@ -34,7 +34,7 @@ calcRiverSurplusDischargeAllocation_final(
 
 \item{output}{Output to be reported}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
 \item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
 combined with scalar value defining the strictness of accessibility restriction:
@@ -72,9 +72,10 @@ allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{avlland_scen}{Land availability scenario (currCropland, currIrrig, potIrrig)
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
 combination of land availability scenario and initialization year separated by ":".
-protection scenario separated by "_" (only relevant when potIrrig selected):
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{cropmix}{cropmix for which irrigation yield improvement is calculated

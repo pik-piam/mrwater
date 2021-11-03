@@ -5,7 +5,7 @@
 #' @param lpjml       LPJmL version used for monthly discharge
 #' @param climatetype Switch between different climate scenarios
 #'                    or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod   EFR method used including selected strictness of EFRs
+#' @param efrMethod   EFR method used including selected strictness of EFRs
 #'                    (e.g. Smakhtin:good, VMF:fair)
 #'
 #' @importFrom magclass collapseNames new.magpie getYears setYears as.array as.magpie add_dimension mbind
@@ -23,30 +23,30 @@
 #' }
 #'
 calcEnvmtlFlowRequirementsShare <- function(lpjml,
-                                            climatetype, EFRmethod) {
+                                            climatetype, efrMethod) {
 
   # Long-term reference time frame for EFR calculation:
   EFRyears <- c(1985:2015)
 
   # retrieve ecosystem preservation status:
-  preservationstatus <- strsplit(EFRmethod, ":")[[1]][2]
+  preservationstatus <- strsplit(efrMethod, ":")[[1]][2]
 
   # Monthly Discharge from LPJmL (raw: including variation)
-  monthly_discharge     <- setYears(calcOutput("LPJmL_new", version = lpjml["natveg"],
-                                               subtype = "mdischarge", climatetype = climatetype,
-                                               stage = "raw", years = EFRyears, aggregate = FALSE),
-                                    EFRyears)
+  monthlyDischarge    <- setYears(calcOutput("LPJmL_new", version = lpjml["natveg"],
+                                             subtype = "mdischarge", climatetype = climatetype,
+                                             stage = "raw", years = EFRyears, aggregate = FALSE),
+                                  EFRyears)
 
   # Transform to array (faster calculation)
-  monthly_discharge     <- as.array(collapseNames(monthly_discharge))
+  monthlyDischarge    <- as.array(collapseNames(monthlyDischarge))
 
   # Mean annual discharge
-  mean_annual_discharge <- apply(monthly_discharge, MARGIN = c(1), sum) / length(EFRyears)
+  meanAnnualDischarge <- apply(monthlyDischarge, MARGIN = c(1), sum) / length(EFRyears)
 
   # Mean monthly flow
-  mean_monthly_flow     <- as.magpie(apply(monthly_discharge, MARGIN = c(1, 3), mean), spatial = 1)
+  meanMonthlyFlow     <- as.magpie(apply(monthlyDischarge, MARGIN = c(1, 3), mean), spatial = 1)
 
-  if (grepl("Smakhtin", EFRmethod)) {
+  if (grepl("Smakhtin", efrMethod)) {
 
     # LFR: dependent on chosen ecosystem preservation status
     if (preservationstatus == "fair") {
@@ -74,38 +74,38 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
     ## Note: LFRs correspond to the Q90/Q75/Q50-value (depending on EFR conservation status)
     ## This is calculated via the 10%/25%/50%-quantile of monthly discharge.
     # Get the monthly LFR_val quantile for all cells (across selected long-term reference time period)
-    LFR_quant <- apply(monthly_discharge, MARGIN = c(1), quantile, probs = LFR_val)
+    LFR_quant <- apply(monthlyDischarge, MARGIN = c(1), quantile, probs = LFR_val)
     # Yearly LFRs
     LFR       <- LFR_quant * 12
     # LFR-Share: LFR as fraction of mean annual discharge
-    LFR       <- as.magpie(ifelse(mean_annual_discharge > 0, LFR / mean_annual_discharge, 0),
+    LFR       <- as.magpie(ifelse(meanAnnualDischarge > 0, LFR / meanAnnualDischarge, 0),
                            spatial = 1)
 
     ### Calculate HFR-Share
     # Yearly Q90
-    Q90       <- as.magpie(apply(monthly_discharge, MARGIN = c(1), quantile, probs = 0.1) * 12,
+    Q90       <- as.magpie(apply(monthlyDischarge, MARGIN = c(1), quantile, probs = 0.1) * 12,
                            spatial = 1)
 
-    mean_annual_discharge <- as.magpie(mean_annual_discharge, spatial = 1)
+    meanAnnualDischarge <- as.magpie(meanAnnualDischarge, spatial = 1)
 
     ## Note: "For rivers with low Q90 values, high-flow events are important
     ## for river channel maintenance, wetland flooding, and riparian vegetation.
     ## HFRs of 20% of available water are therefore assigned to rivers with a
     ## low fraction of Q90 in total discharge. Rivers with a more stable flow
     ## regime receive a lower HFR." (Bonsch et al. 2015)
-    HFR <- LFR
+    HFR       <- LFR
     HFR[, , ] <- NA
-    HFR[Q90 < 0.1 * mean_annual_discharge]  <- HFR_Q90_less10
-    HFR[Q90 >= 0.1 * mean_annual_discharge] <- HFR_Q90_10_20
-    HFR[Q90 >= 0.2 * mean_annual_discharge] <- HFR_Q90_20_30
-    HFR[Q90 >= 0.3 * mean_annual_discharge] <- HFR_Q90_more30
-    HFR[mean_annual_discharge <= 0]         <- HFR_Q90_less10
+    HFR[Q90 < 0.1 * meanAnnualDischarge]  <- HFR_Q90_less10
+    HFR[Q90 >= 0.1 * meanAnnualDischarge] <- HFR_Q90_10_20
+    HFR[Q90 >= 0.2 * meanAnnualDischarge] <- HFR_Q90_20_30
+    HFR[Q90 >= 0.3 * meanAnnualDischarge] <- HFR_Q90_more30
+    HFR[meanAnnualDischarge <= 0]         <- HFR_Q90_less10
 
     # Naming of dimensions
     LFR <- add_dimension(LFR, dim = 3.1, add = "EFR", nm = "LFR")
     HFR <- add_dimension(HFR, dim = 3.1, add = "EFR", nm = "HFR")
 
-  } else if (grepl("VMF", EFRmethod)) {
+  } else if (grepl("VMF", efrMethod)) {
 
     if (preservationstatus != "fair") {
       stop("The VMF method as of Pastor et al. (2014) is parametrized to a fair
@@ -114,31 +114,31 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
     }
 
     # Monthly value of mean annual flow:
-    mean_annual_discharge <- as.magpie(mean_annual_discharge, spatial = 1)
-    mean_annual_flow      <- mean_annual_discharge / 12
+    meanAnnualDischarge <- as.magpie(meanAnnualDischarge, spatial = 1)
+    meanAnnualFlow      <- meanAnnualDischarge / 12
 
     ## Determination of LF/IF/HF-months according to Pastor et al. (2014)
-    LFmonths <- mean_monthly_flow <= 0.4 * mean_annual_flow
-    HFmonths <- mean_monthly_flow >  0.8 * mean_annual_flow
+    LFmonths <- meanMonthlyFlow <= 0.4 * meanAnnualFlow
+    HFmonths <- meanMonthlyFlow >  0.8 * meanAnnualFlow
     IFmonths <- !LFmonths & !HFmonths
 
     ## Determination of low and high flow requirements
     # LFR: low flow months + half of intermediate flow months requirements
     # HFR: half of intermediate flow months + high flow months requirements
-    LFR <- HFR <- new.magpie(cells_and_regions = getCells(mean_annual_flow),
-                             names = getNames(mean_monthly_flow), fill = 0)
-    LFR[LFmonths] <- 0.6  * mean_monthly_flow[LFmonths]
-    LFR[IFmonths] <- 0.45 * mean_monthly_flow[IFmonths] * 0.5
-    HFR[IFmonths] <- 0.45 * mean_monthly_flow[IFmonths] * 0.5
-    HFR[HFmonths] <- 0.3  * mean_monthly_flow[HFmonths]
+    LFR <- HFR <- new.magpie(cells_and_regions = getCells(meanAnnualFlow),
+                             names = getNames(meanMonthlyFlow), fill = 0)
+    LFR[LFmonths] <- 0.6  * meanMonthlyFlow[LFmonths]
+    LFR[IFmonths] <- 0.45 * meanMonthlyFlow[IFmonths] * 0.5
+    HFR[IFmonths] <- 0.45 * meanMonthlyFlow[IFmonths] * 0.5
+    HFR[HFmonths] <- 0.3  * meanMonthlyFlow[HFmonths]
 
     # Yearly LFRs and HFRs
     LFR <- dimSums(LFR, dim = 3)
     HFR <- dimSums(HFR, dim = 3)
 
     # LFR and HFR as share of natural discharge
-    LFR <- ifelse(mean_annual_discharge > 0, LFR / mean_annual_discharge, 0)
-    HFR <- ifelse(mean_annual_discharge > 0, HFR / mean_annual_discharge, 0)
+    LFR <- ifelse(meanAnnualDischarge > 0, LFR / meanAnnualDischarge, 0)
+    HFR <- ifelse(meanAnnualDischarge > 0, HFR / meanAnnualDischarge, 0)
 
     # Naming of dimensions
     LFR <- add_dimension(LFR, dim = 3.1, add = "EFR", nm = "LFR")

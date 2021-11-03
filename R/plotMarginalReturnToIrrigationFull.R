@@ -9,7 +9,7 @@
 #' @param selectyears       years for which irrigatable area is calculated
 #' @param iniyear           initialization year
 #' @param climatetype       Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param EFRmethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param efrMethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                          If FALSE: uncalibrated LPJmL yields are used
@@ -38,18 +38,18 @@
 #'
 #' @export
 
-plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "GLO", scenario, lpjml, selectyears, iniyear, climatetype, EFRmethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, cropmix, potential_wat = TRUE, com_ag, multicropping) {
+plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "GLO", scenario, lpjml, selectyears, iniyear, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, cropmix, potential_wat = TRUE, com_ag, multicropping) {
 
   # Main data
   inputdata   <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = x_axis, scenario = scenario,
     lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-    EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
+    efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
     allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-    avlland_scen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
+    landScen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
   tmp         <- inputdata$data
   names(tmp)[-1] <- paste(names(tmp)[-1], "CurrCropland", sep = ".")
-  inputdata   <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = x_axis, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = TRUE,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, avlland_scen = "potIrrig_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
+  inputdata   <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = x_axis, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = TRUE,
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = "potCropland_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
   df          <- inputdata$data
   names(df)[-1] <- paste(names(df)[-1], "PotCropland", sep = ".")
   df          <- merge(df, tmp)
@@ -61,10 +61,10 @@ plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "G
     # Area that can be irrigated with committed agricultural uses
     current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0,
                                                   selectyears = selectyears, climatetype = climatetype,
-                                                  accessibilityrule = accessibilityrule, EFRmethod = EFRmethod,
+                                                  accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                                   rankmethod = rankmethod, yieldcalib = yieldcalib,
                                                   allocationrule = allocationrule, thresholdtype = thresholdtype,
-                                                  irrigationsystem = irrigationsystem, avlland_scen = "currCropland:2010",
+                                                  irrigationsystem = irrigationsystem, landScen = "currCropland:2010",
                                                   cropmix = cropmix, potential_wat = FALSE, com_ag = TRUE, multicropping = multicropping,
                                                   aggregate = FALSE)[, , "irrigatable"])
     current_fulfilled <- dimSums(current_fulfilled, dim = "season")
@@ -73,7 +73,7 @@ plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "G
                                       cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"], dim = 3)
   } else {
     # Water already committed to irrigation
-    tmp    <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture", lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+    tmp    <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture", lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
     current_fulfilled <- collapseNames(tmp[, , x_axis])
   }
 

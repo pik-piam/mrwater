@@ -4,7 +4,7 @@
 \alias{calcShrCurrIrrigFulfilled}
 \title{calcShrCurrIrrigFulfilled}
 \usage{
-calcShrCurrIrrigFulfilled(lpjml, climatetype, selectyears, iniyear, EFRmethod)
+calcShrCurrIrrigFulfilled(lpjml, climatetype, selectyears, iniyear, efrMethod)
 }
 \arguments{
 \item{lpjml}{LPJmL version used}
@@ -16,7 +16,7 @@ historical baseline "GSWP3-W5E5:historical"}
 
 \item{iniyear}{Initialization year}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs
+\item{efrMethod}{EFR method used including selected strictness of EFRs
 (e.g. Smakhtin:good, VMF:fair)}
 }
 \value{

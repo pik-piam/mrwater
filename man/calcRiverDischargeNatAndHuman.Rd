@@ -9,7 +9,7 @@ calcRiverDischargeNatAndHuman(
   selectyears,
   iniyear,
   climatetype,
-  EFRmethod,
+  efrMethod,
   com_ag
 )
 }
@@ -22,7 +22,7 @@ calcRiverDischargeNatAndHuman(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
 \item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
 }

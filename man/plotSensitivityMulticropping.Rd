@@ -12,14 +12,14 @@ plotSensitivityMulticropping(
   lpjml,
   selectyears,
   climatetype,
-  EFRmethod,
+  efrMethod,
   accessibilityrule,
   rankmethod,
   yieldcalib,
   allocationrule,
   thresholdtype,
   irrigationsystem,
-  avlland_scen,
+  landScen,
   cropmix,
   potential_wat = TRUE,
   com_ag
@@ -42,7 +42,7 @@ available water volume "wat_ag_ww" "wat_ag_wc"}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{EFRmethod}{EFR method: VMF:fair, Smakthin:good}
+\item{efrMethod}{EFR method: VMF:fair, Smakthin:good}
 
 \item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction:
 discharge that is exceeded x percent of the time on average throughout a year (Qx).
@@ -66,10 +66,10 @@ TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
-\item{avlland_scen}{Land availability scenario: current or potential;
-optional additionally: protection scenario in case of potential (when left empty: no protection) and initialization year of cropland area
-combination of land availability scenario and initialization year separated by ":". land availability scenario: currIrrig (only currently irrigated cropland available for irrigated agriculture), currCropland (only current cropland areas available for irrigated agriculture), potIrrig (suitable land is available for irrigated agriculture, potentially land restrictions activated through protect_scen argument)
-protection scenario separated by "_" (only relevant when potIrrig selected):
+\item{landScen}{Land availability scenario (currCropland, currIrrig, potCropland)
+combination of land availability scenario and initialization year separated by ":".
+Initialization year only relevant for curr scenarios.
+protection scenario separated by "_" (only relevant when potCropland selected):
 WDPA, BH, FF, CPD, LW, HalfEarth}
 
 \item{cropmix}{cropmix for which irrigation yield improvement is calculated
