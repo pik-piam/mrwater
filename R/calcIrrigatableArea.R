@@ -50,7 +50,7 @@
 #' }
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames add_dimension mbind
+#' @importFrom magclass collapseNames add_dimension add_columns mbind
 
 calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
                                 accessibilityrule, rankmethod, yieldcalib, allocationrule,
@@ -71,7 +71,7 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
                                   irrigationsystem = irrigationsystem, iniyear = iniyear,
                                   avlland_scen = avlland_scen, cropmix = cropmix,
                                   com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
-    avlWatWWC <- collapseNames(avlWat[, , "wat_ag_wc"])
+    avlWatWC <- collapseNames(avlWat[, , "wat_ag_wc"])
     avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
 
   } else {
@@ -85,7 +85,7 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
     avlWat         <- add_columns(avlWat, dim = 3.3, addnm = "triple")
     avlWat[, , c("double", "triple")] <- 0
 
-    avlWatWWC <- collapseNames(avlWat[, , "currHuman_wc"])
+    avlWatWC <- collapseNames(avlWat[, , "currHuman_wc"])
     avlWatWW <- collapseNames(avlWat[, , "currHuman_ww"])
 
   }
@@ -113,7 +113,7 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, EFRmethod,
   irrigareaWW[watReqWW == 0] <- 0      # cells with no water requirements also get no irrigated area assigned
   irrigareaWW <- add_dimension(irrigareaWW, dim = 3.4, add = "type", nm = "irrigatable_ww")
 
-  irrigareaWC <- pmin(avlWatWWC / watReqWC, 1) * areaPotIrrig
+  irrigareaWC <- pmin(avlWatWC / watReqWC, 1) * areaPotIrrig
   irrigareaWC[watReqWC == 0] <- 0
   irrigareaWC <- add_dimension(irrigareaWC, dim = 3.4, add = "type", nm = "irrigatable_wc")
 

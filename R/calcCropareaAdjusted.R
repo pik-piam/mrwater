@@ -34,8 +34,8 @@ calcCropareaAdjusted <- function(sectoral, physical, cellular, cells, irrigation
 
   # read in croparea from original function
   croparea <- calcOutput("Croparea", sectoral = sectoral, physical = physical,
-                                  cells = cells, cellular = cellular,
-                                  irrigation = irrigation, aggregate = FALSE)
+                          cells = cells, cellular = cellular,
+                          irrigation = irrigation, aggregate = FALSE)
 
   # tranform cell names such that they match with the rest of mrwater library
   map                          <- toolGetMappingCoord2Country()

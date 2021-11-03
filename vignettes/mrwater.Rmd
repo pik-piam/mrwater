@@ -1,0 +1,228 @@
+---
+title: "mrwater Documentation"
+author: "Felicitas D. Beier"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mrwater Documentation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r Setup, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>")
+```
+
+## Overview
+
+The following document provides a full code documentation of the ``mrwater`` library including a range of arguments that can be varied to produce cellular pre-processed water-related outputs.
+The ``fullWATER.R`` gives an overview of functions generating the main model outputs. It can be executed with the function call ``madrat:::retrieveData(WATER)`` that will generate a .tgz file with all relevant outputs. 
+
+
+### Related libraries
+
+The ``mrwater`` library is part of the mr-universe. For more details to the related libraries, please have a look at the respective libraries:
+
+```{r Libraries}
+library(madrat)
+library(magclass)
+library(mrcommons)
+library(mrland)
+library(mrmagpie)
+```
+
+### Input data
+
+The ``mrwater`` library relies on a range of input data. Open-source data is directly downloaded and imported via ``downloadSource`` and ``readSource`` functions that are part of the ``madrat`` library. 
+Data that is not openly available needs to be stored in a specific folder structure (``inputdata/sources/DataSource``) where the respective DataSource folder must have the same name as the ``readSource`` function (e.g. readRamankutty refers to the inputdata/sources/Ramankutty folder).
+The read functions of this library and the underlying libraries necessary to run the code (e.g. ``mrwater:::readIrrigationSystem``; ``mrcommons:::readFAO``; ``mrmagpie:::readZabel2014``) access this folder to include the required data. 
+
+
+## Motivation
+
+The mrwater library can be used to generate stand-alone spatially explicit irrigation potentials (irrigation water potentials (withdrawals and consumption) and irrigation area potentials) and (aggregated) input data for land-system models. Potential aggregation units are spatial clusters (based on bio-physical similarity of grid cells), country- or basin-scale. 
+
+Furthermore, its outputs are a useful disaggregation tool for land-system model outputs. For example irrigation water withdrawals from land-use models such as MAgPIE can be disaggregated to a 0.5-degree spatial resolution using spatially explicit irrigation potentials.
+
+It is designed as hydrological input data processing tool for the global land-use model MAgPIE (Model of Agricultural Production and its Impact on the Environment). Nevertheless, it is applicable for other land-system models and its spatially explicit as well as aggregated outputs can be used for a variety of land-system models (e.g. CGEs, PEs, etc.).
+
+Note: To return spatially explicit function outputs, the ``madrat:::calcOutput()`` function call must include the argument ``aggregate = FALSE``. For aggregation, a mapping is required. 
+
+
+## Hydrological input data
+
+In this version of the mrwater library, all hydrological input data is provided by the process-based hydrology-vegetation model LPJmL. 
+The data is available at ... [ask LPJmL folks to publish on e.g. Zenodo]. 
+Data that is based on natural vegetation runs is provided by LPJmL4. Data that includes management is based on LPJmL5. 
+
+The river routing consists of several functions. 
+The first iteration determines naturalized discharge based on yearly runoff and lake evaporation using the STN river structure (``rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))``) that determines the flow direction and basin attribution of the 67420 grid cells of the underlying land mask.
+The function returns natural discharge and lake evaporation that are required for further calculations in the river routing routine. 
+
+```{r NatDischarge}
+natQ <- calcOutput("RiverNaturalFlows", selectyears = 2010, climatetype = "GFDL-ESM4:ssp126",
+                   lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb"), aggregate = FALSE)[, , "discharge_nat"]
+```
+
+The required arguments are ``selectyears`` (determining the year(s) for which the output shall be generated), ``climatetype`` (selecting the GCM data and scenario underlying the process-based vegetation model), and ``lpjml`` (selecting the LPJmL model versions used for natural vegetation (``natveg``) input data and management (``crop``) input data)
+
+Environmental flow requirements (EFRs) and accessible discharge are also calculated based on hydrological LPJmL data only. Both are based on monthly discharge. 
+The calculation method and strictness of EFR can be selected via the ``EFRmethod`` argument (e.g. "Smakhtin:good", "VMF:fair").
+Inaccessible discharge is based on the assumption that the higher the long-term seasonal variability of discharge is, the harder it is to access the water by humans and bring it into productive use. Different accessibility rules can be selected via the ``accessibilityrule`` argument (e.g. "CV:2" stands for the coefficient of variation approach to a base of 2; "Q:75" stands for a quantile approach where discharge that exceeds the 75th quantile is inaccessible to humans).
+
+```{r EFRs}
+selectyears <- 2010
+lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb")
+climatetype <- "GFDL-ESM4:ssp126"
+
+efr <- calcOutput("EnvmtlFlowRequirements", EFRmethod = "VMF:fair", 
+                  selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
+                  aggregate = FALSE)[, , "EFR"]
+
+inaccessibleQ <- calcOutput("DischargeInaccessible", accessibilityrule = "CV:2", 
+                            selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
+                            aggregate = FALSE)
+
+EFRmethod         <- "VMF:fair"
+accessibilityrule <- "CV:2"
+```
+
+Note: The integration of alternative bio-physical and hydrological input data is possible. However, this functionality is not yet implemented.
+
+
+## Human water use data
+
+Human water abstractions are considered in consecutive river routing iterations that reserve the respective water abstraction and update cellular discharge respectively. They are determined through the following function call:
+
+```{r HumanDischarge}
+humanQ <- calcOutput("RiverDischargeNatAndHuman", iniyear = 2010, com_ag = TRUE,
+                     selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
+                     EFRmethod = EFRmethod, aggregate = FALSE)
+
+iniyear <- 2010
+com_ag  <- TRUE
+```
+
+Non-agricultural water abstractions as provided by ISIMIP (and for future scenarios WATERGAP) have priority over agricultural water abstractions. They are determined through the function call ``calcOutput("RiverHumanUses", humanuse = "non_agriculture", ...)`` and report reserved non-agricultural water consumption ("currHuman_wc") and withdrawal ("currHuman_ww"). 
+
+Taking so-called "committed agricultural uses", i.e. reserving water abstractions of currently irrigated areas, into account is optional (it can be activated via the ``com_ag`` argument). 
+In case of an activation of committed agricultural uses, the required consumption and withdrawal for currently irrigated areas as determined in ``calcOutput("WaterUseCommittedAg", ...)`` are reserved in addition to non-agricultural water abstractions via the function call ``calcOutput("RiverHumanUses", humanuse = "committed_agriculture", ..., iniyear = 2010)``. The argument ``iniyear`` determines the chosen cellular irrigated crop mix (i.e. the crop mix as reported by FAOSTAT for the year 2010 on cellular cropland as reported by LUH2). Cellular irrigated areas for specific years are provided via ``calcOutput("Croparea", years = iniyear, sectoral = "kcr", physical = TRUE, cells = "lpjcell", cellular = TRUE, irrigation = TRUE, aggregate = FALSE)`` through combining (irrigated and rainfed) cropland area provided by LUH2 and country-level FAO crop production data. (KRISTINE: Please confirm and if necessary rewrite). Note that areas reported as irrigated depreciate at a rate of 10 percent per annum for future time steps (years after ``iniyear``). 
+
+Compared to the previous section, this section requires additional input data: ISIMIP non-agricultural water abstraction data (for the historical time period and fixed at this level for the future), WATERGAP non-agricultural water abstraction data (for future scenarios),  LPJmL5 crop water requirements, country level irrigation system shares as provided by Jägermeyr (REF!), LUH2 cellular cropland area (see also: ``mrcommons:::calcLUH2v2``), and FAO country-level crop-specific production data (see also: ``mrcommons:::readFAO_online``).
+
+
+## Land-use input data
+
+Spatial-explicit land-use and irrigation area data provided by LUH2 (see also ``mrcommons:::calcLUH2v2``). 
+Since the LUH2 cropland map is subdivided into only five crop functional types (C3 annuals; C4 annuals; C3 perennials; C4 perennials; C3 nitrogen fixers), we use the spatial distribution of LUH2 and FAOSTAT information on total country-level crop-specific production to derive spatially-explicit crop-specific areas (see ``mrcommons:::calcCroparea``). The country-level FAOSTAT cropmix is distributed equally across physical cropland of the respective country while maintaining the spatially explicit cropland area distribution as provided by LUH2. 
+The distribution of rice area is derived more explicitly. LUH2 provides cellular flooded area shares and only rice is flooded according to the data set. The distribution of physical rice areas is therefore determined by assigning the country's rice production to flooded areas provided at cellular level by LUH2. Aerobic (non-paddy) rice is accounted by distributing country-level FAO rice areas beyond country-aggregated LUH2 flooded area (i.e. where FAO reports higher country-level rice areas than there are LUH2 flooded areas in the respective country) equally across the remaining country's cropland area.
+Note that flooded areas are not accounted as irrigated areas. For one, because flooded rice production is often only partially irrigated and also because it fulfills a special management purpose in terms of pest control.
+
+```{r Landuse}
+croparea <- calcOutput("Croparea", years = iniyear, sectoral = "kcr", physical = TRUE, cells = "lpjcell", cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
+```
+
+The ``physical`` argument determines accounts for the cropping intensity in that ``physical = TRUE`` returns cropland areas that match physical area. With ``physical = FALSE`` croparea can exceed physical land area, due to multicropping. 
+
+
+## Irrigation Water Potentials (IWP)
+
+Finally, the function ``calcRiverSurplusDischargeAllocation`` determines the allocation of "surplus discharge", i.e. the discharge of the estuary cell that is not (yet) consumed along the river in the last iteration of the previous river routings that reserved environmental and human water uses. The function returns the water that is potentially available for irrigation considering biophysical, economic and management constraints. 
+
+```{r AllocationAlgorithm}
+iwp <- calcOutput("RiverSurplusDischargeAllocation", output = "potIrrigWat", 
+                   selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
+                   EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                   iniyear = iniyear, com_ag = com_ag,
+                   allocationrule = "optimization", 
+                   rankmethod = "USD_ha:TRUE", yieldcalib = TRUE, cropmix = "hist_total",
+                   thresholdtype = "USD_ha", gainthreshold = 500,
+                   avlland_scen = "potIrrigRamankutty_HalfEarth:2010",
+                   irrigationsystem = "initialization", multicropping = FALSE, aggregate = FALSE)
+```
+
+
+### Alternative allocation algortihms
+
+The ``mrwater`` library includes different surplus discharge allocation rules representing different management strategies ("upstreamfirst" vs. "optimization") that can be set in the ``allocationrule`` argument. 
+The upstreamfirst algorithm allows irrigation water abstractions provided that there is sufficient local discharge available and a positive yield gain through irrigation reserving these irrigation water abstractions in upstream grid cells first following the calculation order of cells from upstream to downstream (for more details on the river structure and calculation order see ``riverstructure.Rmd``). 
+The optimization algorithm ranks grid cells according to their yield value gain through irrigation allocating available local discharge to the grid cell with the highest productivity first, such that water resources are made available at the most efficient location rather than upstream before downstream. 
+
+
+### Economic yield value gains
+
+The yield value gain can be expressed in USD per hectare irrigated area or USD per cubic meter of irrigation water set via the ``unit`` argument in ``calcIrrigYieldImprovementPotential`` and via the ``rankmethod`` argument in ``calcRiverSurplusDischargeAllocation``. The ``rankmethod`` argument consists of two components: the unit selections ("USD_ha" or "USD_m3") and a boolean determining whether grid cells are ranked according to their full yield gain potential (TRUE) or taking a two step approach ranking according to their 75% potential and their full potential allocating 50% of irrigation water requirements in each of the two iterations (FALSE) separated by a ":". 
+
+The yield gain through irrigation - as calculated from LPJmL5 irrigated and rainfed yields - is valued with global average crop prices as provided by FAOSTAT (see ``mrcommons:::calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr", years = NULL, year = iniyear, aggregate = FALSE))``.
+
+Depending on the modeling application, LPJmL irrigated and rainfed crop yields can be calibrated to meet FAO crop yields via the ``yieldcalib`` argument. 
+The ``cropmix`` argument determines the selection of crops ("hist_total" refers to the cellular cropmix as determined in ``calcCroparea`` considering irrigated and rainfed areas, "hist_irrig" refers to cellular cropmix as determined in ``calcCroparea`` considering only irrigated areas. Besides these crop mixes, a selection of one or several proxycrop(s) can be selected. This setting is relevant when calculating irrigation potentials for the future).
+
+```{r YieldValueGain}
+yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+                        selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, iniyear = iniyear,
+                        cropmix = "hist_total", yieldcalib = TRUE, 
+                        multicropping = FALSE, aggregate = FALSE)
+```
+
+To represent economic aspects of irrigation, different yield value gain thresholds can be chosen to calculate the respective IWP. It is set via the arguments ``thresholdtype`` and ``gainthreshold``. 
+
+### Work-in-progress
+
+Please refrain from using the ``multicropping = TRUE`` argument. 
+This implementation is still work-in-progress and will be updated soon. 
+
+
+### Cropland extent
+
+The irrigation potentials can be calculated for various scenarios of potential cropland cover that are set via the ``avlland_scen`` argument. It consists of three parts: (1) a selection of current cropland (currCropland) or potential cropland (potIrrig); (2) a protection component (only relevant for the cropland expansion case, i.e. potIrrig) separated by "_" from (1). WDPA, BH, FF, CPD, LW, HalfEarth can be selected as protection scenario; (3) initialization year of cropland area, separated by ":".
+For example ``avlland_scen = "currCropland:2010"`` selects current cropland extent as of the year 2010; ``avlland_scen = "potIrrigRamankutty_HalfEarth:2010"`` is potential cropland while respecting a Half Earth land protection scenario. The year argument is ignored for the case of potIrrig. It is only relevant for the currCropland case.
+
+
+### Irrigation Area Potential (IAP)
+
+The ``calcIrrigatableArea`` function translates IWP into IAP and returns the area that can potentially be irrigated given the assumptions that are set via the arguments.
+
+```{r IAP}
+allocationrule   <- "optimization" 
+rankmethod       <- "USD_ha:TRUE"
+yieldcalib       <- TRUE
+cropmix          <- "hist_total"
+thresholdtype    <- "USD_ha"
+gainthreshold    <- 500
+avlland_scen     <- "potIrrigRamankutty_HalfEarth:2010"
+irrigationsystem <- "initialization"
+multicropping    <- FALSE
+
+iap <- calcOutput("IrrigatableArea", selectyears = selectyears, lpjml = lpjml, climatetype = climatetype, 
+                   EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+                   rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+                   thresholdtype = thresholdtype, gainthreshold = gainthreshold, 
+                   irrigationsystem = irrigationsystem, avlland_scen = avlland_scen,
+                   cropmix = cropmix, com_ag = com_ag, 
+                   potential_wat = TRUE, multicropping = FALSE, aggregate = FALSE)
+```
+
+
+### Generation of irrigation area demand (IAD) curves
+
+For a representation of irrigation potentials at various irrigation yield value gains, the river routing routine has to be executed for varying irrigation yield value gain thresholds. 
+The generated data can be used to create irrigation area demand curves and/or aggregated to different scales (e.g. country-, basin-scale).
+
+[include function call for economics of irrigation with list of thresholds between 0 and 3000]
+
+
+```{r EconOfIrrig}
+iad <- calcOutput("EconOfIrrig", scenario = "ssp2", season = "single", output = "IrrigArea",
+             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = 2010,
+             lpjml = lpjml, climatetype = climatetype, EFRmethod = EFRmethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule, thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, avlland_scen = currland, cropmix = cropmix,
+             potential_wat = TRUE, com_ag = FALSE, multicropping = FALSE, aggregate = FALSE)
+```
+
+[include curve plot generation function (one for selected countries, one for selected basins)]
+
+[include sample output (e.g. country curve plot or basin curve plot)]
+

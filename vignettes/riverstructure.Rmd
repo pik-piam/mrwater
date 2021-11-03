@@ -1,0 +1,49 @@
+---
+title: "mrwater River Structure"
+author: "Felicitas D. Beier"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mrwater River Structure}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r Setup, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>")
+
+library(mrwater)
+```
+
+## Overview
+
+The ``mrwater`` library is based on the STN river structure (REF!) and the ... land mask [ask Jens where 67k land mask comes from] (REF!). 
+
+
+## Data
+
+### River structure
+
+The river structure is stored in the form of a sorted list of objects in the folder ``inst/extdata`` and can be accessed with the function call ``rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))``.
+For each of the 67420 grid cells, ``rs$nextcell`` contains the cell that comes after the respective grid cell (i.e. cell to which discharge of current cell flows (exactly 1 cell)). Values of -1 indicate that there is no downstream cell (i.e. the respective cell is the last of the river basin). 
+``rs$downstreamcells`` (``rs$upstreamcells``) contains the list of downstreamcells (upstreamcells) of the respective grid cell (i.e. all cells that are downstream (upstream) of current cell (list of cells)). Values of 0 indicate that there is no downstream (upstream) cell. 
+``rs$endcell`` provides the last downstream cell to the respective cell (i.e.  estuary cell of current cell, i.e. last cell of the river of which current cell is part of (exactly 1 cell)). It indicates which cells belong to one river basin. 
+``rs$calcorder`` indicates the ordering of cells for calculation from upstream to downstream. Grid cells with the same calcorder can be calculated in parallel. 
+``rs$coordinates`` provides the coordinates (lon.lat) to the respective grid cell.
+
+```{r RiverStructure, eval = TRUE, echo = TRUE}
+rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
+str(rs)
+```
+
+
+### Basin attribution
+
+While ``rs$endcell`` can be used to uniquely identify which grid cells belong to one common basin, it does not provide the name of the river basin.
+To identify specific river basins, the ``toolSelectRiverBasin`` function can be used to select all grid cells that belong to one specific river basin that is listed in the ``RiverBasinMapping.csv`` stored in ``inst/extdata``. It returns a list of grid cells including their coordinates and country attribution. 
+
+```{r Basins, eval = TRUE, echo = TRUE}
+mississippi <- toolSelectRiverBasin(basinname = "Mississippi") 
+str(mississippi)
+```
+
