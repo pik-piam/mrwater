@@ -208,7 +208,7 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
   if (any(is.na(out))) {
     stop("calcRiverSurplusDischargeAllocation produced NAs")
   }
-  if (any(out < 0)) {
+  if (any(round(out) < 0)) {
     stop("calcRiverSurplusDischargeAllocation produced negative values")
   }
 
