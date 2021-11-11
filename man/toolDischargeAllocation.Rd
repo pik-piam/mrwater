@@ -14,21 +14,23 @@ cell numbers including ordered cell number)}
 
 \item{inoutLIST}{List of inputs that are also and output of the function
 (variables that are updated in the discharge allocation loop):
-reservedWAT minimum (water requirement reserved per grid cell (as magpie object of correct dimension));
-discharge (Discharge to be allocated (as magpie object of correct dimension));
-fullirrigFRAC (fraction of fullirrigation requirements that can be fulfilled)}
+reservedWAT (minimum water requirement reserved per cell);
+discharge (discharge to be allocated);
+fullirrigFRAC (fraction of full irrigation requirements that can be fulfilled)}
 
 \item{inLIST}{List of inputs to the discharge allocation algorithm
 (variables that are not altered by the discharge allocation algorithm):
-yieldgain (yield gain potential through irrigation of proxy crops: magpie object with cellular and year dimension (as magpie object of correct dimension));
-fullIrrigReqWW (required withdrawal for full irrigation in specific cell (as magpie object of correct dimension));
-fullIrrigReqWC (required consumption for full irrigation in specific cell (as magpie object of correct dimension));
-gainthreshold (Minimum yield gain in USD/ha (as scalar value)); iwpWW; iwpWC}
+yieldgain (irrigation yield value gain);
+fullIrrigReqWW (required withdrawal for full irrigation in specific cell);
+fullIrrigReqWC (required consumption for full irrigation in specific cell);
+gainthreshold (Minimum yield gain in USD/ha (as scalar value));
+iwpWW; iwpWC (irrigation water potential (WW: withdrawal, WC: consumption),
+i.e. water that is potentially available for irrigation water withdrawal/consumption)}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst")}
 
-\item{glocellrank}{Cell ranking for different years (array).
+\item{glocellrank}{Cell ranking for different years
 Note: only applicable when allocationrule "optimization" chosen}
 }
 \value{

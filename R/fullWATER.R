@@ -308,6 +308,6 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   }
 
   # Half-Earth protection map
-  calcOutput("ProtectArea", aggregate = FALSE, file = "protectedAreas.mz")
+  calcOutput("ProtectArea", cells = "lpjcell", aggregate = FALSE, file = "protectedAreas.mz")
 
 }

@@ -40,15 +40,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, landScen) {
     # No irrigation in protected areas (if protection scenario is activated) [in mio. ha]
     if (!is.na(protectSCEN)) {
       # read in protected area of selected scenario
-      tmp <- collapseNames(calcOutput("ProtectArea", aggregate = FALSE)[, , protectSCEN])
-      #### expand to 67k cells (temporarily until read/calcProtectArea is adjusted) ####
-      tmp <- collapseDim(addLocation(tmp), dim = c("region", "cell"))
-      protectArea                    <- new.magpie(cells_and_regions = getCells(collapseDim(land, dim = "iso")),
-                                                   years = getYears(tmp),
-                                                   names = getNames(tmp), fill = 0,
-                                                   sets = c("x.y.iso", "t", "data"))
-      protectArea[getCells(tmp), , ] <- tmp
-      #### expand to 67k cells (temporarily until read/calcProtectArea is adjusted) ####
+      protectArea <- collapseNames(calcOutput("ProtectArea", cells = "lpjcell", aggregate = FALSE)[, , protectSCEN])
 
       # total land area (Note: constant over the years.)
       landarea <- setYears(collapseNames(dimSums(readSource("LUH2v2", subtype = "states",
