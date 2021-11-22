@@ -15,11 +15,12 @@
 #' @param thresholdtype     Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param gainthreshold     Gainthreshold for allocation algorithm
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param landScen  Land availability scenario (currCropland, currIrrig, potCropland)
-#'                  combination of land availability scenario and initialization year separated by ":".
-#'                  Initialization year only relevant for curr scenarios.
-#'                  protection scenario separated by "_" (only relevant when potCropland selected):
-#'                  WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param landScen          Land availability scenario consisting of two parts separated by ":":
+#'                          1. landScen (currCropland, currIrrig, potCropland)
+#'                          2. for curr-scenarios: initialization year;
+#'                          for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+#'                          For case of pot-scenario without land protection select "NA"
+#'                          or do not specify second part of the argument
 #' @param cropmix           cropmix for which irrigation yield improvement is calculated
 #'                          can be selection of proxycrop(s) for calculation of average yield gain
 #'                          or hist_irrig or hist_total for historical cropmix

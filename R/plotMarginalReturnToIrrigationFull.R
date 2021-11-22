@@ -49,7 +49,7 @@ plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "G
   tmp         <- inputdata$data
   names(tmp)[-1] <- paste(names(tmp)[-1], "CurrCropland", sep = ".")
   inputdata   <- reportEconOfIrrig(GT_range = y_axis_range, region = region, output = x_axis, scenario = scenario, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = TRUE,
-    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = "potCropland_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
+    allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = "potCropland:HalfEarth", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping)
   df          <- inputdata$data
   names(df)[-1] <- paste(names(df)[-1], "PotCropland", sep = ".")
   df          <- merge(df, tmp)

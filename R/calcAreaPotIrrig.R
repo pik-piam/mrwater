@@ -7,11 +7,12 @@
 #'                    if !NULL: already irrigated area is subtracted;
 #'                    year specified here is the year of the initialization
 #'                    used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)
-#' @param landScen    Land availability scenario (currCropland, currIrrig, potCropland)
-#'                    combination of land availability scenario and initialization year separated by ":".
-#'                    Initialization year only relevant for curr scenarios.
-#'                    protection scenario separated by "_" (only relevant when potCropland selected):
-#'                    WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param landScen    Land availability scenario consisting of two parts separated by ":":
+#'                    1. landScen (currCropland, currIrrig, potCropland)
+#'                    2. for curr-scenarios: initialization year;
+#'                    for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+#'                    For case of pot-scenario without land protection select "NA"
+#'                    or do not specify second part of the argument
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -28,9 +29,12 @@
 calcAreaPotIrrig <- function(selectyears, comagyear, landScen) {
 
   # retrieve function arguments
-  iniyear     <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
-  landScen    <- as.list(strsplit(landScen, split = ":"))[[1]][1]
-  protectSCEN <- as.list(strsplit(landScen, split = "_"))[[1]][2]
+  if (grepl("curr", landScen)) {
+    iniyear     <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
+  } else if (grepl("pot", landScen))  {
+    protectSCEN <- as.list(strsplit(landScen, split = ":"))[[1]][2]
+  }
+  landScen      <- as.list(strsplit(landScen, split = ":"))[[1]][1]
 
   if (grepl("potCropland", landScen)) {
 

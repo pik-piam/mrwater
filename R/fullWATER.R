@@ -32,6 +32,7 @@
 #' @param potland           Potential land availability scenario: specify suitability (Ramankutty or Zabel),
 #'                          protection scenario and initialization year after potIrrig
 #'                          (e.g. potCropland_HalfEarth:2010)
+#' @param yieldcalib        Boolean for whether LPJmL should be calibrated to FAO country yields (TRUE or FALSE)
 #'
 #' @author Felicitas Beier
 #'
@@ -40,7 +41,7 @@
 fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
                       allocationrule = "optimization", rankmethod = "USD_ha:TRUE",
                       thresholdtype = "USD_ha", gainthreshold = 500,
-                      currland = "currCropland:2010", potland = "potIrrig_HalfEarth:2010") {
+                      currland = "currCropland:2010", potland = "potIrrig:HalfEarth", yieldcalib = TRUE) {
 
   # Standard settings
   iniyear          <- 2010
@@ -54,7 +55,6 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   climatetype      <- "GFDL-ESM4:ssp126"
 
   irrigationsystem <- "initialization"
-  yieldcalib       <- TRUE
   cropmix          <- "hist_total"
   #* #*#*# @KRISTINE/JENS/BENNI: Does is make sense to use "hist_total" everywhere or should I use "hist_irrig" sometimes (e.g. for committed uses) or would that create mismatch?
 
@@ -144,35 +144,33 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "DemandCurve_pot_single.mz")
 
   # Reference data
-  for (y in c(TRUE, FALSE)) {
-    calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-               selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
-               yieldcalib = y, thresholdtype = thresholdtype, landScen = currland,
-               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
-               file = paste0("yieldgainarea_curr", y, ".mz"))
+  calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
+             selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype, landScen = currland,
+             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
+             file = paste0("yieldgainarea_curr", ".mz"))
 
-    calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-               selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
-               yieldcalib = y, thresholdtype = thresholdtype, landScen = potland,
-               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
-               file = paste0("yieldgainarea_pot", y, ".mz"))
-    calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-               selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
-               yieldcalib = y, thresholdtype = thresholdtype,
-               landScen = paste0(gsub("_.*", "", potland), ":", iniyear),
-               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
-               file = paste0("yieldgainarea_pot_Unprotect", y, ".mz"))
+  calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
+             selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype, landScen = potland,
+             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
+             file = paste0("yieldgainarea_pot", ".mz"))
+  calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
+             selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             landScen = paste0(gsub("_.*", "", potland), ":", iniyear),
+             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
+             file = paste0("yieldgainarea_pot_Unprotect", ".mz"))
 
-    # Yield gain through irrigation
-    calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
-               unit = "USD_ha", iniyear = iniyear, selectyears = plotyear,
-               cropmix = cropmix, yieldcalib = y, multicropping = multicropping,
-               aggregate = FALSE, file = paste0("yieldgain_USDha", y, ".mz"))
-    calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
-               unit = "USD_m3", iniyear = iniyear, selectyears = plotyear,
-               cropmix = cropmix, yieldcalib = y, multicropping = multicropping,
-               aggregate = FALSE, file = paste0("yieldgain_USDm3", y, ".mz"))
-  }
+  # Yield gain through irrigation
+  calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
+             unit = "USD_ha", iniyear = iniyear, selectyears = plotyear,
+             cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping,
+             aggregate = FALSE, file = paste0("yieldgain_USDha", ".mz"))
+  calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
+             unit = "USD_m3", iniyear = iniyear, selectyears = plotyear,
+             cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping,
+             aggregate = FALSE, file = paste0("yieldgain_USDm3", ".mz"))
 
   # Area that is potentially available for irrigated agriculture
   calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
@@ -218,11 +216,6 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              accessibilityrule = accessibilityrule, efrMethod = efrMethod,
              multicropping = multicropping, aggregate = FALSE,
              file = "LUHfulfilled_comag.mz")
-
-  # Environmental flow requirements
-  # calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
-  #            climatetype = climatetype, efrMethod = efrMethod, aggregate = FALSE,
-  #            file = "EFR.mz")
 
   # Basin violations
   calcOutput("EFRviolations", lpjml = lpjml, selectyears = plotyear,

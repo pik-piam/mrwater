@@ -12,7 +12,8 @@ fullWATER(
   thresholdtype = "USD_ha",
   gainthreshold = 500,
   currland = "currCropland:2010",
-  potland = "potIrrig_HalfEarth:2010"
+  potland = "potIrrig:HalfEarth",
+  yieldcalib = TRUE
 )
 }
 \arguments{
@@ -53,6 +54,8 @@ water allocation in upstreamfirst algorithm
 \item{potland}{Potential land availability scenario: specify suitability (Ramankutty or Zabel),
 protection scenario and initialization year after potIrrig
 (e.g. potCropland_HalfEarth:2010)}
+
+\item{yieldcalib}{Boolean for whether LPJmL should be calibrated to FAO country yields (TRUE or FALSE)}
 }
 \description{
 Function that produces the objects for water outputs that can

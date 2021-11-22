@@ -98,7 +98,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                           lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                           efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                           allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                          landScen = "potCropland_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+                          landScen = "potCropland:HalfEarth", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
   inputdata <- toolRegionSums(x = inputdata, region = region)
   inputdata <- as.data.frame(inputdata)
 
@@ -107,7 +107,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                       lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                       efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                       allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                      landScen = "potCropland_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+                      landScen = "potCropland:HalfEarth", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
     tmp <- toolRegionSums(x = tmp, region = region)
     tmp <- as.data.frame(tmp)
 
@@ -115,7 +115,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
                        lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                        efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                        allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                       landScen = "potCropland_HalfEarth:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+                       landScen = "potCropland:HalfEarth", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
     tmp2 <- toolRegionSums(x = tmp2, region = region)
     tmp2 <- as.data.frame(tmp2)
 
@@ -163,7 +163,7 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
   # potential cropland
   inputdata  <- calcOutput("YieldgainArea", rangeGT = y_axis_range, lpjml = lpjml,
                               selectyears = selectyears, climatetype = climatetype, efrMethod = efrMethod,
-                              yieldcalib = yieldcalib, thresholdtype = thresholdtype, landScen = "potCropland_HalfEarth:2010",
+                              yieldcalib = yieldcalib, thresholdtype = thresholdtype, landScen = "potCropland:HalfEarth",
                               cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
   inputdata <- toolRegionSums(x = inputdata, region = region)
   inputdata <- as.data.frame(inputdata)

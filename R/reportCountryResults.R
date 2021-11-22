@@ -127,7 +127,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                           efrMethod = efrMethod, rankmethod = rankmethod,
                                           yieldcalib = yieldcalib, allocationrule = allocationrule,
                                           thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                          landScen = "potCropland_HalfEarth:2010",
+                                          landScen = "potCropland:HalfEarth",
                                           cropmix = cropmix, potential_wat = TRUE,
                                           com_ag = com_ag, multicropping = multicropping,
                                           aggregate = FALSE)[, , "irrigatable"][, , scenario])
@@ -206,7 +206,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                           efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                           allocationrule = allocationrule, thresholdtype = thresholdtype,
                                           irrigationsystem = irrigationsystem, iniyear = iniyear,
-                                          landScen = "potCropland_HalfEarth:2010", cropmix = cropmix,
+                                          landScen = "potCropland:HalfEarth", cropmix = cropmix,
                                           com_ag = com_ag, multicropping = multicropping,
                                           aggregate = FALSE)[, , output][, , scenario])
     potIrrpot           <- dimSums(potIrrpot, dim = "season")

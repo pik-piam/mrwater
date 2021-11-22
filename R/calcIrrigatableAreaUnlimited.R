@@ -3,11 +3,12 @@
 #'              land scenario and gainthreshold
 #'
 #' @param selectyears   years for which irrigatable area is calculated
-#' @param landScen      Land availability scenario (currCropland, currIrrig, potCropland)
-#'                      combination of land availability scenario and initialization year separated by ":".
-#'                      Initialization year only relevant for curr scenarios.
-#'                      protection scenario separated by "_" (only relevant when potCropland selected):
-#'                      WDPA, BH, FF, CPD, LW, HalfEarth
+#' @param landScen      Land availability scenario consisting of two parts separated by ":":
+#'                      1. landScen (currCropland, currIrrig, potCropland)
+#'                      2. for curr-scenarios: initialization year;
+#'                      for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+#'                      For case of pot-scenario without land protection select "NA"
+#'                      or do not specify second part of the argument
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param cropmix       cropmix for which irrigation yield improvement is calculated

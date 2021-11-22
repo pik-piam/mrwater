@@ -137,7 +137,7 @@ iwp <- calcOutput("RiverSurplusDischargeAllocation", output = "potIrrigWat",
                    allocationrule = "optimization", 
                    rankmethod = "USD_ha:TRUE", yieldcalib = TRUE, cropmix = "hist_total",
                    thresholdtype = "USD_ha", gainthreshold = 500,
-                   landScen = "potCropland_HalfEarth:2010",
+                   landScen = "potCropland:HalfEarth",
                    irrigationsystem = "initialization", multicropping = FALSE, aggregate = FALSE)
 ```
 
@@ -190,7 +190,7 @@ yieldcalib       <- TRUE
 cropmix          <- "hist_total"
 thresholdtype    <- "USD_ha"
 gainthreshold    <- 500
-landScen         <- "potCropland_HalfEarth:2010"
+landScen         <- "potCropland:HalfEarth"
 irrigationsystem <- "initialization"
 multicropping    <- FALSE
 
