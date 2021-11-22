@@ -35,7 +35,7 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
   watNonAg <- calcOutput("WaterUseNonAg", selectyears = 2010, cells = "lpjcell",
-                          datasource = "WATCH_ISIMIP_WATERGAP", usetype = "total",
+                          datasource = "WATERGAP_ISIMIP", usetype = "total",
                           seasonality = "total", harmonType = "average",
                           lpjml = NULL, climatetype = NULL, aggregate = FALSE)
 
