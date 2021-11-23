@@ -60,7 +60,10 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
                             landScen, cropmix, com_ag, multicropping) {
 
   # Check
-  if (!is.na(as.list(strsplit(landScen, split = ":"))[[1]][2]) &&
+  if (!is.numeric(iniyear)) {
+    iniyear <- as.numeric(gsub("y", "", iniyear))
+  }
+  if (grepl("curr", landScen) &&
       iniyear != as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])) {
     stop("Initialization year in calcWaterPotUse does not match:
          iniyear and landScen should have same initialization year")
