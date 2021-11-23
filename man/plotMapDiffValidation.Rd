@@ -10,6 +10,7 @@ plotMapDiffValidation(
   lpjml,
   climatetype,
   selectyears,
+  iniyear,
   gainthreshold,
   rankmethod,
   cropmix,
@@ -33,6 +34,8 @@ plotMapDiffValidation(
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{selectyears}{years for which irrigatable area is calculated}
+
+\item{iniyear}{Initialization year}
 
 \item{gainthreshold}{Threshold of yield improvement potential required for water allocation in upstreamfirst algorithm (in tons per ha)}
 

@@ -7,6 +7,7 @@
 calcIrrigatableArea(
   lpjml,
   selectyears,
+  iniyear,
   climatetype,
   efrMethod,
   accessibilityrule,
@@ -27,6 +28,8 @@ calcIrrigatableArea(
 \item{lpjml}{LPJmL version used}
 
 \item{selectyears}{Years for which irrigatable area is calculated}
+
+\item{iniyear}{Initialization year for initial croparea}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 

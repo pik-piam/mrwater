@@ -6,6 +6,7 @@
 \usage{
 calcIrrigatableAreaUnlimited(
   selectyears,
+  iniyear,
   landScen,
   lpjml,
   climatetype,
@@ -18,6 +19,8 @@ calcIrrigatableAreaUnlimited(
 }
 \arguments{
 \item{selectyears}{years for which irrigatable area is calculated}
+
+\item{iniyear}{initialization year}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. landScen (currCropland, currIrrig, potCropland)

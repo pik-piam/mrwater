@@ -113,7 +113,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
 
   ### Main Outputs ###
   # Potentially irrigated area
-  calcOutput("IrrigatableArea", selectyears = selectyears,
+  calcOutput("IrrigatableArea", selectyears = selectyears, iniyear = iniyear,
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = gainthreshold, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
@@ -126,7 +126,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   # Potentially irrigated area for different thresholds
   # (only for sustainable scenario and only for multicropping = FALSE!)
   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
-             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+             GT_range = c(0, 250, 500, 1000, 2000, 3000),
+             selectyears = plotyear, iniyear = iniyear,
              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule, thresholdtype = thresholdtype,
@@ -135,7 +136,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "DemandCurve_curr_single.mz")
 
   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
-             GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+             GT_range = c(0, 250, 500, 1000, 2000, 3000),
+             selectyears = plotyear, iniyear = iniyear,
              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule, thresholdtype = thresholdtype,
@@ -145,18 +147,21 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
 
   # Reference data
   calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-             selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
+             selectyears = plotyear, iniyear = iniyear,
+             climatetype = climatetype, efrMethod = efrMethod,
              yieldcalib = yieldcalib, thresholdtype = thresholdtype, landScen = currland,
              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
              file = paste0("yieldgainarea_curr", ".mz"))
 
   calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-             selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
+             selectyears = plotyear, iniyear = iniyear,
+             climatetype = climatetype, efrMethod = efrMethod,
              yieldcalib = yieldcalib, thresholdtype = thresholdtype, landScen = potland,
              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
              file = paste0("yieldgainarea_pot", ".mz"))
   calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
-             selectyears = plotyear, climatetype = climatetype, efrMethod = efrMethod,
+             selectyears = plotyear, iniyear = iniyear,
+             climatetype = climatetype, efrMethod = efrMethod,
              yieldcalib = yieldcalib, thresholdtype = thresholdtype,
              landScen = paste0(gsub("_.*", "", potland), ":", iniyear),
              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE,
@@ -185,7 +190,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
 
   # Physical Potential considering committed uses
   # Potentially irrigated area
-  calcOutput("IrrigatableArea", selectyears = plotyear,
+  calcOutput("IrrigatableArea", selectyears = plotyear, iniyear = iniyear,
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
@@ -196,7 +201,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "irrigArea_currCropland_comag.mz")
 
   # Potentially irrigated area
-  calcOutput("IrrigatableArea", selectyears = plotyear,
+  calcOutput("IrrigatableArea", selectyears = plotyear, iniyear = iniyear,
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
@@ -207,7 +212,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "irrigArea_potCropland_comag.mz")
 
   # LUH fulfilled
-  calcOutput("IrrigatableArea", selectyears = plotyear,
+  calcOutput("IrrigatableArea", selectyears = plotyear, iniyear = iniyear,
              climatetype = climatetype, lpjml = lpjml,
              gainthreshold = 0, rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule,  thresholdtype = thresholdtype,
@@ -270,7 +275,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
     for (accessibilityrule in c("CV:2", "Q:1", "Q:0.9", "Q:0.75", "Q:0.5")) {
 
       calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
-                 GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+                 GT_range = c(0, 250, 500, 1000, 2000, 3000),
+                 selectyears = plotyear, iniyear = iniyear,
                  lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                  thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
@@ -280,7 +286,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
 
       # Potentially irrigated area
       calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
-                 GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+                 GT_range = c(0, 250, 500, 1000, 2000, 3000),
+                 selectyears = plotyear, iniyear = iniyear,
                  lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                  thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
@@ -289,7 +296,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
                  file = paste0("ValidPotcropland", gsub(":", "", efrMethod), gsub(":", "", accessibilityrule), ".mz"))
 
       calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "IrrigArea",
-                 GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = plotyear,
+                 GT_range = c(0, 250, 500, 1000, 2000, 3000),
+                 selectyears = plotyear, iniyear = iniyear,
                  lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                  thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,

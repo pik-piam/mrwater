@@ -6,6 +6,7 @@
 #'                      irrigated areas
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years for which irrigatable area is calculated
+#' @param iniyear       Initialization year for cropland area
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod     EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
@@ -36,7 +37,7 @@
 #'
 #' @export
 
-calcYieldgainArea <- function(rangeGT, lpjml, selectyears,
+calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
                               climatetype, efrMethod, yieldcalib, thresholdtype,
                               landScen, cropmix, multicropping) {
 
@@ -45,7 +46,8 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears,
   }
 
   x <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = 0,
-                  selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,
+                  selectyears = selectyears, iniyear = iniyear,
+                  lpjml = lpjml, climatetype = climatetype,
                   cropmix = cropmix, yieldcalib = yieldcalib,
                   thresholdtype = thresholdtype, multicropping = multicropping,
                   landScen = landScen, aggregate = FALSE)
@@ -81,7 +83,8 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears,
   for (gainthreshold in rangeGT) {
 
     tmp <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = gainthreshold,
-                    selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,
+                    selectyears = selectyears, iniyear = iniyear,
+                    lpjml = lpjml, climatetype = climatetype,
                     cropmix = cropmix, yieldcalib = yieldcalib,
                     thresholdtype = thresholdtype, multicropping = multicropping,
                     landScen = landScen, aggregate = FALSE)

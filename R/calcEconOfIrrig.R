@@ -9,6 +9,7 @@
 #' @param GT_range         range of x-axis (gainthreshold) to be depicted on the curve
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
+#' @param iniyear          initialization year
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
@@ -50,17 +51,16 @@
 #'
 #' @export
 
-calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyears, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, landScen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
+calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyears, iniyear, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, landScen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  iniyear <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
-
   if (output == "IrrigArea") {
     x <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = 0,
-                                  selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
+                                  selectyears = selectyears, iniyear = iniyear,
+                                  climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                   rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
@@ -113,7 +113,8 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
 
     if (output == "IrrigArea") {
       tmp <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = gainthreshold,
-                                      lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                                      selectyears = selectyears, iniyear = iniyear,
+                                      lpjml = lpjml, climatetype = climatetype,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                       thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,

@@ -107,7 +107,7 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
                                             com_ag = com_ag, aggregate = FALSE)
 
   # Required water for full irrigation per cell (in mio. m^3)
-  required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
+  required_wat_fullirrig      <- calcOutput("FullIrrigationRequirement", selectyears = selectyears, iniyear = iniyear,
                                             lpjml = lpjml, climatetype = climatetype, comagyear = comagyear,
                                             irrigationsystem = irrigationsystem, landScen = landScen,
                                             cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)

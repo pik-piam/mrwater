@@ -7,9 +7,10 @@
 plotScatterIrrigArea(
   region,
   scenario,
-  lpjml,
   selectyears,
+  iniyear,
   climatetype,
+  lpjml,
   efrMethod,
   accessibilityrule,
   rankmethod,
@@ -28,11 +29,13 @@ plotScatterIrrigArea(
 
 \item{scenario}{EFP and non-agricultural water use scenarios separate by "." (e.g. "on.ssp2")}
 
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
-
 \item{selectyears}{years for which irrigatable area is calculated}
 
+\item{iniyear}{initialization year}
+
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 

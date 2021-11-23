@@ -9,6 +9,7 @@ plotMapIrrigatableArea(
   lpjml,
   climatetype,
   selectyears,
+  iniyear,
   rankmethod,
   cropmix,
   yieldcalib,
@@ -32,6 +33,8 @@ plotMapIrrigatableArea(
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{selectyears}{years for which irrigatable area is calculated}
+
+\item{iniyear}{initialization year}
 
 \item{rankmethod}{Method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 

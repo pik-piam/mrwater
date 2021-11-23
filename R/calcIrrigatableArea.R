@@ -4,6 +4,7 @@
 #'
 #' @param lpjml             LPJmL version used
 #' @param selectyears       Years for which irrigatable area is calculated
+#' @param iniyear           Initialization year for initial croparea
 #' @param climatetype       Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Strictness of accessibility restriction:
@@ -54,13 +55,10 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames add_dimension add_columns mbind
 
-calcIrrigatableArea <- function(lpjml, selectyears, climatetype, efrMethod,
+calcIrrigatableArea <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
                                 accessibilityrule, rankmethod, yieldcalib, allocationrule,
                                 thresholdtype, gainthreshold, irrigationsystem, landScen,
                                 cropmix, potential_wat, com_ag, multicropping) {
-
-  # retrieve function arguments
-  iniyear <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
 
   ## Read in water available for irrigation
   if (potential_wat) {
@@ -94,7 +92,7 @@ calcIrrigatableArea <- function(lpjml, selectyears, climatetype, efrMethod,
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
-                          lpjml = lpjml, climatetype = climatetype,
+                          lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                           irrigationsystem = irrigationsystem, landScen = landScen,
                           cropmix = cropmix, multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWatWW),

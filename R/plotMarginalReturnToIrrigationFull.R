@@ -60,7 +60,8 @@ plotMarginalReturnToIrrigationFull <- function(y_axis_range, x_axis, region = "G
   if (x_axis == "IrrigArea") {
     # Area that can be irrigated with committed agricultural uses
     current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0,
-                                                  selectyears = selectyears, climatetype = climatetype,
+                                                  selectyears = selectyears, iniyear = iniyear,
+                                                  climatetype = climatetype,
                                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                                   rankmethod = rankmethod, yieldcalib = yieldcalib,
                                                   allocationrule = allocationrule, thresholdtype = thresholdtype,

@@ -3,6 +3,7 @@
 #'
 #' @param reference        LUH or committed
 #' @param scenario         Non-agricultural water use scenario
+#' @param iniyear          Initialization year
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
@@ -38,19 +39,19 @@
 #'
 #' @export
 
-plotMapDiffValidation <- function(reference, scenario, lpjml, climatetype, selectyears, gainthreshold, rankmethod, cropmix, yieldcalib, efrMethod, accessibilityrule, allocationrule, thresholdtype, irrigationsystem, landScen, multicropping) {
+plotMapDiffValidation <- function(reference, scenario, lpjml, climatetype, selectyears, iniyear, gainthreshold, rankmethod, cropmix, yieldcalib, efrMethod, accessibilityrule, allocationrule, thresholdtype, irrigationsystem, landScen, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for the map")
   }
 
   x1000 <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold,
-    selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
+    selectyears = selectyears, iniyear = iniyear, climatetype = climatetype, accessibilityrule = accessibilityrule,
     efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
     thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
     cropmix = cropmix, potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"]), dim = "season")
   if (reference == "committed") {
-    xC  <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears,
+    xC  <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0, selectyears = selectyears, iniyear = iniyear,
       climatetype = climatetype, accessibilityrule = accessibilityrule, efrMethod = efrMethod,
       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype,
       irrigationsystem = irrigationsystem, landScen = landScen, cropmix = cropmix, potential_wat = FALSE,

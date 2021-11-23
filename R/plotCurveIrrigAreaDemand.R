@@ -52,7 +52,8 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
   ## Main data: with water constraint
   # on current cropland
   inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "single", output = "IrrigArea",
-                       lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                       selectyears = selectyears, iniyear = iniyear,
+                       climatetype = climatetype, lpjml = lpjml,
                        efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                        allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                        landScen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
@@ -61,15 +62,17 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
 
   if (multicropping) {
     tmp <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "double", output = "IrrigArea",
-                            lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
-                            efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
-                            allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                            landScen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+                       selectyears = selectyears, iniyear = iniyear,
+                       climatetype = climatetype, lpjml = lpjml,
+                       efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
+                       allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                       landScen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
     tmp <- toolRegionSums(x = tmp, region = region)
     tmp <- as.data.frame(tmp)
 
     tmp2 <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "triple", output = "IrrigArea",
-                      lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                      selectyears = selectyears, iniyear = iniyear,
+                      climatetype = climatetype, lpjml = lpjml,
                       efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                       allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                       landScen = "currCropland:2010", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
@@ -95,7 +98,8 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
 
   # on potential cropland
   inputdata <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "single", output = "IrrigArea",
-                          lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                          selectyears = selectyears, iniyear = iniyear,
+                          climatetype = climatetype, lpjml = lpjml,
                           efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                           allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                           landScen = "potCropland:HalfEarth", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
@@ -104,7 +108,8 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
 
   if (multicropping) {
     tmp <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "double", output = "IrrigArea",
-                      lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                      selectyears = selectyears, iniyear = iniyear,
+                      climatetype = climatetype, lpjml = lpjml,
                       efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                       allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                       landScen = "potCropland:HalfEarth", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
@@ -112,7 +117,8 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
     tmp <- as.data.frame(tmp)
 
     tmp2 <- calcOutput("EconOfIrrig", GT_range = y_axis_range, scenario = gsub(".*\\.", "", scenario), season = "triple", output = "IrrigArea",
-                       lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                       selectyears = selectyears, iniyear = iniyear,
+                       climatetype = climatetype, lpjml = lpjml,
                        efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                        allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                        landScen = "potCropland:HalfEarth", cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
@@ -140,7 +146,8 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
   ## Reference data: without water constraint
   # current cropland
   inputdata <- calcOutput("YieldgainArea", rangeGT = y_axis_range, lpjml = lpjml,
-                          selectyears = selectyears, climatetype = climatetype, efrMethod = efrMethod,
+                          selectyears = selectyears, iniyear = iniyear,
+                          climatetype = climatetype, efrMethod = efrMethod,
                           yieldcalib = yieldcalib, thresholdtype = thresholdtype, landScen = "currCropland:2010",
                           cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
   inputdata <- toolRegionSums(x = inputdata, region = region)
@@ -162,9 +169,10 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
 
   # potential cropland
   inputdata  <- calcOutput("YieldgainArea", rangeGT = y_axis_range, lpjml = lpjml,
-                              selectyears = selectyears, climatetype = climatetype, efrMethod = efrMethod,
-                              yieldcalib = yieldcalib, thresholdtype = thresholdtype, landScen = "potCropland:HalfEarth",
-                              cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
+                            selectyears = selectyears, iniyear = iniyear,
+                            climatetype = climatetype, efrMethod = efrMethod,
+                            yieldcalib = yieldcalib, thresholdtype = thresholdtype, landScen = "potCropland:HalfEarth",
+                            cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)
   inputdata <- toolRegionSums(x = inputdata, region = region)
   inputdata <- as.data.frame(inputdata)
 
@@ -185,7 +193,8 @@ plotCurveIrrigAreaDemand <- function(y_axis_range, region = "GLO", scenario,
   ## Reference points
   # Area that can be irrigated with committed agricultural uses
   current_fulfilled <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = 0,
-                                      selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
+                                      selectyears = selectyears, iniyear = iniyear,
+                                      climatetype = climatetype, lpjml = lpjml,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                       thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,

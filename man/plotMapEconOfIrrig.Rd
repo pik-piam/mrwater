@@ -11,6 +11,7 @@ plotMapEconOfIrrig(
   scenario,
   lpjml,
   selectyears,
+  iniyear,
   climatetype,
   efrMethod,
   accessibilityrule,
@@ -37,6 +38,8 @@ plotMapEconOfIrrig(
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{selectyears}{years for which irrigatable area is calculated}
+
+\item{iniyear}{initialization year}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 

@@ -4,6 +4,7 @@
 #' @param scenario          Non-agricultural water use scenario
 #' @param lpjml             LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears       years for which irrigatable area is calculated
+#' @param iniyear           initialization year
 #' @param climatetype       Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
@@ -39,13 +40,13 @@
 #'
 #' @export
 
-plotMapUnsusIrrig <- function(scenario, lpjml, climatetype, selectyears, rankmethod, cropmix, yieldcalib, efrMethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, landScen, potential_wat, com_ag, multicropping) {
+plotMapUnsusIrrig <- function(scenario, lpjml, climatetype, selectyears, iniyear, rankmethod, cropmix, yieldcalib, efrMethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, landScen, potential_wat, com_ag, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for the map")
   }
 
-  irrigarea  <- dimSums(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears,
+  irrigarea  <- dimSums(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, iniyear = iniyear,
                            climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                            rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                            thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,

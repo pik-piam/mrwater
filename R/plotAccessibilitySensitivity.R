@@ -4,6 +4,7 @@
 #' @param x_axis_range     range of x-axis (gainthreshold) to be depicted on the curve
 #' @param output           output type to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc" "wat_tot_ww" "wat_tot_wc"
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
+#' @param iniyear          initialization year
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
@@ -43,7 +44,7 @@
 #' @export
 
 plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml,
-                                         selectyears, climatetype, efrMethod, gainthreshold, rankmethod, yieldcalib,
+                                         selectyears, iniyear, climatetype, efrMethod, gainthreshold, rankmethod, yieldcalib,
                                          allocationrule, thresholdtype, irrigationsystem, landScen, cropmix, com_ag,
                                          multicropping, potential_wat = TRUE) {
 
@@ -51,11 +52,10 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml,
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  iniyear      <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
-
   if (output == "IrrigArea") {
-    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears,
-                                  climatetype = climatetype, accessibilityrule = "Q:0", efrMethod = efrMethod,
+    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, climatetype = climatetype,
+                                  selectyears = selectyears, iniyear = iniyear,
+                                  accessibilityrule = "Q:0", efrMethod = efrMethod,
                                   rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                   landScen = landScen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag,
@@ -79,7 +79,7 @@ plotAccessibilitySensitivity <- function(x_axis_range, scenario, output, lpjml,
 
   for (accessibilityrule in x_axis_range) {
     if (output == "IrrigArea") {
-      x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"), efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, landScen = landScen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+      x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, iniyear = iniyear, climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"), efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, landScen = landScen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
       x <- dimSums(x, dim = "season")
     } else {
       x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, selectyears = selectyears, climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"), efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem, iniyear = iniyear, landScen = landScen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])

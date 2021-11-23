@@ -7,6 +7,7 @@
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
+#' @param iniyear          initialization year
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param yieldcalib       If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
@@ -43,16 +44,15 @@
 #'
 #' @export
 
-plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, selectyears, climatetype, efrMethod, rankmethod, yieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, landScen, cropmix, com_ag, multicropping, potential_wat = TRUE) {
+plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, selectyears, iniyear, climatetype, efrMethod, rankmethod, yieldcalib, allocationrule, thresholdtype, gainthreshold, irrigationsystem, landScen, cropmix, com_ag, multicropping, potential_wat = TRUE) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  iniyear <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
-
-  x     <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold,
-                                    selectyears = selectyears, climatetype = climatetype,
+  x     <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = gainthreshold,
+                                    selectyears = selectyears, iniyear = iniyear,
+                                    climatetype = climatetype, lpjml = lpjml,
                                     accessibilityrule = "Q0", efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                     allocationrule = allocationrule, thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                     landScen = landScen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag,
@@ -79,8 +79,9 @@ plotReturnToIrrigation <- function(y_axis_range, x_axis, scenario, lpjml, select
 
   for (accessibilityrule in y_axis_range) {
 
-    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears,
-                                  climatetype = climatetype, accessibilityrule = paste("Q", accessibilityrule, sep = ":"),
+    x <- collapseNames(calcOutput("IrrigatableArea", selectyears = selectyears, iniyear = iniyear,
+                                  climatetype = climatetype, lpjml = lpjml,
+                                  accessibilityrule = paste("Q", accessibilityrule, sep = ":"),
                                   efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                   landScen = landScen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag,

@@ -3,6 +3,7 @@
 #'              land scenario and gainthreshold
 #'
 #' @param selectyears   years for which irrigatable area is calculated
+#' @param iniyear       initialization year
 #' @param landScen      Land availability scenario consisting of two parts separated by ":":
 #'                      1. landScen (currCropland, currIrrig, potCropland)
 #'                      2. for curr-scenarios: initialization year;
@@ -35,12 +36,9 @@
 #' @import magclass
 #' @import magpiesets
 
-calcIrrigatableAreaUnlimited <- function(selectyears, landScen, lpjml,
+calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
                                          climatetype, cropmix, yieldcalib,
                                          thresholdtype, gainthreshold, multicropping) {
-
-  # Retrieve function arguments
-  iniyear       <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
 
   ## Area that can potentially be irrigated (including total potentially irrigatable area; defined by comagyear=NULL)
   potArea <- calcOutput("AreaPotIrrig", selectyears = selectyears,

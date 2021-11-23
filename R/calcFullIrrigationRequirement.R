@@ -9,6 +9,7 @@
 #'                         if NULL: total potential land area is used;
 #'                         year specified here is the year of the initialization
 #'                         used for cropland area initialization in calcIrrigatedArea
+#' @param iniyear          Croparea initialization year
 #' @param irrigationsystem Irrigation system used: system share as in initialization year,
 #'                         or drip, surface, sprinkler for full irrigation by selected system
 #' @param landScen         Land availability scenario consisting of two parts separated by ":":
@@ -34,11 +35,8 @@
 #' @importFrom magclass collapseNames getCells getSets getYears getNames new.magpie dimSums
 #' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
 
-calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear,
+calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear, iniyear,
                                           irrigationsystem, landScen, cropmix, multicropping) {
-
-  # retrieve function arguments
-  iniyear  <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
 
   # read in irrigation water requirements for each irrigation system
   # [in m^3 per hectare per year] (smoothed & harmonized)

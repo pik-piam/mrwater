@@ -8,6 +8,7 @@ calcYieldgainArea(
   rangeGT,
   lpjml,
   selectyears,
+  iniyear,
   climatetype,
   efrMethod,
   yieldcalib,
@@ -24,6 +25,8 @@ irrigated areas}
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{selectyears}{Years for which irrigatable area is calculated}
+
+\item{iniyear}{Initialization year for cropland area}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 

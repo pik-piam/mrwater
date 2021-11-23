@@ -7,6 +7,7 @@
 #' @param scenario         EFP and non-agricultural water use scenarios separate by "." (e.g. "on.ssp2")
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
+#' @param iniyear          initialization year
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
@@ -42,7 +43,7 @@
 #'
 #' @export
 
-plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, lpjml, selectyears, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, landScen, cropmix, com_ag, multicropping) {
+plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, lpjml, selectyears, iniyear, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, landScen, cropmix, com_ag, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -50,8 +51,9 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
 
   if (!requireNamespace("cowplot", quietly = TRUE)) stop("The package cowplot is required for plotting MapEconOfIrrig!")
 
-  x0                <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0,
-                                                        selectyears = selectyears, climatetype = climatetype,
+  x0                <- dimSums(collapseNames(calcOutput("IrrigatableArea", gainthreshold = 0,
+                                                        selectyears = selectyears, iniyear = iniyear,
+                                                        climatetype = climatetype, lpjml = lpjml,
                                                         accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
                                                         allocationrule = allocationrule, thresholdtype = thresholdtype,
@@ -59,8 +61,9 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
                                                         cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag,
                                                         multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"]), dim = "season")
   x0[x0 == 0]       <- NA
-  x500              <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 500,
-                                                        selectyears = selectyears, climatetype = climatetype,
+  x500              <- dimSums(collapseNames(calcOutput("IrrigatableArea", gainthreshold = 500,
+                                                        selectyears = selectyears, iniyear = iniyear,
+                                                        climatetype = climatetype, lpjml = lpjml,
                                                         accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
                                                         allocationrule = allocationrule, thresholdtype = thresholdtype,
@@ -68,8 +71,9 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
                                                         cropmix = cropmix, potential_wat = TRUE, com_ag = com_ag,
                                                         multicropping = multicropping, aggregate = FALSE)[, , scenario][, , "irrigatable"]), dim = "season")
   x500[x500 == 0]   <- NA
-  x1000             <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 1000,
-                                                        selectyears = selectyears, climatetype = climatetype,
+  x1000             <- dimSums(collapseNames(calcOutput("IrrigatableArea", gainthreshold = 1000,
+                                                        selectyears = selectyears, iniyear = iniyear,
+                                                        climatetype = climatetype, lpjml = lpjml,
                                                         accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
                                                         allocationrule = allocationrule, thresholdtype = thresholdtype,
@@ -148,7 +152,7 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
 
   if (reference == "committed") {
     xC              <- dimSums(collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0,
-                                                selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
+                                                selectyears = selectyears, iniyear = iniyear, climatetype = climatetype, accessibilityrule = accessibilityrule,
                                                 efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                                 allocationrule = allocationrule, thresholdtype = thresholdtype,
                                                 irrigationsystem = irrigationsystem, landScen = landScen, cropmix = cropmix,

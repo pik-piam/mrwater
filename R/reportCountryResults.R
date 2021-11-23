@@ -82,7 +82,8 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
 
     # Currently Irrigated Area [total, sustainable, unsustainable]
     currIrr <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
-                                        gainthreshold = gainthreshold, selectyears = selectyears,
+                                        gainthreshold = gainthreshold,
+                                        selectyears = selectyears, iniyear = iniyear,
                                         climatetype = climatetype, accessibilityrule = accessibilityrule,
                                         efrMethod = efrMethod, rankmethod = rankmethod,
                                         yieldcalib = yieldcalib, allocationrule = allocationrule,
@@ -102,7 +103,8 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
 
     # Potentially Irrigated Area (on current Cropland) [total, sustainable, unsustainable]
     potIrrcurr <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
-                                           gainthreshold = gainthreshold, selectyears = selectyears,
+                                           gainthreshold = gainthreshold,
+                                           selectyears = selectyears, iniyear = iniyear,
                                            climatetype = climatetype, accessibilityrule = accessibilityrule,
                                         efrMethod = efrMethod, rankmethod = rankmethod,
                                         yieldcalib = yieldcalib, allocationrule = allocationrule,
@@ -122,7 +124,8 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
 
     # Potentially Irrigated Area (on potential Cropland) [total, sustainable, unsustainable]
     potIrrpot <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
-                                          gainthreshold = gainthreshold, selectyears = selectyears,
+                                          gainthreshold = gainthreshold,
+                                          selectyears = selectyears, iniyear = iniyear,
                                           climatetype = climatetype, accessibilityrule = accessibilityrule,
                                           efrMethod = efrMethod, rankmethod = rankmethod,
                                           yieldcalib = yieldcalib, allocationrule = allocationrule,

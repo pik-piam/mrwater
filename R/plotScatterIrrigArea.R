@@ -5,6 +5,7 @@
 #' @param scenario         EFP and non-agricultural water use scenarios separate by "." (e.g. "on.ssp2")
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
+#' @param iniyear          initialization year
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
@@ -41,7 +42,7 @@
 #'
 #' @export
 
-plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatetype,
+plotScatterIrrigArea <- function(region, scenario, selectyears, iniyear, climatetype, lpjml,
                                  efrMethod, accessibilityrule, rankmethod, yieldcalib,
                                  allocationrule, gainthreshold, thresholdtype,
                                  irrigationsystem, landScen, cropmix, multicropping) {
@@ -50,15 +51,12 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
 
-  # retrieve function arguments
-  iniyear   <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
-
   croparea  <- calcOutput("CropareaAdjusted", years = selectyears, sectoral = "kcr", cells = "lpjcell",
                            physical = TRUE, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
   irrigarea <- dimSums(croparea[, , "irrigated"], dim = 3)
   croparea  <- dimSums(croparea, dim = 3)
 
-  irrigatableArea <- collapseNames(calcOutput("IrrigatableArea", selectyears = selectyears,
+  irrigatableArea <- collapseNames(calcOutput("IrrigatableArea", selectyears = selectyears, iniyear = iniyear,
                                               climatetype = climatetype, lpjml = lpjml,
                                               gainthreshold = gainthreshold, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                               allocationrule = allocationrule,  thresholdtype = thresholdtype,
@@ -89,7 +87,7 @@ plotScatterIrrigArea <- function(region, scenario, lpjml, selectyears, climatety
                                          cropmix = cropmix, com_ag = FALSE,
                                          multicropping = multicropping, aggregate = FALSE)[, , scenario])
 
-  fullirrigReq  <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
+  fullirrigReq  <- calcOutput("FullIrrigationRequirement", selectyears = selectyears, iniyear = iniyear,
                                lpjml = lpjml, climatetype = climatetype, comagyear = NULL,
                                irrigationsystem = irrigationsystem, landScen = landScen,
                                cropmix = cropmix, multicropping = multicropping, aggregate = FALSE)

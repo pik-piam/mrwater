@@ -4,6 +4,7 @@
 #' @param scenario         Non-agricultural water use scenario and EFP "on" or "off" separated by .
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
+#' @param iniyear          initialization year
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction:
@@ -40,13 +41,13 @@
 #'
 #' @export
 
-plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, rankmethod, cropmix, yieldcalib, efrMethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, landScen, potential_wat, com_ag, multicropping) {
+plotMapIrrigatableArea <- function(scenario, lpjml, climatetype, selectyears, iniyear, rankmethod, cropmix, yieldcalib, efrMethod, accessibilityrule, allocationrule, thresholdtype, gainthreshold, irrigationsystem, landScen, potential_wat, com_ag, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for the map")
   }
 
-  irrigarea  <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+  irrigarea  <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, selectyears = selectyears, iniyear = iniyear, climatetype = climatetype,
                                          efrMethod = efrMethod, accessibilityrule = accessibilityrule, rankmethod = rankmethod, yieldcalib = yieldcalib,
                                          allocationrule = allocationrule, thresholdtype = thresholdtype, gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                          landScen = landScen, cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
