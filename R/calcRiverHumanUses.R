@@ -127,7 +127,7 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
     # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
     watReserved <- as.array(collapseNames(prevHuman_routing[, , "required_wat_min"]))
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
-    prevHumanWC <- as.array(collapseNames(prevHuman_routing[, , "currHumanWC"]))
+    prevHumanWC <- as.array(collapseNames(prevHuman_routing[, , "currHuman_wc"]))
 
     ## Current human uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
@@ -259,12 +259,12 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   ########################
   out <- new.magpie(cells_and_regions = getCells(watReserved),
                     years = getYears(watReserved),
-                    names = c("required_wat_min", "currHumanWW", "currHumanWC"),
+                    names = c("required_wat_min", "currHuman_ww", "currHuman_wc"),
                     sets = c("x.y.iso", "year", "data"))
   out <- .transformObject(out)
   out[, , "required_wat_min"] <- as.magpie(watReserved, spatial = 1, temporal = 2)
-  out[, , "currHumanWW"]     <- as.magpie(currHumanWW, spatial = 1, temporal = 2)
-  out[, , "currHumanWC"]     <- as.magpie(currHumanWC, spatial = 1, temporal = 2)
+  out[, , "currHuman_ww"]     <- as.magpie(currHumanWW, spatial = 1, temporal = 2)
+  out[, , "currHuman_wc"]     <- as.magpie(currHumanWC, spatial = 1, temporal = 2)
   description <- paste0("river routing outputs taking human uses (", humanuse, ") into account")
 
   return(list(x            = out,
