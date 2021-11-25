@@ -51,7 +51,7 @@ plotMapIrrigYieldImprovementPotential <- function(selectyears, iniyear, lpjml, c
   x <- dimSums(x, dim = 3)
 
   # relevant map area
-  area         <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+  area         <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
                               comagyear = NULL, landScen = landScen, aggregate = FALSE)
   x[area == 0] <- NA
 

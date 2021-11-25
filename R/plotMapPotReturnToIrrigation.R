@@ -69,7 +69,7 @@ plotMapPotReturnToIrrigation <- function(selectyears, unit, iniyear, lpjml,
   }
 
   # relevant map area
-  area              <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+  area              <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
                                   comagyear = NULL, landScen = landScen, aggregate = FALSE)
   return[area == 0] <- NA
 

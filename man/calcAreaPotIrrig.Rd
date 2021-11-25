@@ -4,21 +4,23 @@
 \alias{calcAreaPotIrrig}
 \title{calcAreaPotIrrig}
 \usage{
-calcAreaPotIrrig(selectyears, comagyear, landScen)
+calcAreaPotIrrig(selectyears, comagyear, iniyear, landScen)
 }
 \arguments{
-\item{selectyears}{years to be returned}
+\item{selectyears}{Years to be returned}
 
-\item{comagyear}{if NULL: total potential croparea is used;
+\item{comagyear}{If NULL: total potential croparea is used;
 if !NULL: already irrigated area is subtracted;
 year specified here is the year of the initialization
 used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)}
+
+\item{iniyear}{Initialization year for current cropland area}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. landScen (currCropland, currIrrig, potCropland)
 2. for curr-scenarios: initialization year;
 for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
-For case of pot-scenario without land protection select "NA"
+For case of pot-scenario without land protection: do not specify anything behind ":"
 or do not specify second part of the argument}
 }
 \value{
@@ -30,7 +32,7 @@ This function calculates land that is potentially available
 }
 \examples{
 \dontrun{
-calcOutput("AreapotCropland", aggregate = FALSE)
+calcOutput("AreaPotIrrig", aggregate = FALSE)
 }
 
 }

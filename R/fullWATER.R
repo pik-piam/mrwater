@@ -141,9 +141,19 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule, thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, landScen = currland, cropmix = cropmix,
+             potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
+             file = "DemandCurve_curr_single.mz")
+
+  calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = "wat_ag_ww",
+             GT_range = c(0, 250, 500, 1000, 2000, 3000),
+             selectyears = plotyear, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule, thresholdtype = thresholdtype,
              irrigationsystem = irrigationsystem, landScen = potland, cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = multicropping, aggregate = FALSE,
-             file = "DemandCurve_pot_single.mz")
+             file = "Econ_ww_pot.mz")
 
   # Reference data
   calcOutput("YieldgainArea", rangeGT = c(0, 250, 500, 1000, 2000, 3000), lpjml = lpjml,
@@ -178,13 +188,13 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              aggregate = FALSE, file = paste0("yieldgain_USDm3", ".mz"))
 
   # Area that is potentially available for irrigated agriculture
-  calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
+  calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL, iniyear = iniyear,
              landScen = potland, aggregate = FALSE,
              file = "avlIrrigarea_pot.mz")
-  calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
+  calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL, iniyear = iniyear,
              landScen = paste0(gsub("_.*", "", potland), ":", iniyear), aggregate = FALSE,
              file = "avlIrrigarea_pot_Unprotect.mz")
-  calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
+  calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL, iniyear = iniyear,
              landScen = currland, aggregate = FALSE,
              file = "avlIrrigarea_curr.mz")
 

@@ -108,7 +108,7 @@ plotMapYieldgainPotential <- function(output, scenario, selectyears, iniyear, lp
   }
 
   # relevant map area
-  area         <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+  area         <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
                               comagyear = NULL, landScen = landScen, aggregate = FALSE)
   x[area == 0] <- NA
 

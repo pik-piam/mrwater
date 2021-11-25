@@ -94,7 +94,7 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
     legendtitle <- "Cellshare"
     legendrange <- c(0, 0.1)
   } else if (legend_scale == "Areashare") {
-    y <- calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL, landScen = landScen, aggregate = FALSE)
+    y <- calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL, iniyear = iniyear, landScen = landScen, aggregate = FALSE)
     legendtitle <- "Areashare"
     legendrange <- c(0, 0.1)
   } else if (legend_scale == "Boolean") {
@@ -109,7 +109,7 @@ plotMapEconOfIrrig <- function(areacorrect, reference, legend_scale, scenario, l
   }
 
   if (areacorrect) {
-    z <- calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL, landScen = landScen, aggregate = FALSE)
+    z <- calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL, iniyear = iniyear, landScen = landScen, aggregate = FALSE)
     w <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", type = "cell")
     w <- (111e3 * 0.5) * (111e3 * 0.5) * cos(w$lat / 180 * pi) / 10000000000 # square meter -> Mha (1ha = 10000m^2)
     w <- as.magpie(w, spatial = 1)

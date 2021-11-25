@@ -73,7 +73,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
   if (unlimited) {
 
     # Area that can potentially be irrigated without water limitation
-    area <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+    area <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
                         landScen = landScen, comagyear = NULL,
                         aggregate = FALSE)
     d    <- "Potentially Irrigated Area only considering land constraint"

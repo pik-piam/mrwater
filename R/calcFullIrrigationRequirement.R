@@ -46,7 +46,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   irrigWat <- irrigWat[, , "pasture", invert = TRUE]
 
   # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
-  land <- calcOutput("AreaPotIrrig", selectyears = selectyears,
+  land <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
                      comagyear = comagyear, landScen = landScen, aggregate = FALSE)
 
   # share of corp area by crop type
