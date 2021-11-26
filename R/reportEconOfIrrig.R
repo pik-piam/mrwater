@@ -8,6 +8,7 @@
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
+#' @param iniyear          initialization year
 #' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod        EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)
@@ -44,7 +45,7 @@
 #'
 #' @export
 
-reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
+reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml, iniyear,
                               selectyears, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib,
                               allocationrule, thresholdtype, irrigationsystem, landScen, cropmix,
                               potential_wat = TRUE, com_ag, multicropping) {
@@ -52,8 +53,6 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
-
-  iniyear <- as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])
 
   if (output == "IrrigArea") {
 

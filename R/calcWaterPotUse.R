@@ -63,11 +63,6 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
-  if (grepl("curr", landScen) &&
-      iniyear != as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])) {
-    stop("Initialization year in calcWaterPotUse does not match:
-         iniyear and landScen should have same initialization year")
-  }
 
   # Water potentially available for irrigation (accounting for previously committed agricultural uses)
   watAvlAg    <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",

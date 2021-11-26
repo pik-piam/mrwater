@@ -68,11 +68,6 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod,
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
-  if (grepl("curr", landScen) &&
-      iniyear != as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])) {
-    stop("Initialization year in calcWaterPotUse does not match:
-         iniyear and landScen should have same initialization year")
-  }
 
   # River structure attributes
   rs     <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))

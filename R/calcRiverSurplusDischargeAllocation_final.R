@@ -72,11 +72,6 @@ calcRiverSurplusDischargeAllocation_final <- function(lpjml, climatetype,
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
-  if (grepl("curr", landScen) &&
-      iniyear != as.numeric(as.list(strsplit(landScen, split = ":"))[[1]][2])) {
-    stop("Initialization year in calcWaterPotUse does not match:
-         iniyear and landScen should have same initialization year")
-  }
 
   # Retrieve arguments
   if (com_ag == TRUE) {

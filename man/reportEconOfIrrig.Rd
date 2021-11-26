@@ -10,6 +10,7 @@ reportEconOfIrrig(
   GT_range,
   scenario,
   lpjml,
+  iniyear,
   selectyears,
   climatetype,
   efrMethod,
@@ -36,6 +37,8 @@ reportEconOfIrrig(
 \item{scenario}{non-agricultural water use scenario to be displayed in plot}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+
+\item{iniyear}{initialization year}
 
 \item{selectyears}{years for which irrigatable area is calculated}
 

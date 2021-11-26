@@ -33,7 +33,9 @@ magpie object in cellular resolution
 This function calculates cellular discharge after considering known human consumption (non-agricultural and committed agricultural) along the river calculated and accounted for in previous river routings (see calcRiverNaturalFlows and calcRiverHumanUses)
 }
 \examples{
-\dontrun{ calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE) }
+\dontrun{
+calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE)
+}
 
 }
 \author{
