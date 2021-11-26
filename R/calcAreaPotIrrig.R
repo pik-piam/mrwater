@@ -32,7 +32,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
   # retrieve function arguments
   protectSCEN <- as.list(strsplit(landScen, split = ":"))[[1]][2]
 
-  if (protectSCEN == "NULL" | protectSCEN == "NA") {
+  if (is.na(protectSCEN) | protectSCEN == "NULL" | protectSCEN == "NA") {
     protectSCEN <- NA
   }
 
