@@ -11,8 +11,7 @@ fullWATER(
   rankmethod = "USD_ha:TRUE",
   thresholdtype = "USD_ha",
   gainthreshold = 500,
-  currland = "currCropland:2010",
-  potland = "potIrrig:HalfEarth",
+  protectLand = "HalfEarth",
   yieldcalib = TRUE
 )
 }
@@ -49,11 +48,7 @@ USD_m3 (USD per cubic meter) for volumetric return}
 water allocation in upstreamfirst algorithm
 (in same unit as thresholdtype)}
 
-\item{currland}{Current land availability scenario: land scenario and initialization year}
-
-\item{potland}{Potential land availability scenario: specify suitability (Ramankutty or Zabel),
-protection scenario and initialization year after potIrrig
-(e.g. potCropland_HalfEarth:2010)}
+\item{protectLand}{Land protection scenario (e.g. HalfEarth, BH_FF, NULL)}
 
 \item{yieldcalib}{Boolean for whether LPJmL should be calibrated to FAO country yields (TRUE or FALSE)}
 }
