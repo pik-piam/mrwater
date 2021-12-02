@@ -30,9 +30,10 @@ USD_ha (USD per hectare) for area return, or
 USD_m3 (USD per cubic meter) for volumetric return;
 and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
 
-\item{cropmix}{Cropmix for which irrigation yield improvement is calculated
-can be selection of proxycrop(s) for calculation of average yield gain
-or hist_irrig or hist_total for historical cropmix}
+\item{cropmix}{Selected cropmix (options:
+"hist_irrig" for historical cropmix on currently irrigated area,
+"hist_total" for historical cropmix on total cropland,
+or selection of proxycrops)}
 
 \item{iniyear}{Initialization year for price}
 

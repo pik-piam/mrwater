@@ -19,9 +19,10 @@
 #' @param allocationrule   Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")
 #' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param cropmix          cropmix for which irrigation yield improvement is calculated
-#'                         can be selection of proxycrop(s) for calculation of average yield gain
-#'                         or hist_irrig or hist_total for historical cropmix
+#' @param cropmix          Selected cropmix (options:
+#'                         "hist_irrig" for historical cropmix on currently irrigated area,
+#'                         "hist_total" for historical cropmix on total cropland,
+#'                         or selection of proxycrops)
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping    Multicropping activated (TRUE) or not (FALSE)

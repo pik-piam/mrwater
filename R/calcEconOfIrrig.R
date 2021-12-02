@@ -24,14 +24,14 @@
 #' @param thresholdtype    Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param irrigationsystem Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param landScen         Land availability scenario consisting of two parts separated by ":":
-#'                         1. landScen (currCropland, currIrrig, potCropland)
-#'                         2. for curr-scenarios: initialization year;
-#'                         for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
-#'                         For case of pot-scenario without land protection select "NA"
+#'                         1. available land scenario (currCropland, currIrrig, potCropland)
+#'                         2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+#'                         For case of no land protection select "NA"
 #'                         or do not specify second part of the argument
-#' @param cropmix          cropmix for which irrigation yield improvement is calculated
-#'                         can be selection of proxycrop(s) for calculation of average yield gain
-#'                         or hist_irrig or hist_total for historical cropmix
+#' @param cropmix          Selected cropmix (options:
+#'                         "hist_irrig" for historical cropmix on currently irrigated area,
+#'                         "hist_total" for historical cropmix on total cropland,
+#'                         or selection of proxycrops)
 #' @param potential_wat    if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag           if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
 #'                         if FALSE: no irrigation areas reserved (irrigation potential)
@@ -58,6 +58,7 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
   }
 
   if (output == "IrrigArea") {
+
     x <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = 0,
                                   selectyears = selectyears, iniyear = iniyear,
                                   climatetype = climatetype, lpjml = lpjml,
@@ -70,7 +71,9 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
 
     d <- "Irrigatable Area for different gainthresholds"
     u <- "Mha"
+
   } else {
+
     x <- collapseNames(calcOutput("WaterPotUse", gainthreshold = 0,
                                   selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
@@ -84,6 +87,7 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
     x <- x / 1000
     d <- "Water Use Potential for different gainthresholds"
     u <- "km^3"
+
   }
 
   # separation of multicropping layers and combine to one magpie object
@@ -112,6 +116,7 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
   for (gainthreshold in GT_range) {
 
     if (output == "IrrigArea") {
+
       tmp <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = gainthreshold,
                                       selectyears = selectyears, iniyear = iniyear,
                                       lpjml = lpjml, climatetype = climatetype,
@@ -122,6 +127,7 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
                                       com_ag = com_ag, multicropping = multicropping,
                                       aggregate = FALSE)[, , "irrigatable"][, , scenario][, , season])
     } else {
+
       tmp <- collapseNames(calcOutput("WaterPotUse", gainthreshold = gainthreshold,
                                       lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,

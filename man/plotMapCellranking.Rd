@@ -33,9 +33,10 @@ or reduced potential (FALSE, reduced potential of cell receives
                              at later stage in allocation algorithm);
 separated by ":"}
 
-\item{cropmix}{Cropmix for which irrigation yield improvement is calculated
-can be selection of proxycrop(s) for calculation of average yield gain
-or hist_irrig or hist_total for historical cropmix}
+\item{cropmix}{Selected cropmix (options:
+"hist_irrig" for historical cropmix on currently irrigated area,
+"hist_total" for historical cropmix on total cropland,
+or selection of proxycrops)}
 
 \item{iniyear}{Initialization year of irrigation system}
 

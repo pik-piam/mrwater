@@ -13,9 +13,10 @@
 #'                      USD_ha (USD per hectare) for area return, or
 #'                      USD_m3 (USD per cubic meter) for volumetric return;
 #'                      and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
-#' @param cropmix       Cropmix for which irrigation yield improvement is calculated
-#'                      can be selection of proxycrop(s) for calculation of average yield gain
-#'                      or hist_irrig or hist_total for historical cropmix
+#' @param cropmix       Selected cropmix (options:
+#'                      "hist_irrig" for historical cropmix on currently irrigated area,
+#'                      "hist_total" for historical cropmix on total cropland,
+#'                      or selection of proxycrops)
 #' @param iniyear       Initialization year for price
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                      If FALSE: uncalibrated LPJmL yields are used
@@ -37,8 +38,10 @@ calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
 
   # Read in average potential yield gain per cell (USD05 per ha)
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
-                           selectyears = cellrankyear, iniyear = iniyear, lpjml = lpjml, climatetype = climatetype,
-                           cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+                           selectyears = cellrankyear, iniyear = iniyear,
+                          lpjml = lpjml, climatetype = climatetype,
+                           cropmix = cropmix, yieldcalib = yieldcalib,
+                          multicropping = multicropping, aggregate = FALSE)
 
   if (!fullpotential) {
 

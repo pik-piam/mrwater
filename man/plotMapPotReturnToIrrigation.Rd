@@ -34,14 +34,15 @@ If FALSE: uncalibrated LPJmL yields are used}
 
 \item{multicropping}{multicropping for return to irrigation (TRUE or FALSE)}
 
-\item{cropmix}{cropmix for calculation of return to irrigation
-(proxycrop(s) or hist_irrig or hist_total)}
+\item{cropmix}{Selected cropmix (options:
+"hist_irrig" for historical cropmix on currently irrigated area,
+"hist_total" for historical cropmix on total cropland,
+or selection of proxycrops)}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
-1. landScen (currCropland, currIrrig, potCropland)
-2. for curr-scenarios: initialization year;
-for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
-For case of pot-scenario without land protection select "NA"
+1. available land scenario (currCropland, currIrrig, potCropland)
+2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+For case of no land protection select "NA"
 or do not specify second part of the argument}
 }
 \value{

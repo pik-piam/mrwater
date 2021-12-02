@@ -58,9 +58,10 @@ If FALSE: uncalibrated LPJmL yields are used}
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
-\item{cropmix}{Cropmix for which irrigation yield improvement is calculated
-can be selection of proxycrop(s) for calculation of average yield gain
-or hist_irrig or hist_total for historical cropmix}
+\item{cropmix}{Selected cropmix (options:
+"hist_irrig" for historical cropmix on currently irrigated area,
+"hist_total" for historical cropmix on total cropland,
+or selection of proxycrops)}
 
 \item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
 

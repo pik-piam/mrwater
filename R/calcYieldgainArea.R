@@ -13,14 +13,14 @@
 #'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param thresholdtype TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param landScen      Land availability scenario consisting of two parts separated by ":":
-#'                      1. landScen (currCropland, currIrrig, potCropland)
-#'                      2. for curr-scenarios: initialization year;
-#'                      for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
-#'                      For case of pot-scenario without land protection select "NA"
+#'                      1. available land scenario (currCropland, currIrrig, potCropland)
+#'                      2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+#'                      For case of no land protection select "NA"
 #'                      or do not specify second part of the argument
-#' @param cropmix       Cropmix for which irrigation yield improvement is calculated
-#'                      can be selection of proxycrop(s) for calculation of average yield gain
-#'                      or hist_irrig or hist_total for historical cropmix
+#' @param cropmix       Selected cropmix (options:
+#'                      "hist_irrig" for historical cropmix on currently irrigated area,
+#'                      "hist_total" for historical cropmix on total cropland,
+#'                      or selection of proxycrops)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
@@ -41,46 +41,12 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
                               climatetype, efrMethod, yieldcalib, thresholdtype,
                               landScen, cropmix, multicropping) {
 
-  if (length(selectyears) > 1) {
-    stop("Please select one year only for Potential Irrigatable Area Supply Curve")
-  }
-
-  x <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = 0,
-                  selectyears = selectyears, iniyear = iniyear,
-                  lpjml = lpjml, climatetype = climatetype,
-                  cropmix = cropmix, yieldcalib = yieldcalib,
-                  thresholdtype = thresholdtype, multicropping = multicropping,
-                  landScen = landScen, aggregate = FALSE)
-  d <- "Potentially Irrigated Area only considering land constraint"
-  u <- "Mha"
-
-  if (multicropping) {
-
-    mc <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
-    mc <- mc[, , "irrigated"] - mc[, , "rainfed"]
-    x1 <- x2 <- x3 <- x
-    x1[mc != 0] <- 0
-    x1 <- add_dimension(x1, dim = 3.1, add = "MC", nm = "addMC0")
-    x2[mc != 1] <- 0
-    x2 <- add_dimension(x2, dim = 3.1, add = "MC", nm = "addMC1")
-    x3[mc != 2] <- 0
-    x3 <- add_dimension(x3, dim = 3.1, add = "MC", nm = "addMC2")
-
-    # calculate harvested area
-    x2 <- 2 * x2
-    x3 <- 3 * x3
-
-    x <- mbind(x1, x2, x3)
-
-  }
-
-  x <- add_dimension(x, dim = 3.1, add = "GT", nm = "0")
-
-  if (rangeGT[1] == 0) {
-    rangeGT <- rangeGT[-1]
-  }
+  x <- vector(mode = "list", length = length(rangeGT))
+  i <- 0
 
   for (gainthreshold in rangeGT) {
+
+    i <- i + 1
 
     tmp <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = gainthreshold,
                     selectyears = selectyears, iniyear = iniyear,
@@ -90,6 +56,14 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
                     landScen = landScen, aggregate = FALSE)
 
     if (multicropping) {
+
+      if (length(selectyears) > 1) {
+        stop("Please select one year only when multicropping is selected
+             or adjust code in calcYieldGainArea respectively")
+      }
+
+      mc <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
+      mc <- mc[, , "irrigated"] - mc[, , "rainfed"]
 
       tmp1 <- tmp2 <- tmp3 <- tmp
       tmp1[mc != 0] <- 0
@@ -109,14 +83,15 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
 
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
 
-    x   <- mbind(x, tmp)
+    x[[i]]   <- tmp
   }
 
-  out <- collapseNames(x)
+  out <- mbind(x)
+  out <- collapseNames(out)
 
   return(list(x            = out,
               weight       = NULL,
-              unit         = u,
-              description  = d,
+              unit         = "Mha",
+              description  = "Potentially irrigated area only considering land constraint",
               isocountries = FALSE))
 }

@@ -8,9 +8,10 @@
 #' @param iniyear     Initialization year for committed agricultural uses
 #' @param climatetype Switch between different climate models or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod   EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
-#' @param cropmix     cropmix for which irrigation yield improvement is calculated
-#'                    can be selection of proxycrop(s) for calculation of average yield gain
-#'                    or hist_irrig or hist_total for historical cropmix
+#' @param cropmix     Selected cropmix (options:
+#'                    "hist_irrig" for historical cropmix on currently irrigated area,
+#'                    "hist_total" for historical cropmix on total cropland,
+#'                    or selection of proxycrops)
 #' @param thresholdtype Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear

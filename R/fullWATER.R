@@ -261,6 +261,49 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              aggregate = FALSE,
              file = paste0("yieldgainarea_potUNSUS", ".mz"))
 
+  # Water requirements for irrigation of selected areas
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("currIrrig:", protectLand),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_actSUS.mz")
+
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("currIrrig:", "NULL"),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_actUNSUS.mz")
+
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("currCropland:", protectLand),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_curSUS.mz")
+
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("currCropland:", "NULL"),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_curUNSUS.mz")
+
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("potCropland:", protectLand),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_potSUS.mz")
+
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("potCropland:", "NULL"),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_potUNSUS.mz")
+
   # Half-Earth protection map
   calcOutput("ProtectArea", cells = "lpjcell", aggregate = FALSE,
              file = "protectedAreas.mz")

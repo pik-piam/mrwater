@@ -38,9 +38,10 @@ plotMapIrrigatableArea(
 
 \item{rankmethod}{Method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
-\item{cropmix}{cropmix for which irrigation yield improvement is calculated
-can be selection of proxycrop(s) for calculation of average yield gain
-or hist_irrig or hist_total for historical cropmix}
+\item{cropmix}{Selected cropmix (options:
+"hist_irrig" for historical cropmix on currently irrigated area,
+"hist_total" for historical cropmix on total cropland,
+or selection of proxycrops)}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 If FALSE: uncalibrated LPJmL yields are used}
@@ -59,10 +60,9 @@ discharge that is exceeded x percent of the time on average throughout a year (Q
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
-1. landScen (currCropland, currIrrig, potCropland)
-2. for curr-scenarios: initialization year;
-for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
-For case of pot-scenario without land protection select "NA"
+1. available land scenario (currCropland, currIrrig, potCropland)
+2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+For case of no land protection select "NA"
 or do not specify second part of the argument}
 
 \item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}

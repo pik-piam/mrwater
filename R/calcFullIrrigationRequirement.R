@@ -13,14 +13,14 @@
 #' @param irrigationsystem Irrigation system used: system share as in initialization year,
 #'                         or drip, surface, sprinkler for full irrigation by selected system
 #' @param landScen         Land availability scenario consisting of two parts separated by ":":
-#'                         1. landScen (currCropland, currIrrig, potCropland)
-#'                         2. for curr-scenarios: initialization year;
-#'                         for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
-#'                         For case of pot-scenario without land protection select "NA"
+#'                         1. available land scenario (currCropland, currIrrig, potCropland)
+#'                         2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+#'                         For case of no land protection select "NA"
 #'                         or do not specify second part of the argument
-#' @param cropmix          Cropmix for which irrigation yield improvement is calculated
-#'                         can be selection of proxycrop(s) for calculation of average yield gain
-#'                         or hist_irrig or hist_total for historical cropmix
+#' @param cropmix          Selected cropmix (options:
+#'                         "hist_irrig" for historical cropmix on currently irrigated area,
+#'                         "hist_total" for historical cropmix on total cropland,
+#'                         or selection of proxycrops)
 #' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
@@ -50,52 +50,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
                      comagyear = comagyear, landScen = landScen, aggregate = FALSE)
 
   # share of corp area by crop type
-  if (length(cropmix) == 1 && grepl("hist", cropmix)) {
-
-    # read in relevant croparea: total (irrigated + rainfed) or irrigated depending on chosen cropmix
-    croparea <- setYears(calcOutput("CropareaAdjusted", years = iniyear,
-                                    sectoral = "kcr", physical = TRUE,
-                                    cells = "lpjcell", cellular = TRUE,
-                                    irrigation = TRUE, aggregate = FALSE), NULL)
-
-    if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "irrig") {
-
-      # irrigated croparea
-      croparea <- collapseNames(croparea[, , "irrigated"])
-
-    } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "total") {
-
-      # total croparea (irrigated + rainfed)
-      croparea <- dimSums(croparea, dim = "irrigation")
-
-    } else {
-      stop("Please select hist_irrig or hist_total when
-           selecting historical cropmix")
-    }
-
-    # historical share of crop types in cropland per cell
-    cropareaShr <- croparea / dimSums(croparea, dim = 3)
-    # correct NAs: where no current cropland available,
-    # representative crops (maize, rapeseed, pulses) assumed as proxy
-    proxyCrops  <- c("maiz", "rapeseed", "puls_pro")
-    otherCrops  <- setdiff(getNames(croparea), proxyCrops)
-    cropareaShr[, , proxyCrops][dimSums(croparea, dim = 3) == 0] <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
-    cropareaShr[, , otherCrops][dimSums(croparea, dim = 3) == 0] <- 0
-
-  } else {
-
-    # equal crop area share for each proxycrop assumed
-    cropareaShr              <- new.magpie(cells_and_regions = getCells(land),
-                                           years = NULL,
-                                           names = cropmix,
-                                           sets = c("x.y.iso", "t", "data"))
-    cropareaShr[, , cropmix] <- 1 / length(cropmix)
-  }
-
-  # Check
-  if (any(round(dimSums(cropareaShr, dim = 3)) != 1)) {
-    stop("Croparea share does not sum up to 1 in calcFullIrrigationRequirement")
-  }
+  cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix)
 
   # land area per crop
   land <- land * cropareaShr

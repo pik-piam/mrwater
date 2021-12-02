@@ -34,9 +34,10 @@
 #'                          USD_m3 (USD per cubic meter) for volumetric return
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge
 #'                          allocation algorithm ("surface", "sprinkler", "drip", "initialization")
-#' @param cropmix           cropmix for which irrigation yield improvement is calculated
-#'                          can be selection of proxycrop(s) for calculation of average yield gain
-#'                          or hist_irrig or hist_total for historical cropmix
+#' @param cropmix           Selected cropmix (options:
+#'                          "hist_irrig" for historical cropmix on currently irrigated area,
+#'                          "hist_total" for historical cropmix on total cropland,
+#'                          or selection of proxycrops)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return data frame in country-resolution

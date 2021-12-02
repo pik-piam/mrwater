@@ -17,10 +17,9 @@ used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 201
 \item{iniyear}{Initialization year for current cropland area}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
-1. landScen (currCropland, currIrrig, potCropland)
-2. for curr-scenarios: initialization year;
-for pot-scenarios: protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
-For case of pot-scenario without land protection: do not specify anything behind ":"
+1. available land scenario (currCropland, currIrrig, potCropland)
+2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+For case of no land protection select "NA"
 or do not specify second part of the argument}
 }
 \value{

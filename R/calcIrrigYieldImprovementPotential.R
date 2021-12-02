@@ -10,9 +10,11 @@
 #'                      USD_ha (USD per hectare) for area return, or
 #'                      USD_m3 (USD per cubic meter) for volumetric return
 #' @param iniyear       initialization year for food price and cropmix area
-#' @param cropmix       cropmix for which irrigation yield improvement is calculated
-#'                      can be selection of proxycrop(s) for calculation of average yield gain
-#'                      or hist_irrig or hist_total for historical cropmix
+#' @param cropmix       Selected cropmix for which yield improvement potential
+#'                      is calculated (options:
+#'                      "hist_irrig" for historical cropmix on currently irrigated area,
+#'                      "hist_total" for historical cropmix on total cropland,
+#'                      or selection of proxycrops)
 #'                      NULL returns all crops individually
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                      If FALSE: uncalibrated LPJmL yields are used
@@ -99,57 +101,18 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   }
 
   # Selected crops
+
   if (!is.null(cropmix)) {
 
-    # share of corp area by crop type
-    if (length(cropmix) == 1 && grepl("hist", cropmix)) {
+    # share of crop area by crop type
+    cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix)
 
-      # read in relevant croparea: total (irrigated + rainfed) or irrigated depending on chosen cropmix
-      croparea <- setYears(calcOutput("CropareaAdjusted", years = iniyear,
-                                      sectoral = "kcr", physical = TRUE,
-                                      cellular = TRUE, cells = "lpjcell",
-                                      irrigation = TRUE, aggregate = FALSE),
-                           NULL)
+    # average (rf/irr) yields over crops weighted with their croparea share
+    croplist <- intersect(croplist, getNames(cropareaShr))
+    yields   <- dimSums(yields[, , croplist] * cropareaShr[, , croplist], dim = "MAG")
 
-      if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "irrig") {
-
-        # irrigated croparea
-        croparea <- collapseNames(croparea[, , "irrigated"])
-
-      } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "total") {
-
-        # total croparea (irrigated + rainfed)
-        croparea <- dimSums(croparea, dim = "irrigation")
-
-      } else {
-        stop("Please select hist_irrig or hist_total when selecting historical cropmix")
-      }
-
-      # historical share of crop types in cropland per cell
-      cropareaShr <- croparea / dimSums(croparea, dim = 3)
-      # correct NAs: where no current cropland available,
-      # representative crops (maize, rapeseed, pulses) assumed as proxy
-      repCrops    <- c("maiz", "rapeseed", "puls_pro")
-      otherCrops  <- setdiff(getNames(croparea), repCrops)
-      cropareaShr[, , repCrops][dimSums(croparea, dim = 3) == 0]   <- 1 / length(c("maiz", "rapeseed", "puls_pro"))
-      cropareaShr[, , otherCrops][dimSums(croparea, dim = 3) == 0] <- 0
-
-      # average (rf/irr) yields over historical crops weighted with their croparea share
-      croplist <- intersect(croplist, getNames(cropareaShr))
-      yields   <- dimSums(yields[, , croplist] * cropareaShr[, , croplist], dim = "MAG")
-
-      description <- "Average yield improvement potential for crop types weighted with historical croparea share"
-
-    } else {
-
-      # Note: equal crop area share for each proxycrop assumed
-      # select proxy crops
-      yields      <- yields[, , cropmix]
-      # average over proxy crops
-      yields      <- dimSums(yields, dim = "MAG") / length(cropmix)
-      description <- "Average yield improvement potential for selection of crop types"
-
-    }
+    # description of output
+    description <- "Average yield improvement potential for crop types weighted cropmix croparea share"
 
     # Account for multicropping potential
     mc   <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
