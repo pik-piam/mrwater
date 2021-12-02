@@ -48,7 +48,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   multicropping    <- FALSE
 
   lpjml            <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                        crop = "ggcmi_phase3_nchecks_bft_6277d36e")
+                        crop = "ggcmi_phase3_nchecks_9ca735cb")
   climatetype      <- "GFDL-ESM4:ssp126"
 
   irrigationsystem <- "initialization"
@@ -207,9 +207,29 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              cropmix = cropmix, multicropping = multicropping,
              efrMethod = efrMethod,
              yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             landScen = paste0("currIrrig:", protectLand),
+             aggregate = FALSE,
+             file = paste0("yieldgainarea_actSUS", ".mz"))
+
+  calcOutput("YieldgainArea", rangeGT = gtrange,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = plotyear, iniyear = iniyear,
+             cropmix = cropmix, multicropping = multicropping,
+             efrMethod = efrMethod,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             landScen = paste0("currIrrig:", "NULL"),
+             aggregate = FALSE,
+             file = paste0("yieldgainarea_actUNSUS", ".mz"))
+
+  calcOutput("YieldgainArea", rangeGT = gtrange,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = plotyear, iniyear = iniyear,
+             cropmix = cropmix, multicropping = multicropping,
+             efrMethod = efrMethod,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype,
              landScen = paste0("currCropland:", protectLand),
              aggregate = FALSE,
-             file = paste0("yieldgainarea_currSUS", ".mz"))
+             file = paste0("yieldgainarea_curSUS", ".mz"))
 
   calcOutput("YieldgainArea", rangeGT = gtrange,
              lpjml = lpjml, climatetype = climatetype,
@@ -219,7 +239,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              yieldcalib = yieldcalib, thresholdtype = thresholdtype,
              landScen = paste0("currCropland:", "NULL"),
              aggregate = FALSE,
-             file = paste0("yieldgainarea_currUNSUS", ".mz"))
+             file = paste0("yieldgainarea_curUNSUS", ".mz"))
 
   calcOutput("YieldgainArea", rangeGT = gtrange,
              lpjml = lpjml, climatetype = climatetype,
