@@ -50,7 +50,8 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
                      comagyear = comagyear, landScen = landScen, aggregate = FALSE)
 
   # share of corp area by crop type
-  cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix)
+  cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
+                            aggregate = FALSE)
 
   # land area per crop
   land <- land * cropareaShr

@@ -105,7 +105,8 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   if (!is.null(cropmix)) {
 
     # share of crop area by crop type
-    cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix)
+    cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
+                              aggregate = FALSE)
 
     # average (rf/irr) yields over crops weighted with their croparea share
     croplist <- intersect(croplist, getNames(cropareaShr))

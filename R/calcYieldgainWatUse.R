@@ -42,7 +42,7 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   irrigWater <- calcOutput("IrrigWatRequirements", aggregate = FALSE, lpjml = lpjml,
                            selectyears = selectyears, climatetype = climatetype)
   # Pasture is not irrigated in MAgPIE
-  irrigWater <- irrigWater[, , "pasture", invert = T]
+  irrigWater <- irrigWater[, , "pasture", invert = TRUE]
 
   # Withdrawal requirements per crop
   irrigReqW  <- collapseNames(irrigWater[, , "withdrawal"])
@@ -63,7 +63,8 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   potGain    <- dimSums(potGain, dim = 3)
 
   # Crop share per cell according to chosen cropmix
-  cropShr    <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix)
+  cropShr    <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
+                           aggregate = FALSE)
 
   # Loop over several gain thresholds
   x <- vector(mode = "list", length = length(rangeGT))

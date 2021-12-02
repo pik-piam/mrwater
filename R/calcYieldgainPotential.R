@@ -97,7 +97,8 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
   }
 
   # share of crop area by crop type
-  cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix)
+  cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
+                            aggregate = FALSE)
 
   # Potential area by croptype (in Mha)
   area <- cropareaShr * area
