@@ -42,7 +42,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
 
   # Standard settings
   iniyear          <- 2010
-  selectyears      <- c(2010, 2050)
+  selectyears      <- 2010
   plotyear         <- 2010
   ssp              <- "ssp2"
   multicropping    <- FALSE
