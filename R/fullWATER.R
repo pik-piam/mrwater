@@ -308,6 +308,14 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   calcOutput("ProtectArea", cells = "lpjcell", aggregate = FALSE,
              file = "protectedAreas.mz")
 
+  # Available area (temporary output: to compare whether numbers match)
+  calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL,
+             iniyear = iniyear, landScen = paste0("potCropland:", "NULL"),
+             aggregate = FALSE, file = "potCropland.mz")
+  calcOutput("AreaPotIrrig", selectyears = selectyears, comagyear = NULL,
+             iniyear = iniyear, landScen = paste0("potCropland:", protectLand),
+             aggregate = FALSE, file = "potCroplandSUS.mz")
+
   # Accessibility graph
   calcOutput("LPJmL_new", subtype = "mdischarge",
              version = lpjml["natveg"], climatetype = climatetype,
