@@ -94,7 +94,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = paste0("currIrrig:", protectLand), potential_wat = FALSE, com_ag = FALSE,
+              landScen = paste0("currIrrig:", protectLand), potential_wat = TRUE, com_ag = FALSE,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTSUS.mz"))
 
@@ -127,7 +127,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = paste0("currIrrig:", protectLand), potential_wat = FALSE, com_ag = TRUE,
+              landScen = paste0("currIrrig:", protectLand), potential_wat = TRUE, com_ag = TRUE,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTSUScomAg.mz"))
 
@@ -161,7 +161,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = "currIrrig:NULL", potential_wat = FALSE, com_ag = FALSE,
+              landScen = "currIrrig:NULL", potential_wat = TRUE, com_ag = FALSE,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTUNSUS.mz"))
 
@@ -194,7 +194,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = "currIrrig:NULL", potential_wat = FALSE, com_ag = TRUE,
+              landScen = "currIrrig:NULL", potential_wat = TRUE, com_ag = TRUE,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTUNSUScomAg.mz"))
 

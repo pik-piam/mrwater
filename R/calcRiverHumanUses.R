@@ -130,9 +130,9 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
     prevHumanWC <- as.array(collapseNames(prevHuman_routing[, , "currHuman_wc"]))
 
     ## Current human uses
-    # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
+    # Committed Water Withdrawals (in mio. m^3 / yr) [smoothed]
     currHumanWW <- watComAgWW
-    # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
+    # Committed Water Consumption (in mio. m^3 / yr) [smoothed]
     currHumanWC <- watComAgWC
 
   } else {
