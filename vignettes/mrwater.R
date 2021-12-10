@@ -1,18 +1,18 @@
-## ----Setup, echo = FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----Setup, echo = FALSE-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>")
 
-## ----Libraries------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----Libraries---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  library(madrat)
 #  library(magclass)
 #  library(mrcommons)
 #  library(mrland)
 #  library(mrmagpie)
 
-## ----NatDischarge---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----NatDischarge------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  natQ <- calcOutput("RiverNaturalFlows", selectyears = 2010, climatetype = "GFDL-ESM4:ssp126",
 #                     lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb"), aggregate = FALSE)[, , "discharge_nat"]
 
-## ----EFRs-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----EFRs--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  selectyears <- 2010
 #  lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb")
 #  climatetype <- "GFDL-ESM4:ssp126"
@@ -28,7 +28,7 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>"
 #  efrMethod         <- "VMF:fair"
 #  accessibilityrule <- "CV:2"
 
-## ----HumanDischarge-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----HumanDischarge----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  humanQ <- calcOutput("RiverDischargeNatAndHuman", iniyear = 2010, com_ag = TRUE,
 #                       selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
 #                       efrMethod = efrMethod, aggregate = FALSE)
@@ -36,10 +36,10 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>"
 #  iniyear <- 2010
 #  com_ag  <- TRUE
 
-## ----Landuse--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----Landuse-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  croparea <- calcOutput("Croparea", years = iniyear, sectoral = "kcr", physical = TRUE, cells = "lpjcell", cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
 
-## ----AllocationAlgorithm--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----AllocationAlgorithm-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  iwp <- calcOutput("RiverSurplusDischargeAllocation", output = "potIrrigWat",
 #                     selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
 #                     efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -50,13 +50,13 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>"
 #                     landScen = "potCropland:HalfEarth",
 #                     irrigationsystem = "initialization", multicropping = FALSE, aggregate = FALSE)
 
-## ----YieldValueGain-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----YieldValueGain----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
 #                          selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, iniyear = iniyear,
 #                          cropmix = "hist_total", yieldcalib = TRUE,
 #                          multicropping = FALSE, aggregate = FALSE)
 
-## ----IAP------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----IAP---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  allocationrule   <- "optimization"
 #  rankmethod       <- "USD_ha:TRUE"
 #  yieldcalib       <- TRUE
@@ -76,12 +76,12 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>"
 #                     cropmix = cropmix, com_ag = com_ag,
 #                     potential_wat = TRUE, multicropping = FALSE, aggregate = FALSE)
 
-## ----EconOfIrrig----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----EconOfIrrig-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  iad <- calcOutput("EconOfIrrig", scenario = "ssp2", season = "single", output = "IrrigArea",
 #               GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = 2010, iniyear = 2010,
 #               lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
 #               rankmethod = rankmethod, yieldcalib = yieldcalib,
 #               allocationrule = allocationrule, thresholdtype = thresholdtype,
-#               irrigationsystem = irrigationsystem, landScen = currland, cropmix = cropmix,
+#               irrigationsystem = irrigationsystem, landScen = landScen, cropmix = cropmix,
 #               potential_wat = TRUE, com_ag = FALSE, multicropping = FALSE, aggregate = FALSE)
 

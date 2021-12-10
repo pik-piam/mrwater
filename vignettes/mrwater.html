@@ -12,7 +12,7 @@
 
 <meta name="author" content="Felicitas D. Beier" />
 
-<meta name="date" content="2021-11-23" />
+<meta name="date" content="2021-12-10" />
 
 <title>mrwater Documentation</title>
 
@@ -141,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">mrwater Documentation</h1>
 <h4 class="author">Felicitas D. Beier</h4>
-<h4 class="date">2021-11-23</h4>
+<h4 class="date">2021-12-10</h4>
 
 
 
@@ -245,7 +245,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="cropland-extent" class="section level3">
 <h3>Cropland extent</h3>
-<p>The irrigation potentials can be calculated for various scenarios of potential cropland cover that are set via the <code>landScen</code> argument. It consists of three parts: (1) a selection of current cropland (currCropland) or potential cropland (potCropland); (2) a protection component (only relevant for the cropland expansion case, i.e. potCropland) separated by &quot;_&quot; from (1). WDPA, BH, FF, CPD, LW, HalfEarth can be selected as protection scenario; (3) initialization year of cropland area, separated by “:”. For example <code>landScen = &quot;currCropland:2010&quot;</code> selects current cropland extent as of the year 2010; <code>landScen = &quot;potIrrigRamankutty_HalfEarth:2010&quot;</code> is potential cropland while respecting a Half Earth land protection scenario. The year argument is ignored for the case of potCropland. It is only relevant for the currCropland case.</p>
+<p>The irrigation potentials can be calculated for various scenarios of potential cropland cover that are set via the <code>landScen</code> argument. It consists of two parts: (1) the potentially available land component where currently irrigated area (currIrrig), current cropland area (currCropland) or potential cropland area (potCropland) can be selected, and (2) a protection component that selects which land areas shall be protected, i.e. no irrigation taking place in these areas. Possible selections are: WDPA, BH, FF, CPD, LW, BH_FF, HalfEarth. For example <code>landScen = &quot;currCropland:NA&quot;</code> selects current cropland extent as of the year set in iniyear without land protection; <code>landScen = &quot;potIrrig:HalfEarth&quot;</code> is potential cropland while respecting a Half Earth land protection scenario.</p>
 </div>
 <div id="irrigation-area-potential-iap" class="section level3">
 <h3>Irrigation Area Potential (IAP)</h3>
@@ -272,16 +272,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="generation-of-irrigation-area-demand-iad-curves" class="section level3">
 <h3>Generation of irrigation area demand (IAD) curves</h3>
 <p>For a representation of irrigation potentials at various irrigation yield value gains, the river routing routine has to be executed for varying irrigation yield value gain thresholds. The generated data can be used to create irrigation area demand curves and/or aggregated to different scales (e.g. country-, basin-scale).</p>
-<p>[include function call for economics of irrigation with list of thresholds between 0 and 3000]</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>iad <span class="ot">&lt;-</span> <span class="fu">calcOutput</span>(<span class="st">&quot;EconOfIrrig&quot;</span>, <span class="at">scenario =</span> <span class="st">&quot;ssp2&quot;</span>, <span class="at">season =</span> <span class="st">&quot;single&quot;</span>, <span class="at">output =</span> <span class="st">&quot;IrrigArea&quot;</span>,</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">GT_range =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">250</span>, <span class="dv">500</span>, <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="at">selectyears =</span> <span class="dv">2010</span>, <span class="at">iniyear =</span> <span class="dv">2010</span>,</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">lpjml =</span> lpjml, <span class="at">climatetype =</span> climatetype, <span class="at">efrMethod =</span> efrMethod, <span class="at">accessibilityrule =</span> accessibilityrule,</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">rankmethod =</span> rankmethod, <span class="at">yieldcalib =</span> yieldcalib,</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">allocationrule =</span> allocationrule, <span class="at">thresholdtype =</span> thresholdtype,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">irrigationsystem =</span> irrigationsystem, <span class="at">landScen =</span> currland, <span class="at">cropmix =</span> cropmix,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">irrigationsystem =</span> irrigationsystem, <span class="at">landScen =</span> landScen, <span class="at">cropmix =</span> cropmix,</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">potential_wat =</span> <span class="cn">TRUE</span>, <span class="at">com_ag =</span> <span class="cn">FALSE</span>, <span class="at">multicropping =</span> <span class="cn">FALSE</span>, <span class="at">aggregate =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p>[include curve plot generation function (one for selected countries, one for selected basins)]</p>
-<p>[include sample output (e.g. country curve plot or basin curve plot)]</p>
+<p>[include curve plot generation function (one for selected countries, one for selected basins) (see mrwater_CurrentIrrigationPotentials.Rmd)]</p>
+<p>[include sample output (e.g. country curve plot or basin curve plot) (see mrwater_CurrentIrrigationPotentials.Rmd)]</p>
 </div>
 </div>
 

@@ -175,8 +175,9 @@ This implementation is still work-in-progress and will be updated soon.
 
 ### Cropland extent
 
-The irrigation potentials can be calculated for various scenarios of potential cropland cover that are set via the ``landScen`` argument. It consists of three parts: (1) a selection of current cropland (currCropland) or potential cropland (potCropland); (2) a protection component (only relevant for the cropland expansion case, i.e. potCropland) separated by "_" from (1). WDPA, BH, FF, CPD, LW, HalfEarth can be selected as protection scenario; (3) initialization year of cropland area, separated by ":".
-For example ``landScen = "currCropland:2010"`` selects current cropland extent as of the year 2010; ``landScen = "potIrrigRamankutty_HalfEarth:2010"`` is potential cropland while respecting a Half Earth land protection scenario. The year argument is ignored for the case of potCropland. It is only relevant for the currCropland case.
+The irrigation potentials can be calculated for various scenarios of potential cropland cover that are set via the ``landScen`` argument. 
+It consists of two parts: (1) the potentially available land component where currently irrigated area (currIrrig), current cropland area (currCropland) or potential cropland area (potCropland) can be selected, and (2) a protection component that selects which land areas shall be protected, i.e. no irrigation taking place in these areas. Possible selections are: WDPA, BH, FF, CPD, LW, BH_FF, HalfEarth.
+For example ``landScen = "currCropland:NA"`` selects current cropland extent as of the year set in iniyear without land protection; ``landScen = "potIrrig:HalfEarth"`` is potential cropland while respecting a Half Earth land protection scenario.
 
 
 ### Irrigation Area Potential (IAP)
@@ -210,20 +211,17 @@ iap <- calcOutput("IrrigatableArea", selectyears = selectyears, iniyear = iniyea
 For a representation of irrigation potentials at various irrigation yield value gains, the river routing routine has to be executed for varying irrigation yield value gain thresholds. 
 The generated data can be used to create irrigation area demand curves and/or aggregated to different scales (e.g. country-, basin-scale).
 
-[include function call for economics of irrigation with list of thresholds between 0 and 3000]
-
-
 ```{r EconOfIrrig}
 iad <- calcOutput("EconOfIrrig", scenario = "ssp2", season = "single", output = "IrrigArea",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = 2010, iniyear = 2010,
              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
              allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, landScen = currland, cropmix = cropmix,
+             irrigationsystem = irrigationsystem, landScen = landScen, cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = FALSE, aggregate = FALSE)
 ```
 
-[include curve plot generation function (one for selected countries, one for selected basins)]
+[include curve plot generation function (one for selected countries, one for selected basins) (see mrwater_CurrentIrrigationPotentials.Rmd)]
 
-[include sample output (e.g. country curve plot or basin curve plot)]
+[include sample output (e.g. country curve plot or basin curve plot) (see mrwater_CurrentIrrigationPotentials.Rmd)]
 
