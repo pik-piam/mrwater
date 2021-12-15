@@ -48,7 +48,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   multicropping    <- FALSE
 
   lpjml            <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                        crop = "ggcmi_phase3_nchecks_9ca735cb")
+                        crop = "ggcmi_phase3_nchecks_bft_6277d36e")
   climatetype      <- "GFDL-ESM4:ssp126"
 
   irrigationsystem <- "initialization"
