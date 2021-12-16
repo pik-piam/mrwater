@@ -16,7 +16,8 @@
 toolLPJcellCoordinates <- function(x, type) {
 
   # read in LPJmL mapping
-  lpjCells <- toolGetMapping("LPJ_CellBelongingsToCountries.csv", where = "mcrommons")
+  lpjCells <- toolGetMapping("LPJ_CellBelongingsToCountries.csv",
+                             type = "cell", where = "mcrommons")
   # transform to coordinate style data with p separation
   lpjCells <- data.frame(lpjCells, data.frame("coordinates" = paste(gsub("\\.", "p", lpjCells$lon),
                                                                     gsub("\\.", "p", lpjCells$lat), sep = "."),
