@@ -13,15 +13,15 @@ toolDischargeAllocation(y, rs, l_inout, l_in, allocationrule, glocellrank)
 cell numbers including ordered cell number)}
 
 \item{l_inout}{List of inputs that are at the same time outputs:
-required_wat_min_allocation Minimum (water requirement reserved per grid cell (as magpie object of correct dimension));
+minWatReserved Minimum (water requirement reserved per grid cell (as magpie object of correct dimension));
 discharge (Discharge to be allocated (as magpie object of correct dimension));
-frac_fullirrig (fraction of fullirrigation requirements that can be fulfilled)}
+fracFullirrig (fraction of fullirrigation requirements that can be fulfilled)}
 
 \item{l_in}{List of inputs:
-irrig_yieldgainpotential (yield gain potential through irrigation of proxy crops: magpie object with cellular and year dimension (as magpie object of correct dimension));
-required_wat_fullirrig_ww (required withdrawal for full irrigation in specific cell (as magpie object of correct dimension));
-required_wat_fullirrig_wc (required consumption for full irrigation in specific cell (as magpie object of correct dimension));
-gainthreshold (Minimum yield gain in USD/ha (as scalar value)); avl_wat_ww; avl_wat_wc}
+irrigGain (yield gain potential through irrigation of proxy crops: magpie object with cellular and year dimension (as magpie object of correct dimension));
+reqWatFullirrigWW (required withdrawal for full irrigation in specific cell (as magpie object of correct dimension));
+reqWatFullirrigWC (required consumption for full irrigation in specific cell (as magpie object of correct dimension));
+gainthreshold (Minimum yield gain in USD/ha (as scalar value)); avlWatWW; avlWatWC}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst")}

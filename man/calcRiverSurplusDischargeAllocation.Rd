@@ -12,6 +12,7 @@ calcRiverSurplusDischargeAllocation(
   efrMethod,
   accessibilityrule,
   rankmethod,
+  yieldcalib,
   allocationrule,
   thresholdtype,
   gainthreshold,
@@ -19,7 +20,6 @@ calcRiverSurplusDischargeAllocation(
   iniyear,
   landScen,
   cropmix,
-  yieldcalib,
   com_ag,
   multicropping
 )
@@ -27,16 +27,14 @@ calcRiverSurplusDischargeAllocation(
 \arguments{
 \item{lpjml}{LPJmL version used}
 
-\item{climatetype}{Switch between different climate scenarios
-or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{selectyears}{Years to be returned
 (Note: does not affect years of harmonization or smoothing)}
 
 \item{output}{Output to be reported}
 
-\item{efrMethod}{EFR method used including selected strictness of EFRs
-(e.g. Smakhtin:good, VMF:fair)}
+\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
 \item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
 combined with scalar value defining the strictness of accessibility restriction:
@@ -49,23 +47,25 @@ Unit according to which rank is calculated:
 tDM (tons per dry matter),
 USD_ha (USD per hectare) for area return, or
 USD_m3 (USD per cubic meter) for volumetric return;
-and boolean indicating fullpotential
-(TRUE, i.e. cell receives full irrigation requirements in total area)
-or reduced potential
-(FALSE, reduced potential of cell receives at later stage in allocation algorithm);
+and boolean indicating fullpotential (TRUE, i.e. cell receives full
+                                      irrigation requirements in total area)
+or reduced potential (FALSE, reduced potential of cell
+                      receives at later stage in allocation algorithm);
 separated by ":"}
 
+\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+If FALSE: uncalibrated LPJmL yields are used}
+
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
-across cells of river basin ("optimization", "upstreamfirst")}
+("optimization" or "upstreamfirst")}
 
 \item{thresholdtype}{Unit of yield improvement potential used as threshold:
 tDM (tons per dry matter),
 USD_ha (USD per hectare) for area return, or
 USD_m3 (USD per cubic meter) for volumetric return}
 
-\item{gainthreshold}{Threshold of yield improvement potential required for
-water allocation in upstreamfirst algorithm
-(in same unit as thresholdtype)}
+\item{gainthreshold}{Threshold of yield improvement potential
+(same unit as thresholdtype)}
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge
 allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
@@ -83,11 +83,8 @@ or do not specify second part of the argument}
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
 
-\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
-If FALSE: uncalibrated LPJmL yields are used}
-
-\item{com_ag}{if TRUE: the currently already irrigated areas in
-         initialization year are reserved for irrigation,
+\item{com_ag}{if TRUE: the currently already irrigated areas
+         in initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
@@ -96,7 +93,7 @@ if FALSE: no irrigation areas reserved (irrigation potential)}
 magpie object in cellular resolution
 }
 \description{
-This function distributes surplus basin discharge after
+This function distributes surplus basin discharge after the
              previous river routings following certain management assumptions
 }
 \examples{

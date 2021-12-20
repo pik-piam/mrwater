@@ -363,9 +363,11 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "irrigAreaCurrent.mz")
 
   # Yield gain through irrigation
-  calcOutput("IrrigYieldImprovementPotential", lpjml = lpjml, climatetype = climatetype,
-             unit = "USD_ha", iniyear = iniyear, selectyears = plotyear,
-             cropmix = cropmix, yieldcalib = yieldcalib, multicropping = multicropping,
-             aggregate = FALSE, file = paste0("yieldgain_USDha", ".mz"))
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = plotyear,
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = multicropping, aggregate = FALSE,
+             file = paste0("yieldgain_USDha", ".mz"))
 
 }
