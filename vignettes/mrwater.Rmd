@@ -52,7 +52,6 @@ Note: To return spatially explicit function outputs, the ``madrat:::calcOutput()
 ## Hydrological input data
 
 In this version of the mrwater library, all hydrological input data is provided by the process-based hydrology-vegetation model LPJmL. 
-The data is available at ... [ask LPJmL folks to publish on e.g. Zenodo]. 
 Data that is based on natural vegetation runs is provided by LPJmL4. Data that includes management is based on LPJmL5. 
 
 The river routing consists of several functions. 
@@ -72,7 +71,7 @@ Inaccessible discharge is based on the assumption that the higher the long-term 
 
 ```{r EFRs}
 selectyears <- 2010
-lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb")
+lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_bft_6277d36e")
 climatetype <- "GFDL-ESM4:ssp126"
 
 efr <- calcOutput("EnvmtlFlowRequirements", efrMethod = "VMF:fair", 
@@ -87,7 +86,7 @@ efrMethod         <- "VMF:fair"
 accessibilityrule <- "CV:2"
 ```
 
-Note: The integration of alternative bio-physical and hydrological input data is possible. However, this functionality is not yet implemented.
+Note: The integration of alternative biophysical and hydrological input data is possible.
 
 
 ## Human water use data
@@ -106,9 +105,10 @@ com_ag  <- TRUE
 Non-agricultural water abstractions as provided by ISIMIP (and for future scenarios WATERGAP) have priority over agricultural water abstractions. They are determined through the function call ``calcOutput("RiverHumanUses", humanuse = "non_agriculture", ...)`` and report reserved non-agricultural water consumption ("currHuman_wc") and withdrawal ("currHuman_ww"). 
 
 Taking so-called "committed agricultural uses", i.e. reserving water abstractions of currently irrigated areas, into account is optional (it can be activated via the ``com_ag`` argument). 
-In case of an activation of committed agricultural uses, the required consumption and withdrawal for currently irrigated areas as determined in ``calcOutput("WaterUseCommittedAg", ...)`` are reserved in addition to non-agricultural water abstractions via the function call ``calcOutput("RiverHumanUses", humanuse = "committed_agriculture", ..., iniyear = 2010)``. The argument ``iniyear`` determines the chosen cellular irrigated crop mix (i.e. the crop mix as reported by FAOSTAT for the year 2010 on cellular cropland as reported by LUH2). Cellular irrigated areas for specific years are provided via ``calcOutput("Croparea", years = iniyear, sectoral = "kcr", physical = TRUE, cells = "lpjcell", cellular = TRUE, irrigation = TRUE, aggregate = FALSE)`` through combining (irrigated and rainfed) cropland area provided by LUH2 and country-level FAO crop production data. (KRISTINE: Please confirm and if necessary rewrite). Note that areas reported as irrigated depreciate at a rate of 10 percent per annum for future time steps (years after ``iniyear``). 
+In case of an activation of committed agricultural uses, the required consumption and withdrawal for currently irrigated areas as determined in ``calcOutput("WaterUseCommittedAg", ...)`` are reserved in addition to non-agricultural water abstractions via the function call ``calcOutput("RiverHumanUses", humanuse = "committed_agriculture", ..., iniyear = 2010)``. The argument ``iniyear`` determines the chosen cellular irrigated crop mix (i.e. the crop mix as reported by FAOSTAT for the year 2010 on cellular cropland as reported by LUH2). Cellular irrigated areas for specific years are provided via ``calcOutput("Croparea", years = iniyear, sectoral = "kcr", physical = TRUE, cells = "lpjcell", cellular = TRUE, irrigation = TRUE, aggregate = FALSE)`` through combining (irrigated and rainfed) cropland area provided by LUH2 and country-level FAO crop production data. 
+Note that areas reported as irrigated depreciate at a rate of 10 percent per annum for future time steps (years after ``iniyear``). 
 
-Compared to the previous section, this section requires additional input data: ISIMIP non-agricultural water abstraction data (for the historical time period and fixed at this level for the future), WATERGAP non-agricultural water abstraction data (for future scenarios),  LPJmL5 crop water requirements, country level irrigation system shares as provided by Jägermeyr (REF!), LUH2 cellular cropland area (see also: ``mrcommons:::calcLUH2v2``), and FAO country-level crop-specific production data (see also: ``mrcommons:::readFAO_online``).
+Compared to the previous section, this section requires additional input data: ISIMIP non-agricultural water abstraction data (for the historical time period and fixed at this level for the future), WATERGAP non-agricultural water abstraction data (for future scenarios),  LPJmL5 crop water requirements, country level irrigation system shares as provided by Jägermeyr (2015), LUH2 cellular cropland area (see also: ``mrcommons:::calcLUH2v2``), and FAO country-level crop-specific production data (see also: ``mrcommons:::readFAO_online``).
 
 
 ## Land-use input data
@@ -182,7 +182,7 @@ For example ``landScen = "currCropland:NA"`` selects current cropland extent as 
 
 ### Irrigation Area Potential (IAP)
 
-The ``calcIrrigatableArea`` function translates IWP into IAP and returns the area that can potentially be irrigated given the assumptions that are set via the arguments.
+The ``calcIrrigatableArea`` function translates potential irrigation water (PIW) into potentially irrigated areas (PIA) and returns the area that can potentially be irrigated given the assumptions that are set via the arguments.
 
 ```{r IAP}
 allocationrule   <- "optimization" 
@@ -206,10 +206,10 @@ iap <- calcOutput("IrrigatableArea", selectyears = selectyears, iniyear = iniyea
 ```
 
 
-### Generation of irrigation area demand (IAD) curves
+### Generation of potential irrigation area (PIA) curves
 
 For a representation of irrigation potentials at various irrigation yield value gains, the river routing routine has to be executed for varying irrigation yield value gain thresholds. 
-The generated data can be used to create irrigation area demand curves and/or aggregated to different scales (e.g. country-, basin-scale).
+The generated data can be used to create PIA curves and/or aggregated to different scales (e.g. country-, basin-scale).
 
 ```{r EconOfIrrig}
 iad <- calcOutput("EconOfIrrig", scenario = "ssp2", season = "single", output = "IrrigArea",
@@ -220,8 +220,3 @@ iad <- calcOutput("EconOfIrrig", scenario = "ssp2", season = "single", output = 
              irrigationsystem = irrigationsystem, landScen = landScen, cropmix = cropmix,
              potential_wat = TRUE, com_ag = FALSE, multicropping = FALSE, aggregate = FALSE)
 ```
-
-[include curve plot generation function (one for selected countries, one for selected basins) (see mrwater_CurrentIrrigationPotentials.Rmd)]
-
-[include sample output (e.g. country curve plot or basin curve plot) (see mrwater_CurrentIrrigationPotentials.Rmd)]
-

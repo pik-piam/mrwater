@@ -53,8 +53,8 @@ water allocation in upstreamfirst algorithm
 \item{yieldcalib}{Boolean for whether LPJmL should be calibrated to FAO country yields (TRUE or FALSE)}
 }
 \description{
-Function that produces the objects for water outputs that can
-             be plotted with the mrwaterPlots functions.
+Function that produces the objects for water outputs
+             on cellular resolution.
 }
 \author{
 Felicitas Beier

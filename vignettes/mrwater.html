@@ -12,7 +12,7 @@
 
 <meta name="author" content="Felicitas D. Beier" />
 
-<meta name="date" content="2021-12-10" />
+<meta name="date" content="2021-12-23" />
 
 <title>mrwater Documentation</title>
 
@@ -141,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">mrwater Documentation</h1>
 <h4 class="author">Felicitas D. Beier</h4>
-<h4 class="date">2021-12-10</h4>
+<h4 class="date">2021-12-23</h4>
 
 
 
@@ -171,14 +171,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="hydrological-input-data" class="section level2">
 <h2>Hydrological input data</h2>
-<p>In this version of the mrwater library, all hydrological input data is provided by the process-based hydrology-vegetation model LPJmL. The data is available at … [ask LPJmL folks to publish on e.g. Zenodo]. Data that is based on natural vegetation runs is provided by LPJmL4. Data that includes management is based on LPJmL5.</p>
+<p>In this version of the mrwater library, all hydrological input data is provided by the process-based hydrology-vegetation model LPJmL. Data that is based on natural vegetation runs is provided by LPJmL4. Data that includes management is based on LPJmL5.</p>
 <p>The river routing consists of several functions. The first iteration determines naturalized discharge based on yearly runoff and lake evaporation using the STN river structure (<code>rs &lt;- readRDS(system.file(&quot;extdata/riverstructure_stn_coord.rds&quot;, package = &quot;mrwater&quot;))</code>) that determines the flow direction and basin attribution of the 67420 grid cells of the underlying land mask. The function returns natural discharge and lake evaporation that are required for further calculations in the river routing routine.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>natQ <span class="ot">&lt;-</span> <span class="fu">calcOutput</span>(<span class="st">&quot;RiverNaturalFlows&quot;</span>, <span class="at">selectyears =</span> <span class="dv">2010</span>, <span class="at">climatetype =</span> <span class="st">&quot;GFDL-ESM4:ssp126&quot;</span>,</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">lpjml =</span> <span class="fu">c</span>(<span class="at">natveg =</span> <span class="st">&quot;LPJmL4_for_MAgPIE_44ac93de&quot;</span>, <span class="at">crop =</span> <span class="st">&quot;ggcmi_phase3_nchecks_9ca735cb&quot;</span>), <span class="at">aggregate =</span> <span class="cn">FALSE</span>)[, , <span class="st">&quot;discharge_nat&quot;</span>]</span></code></pre></div>
 <p>The required arguments are <code>selectyears</code> (determining the year(s) for which the output shall be generated), <code>climatetype</code> (selecting the GCM data and scenario underlying the process-based vegetation model), and <code>lpjml</code> (selecting the LPJmL model versions used for natural vegetation (<code>natveg</code>) input data and management (<code>crop</code>) input data)</p>
 <p>Environmental flow requirements (EFRs) and accessible discharge are also calculated based on hydrological LPJmL data only. Both are based on monthly discharge. The calculation method and strictness of EFR can be selected via the <code>efrMethod</code> argument (e.g. “Smakhtin:good”, “VMF:fair”). Inaccessible discharge is based on the assumption that the higher the long-term seasonal variability of discharge is, the harder it is to access the water by humans and bring it into productive use. Different accessibility rules can be selected via the <code>accessibilityrule</code> argument (e.g. “CV:2” stands for the coefficient of variation approach to a base of 2; “Q:75” stands for a quantile approach where discharge that exceeds the 75th quantile is inaccessible to humans).</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>selectyears <span class="ot">&lt;-</span> <span class="dv">2010</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lpjml       <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">natveg =</span> <span class="st">&quot;LPJmL4_for_MAgPIE_44ac93de&quot;</span>, <span class="at">crop =</span> <span class="st">&quot;ggcmi_phase3_nchecks_9ca735cb&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lpjml       <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">natveg =</span> <span class="st">&quot;LPJmL4_for_MAgPIE_44ac93de&quot;</span>, <span class="at">crop =</span> <span class="st">&quot;ggcmi_phase3_nchecks_bft_6277d36e&quot;</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>climatetype <span class="ot">&lt;-</span> <span class="st">&quot;GFDL-ESM4:ssp126&quot;</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>efr <span class="ot">&lt;-</span> <span class="fu">calcOutput</span>(<span class="st">&quot;EnvmtlFlowRequirements&quot;</span>, <span class="at">efrMethod =</span> <span class="st">&quot;VMF:fair&quot;</span>, </span>
@@ -191,7 +191,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>efrMethod         <span class="ot">&lt;-</span> <span class="st">&quot;VMF:fair&quot;</span></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>accessibilityrule <span class="ot">&lt;-</span> <span class="st">&quot;CV:2&quot;</span></span></code></pre></div>
-<p>Note: The integration of alternative bio-physical and hydrological input data is possible. However, this functionality is not yet implemented.</p>
+<p>Note: The integration of alternative biophysical and hydrological input data is possible.</p>
 </div>
 <div id="human-water-use-data" class="section level2">
 <h2>Human water use data</h2>
@@ -203,8 +203,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>iniyear <span class="ot">&lt;-</span> <span class="dv">2010</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>com_ag  <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span></code></pre></div>
 <p>Non-agricultural water abstractions as provided by ISIMIP (and for future scenarios WATERGAP) have priority over agricultural water abstractions. They are determined through the function call <code>calcOutput(&quot;RiverHumanUses&quot;, humanuse = &quot;non_agriculture&quot;, ...)</code> and report reserved non-agricultural water consumption (“currHuman_wc”) and withdrawal (“currHuman_ww”).</p>
-<p>Taking so-called “committed agricultural uses”, i.e. reserving water abstractions of currently irrigated areas, into account is optional (it can be activated via the <code>com_ag</code> argument). In case of an activation of committed agricultural uses, the required consumption and withdrawal for currently irrigated areas as determined in <code>calcOutput(&quot;WaterUseCommittedAg&quot;, ...)</code> are reserved in addition to non-agricultural water abstractions via the function call <code>calcOutput(&quot;RiverHumanUses&quot;, humanuse = &quot;committed_agriculture&quot;, ..., iniyear = 2010)</code>. The argument <code>iniyear</code> determines the chosen cellular irrigated crop mix (i.e. the crop mix as reported by FAOSTAT for the year 2010 on cellular cropland as reported by LUH2). Cellular irrigated areas for specific years are provided via <code>calcOutput(&quot;Croparea&quot;, years = iniyear, sectoral = &quot;kcr&quot;, physical = TRUE, cells = &quot;lpjcell&quot;, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)</code> through combining (irrigated and rainfed) cropland area provided by LUH2 and country-level FAO crop production data. (KRISTINE: Please confirm and if necessary rewrite). Note that areas reported as irrigated depreciate at a rate of 10 percent per annum for future time steps (years after <code>iniyear</code>).</p>
-<p>Compared to the previous section, this section requires additional input data: ISIMIP non-agricultural water abstraction data (for the historical time period and fixed at this level for the future), WATERGAP non-agricultural water abstraction data (for future scenarios), LPJmL5 crop water requirements, country level irrigation system shares as provided by Jägermeyr (REF!), LUH2 cellular cropland area (see also: <code>mrcommons:::calcLUH2v2</code>), and FAO country-level crop-specific production data (see also: <code>mrcommons:::readFAO_online</code>).</p>
+<p>Taking so-called “committed agricultural uses”, i.e. reserving water abstractions of currently irrigated areas, into account is optional (it can be activated via the <code>com_ag</code> argument). In case of an activation of committed agricultural uses, the required consumption and withdrawal for currently irrigated areas as determined in <code>calcOutput(&quot;WaterUseCommittedAg&quot;, ...)</code> are reserved in addition to non-agricultural water abstractions via the function call <code>calcOutput(&quot;RiverHumanUses&quot;, humanuse = &quot;committed_agriculture&quot;, ..., iniyear = 2010)</code>. The argument <code>iniyear</code> determines the chosen cellular irrigated crop mix (i.e. the crop mix as reported by FAOSTAT for the year 2010 on cellular cropland as reported by LUH2). Cellular irrigated areas for specific years are provided via <code>calcOutput(&quot;Croparea&quot;, years = iniyear, sectoral = &quot;kcr&quot;, physical = TRUE, cells = &quot;lpjcell&quot;, cellular = TRUE, irrigation = TRUE, aggregate = FALSE)</code> through combining (irrigated and rainfed) cropland area provided by LUH2 and country-level FAO crop production data. Note that areas reported as irrigated depreciate at a rate of 10 percent per annum for future time steps (years after <code>iniyear</code>).</p>
+<p>Compared to the previous section, this section requires additional input data: ISIMIP non-agricultural water abstraction data (for the historical time period and fixed at this level for the future), WATERGAP non-agricultural water abstraction data (for future scenarios), LPJmL5 crop water requirements, country level irrigation system shares as provided by Jägermeyr (2015), LUH2 cellular cropland area (see also: <code>mrcommons:::calcLUH2v2</code>), and FAO country-level crop-specific production data (see also: <code>mrcommons:::readFAO_online</code>).</p>
 </div>
 <div id="land-use-input-data" class="section level2">
 <h2>Land-use input data</h2>
@@ -249,7 +249,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="irrigation-area-potential-iap" class="section level3">
 <h3>Irrigation Area Potential (IAP)</h3>
-<p>The <code>calcIrrigatableArea</code> function translates IWP into IAP and returns the area that can potentially be irrigated given the assumptions that are set via the arguments.</p>
+<p>The <code>calcIrrigatableArea</code> function translates potential irrigation water (PIW) into potentially irrigated areas (PIA) and returns the area that can potentially be irrigated given the assumptions that are set via the arguments.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>allocationrule   <span class="ot">&lt;-</span> <span class="st">&quot;optimization&quot;</span> </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>rankmethod       <span class="ot">&lt;-</span> <span class="st">&quot;USD_ha:TRUE&quot;</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>yieldcalib       <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
@@ -269,9 +269,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>                   <span class="at">cropmix =</span> cropmix, <span class="at">com_ag =</span> com_ag, </span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>                   <span class="at">potential_wat =</span> <span class="cn">TRUE</span>, <span class="at">multicropping =</span> <span class="cn">FALSE</span>, <span class="at">aggregate =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 </div>
-<div id="generation-of-irrigation-area-demand-iad-curves" class="section level3">
-<h3>Generation of irrigation area demand (IAD) curves</h3>
-<p>For a representation of irrigation potentials at various irrigation yield value gains, the river routing routine has to be executed for varying irrigation yield value gain thresholds. The generated data can be used to create irrigation area demand curves and/or aggregated to different scales (e.g. country-, basin-scale).</p>
+<div id="generation-of-potential-irrigation-area-pia-curves" class="section level3">
+<h3>Generation of potential irrigation area (PIA) curves</h3>
+<p>For a representation of irrigation potentials at various irrigation yield value gains, the river routing routine has to be executed for varying irrigation yield value gain thresholds. The generated data can be used to create PIA curves and/or aggregated to different scales (e.g. country-, basin-scale).</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>iad <span class="ot">&lt;-</span> <span class="fu">calcOutput</span>(<span class="st">&quot;EconOfIrrig&quot;</span>, <span class="at">scenario =</span> <span class="st">&quot;ssp2&quot;</span>, <span class="at">season =</span> <span class="st">&quot;single&quot;</span>, <span class="at">output =</span> <span class="st">&quot;IrrigArea&quot;</span>,</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">GT_range =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">250</span>, <span class="dv">500</span>, <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="at">selectyears =</span> <span class="dv">2010</span>, <span class="at">iniyear =</span> <span class="dv">2010</span>,</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">lpjml =</span> lpjml, <span class="at">climatetype =</span> climatetype, <span class="at">efrMethod =</span> efrMethod, <span class="at">accessibilityrule =</span> accessibilityrule,</span>
@@ -279,8 +279,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">allocationrule =</span> allocationrule, <span class="at">thresholdtype =</span> thresholdtype,</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">irrigationsystem =</span> irrigationsystem, <span class="at">landScen =</span> landScen, <span class="at">cropmix =</span> cropmix,</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">potential_wat =</span> <span class="cn">TRUE</span>, <span class="at">com_ag =</span> <span class="cn">FALSE</span>, <span class="at">multicropping =</span> <span class="cn">FALSE</span>, <span class="at">aggregate =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p>[include curve plot generation function (one for selected countries, one for selected basins) (see mrwater_CurrentIrrigationPotentials.Rmd)]</p>
-<p>[include sample output (e.g. country curve plot or basin curve plot) (see mrwater_CurrentIrrigationPotentials.Rmd)]</p>
 </div>
 </div>
 

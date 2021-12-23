@@ -12,7 +12,7 @@
 
 <meta name="author" content="Felicitas D. Beier" />
 
-<meta name="date" content="2021-11-03" />
+<meta name="date" content="2021-12-23" />
 
 <title>mrwater River Structure</title>
 
@@ -141,13 +141,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">mrwater River Structure</h1>
 <h4 class="author">Felicitas D. Beier</h4>
-<h4 class="date">2021-11-03</h4>
+<h4 class="date">2021-12-23</h4>
 
 
 
 <div id="overview" class="section level2">
 <h2>Overview</h2>
-<p>The <code>mrwater</code> library is based on the STN river structure (REF!) and the … land mask [ask Jens where 67k land mask comes from] (REF!).</p>
+<p>The <code>mrwater</code> library is based on the STN river structure (Vörösmarty et al. 2000, 2011) and the CRU gridded land mask (Harris et al. 2014, 2021).</p>
 </div>
 <div id="data" class="section level2">
 <h2>Data</h2>
@@ -370,7 +370,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>While <code>rs$endcell</code> can be used to uniquely identify which grid cells belong to one common basin, it does not provide the name of the river basin. To identify specific river basins, the <code>toolSelectRiverBasin</code> function can be used to select all grid cells that belong to one specific river basin that is listed in the <code>RiverBasinMapping.csv</code> stored in <code>inst/extdata</code>. It returns a list of grid cells including their coordinates and country attribution.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mississippi <span class="ot">&lt;-</span> <span class="fu">toolSelectRiverBasin</span>(<span class="at">basinname =</span> <span class="st">&quot;Mississippi&quot;</span>) </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(mississippi)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  chr [1:1372] &quot;-113p75.44p75.USA&quot; &quot;-113p25.45p25.USA&quot; &quot;-113p25.45p75.USA&quot; &quot;-113p25.48p25.USA&quot; &quot;-113p25.48p75.USA&quot; &quot;-112p75.45p25.USA&quot; &quot;-112p75.45p75.USA&quot; &quot;-112p75.46p75.USA&quot; ...</span></span></code></pre></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  chr [1:1372] &quot;-113p75.44p75.USA&quot; &quot;-113p25.45p25.USA&quot; &quot;-113p25.45p75.USA&quot; &quot;-113p25.48p25.USA&quot; &quot;-113p25.48p75.USA&quot; &quot;-112p75.45p25.USA&quot; &quot;-112p75.45p75.USA&quot; ...</span></span></code></pre></div>
 </div>
 </div>
 

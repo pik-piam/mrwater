@@ -51,6 +51,7 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames
 #' @importFrom stringr str_split
+#' @importFrom stats reshape
 #'
 #' @export
 

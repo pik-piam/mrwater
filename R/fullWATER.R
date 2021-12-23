@@ -1,6 +1,6 @@
 #' @title fullWATER
-#' @description Function that produces the objects for water outputs that can
-#'              be plotted with the mrwaterPlots functions.
+#' @description Function that produces the objects for water outputs
+#'              on cellular resolution.
 #'
 #' @param efrMethod         EFR method used including selected strictness of EFRs
 #'                          (Smakhtin:good, VMF:fair)

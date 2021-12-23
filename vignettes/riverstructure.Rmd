@@ -17,7 +17,8 @@ library(mrwater)
 
 ## Overview
 
-The ``mrwater`` library is based on the STN river structure (REF!) and the ... land mask [ask Jens where 67k land mask comes from] (REF!). 
+The ``mrwater`` library is based on the STN river structure (Vörösmarty et al. 2000, 2011) 
+and the CRU gridded land mask (Harris et al. 2014, 2021). 
 
 
 ## Data
