@@ -1,8 +1,8 @@
-# madrat based MAgPIE Input Data Library
+# madrat based MAgPIE water Input Data Library
 
 R package **mrwater**, version **1.0.0**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/mrwater)](https://cran.r-project.org/package=mrwater)  [![R build status](https://github.com/pik-piam/mrwater/workflows/check/badge.svg)](https://github.com/pik-piam/mrwater/actions) [![codecov](https://codecov.io/gh/pik-piam/mrwater/branch/master/graph/badge.svg)](https://codecov.io/gh/pik-piam/mrwater) [![r-universe](https://pik-piam.r-universe.dev/badges/mrwater)](https://pik-piam.r-universe.dev/ui#builds)
+[![CRAN status](https://www.r-pkg.org/badges/version/mrwater)](https://cran.r-project.org/package=mrwater) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5801680.svg)](https://doi.org/10.5281/zenodo.5801680) [![R build status](https://github.com/pik-piam/mrwater/workflows/check/badge.svg)](https://github.com/pik-piam/mrwater/actions) [![codecov](https://codecov.io/gh/pik-piam/mrwater/branch/master/graph/badge.svg)](https://codecov.io/gh/pik-piam/mrwater) [![r-universe](https://pik-piam.r-universe.dev/badges/mrwater)](https://pik-piam.r-universe.dev/ui#builds)
 
 ## Purpose and Functionality
 
@@ -47,15 +47,17 @@ In case of questions / problems please contact Felicitas Beier <beier@pik-potsda
 
 To cite package **mrwater** in publications use:
 
-Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2021). _mrwater: madrat based MAgPIE Input Data Library_. R package version 1.0.0.
+Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2021). _mrwater: madrat based MAgPIE water Input Data Library_. doi: 10.5281/zenodo.5801680 (URL: https://doi.org/10.5281/zenodo.5801680), R package version 1.0.0, <URL: https://github.com/pik-piam/mrwater>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
 @Manual{,
-  title = {mrwater: madrat based MAgPIE Input Data Library},
+  title = {mrwater: madrat based MAgPIE water Input Data Library},
   author = {Felicitas Beier and Jens Heinke and Kristine Karstens and Benjamin Leon Bodirsky and Jan Philipp Dietrich},
   year = {2021},
   note = {R package version 1.0.0},
+  doi = {10.5281/zenodo.5801680},
+  url = {https://github.com/pik-piam/mrwater},
 }
 ```
