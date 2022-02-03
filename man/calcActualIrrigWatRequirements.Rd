@@ -19,7 +19,8 @@ calcActualIrrigWatRequirements(lpjml, selectyears, climatetype, iniyear)
 magpie object in cellular resolution
 }
 \description{
-This function calculates actual irrigation water requirements per cell given a certain irrigation system
+This function calculates actual irrigation water requirements
+             per cell given a certain irrigation system
 }
 \examples{
 \dontrun{

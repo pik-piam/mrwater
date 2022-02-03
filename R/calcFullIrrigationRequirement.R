@@ -38,7 +38,7 @@
 calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear, iniyear,
                                           irrigationsystem, landScen, cropmix, multicropping) {
 
-  # read in irrigation water requirements for each irrigation system
+  # read in irrigation water requirements for each irrigation system and season
   # [in m^3 per hectare per year] (smoothed & harmonized)
   irrigWat <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                           lpjml = lpjml, climatetype = climatetype, aggregate = FALSE)
@@ -63,31 +63,6 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
   irrigWat <- irrigWat[, , getNames(cropareaShr)] * land
 
-  # add seasonality dimension
-  irrigWat <- add_dimension(irrigWat, dim = 3.1, add = "season", nm = "single")
-  irrigWat <- add_columns(irrigWat,   dim = 3.1, addnm = c("double", "triple"))
-
-  # Increase of water requirements where multicropping takes place
-  if (multicropping) {
-
-    # water requirement reduction parameters (share of water requirement necessary in second / third season):
-    watShr2 <- 0.9    #-#-# FIND LITERATURE VALUES FOR THIS!!!! #-#-#
-    watShr3 <- 0.8    #-#-# FIND LITERATURE VALUES FOR THIS!!!! #-#-#
-
-    # read in multiple cropping zones [3 layers: single, double, triple cropping]
-    mc          <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
-    mc          <- collapseNames(mc[, , "irrigated"])
-
-    irrigWat[, , "double"] <- irrigWat[, , "single"] * watShr2
-    irrigWat[, , "triple"] <- irrigWat[, , "single"] * watShr3
-
-  } else {
-
-    # when multicropping is deactivated: only first season is considered
-    irrigWat[, , c("double", "triple")] <- 0
-
-  }
-
   # sum over crops
   irrigWat <- dimSums(irrigWat, dim = "crop")
 
@@ -95,7 +70,8 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   if (irrigationsystem == "initialization") {
 
     # read in irrigation system area initialization [share of AEI by system] and expand to all years
-    tmp               <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
+    tmp               <- calcOutput("IrrigationSystem", source = "Jaegermeyr",
+                                    aggregate = FALSE)
     irrigSystem       <- new.magpie(cells_and_regions = getCells(irrigWat),
                                     years = getYears(irrigWat),
                                     names = getNames(tmp),
@@ -112,12 +88,8 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
 
   }
 
-  # Adjust dimension names and ordering of cells
-  getSets(irrigWat, fulldim = FALSE) <- c("x.y.iso", "year", "season.irrig_type")
-  order    <- paste(c(rep("single", 2), rep("double", 2), rep("triple", 2)),
-                    c("consumption", "withdrawal"),
-                    sep = ".")
-  irrigWat <- irrigWat[, , order]
+  # Sum over seasons
+  irrigWat <- dimSums(irrigWat, dim = "season")
 
   # Checks
   if (any(is.na(irrigWat))) {

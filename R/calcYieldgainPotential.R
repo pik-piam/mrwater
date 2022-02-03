@@ -90,8 +90,6 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                      landScen = landScen, cropmix = cropmix, potential_wat = TRUE,
                                      com_ag = FALSE, multicropping = multicropping,
                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
-    # sum over seasons (yearly irrigated area harvested)
-    area <- dimSums(area, dim = "season")
     d    <- "Potentially Irrigated Area considering land and water constraints"
 
   }

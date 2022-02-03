@@ -3,7 +3,6 @@
 #'              subject to land and water constraints
 #'
 #' @param scenario         non-agricultural water use scenario
-#' @param season           single, double, triple
 #' @param output           output to be displayed: irrigated area "IrrigArea" or
 #'                         available water volume "wat_ag_ww" "wat_ag_wc"
 #' @param GT_range         range of x-axis (gainthreshold) to be depicted on the curve
@@ -51,7 +50,11 @@
 #'
 #' @export
 
-calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyears, iniyear, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib, allocationrule, thresholdtype, irrigationsystem, landScen, cropmix, potential_wat = TRUE, com_ag, multicropping) {
+calcEconOfIrrig <- function(scenario, output, GT_range, selectyears, iniyear,
+                            lpjml, climatetype, efrMethod, accessibilityrule,
+                            rankmethod, yieldcalib, allocationrule, thresholdtype,
+                            irrigationsystem, landScen, cropmix,
+                            potential_wat = TRUE, com_ag, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -67,7 +70,7 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                   landScen = landScen, cropmix = cropmix, potential_wat = potential_wat,
                                   com_ag = com_ag, multicropping = multicropping,
-                                  aggregate = FALSE)[, , "irrigatable"][, , scenario][, , season])
+                                  aggregate = FALSE)[, , "irrigatable"][, , scenario])
 
     d <- "Irrigatable Area for different gainthresholds"
     u <- "Mha"
@@ -80,30 +83,13 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
                                   rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear,
                                   landScen = landScen, cropmix = cropmix, com_ag = com_ag,
-                                  multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario][, , season])
+                                  multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario])
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)
     # (1 mio. = 1e+06)
     x <- x / 1000
     d <- "Water Use Potential for different gainthresholds"
     u <- "km^3"
-
-  }
-
-  # separation of multicropping layers and combine to one magpie object
-  if (multicropping) {
-
-    mc <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
-    mc <- mc[, , "irrigated"] - mc[, , "rainfed"]
-    x1 <- x2 <- x3 <- x
-    x1[mc != 0] <- 0
-    x1 <- add_dimension(x1, dim = 3.1, add = "MC", nm = "addMC0")
-    x2[mc != 1] <- 0
-    x2 <- add_dimension(x2, dim = 3.1, add = "MC", nm = "addMC1")
-    x3[mc != 2] <- 0
-    x3 <- add_dimension(x3, dim = 3.1, add = "MC", nm = "addMC2")
-
-    x <- mbind(x1, x2, x3)
 
   }
 
@@ -125,32 +111,18 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
                                       thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                       landScen = landScen, cropmix = cropmix, potential_wat = potential_wat,
                                       com_ag = com_ag, multicropping = multicropping,
-                                      aggregate = FALSE)[, , "irrigatable"][, , scenario][, , season])
+                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
     } else {
 
       tmp <- collapseNames(calcOutput("WaterPotUse", gainthreshold = gainthreshold,
-                                      lpjml = lpjml, selectyears = selectyears, climatetype = climatetype,
+                                      climatetype = climatetype, lpjml = lpjml,
+                                      selectyears = selectyears, iniyear = iniyear,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                      thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear,
+                                      thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                       landScen = landScen, cropmix = cropmix, com_ag = com_ag,
-                                      multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario][, , season])
+                                      multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario])
       tmp <- tmp / 1000
-    }
-
-    # separation of multicropping layers and combine to one magpie object
-    if (multicropping) {
-
-      tmp1 <- tmp2 <- tmp3 <- tmp
-      tmp1[mc != 0] <- 0
-      tmp1 <- add_dimension(tmp1, dim = 3.1, add = "MC", nm = "addMC0")
-      tmp2[mc != 1] <- 0
-      tmp2 <- add_dimension(tmp2, dim = 3.1, add = "MC", nm = "addMC1")
-      tmp3[mc != 2] <- 0
-      tmp3 <- add_dimension(tmp3, dim = 3.1, add = "MC", nm = "addMC2")
-
-      tmp <- mbind(tmp1, tmp2, tmp3)
-
     }
 
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
@@ -159,13 +131,6 @@ calcEconOfIrrig <- function(scenario, season, output, GT_range, lpjml, selectyea
   }
 
   out <- collapseNames(x)
-
-  # if (multicropping) {
-   # getSets(out) <- c("region", "year", "GT", "MC", "EFP")
-
-  # } else {
- #   getSets(out) <- c("x", "y", "iso", "year", "GT", "EFP")
-  # }
 
   return(list(x            = out,
               weight       = NULL,

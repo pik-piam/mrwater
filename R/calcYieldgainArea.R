@@ -55,35 +55,9 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
                     thresholdtype = thresholdtype, multicropping = multicropping,
                     landScen = landScen, aggregate = FALSE)
 
-    if (multicropping) {
-
-      if (length(selectyears) > 1) {
-        stop("Please select one year only when multicropping is selected
-             or adjust code in calcYieldGainArea respectively")
-      }
-
-      mc <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
-      mc <- mc[, , "irrigated"] - mc[, , "rainfed"]
-
-      tmp1 <- tmp2 <- tmp3 <- tmp
-      tmp1[mc != 0] <- 0
-      tmp1 <- add_dimension(tmp1, dim = 3.1, add = "MC", nm = "addMC0")
-      tmp2[mc != 1] <- 0
-      tmp2 <- add_dimension(tmp2, dim = 3.1, add = "MC", nm = "addMC1")
-      tmp3[mc != 2] <- 0
-      tmp3 <- add_dimension(tmp3, dim = 3.1, add = "MC", nm = "addMC2")
-
-      # calculate harvested area
-      tmp2 <- 2 * tmp2
-      tmp3 <- 3 * tmp3
-
-      tmp <- mbind(tmp1, tmp2, tmp3)
-
-    }
-
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
 
-    x[[i]]   <- tmp
+    x[[i]] <- tmp
   }
 
   out <- mbind(x)

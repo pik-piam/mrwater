@@ -59,8 +59,6 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
                            lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                            selectyears = selectyears, iniyear = iniyear,
                            yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
-  # sum over all seasons
-  potGain    <- dimSums(potGain, dim = 3)
 
   # Crop share per cell according to chosen cropmix
   cropShr    <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
@@ -77,31 +75,7 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
     tmp <- potArea
     tmp[potGain < gainthreshold] <- 0
 
-    if (multicropping) {
 
-      if (length(selectyears) > 1) {
-        stop("Please select one year only when multicropping is selected
-             or adjust code in calcYieldGainArea respectively")
-      }
-
-      mc <- calcOutput("MultipleCroppingZones", layers = 3, aggregate = FALSE)
-      mc <- mc[, , "irrigated"] - mc[, , "rainfed"]
-
-      tmp1 <- tmp2 <- tmp3 <- tmp
-      tmp1[mc != 0] <- 0
-      tmp1 <- add_dimension(tmp1, dim = 3.1, add = "MC", nm = "addMC0")
-      tmp2[mc != 1] <- 0
-      tmp2 <- add_dimension(tmp2, dim = 3.1, add = "MC", nm = "addMC1")
-      tmp3[mc != 2] <- 0
-      tmp3 <- add_dimension(tmp3, dim = 3.1, add = "MC", nm = "addMC2")
-
-      # calculate harvested area
-      tmp2 <- 2 * tmp2
-      tmp3 <- 3 * tmp3
-
-      tmp <- mbind(tmp1, tmp2, tmp3)
-
-    }
 
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
 

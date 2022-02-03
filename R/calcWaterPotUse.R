@@ -89,8 +89,8 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
                                       lpjml = lpjml, climatetype = climatetype,
                                       efrMethod = efrMethod, selectyears = selectyears,
                                       iniyear = iniyear, aggregate = FALSE)
-  watNonAgWW[, , "single"] <- collapseNames(watNonAg[, , "currHuman_ww"])
-  watNonAgWC[, , "single"] <- collapseNames(watNonAg[, , "currHuman_wc"])
+  watNonAgWW <- collapseNames(watNonAg[, , "currHuman_ww"])
+  watNonAgWC <- collapseNames(watNonAg[, , "currHuman_wc"])
 
   if (com_ag == TRUE) {
 
@@ -108,8 +108,8 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
 
   }
 
-  currHumanWW[, , "single"] <- collapseNames(currHuman[, , "currHuman_ww"])
-  currHumanWC[, , "single"] <- collapseNames(currHuman[, , "currHuman_wc"])
+  currHumanWW <- collapseNames(currHuman[, , "currHuman_ww"])
+  currHumanWC <- collapseNames(currHuman[, , "currHuman_wc"])
 
   # Function outputs
   watAgWW  <- watAvlAgWW + currHumanWW
@@ -123,7 +123,7 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
   watTotWC <- add_dimension(watTotWC, dim = 3.4, add = "type", nm = "wat_tot_wc")
 
   out <- mbind(watAgWW, watAgWC, watTotWW, watTotWC)
-  getSets(out) <- c("x", "y", "iso", "year", "EFP", "scen", "season", "type")
+  getSets(out) <- c("x", "y", "iso", "year", "EFP", "scen", "type")
 
   return(list(x            = out,
               weight       = NULL,

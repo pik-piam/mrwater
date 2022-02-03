@@ -79,11 +79,6 @@ calcIrrigatableArea <- function(lpjml, selectyears, iniyear, climatetype, efrMet
     avlWat         <- calcOutput("RiverHumanUses", selectyears = selectyears,
                                   lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                                   efrMethod = efrMethod, humanuse = "committed_agriculture", aggregate = FALSE)
-    # adjust dimensions
-    avlWat         <- add_dimension(avlWat, dim = 3.3, add = "season", nm = "single")
-    avlWat         <- add_columns(avlWat, dim = 3.3, addnm = "double")
-    avlWat         <- add_columns(avlWat, dim = 3.3, addnm = "triple")
-    avlWat[, , c("double", "triple")] <- 0
 
     avlWatWC <- collapseNames(avlWat[, , "currHuman_wc"])
     avlWatWW <- collapseNames(avlWat[, , "currHuman_ww"])

@@ -94,7 +94,6 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                         cropmix = cropmix, potential_wat = FALSE,
                                         com_ag = TRUE, multicropping = multicropping,
                                         aggregate = FALSE)[, , "irrigatable"][, , scenario])
-    currIrr           <- dimSums(currIrr, dim = "season")
     getSets(currIrr)  <- c("x", "y", "iso", "year", "type")
     currIrrSus             <- currIrr[, , "on"]
     getNames(currIrrSus)   <- "curr_irrig_sus"
@@ -115,7 +114,6 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                         cropmix = cropmix, potential_wat = TRUE,
                                         com_ag = com_ag, multicropping = multicropping,
                                         aggregate = FALSE)[, , "irrigatable"][, , scenario])
-    potIrrcurr           <- dimSums(potIrrcurr, dim = "season")
     getSets(potIrrcurr)  <- c("x", "y", "iso", "year", "type")
     potIrrcurrSus             <- potIrrcurr[, , "on"]
     getNames(potIrrcurrSus)   <- "curr_irrig_currCropland_sus"
@@ -136,7 +134,6 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                           cropmix = cropmix, potential_wat = TRUE,
                                           com_ag = com_ag, multicropping = multicropping,
                                           aggregate = FALSE)[, , "irrigatable"][, , scenario])
-    potIrrpot           <- dimSums(potIrrpot, dim = "season")
     getSets(potIrrpot)  <- c("x", "y", "iso", "year", "type")
     potIrrpotSus             <- potIrrpot[, , "on"]
     getNames(potIrrpotSus)   <- "curr_irrig_potCropland_sus"
@@ -195,7 +192,6 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                            iniyear = iniyear, landScen = "currCropland:2010",
                                            cropmix = cropmix, com_ag = com_ag, multicropping = multicropping,
                                            aggregate = FALSE)[, , output][, , scenario])
-    potIrrcurr           <- dimSums(potIrrcurr, dim = "season")
     getSets(potIrrcurr)  <- c("x", "y", "iso", "year", "type")
     potIrrcurrSus             <- potIrrcurr[, , "on"]
     getNames(potIrrcurrSus)   <- "curr_irrig_currCropland_sus"
@@ -214,7 +210,6 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                           landScen = "potCropland:HalfEarth", cropmix = cropmix,
                                           com_ag = com_ag, multicropping = multicropping,
                                           aggregate = FALSE)[, , output][, , scenario])
-    potIrrpot           <- dimSums(potIrrpot, dim = "season")
     getSets(potIrrpot)  <- c("x", "y", "iso", "year", "type")
     potIrrpotSus             <- potIrrpot[, , "on"]
     getNames(potIrrpotSus)   <- "curr_irrig_potCropland_sus"
@@ -224,7 +219,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getNames(potIrrpotTot)   <- "curr_irrig_potCropland_tot"
 
     # Combine to one MAgPIE object
-    x <- mbind(currLUH, currIrrSus,    currIrrUnsus,    currIrrTot,
+    x <- mbind(currLUH, currIrrSus, currIrrUnsus, currIrrTot,
                potIrrcurrSus, potIrrcurrUnsus, potIrrcurrTot,
                potIrrpotSus,  potIrrpotUnsus,  potIrrpotTot)
 

@@ -62,7 +62,6 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
                                   efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
                                   cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
-    x <- dimSums(x, dim = "season")
     d <- "Irrigatable Area"
     u <- "Irrigatable Area (Mha)"
 
@@ -73,7 +72,6 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
                                   efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, landScen = landScen,
                                   cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
-    x <- dimSums(x, dim = "season")
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)
     # (1 mio. = 1e+06)
@@ -101,7 +99,6 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
                                     efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                     thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
                                     cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
-      x <- dimSums(x, dim = "season")
 
     } else {
 
@@ -110,7 +107,6 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
                                     efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                     thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear,
                                     landScen = landScen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
-      x <- dimSums(x, dim = "season")
       x <- x / 1000
 
     }

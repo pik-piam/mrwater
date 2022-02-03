@@ -68,6 +68,6 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
   return(list(x            = potArea,
               weight       = NULL,
               unit         = "mio. ha",
-              description  = "Area that would be irrigated given chosen gainthreshold and land constraint",
+              description  = "Area that could be irrigated when water was not a limiting factor given chosen gainthreshold and land constraint",
               isocountries = FALSE))
 }

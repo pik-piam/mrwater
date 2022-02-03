@@ -3,7 +3,9 @@
 #'
 #' @param layers 8 for original GAEZ layers,
 #'               3 for aggregated multiple cropping zones with
-#'               1=single cropping, 2=double cropping, 3=triple cropping
+#'               1 = single cropping, 2 = double cropping, 3 = triple cropping
+#'               2 for aggregated boolean multicropping potential with
+#'               0 = no multicropping (single cropping), 1 = multiple cropping
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -16,17 +18,23 @@
 #' @importFrom mrcommons toolGetMappingCoord2Country
 #' @importFrom magclass new.magpie getYears getNames
 
-calcMultipleCroppingZones <- function(layers = 3) {
+calcMultipleCroppingZones <- function(layers = 2) {
 
   # Read in source
   x <- readSource("GAEZv4", subtype = "MCzones", convert = "onlycorrect")
 
   if (layers == 8) {
+
     out     <- x
+
   } else if (layers == 3) {
+
     mapping <- toolGetMappingCoord2Country(pretty = TRUE)
     out     <- new.magpie(cells_and_regions = paste(mapping$coords, mapping$iso, sep = "."),
-      years = getYears(x), names = getNames(x), sets = getSets(x), fill = NA)
+                          years = getYears(x),
+                          names = getNames(x),
+                          sets = getSets(x),
+                          fill = NA)
     # Aggregation of multiple cropping zone categories
     out[x == 0] <- 1 # where no data given single-cropping potential assumed
     out[x == 1] <- 1 # where no cropping takes place yet single-cropping potential assumed
@@ -38,9 +46,29 @@ calcMultipleCroppingZones <- function(layers = 3) {
     out[x == 7] <- 3 # triple cropping -> triple cropping
     out[x == 8] <- 3 # triple rice cropping -> triple cropping
 
+  } else if (layers == 2) {
+
+    mapping <- toolGetMappingCoord2Country(pretty = TRUE)
+    out     <- new.magpie(cells_and_regions = paste(mapping$coords, mapping$iso, sep = "."),
+                          years = getYears(x),
+                          names = getNames(x),
+                          sets = getSets(x),
+                          fill = NA)
+    # Aggregation of multiple cropping zone categories
+    out[x == 0] <- 0 # where no data given single-cropping potential assumed
+    out[x == 1] <- 0 # where no cropping takes place yet single-cropping potential assumed
+    out[x == 2] <- 0 # single cropping -> single cropping
+    out[x == 3] <- 1 # limited double cropping -> multiple cropping (OR SHOULD BE SINGLE???)
+    out[x == 4] <- 1 # double cropping -> double cropping
+    out[x == 5] <- 1 # double cropping with rice -> double cropping
+    out[x == 6] <- 1 # double rice cropping -> double cropping
+    out[x == 7] <- 1 # triple cropping -> triple cropping
+    out[x == 8] <- 1 # triple rice cropping -> triple cropping
+
   } else {
     stop("Selected number of layers is not available.
-         Please select 8 for original GAEZ layers or 3 for reduced layers")
+         Please select 8 for original GAEZ layers or 3 for reduced layers
+         or 2 for boolean whether multiple cropping is possible")
   }
 
   # Checks

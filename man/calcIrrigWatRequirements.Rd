@@ -4,7 +4,7 @@
 \alias{calcIrrigWatRequirements}
 \title{calcIrrigWatRequirements}
 \usage{
-calcIrrigWatRequirements(selectyears, lpjml, climatetype)
+calcIrrigWatRequirements(selectyears, lpjml, climatetype, multicropping)
 }
 \arguments{
 \item{selectyears}{Years to be returned}
@@ -12,6 +12,8 @@ calcIrrigWatRequirements(selectyears, lpjml, climatetype)
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{climatetype}{Climate model or historical baseline "GSWP3-W5E5:historical"}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

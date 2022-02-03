@@ -4,12 +4,14 @@
 \alias{calcMultipleCroppingZones}
 \title{calcMultipleCroppingZones}
 \usage{
-calcMultipleCroppingZones(layers = 3)
+calcMultipleCroppingZones(layers = 2)
 }
 \arguments{
 \item{layers}{8 for original GAEZ layers,
 3 for aggregated multiple cropping zones with
-1=single cropping, 2=double cropping, 3=triple cropping}
+1 = single cropping, 2 = double cropping, 3 = triple cropping
+2 for aggregated boolean multicropping potential with
+0 = no multicropping (single cropping), 1 = multiple cropping}
 }
 \value{
 magpie object in cellular resolution

@@ -1,7 +1,5 @@
 #' @title       calcYieldsAdjusted
-#' @description This function returns irrigated and rainfed yields for magpie crops.
-#'              It can either return LPJmL potential yields of different stages or
-#'              LPJmL yields calibrated to FAO country yields
+#' @description This function returns irrigated and rainfed yields for MAgPIE crops.
 #'
 #' @param lpjml         LPJmL version used
 #' @param climatetype   Switch between different climate scenarios or
@@ -10,6 +8,7 @@
 #' @param iniyear       Year to be used for cropland of yield calibration
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                      If FALSE: uncalibrated LPJmL yields are used
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -20,10 +19,12 @@
 #' }
 #'
 #' @importFrom madrat calcOutput toolAggregate
-#' @importFrom magclass collapseNames getNames getCells getSets dimSums
+#' @importFrom magclass collapseNames getNames getCells getSets dimSums add_dimension
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldcalib) {
+calcYieldsAdjusted <- function(lpjml, climatetype,
+                               iniyear, selectyears,
+                               yieldcalib, multicropping) {
 
   if (yieldcalib) {
 
@@ -45,10 +46,26 @@ calcYieldsAdjusted <- function(lpjml, climatetype, iniyear, selectyears, yieldca
 
   }
 
+  # Seasonality dimension
+  yields          <- add_dimension(yields, dim = 3.2, add = "season",
+                                        nm = c("first", "second"))
+  getSets(yields) <- c("x", "y", "iso", "year", "crop", "season", "irrigation")
+
+  if (multicropping) {
+
+    ratio                <- calcOutput("MultipleCroppingYieldRatio",
+                                       lpjml = lpjml, climatetype = climatetype,
+                                       selectyears = selectyears, aggregate = FALSE)
+    yields[, , "second"] <- yields[, , "second"] * ratio
+
+  } else {
+
+    yields[, , "second"] <- 0
+
+  }
+
   # only crops (pasture is not irrigated)
-  yields     <- yields[, , "pasture", invert = T]
-  # set correct dimension names
-  getSets(yields)[c("d3.1", "d3.2")] <- c("MAG", "irrigation")
+  yields <- yields[, , "pasture", invert = TRUE]
 
   # Check for NAs
   if (any(is.na(yields))) {

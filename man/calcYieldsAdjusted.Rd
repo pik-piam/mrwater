@@ -4,7 +4,14 @@
 \alias{calcYieldsAdjusted}
 \title{calcYieldsAdjusted}
 \usage{
-calcYieldsAdjusted(lpjml, climatetype, iniyear, selectyears, yieldcalib)
+calcYieldsAdjusted(
+  lpjml,
+  climatetype,
+  iniyear,
+  selectyears,
+  yieldcalib,
+  multicropping
+)
 }
 \arguments{
 \item{lpjml}{LPJmL version used}
@@ -18,14 +25,14 @@ historical baseline "GSWP3-W5E5:historical" for yields}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 If FALSE: uncalibrated LPJmL yields are used}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
-This function returns irrigated and rainfed yields for magpie crops.
-             It can either return LPJmL potential yields of different stages or
-             LPJmL yields calibrated to FAO country yields
+This function returns irrigated and rainfed yields for MAgPIE crops.
 }
 \examples{
 \dontrun{

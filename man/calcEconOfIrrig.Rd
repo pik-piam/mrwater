@@ -6,12 +6,11 @@
 \usage{
 calcEconOfIrrig(
   scenario,
-  season,
   output,
   GT_range,
-  lpjml,
   selectyears,
   iniyear,
+  lpjml,
   climatetype,
   efrMethod,
   accessibilityrule,
@@ -30,18 +29,16 @@ calcEconOfIrrig(
 \arguments{
 \item{scenario}{non-agricultural water use scenario}
 
-\item{season}{single, double, triple}
-
 \item{output}{output to be displayed: irrigated area "IrrigArea" or
 available water volume "wat_ag_ww" "wat_ag_wc"}
 
 \item{GT_range}{range of x-axis (gainthreshold) to be depicted on the curve}
 
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
-
 \item{selectyears}{years for which irrigatable area is calculated}
 
 \item{iniyear}{initialization year}
+
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 

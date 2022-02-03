@@ -155,8 +155,6 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
   avlWatWC          <- as.array(.transformObject(0))
   glocellrank       <- as.array(glocellrank)
 
-  scenarios <- getNames(discharge)
-
   ################################################
   ####### River basin discharge allocation #######
   ################################################
@@ -176,8 +174,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
                   gainthreshold = gainthreshold,
                   avlWatWW = avlWatWW,
                   avlWatWC = avlWatWC,
-                  multicropping = multicropping,
-                  scenarios = scenarios)
+                  multicropping = multicropping)
 
   for (y in selectyears) {
 

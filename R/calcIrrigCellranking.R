@@ -39,9 +39,9 @@ calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
   # Read in average potential yield gain per cell (USD05 per ha)
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
                            selectyears = cellrankyear, iniyear = iniyear,
-                          lpjml = lpjml, climatetype = climatetype,
+                           lpjml = lpjml, climatetype = climatetype,
                            cropmix = cropmix, yieldcalib = yieldcalib,
-                          multicropping = multicropping, aggregate = FALSE)
+                           multicropping = multicropping, aggregate = FALSE)
 
   if (!fullpotential) {
 
@@ -50,23 +50,6 @@ calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
     getCells(yieldGainReduced) <- paste0("B_", getCells(yieldGainReduced))
 
     yieldGain <- mbind(yieldGain, yieldGainReduced)
-
-  }
-
-  if (multicropping) {
-
-    single           <- collapseNames(yieldGain[, , "single"])
-    getCells(single) <- paste0("S_", getCells(single))
-    double           <- collapseNames(yieldGain[, , "double"])
-    getCells(double) <- paste0("D_", getCells(double))
-    triple           <- collapseNames(yieldGain[, , "triple"])
-    getCells(triple) <- paste0("T_", getCells(triple))
-
-    yieldGain <- mbind(single, double, triple)
-
-  } else {
-
-    yieldGain <- collapseNames(yieldGain[, , "single"])
 
   }
 

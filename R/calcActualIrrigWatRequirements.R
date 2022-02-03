@@ -1,5 +1,6 @@
 #' @title       calcActualIrrigWatRequirements
-#' @description This function calculates actual irrigation water requirements per cell given a certain irrigation system
+#' @description This function calculates actual irrigation water requirements
+#'              per cell given a certain irrigation system
 #'
 #' @param lpjml       LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears Years to be returned
@@ -26,13 +27,13 @@ calcActualIrrigWatRequirements <- function(lpjml, selectyears, climatetype, iniy
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
   irrigReq   <- calcOutput("IrrigWatRequirements", aggregate = FALSE,
                             lpjml = lpjml, selectyears = selectyears, climatetype = climatetype)
-  irrigReq   <- irrigReq[, , "pasture", invert = T]
+  irrigReq   <- irrigReq[, , "pasture", invert = TRUE]
 
   # irrigation system share (share of irrigated area)
-  irrig_system_share      <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
+  irrigSystemShr    <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
 
   # total irrigation water requirements per crop given irrigation system share (in m^3 per ha per yr)
-  irrigReq          <- dimSums(irrig_system_share * irrigReq, dim = "system")
+  irrigReq          <- dimSums(irrigSystemShr * irrigReq, dim = "system")
   getSets(irrigReq) <- c("x", "y", "iso", "year", "crop", "type")
 
   # Check for NAs and negative values
