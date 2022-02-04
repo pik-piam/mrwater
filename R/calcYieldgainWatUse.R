@@ -36,7 +36,7 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
                                 cropmix, yieldcalib, multicropping, rangeGT) {
 
   # Irrigation system area initialization
-  irrigationSystem <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
+  irrigationSystem <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr", aggregate = FALSE)
 
   # Irrigation water requirements per crop (in m^3 per hectare per year) [smoothed and harmonized]
   irrigWater <- calcOutput("IrrigWatRequirements", aggregate = FALSE, lpjml = lpjml,

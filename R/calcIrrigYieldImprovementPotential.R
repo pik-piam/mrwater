@@ -77,7 +77,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
     irrigReqWW <- irrigReqWW[, , intersect(gsub("[.].*", "", getNames(irrigReqWW)), croplist)]
 
     # Read in irrigation system area initialization
-    irrigationSystem <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
+    irrigationSystem <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr", aggregate = FALSE)
 
     # Calculate irrigation water requirements
     irrigWatReq  <- dimSums((irrigationSystem[, , ] * irrigReqWW[, , ]), dim = 3.1)

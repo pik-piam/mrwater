@@ -24,13 +24,13 @@ calcWaterUseCommittedAg <- function(lpjml, climatetype, selectyears, iniyear) {
   ######## Read in data ########
   ##############################
   ## Irrigation system area initialization
-  irrigationSystem <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
+  irrigationSystem <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr", aggregate = FALSE)
 
   ## Read in irrigation water requirements per crop (in m^3 per hectare per year) [smoothed and harmonized]
   irrigWater <- calcOutput("IrrigWatRequirements", aggregate = FALSE, lpjml = lpjml,
                            selectyears = selectyears, climatetype = climatetype)
   # Pasture is not irrigated in MAgPIE
-  irrigWater <- irrigWater[, , "pasture", invert = T]
+  irrigWater <- irrigWater[, , "pasture", invert = TRUE]
 
   # Withdrawal requirements per crop
   irrigReqW  <- collapseNames(irrigWater[, , "withdrawal"])

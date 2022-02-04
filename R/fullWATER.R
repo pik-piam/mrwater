@@ -38,14 +38,14 @@
 fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
                       allocationrule = "optimization", rankmethod = "USD_ha:TRUE",
                       thresholdtype = "USD_ha", gainthreshold = 500,
-                      protectLand = "HalfEarth", yieldcalib = TRUE) {
+                      protectLand = "HalfEarth", yieldcalib = TRUE,
+                      multicropping = FALSE) {
 
   # Standard settings
   iniyear          <- 2010
   selectyears      <- 2010
   plotyear         <- 2010
   ssp              <- "ssp2"
-  multicropping    <- FALSE
 
   lpjml            <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
                         crop = "ggcmi_phase3_nchecks_bft_6277d36e")

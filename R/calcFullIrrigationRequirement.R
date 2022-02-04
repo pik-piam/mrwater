@@ -70,7 +70,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   if (irrigationsystem == "initialization") {
 
     # read in irrigation system area initialization [share of AEI by system] and expand to all years
-    tmp               <- calcOutput("IrrigationSystem", source = "Jaegermeyr",
+    tmp               <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr",
                                     aggregate = FALSE)
     irrigSystem       <- new.magpie(cells_and_regions = getCells(irrigWat),
                                     years = getYears(irrigWat),

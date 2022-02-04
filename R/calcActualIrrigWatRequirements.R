@@ -30,7 +30,7 @@ calcActualIrrigWatRequirements <- function(lpjml, selectyears, climatetype, iniy
   irrigReq   <- irrigReq[, , "pasture", invert = TRUE]
 
   # irrigation system share (share of irrigated area)
-  irrigSystemShr    <- calcOutput("IrrigationSystem", source = "Jaegermeyr", aggregate = FALSE)
+  irrigSystemShr    <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr", aggregate = FALSE)
 
   # total irrigation water requirements per crop given irrigation system share (in m^3 per ha per yr)
   irrigReq          <- dimSums(irrigSystemShr * irrigReq, dim = "system")
