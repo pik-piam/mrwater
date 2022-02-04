@@ -65,7 +65,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
 
    # SUS and LANDPROTECT scenarios:
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -76,7 +76,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTSUS.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -87,7 +87,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURSUS.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -98,7 +98,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTSUS.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -109,7 +109,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTSUScomAg.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -120,7 +120,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURSUScomAg.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -132,7 +132,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               file = paste0(o, "EconACTSUScomAg.mz"))
 
    # UNSUS and WATPROTECT scenarios:
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -143,7 +143,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTUNSUS.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -154,7 +154,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURUNSUS.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -165,7 +165,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTUNSUS.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -176,7 +176,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTUNSUScomAg.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -187,7 +187,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURUNSUScomAg.mz"))
 
-   calcOutput("EconOfIrrig", scenario = ssp, season = "single", output = o, GT_range = gtrange,
+   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
               selectyears = plotyear, iniyear = iniyear,
               lpjml = lpjml, climatetype = climatetype,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
