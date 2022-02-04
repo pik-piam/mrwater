@@ -12,7 +12,8 @@ fullWATER(
   thresholdtype = "USD_ha",
   gainthreshold = 500,
   protectLand = "HalfEarth",
-  yieldcalib = TRUE
+  yieldcalib = TRUE,
+  multicropping = FALSE
 )
 }
 \arguments{
@@ -51,6 +52,8 @@ water allocation in upstreamfirst algorithm
 \item{protectLand}{Land protection scenario (e.g. HalfEarth, BH_FF, NULL)}
 
 \item{yieldcalib}{Boolean for whether LPJmL should be calibrated to FAO country yields (TRUE or FALSE)}
+
+\item{multicropping}{Boolean for whether multicropping is activated (TRUE) or not (FALSE)}
 }
 \description{
 Function that produces the objects for water outputs

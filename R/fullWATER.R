@@ -30,6 +30,7 @@
 #'                          (in same unit as thresholdtype)
 #' @param protectLand       Land protection scenario (e.g. HalfEarth, BH_FF, NULL)
 #' @param yieldcalib        Boolean for whether LPJmL should be calibrated to FAO country yields (TRUE or FALSE)
+#' @param multicropping     Boolean for whether multicropping is activated (TRUE) or not (FALSE)
 #'
 #' @author Felicitas Beier
 #'
