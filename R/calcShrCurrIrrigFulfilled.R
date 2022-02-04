@@ -9,6 +9,7 @@
 #' @param iniyear          Initialization year
 #' @param efrMethod        EFR method used including selected strictness of EFRs
 #'                         (e.g. Smakhtin:good, VMF:fair)
+#' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return cellular magpie object
 #' @author Felicitas Beier
@@ -22,7 +23,7 @@
 #'
 #' @export
 
-calcShrCurrIrrigFulfilled <- function(lpjml, climatetype,
+calcShrCurrIrrigFulfilled <- function(lpjml, climatetype, multicropping,
                                        selectyears, iniyear, efrMethod) {
 
   ### Reasons for not-fulfilled actually observed irrigation:
@@ -34,13 +35,16 @@ calcShrCurrIrrigFulfilled <- function(lpjml, climatetype,
   # Water Committed to Agriculture after Routing (in mio. m^3)
   fulfilledCAU   <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                                lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
-                               selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+                               selectyears = selectyears, iniyear = iniyear,
+                               multicropping = multicropping, aggregate = FALSE)
   fulfilledCAUww <- collapseNames(fulfilledCAU[, , "currHuman_ww"])
   fulfilledCAUwc <- collapseNames(fulfilledCAU[, , "currHuman_wc"])
 
   # Committed Agricultural Water (in mio. m^3)
-  actCAU   <- calcOutput("WaterUseCommittedAg", lpjml = lpjml, climatetype = climatetype,
-                         selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+  actCAU   <- calcOutput("WaterUseCommittedAg",
+                         lpjml = lpjml, climatetype = climatetype,
+                         selectyears = selectyears, iniyear = iniyear,
+                         multicropping = multicropping, aggregate = FALSE)
   actCAUww <- actCAUwc <- new.magpie(cells_and_regions = getCells(fulfilledCAUww),
                                      years = getYears(fulfilledCAUww),
                                      names = getNames(fulfilledCAUww),

@@ -93,13 +93,16 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
   #                                     [Reserved Committed Agricultural Uses, if activated] (in mio. m^3 / yr)
   minWatReserved <- calcOutput("RiverWatReserved", aggregate = FALSE,
                                 selectyears = selectyears, iniyear = iniyear,
-                                lpjml = lpjml, climatetype = climatetype, com_ag = com_ag,
+                                lpjml = lpjml, climatetype = climatetype,
+                                com_ag = com_ag, multicropping = multicropping,
                                 efrMethod = efrMethod, accessibilityrule = accessibilityrule)
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
-  discharge      <- calcOutput("RiverDischargeNatAndHuman", selectyears = selectyears, iniyear = iniyear,
-                                lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
-                                com_ag = com_ag, aggregate = FALSE)
+  discharge      <- calcOutput("RiverDischargeNatAndHuman",
+                               selectyears = selectyears, iniyear = iniyear,
+                               lpjml = lpjml, climatetype = climatetype,
+                               efrMethod = efrMethod, multicropping = multicropping,
+                               com_ag = com_ag, aggregate = FALSE)
 
   # Required water for full irrigation per cell (in mio. m^3)
   reqWatFullirrig   <- calcOutput("FullIrrigationRequirement",

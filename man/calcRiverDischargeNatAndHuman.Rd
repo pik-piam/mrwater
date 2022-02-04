@@ -10,7 +10,8 @@ calcRiverDischargeNatAndHuman(
   iniyear,
   climatetype,
   efrMethod,
-  com_ag
+  com_ag,
+  multicropping
 )
 }
 \arguments{
@@ -24,7 +25,10 @@ calcRiverDischargeNatAndHuman(
 
 \item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
-\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)}
+\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
+if FALSE: no irrigation areas reserved (irrigation potential)}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

@@ -95,7 +95,8 @@ Human water abstractions are considered in consecutive river routing iterations 
 
 ```{r HumanDischarge}
 humanQ <- calcOutput("RiverDischargeNatAndHuman", iniyear = 2010, com_ag = TRUE,
-                     selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
+                     selectyears = selectyears, multicropping = FALSE,
+                     climatetype = climatetype, lpjml = lpjml,
                      efrMethod = efrMethod, aggregate = FALSE)
 
 iniyear <- 2010

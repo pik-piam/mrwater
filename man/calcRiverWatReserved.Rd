@@ -11,7 +11,8 @@ calcRiverWatReserved(
   climatetype,
   efrMethod,
   accessibilityrule,
-  com_ag
+  com_ag,
+  multicropping
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ or base value for exponential curve separated by : (CV:2)}
 \item{com_ag}{If TRUE: currently already irrigated areas in initialization
          year are reserved for irrigation,
 if FALSE: no irrigation areas are reserved (full irrigation potential)}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

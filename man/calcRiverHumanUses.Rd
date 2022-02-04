@@ -10,7 +10,8 @@ calcRiverHumanUses(
   climatetype,
   selectyears,
   iniyear,
-  efrMethod
+  efrMethod,
+  multicropping
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ or historical baseline "GSWP3-W5E5:historical"}
 
 \item{efrMethod}{EFR method used including selected strictness of EFRs
 (Smakhtin:good, VMF:fair)}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

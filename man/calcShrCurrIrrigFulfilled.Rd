@@ -4,13 +4,22 @@
 \alias{calcShrCurrIrrigFulfilled}
 \title{calcShrCurrIrrigFulfilled}
 \usage{
-calcShrCurrIrrigFulfilled(lpjml, climatetype, selectyears, iniyear, efrMethod)
+calcShrCurrIrrigFulfilled(
+  lpjml,
+  climatetype,
+  multicropping,
+  selectyears,
+  iniyear,
+  efrMethod
+)
 }
 \arguments{
 \item{lpjml}{LPJmL version used}
 
 \item{climatetype}{Switch between different climate scenarios or
 historical baseline "GSWP3-W5E5:historical"}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 
 \item{selectyears}{Years to be returned}
 

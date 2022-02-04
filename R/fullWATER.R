@@ -333,7 +333,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "cropareaLUH.mz")
 
   # Water use (withdrawal and consumption) on current irrigated area
-  calcOutput("WaterUseCommittedAg",
+  calcOutput("WaterUseCommittedAg", multicropping = multicropping,
              selectyears = selectyears, iniyear = iniyear,
              lpjml = lpjml, climatetype = climatetype,
              aggregate = FALSE, file = "watComAg.mz")
@@ -341,13 +341,15 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             efrMethod = efrMethod, aggregate = FALSE,
+             efrMethod = efrMethod, multicropping = multicropping,
+             aggregate = FALSE,
              file = "comAguses.mz")
   # Non-Agricultural water uses (in mio. m^3 / yr) [smoothed]
   calcOutput("RiverHumanUses", humanuse = "non_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             efrMethod = efrMethod, aggregate = FALSE,
+             efrMethod = efrMethod, multicropping = multicropping,
+             aggregate = FALSE,
              file = "nonAguses.mz")
   # Irrigatable areas with committed agricultural uses
   calcOutput("IrrigatableArea", selectyears = selectyears, iniyear = iniyear,

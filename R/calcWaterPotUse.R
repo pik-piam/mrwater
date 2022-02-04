@@ -86,9 +86,10 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
 
   # Water use for non-agricultural purposes
   watNonAg <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
-                                      lpjml = lpjml, climatetype = climatetype,
-                                      efrMethod = efrMethod, selectyears = selectyears,
-                                      iniyear = iniyear, aggregate = FALSE)
+                         lpjml = lpjml, climatetype = climatetype,
+                         efrMethod = efrMethod, multicropping = multicropping,
+                         selectyears = selectyears, iniyear = iniyear,
+                         aggregate = FALSE)
   watNonAgWW <- collapseNames(watNonAg[, , "currHuman_ww"])
   watNonAgWC <- collapseNames(watNonAg[, , "currHuman_wc"])
 
@@ -97,8 +98,9 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
     # Water already committed to irrigation
     currHuman <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                              lpjml = lpjml, climatetype = climatetype,
-                             efrMethod = efrMethod, selectyears = selectyears,
-                             iniyear = iniyear, aggregate = FALSE)
+                             efrMethod = efrMethod, multicropping = multicropping,
+                             selectyears = selectyears, iniyear = iniyear,
+                             aggregate = FALSE)
 
   } else {
 

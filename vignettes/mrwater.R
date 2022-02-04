@@ -16,23 +16,24 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>"
 #  selectyears <- 2010
 #  lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_bft_6277d36e")
 #  climatetype <- "GFDL-ESM4:ssp126"
-#
+#  
 #  efr <- calcOutput("EnvmtlFlowRequirements", efrMethod = "VMF:fair",
 #                    selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
 #                    aggregate = FALSE)[, , "EFR"]
-#
+#  
 #  inaccessibleQ <- calcOutput("DischargeInaccessible", accessibilityrule = "CV:2",
 #                              selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
 #                              aggregate = FALSE)
-#
+#  
 #  efrMethod         <- "VMF:fair"
 #  accessibilityrule <- "CV:2"
 
 ## ----HumanDischarge------------------------------------------------------------------------------------------------------------------------------------------------------
 #  humanQ <- calcOutput("RiverDischargeNatAndHuman", iniyear = 2010, com_ag = TRUE,
-#                       selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
+#                       selectyears = selectyears, multicropping = FALSE,
+#                       climatetype = climatetype, lpjml = lpjml,
 #                       efrMethod = efrMethod, aggregate = FALSE)
-#
+#  
 #  iniyear <- 2010
 #  com_ag  <- TRUE
 
@@ -66,7 +67,7 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>"
 #  landScen         <- "potCropland:HalfEarth"
 #  irrigationsystem <- "initialization"
 #  multicropping    <- FALSE
-#
+#  
 #  iap <- calcOutput("IrrigatableArea", selectyears = selectyears, iniyear = iniyear,
 #                     lpjml = lpjml, climatetype = climatetype,
 #                     efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -84,3 +85,4 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>"
 #               allocationrule = allocationrule, thresholdtype = thresholdtype,
 #               irrigationsystem = irrigationsystem, landScen = landScen, cropmix = cropmix,
 #               potential_wat = TRUE, com_ag = FALSE, multicropping = FALSE, aggregate = FALSE)
+

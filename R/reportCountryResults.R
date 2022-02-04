@@ -167,8 +167,8 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     # Current Irrigation Water Use [total, sustainable, unsustainable]
     currIrr <- collapseNames(calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                             lpjml = lpjml, climatetype = climatetype,
-                            efrMethod = efrMethod, selectyears = selectyears,
-                            iniyear = iniyear,
+                            efrMethod = efrMethod, multicropping = multicropping,
+                            selectyears = selectyears, iniyear = iniyear,
                             aggregate = FALSE)[, , scenario][, , paste0("currHuman_", gsub("(.*)_", "", output))])
     getSets(currIrr)  <- c("x", "y", "iso", "year", "type")
     currIrrSus             <- currIrr[, , "on"]

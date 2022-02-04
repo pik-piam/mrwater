@@ -19,6 +19,7 @@
 #' @param com_ag            If TRUE: currently already irrigated areas in initialization
 #'                                   year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas are reserved (full irrigation potential)
+#' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -33,7 +34,7 @@
 #' }
 #'
 calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
-                                 efrMethod, accessibilityrule, com_ag) {
+                                 efrMethod, accessibilityrule, com_ag, multicropping) {
 
   # Discharge that is inaccessible to human uses (mio m^3)
   inaccessibleDischarge <- calcOutput("DischargeInaccessible", selectyears = selectyears,
@@ -59,12 +60,14 @@ calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
   if (com_ag) {
 
     reservedRiverrouting <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
-                                       lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
+                                       lpjml = lpjml, climatetype = climatetype,
+                                       efrMethod = efrMethod, multicropping = multicropping,
                                        selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
   } else {
 
     reservedRiverrouting <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
-                                       lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
+                                       lpjml = lpjml, climatetype = climatetype,
+                                       efrMethod = efrMethod, multicropping = multicropping,
                                        selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
   }
 

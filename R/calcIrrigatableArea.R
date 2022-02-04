@@ -76,9 +76,11 @@ calcIrrigatableArea <- function(lpjml, selectyears, iniyear, climatetype, efrMet
 
   } else {
 
-    avlWat         <- calcOutput("RiverHumanUses", selectyears = selectyears,
-                                  lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
-                                  efrMethod = efrMethod, humanuse = "committed_agriculture", aggregate = FALSE)
+    avlWat         <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
+                                 selectyears = selectyears, iniyear = iniyear,
+                                 lpjml = lpjml, climatetype = climatetype,
+                                 efrMethod = efrMethod, multicropping = multicropping,
+                                 aggregate = FALSE)
 
     avlWatWC <- collapseNames(avlWat[, , "currHuman_wc"])
     avlWatWW <- collapseNames(avlWat[, , "currHuman_ww"])
@@ -91,17 +93,19 @@ calcIrrigatableArea <- function(lpjml, selectyears, iniyear, climatetype, efrMet
                           irrigationsystem = irrigationsystem, landScen = landScen,
                           cropmix = cropmix, multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWatWW),
-                         years = getYears(avlWatWW),
-                         names = getNames(avlWatWW),
-                         fill = NA)
+                                     years = getYears(avlWatWW),
+                                     names = getNames(avlWatWW),
+                                     fill = NA)
 
   watReqWW[, , ] <- collapseNames(watReq[, , "withdrawal"])
   watReqWC[, , ] <- collapseNames(watReq[, , "consumption"])
 
   # Read in area that can potentially be irrigated (in every season separately, i.e. multicropping = FALSE)
   # (including total potentially irrigatable area; defined by comagyear=NULL)
-  areaPotIrrig <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
-                              landScen = landScen, comagyear = NULL, aggregate = FALSE)
+  areaPotIrrig <- calcOutput("AreaPotIrrig",
+                             selectyears = selectyears, iniyear = iniyear,
+                             landScen = landScen, comagyear = NULL,
+                             aggregate = FALSE)
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
   irrigareaWW <- pmin(avlWatWW / watReqWW, 1) * areaPotIrrig

@@ -1,12 +1,14 @@
 #' @title       calcRiverDischargeNatAndHuman
 #' @description This function calculates cellular discharge after considering known human consumption (non-agricultural and committed agricultural) along the river calculated and accounted for in previous river routings (see calcRiverNaturalFlows and calcRiverHumanUses)
 #'
-#' @param lpjml       LPJmL version required for respective inputs: natveg or crop
-#' @param selectyears Years to be returned (Note: does not affect years of harmonization or smoothing)
-#' @param climatetype Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param iniyear     Initialization year of irrigation system
-#' @param efrMethod   EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
-#' @param com_ag      if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation, if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param lpjml         LPJmL version required for respective inputs: natveg or crop
+#' @param selectyears   Years to be returned (Note: does not affect years of harmonization or smoothing)
+#' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param iniyear       Initialization year of irrigation system
+#' @param efrMethod     EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
+#' @param com_ag        if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
+#'                      if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -20,7 +22,7 @@
 #' calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE)
 #' }
 #'
-calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatetype, efrMethod, com_ag) {
+calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatetype, efrMethod, com_ag, multicropping) {
 
   #######################################
   ###### Read in Required Inputs ########
@@ -29,34 +31,44 @@ calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatety
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
 
   # Non-agricultural human consumption that can be fulfilled by available water determined in previous river routings
-  NAgWC <- collapseNames(calcOutput("RiverHumanUses", humanuse = "non_agriculture", aggregate = FALSE,
-                                    lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
+  nAgWC <- collapseNames(calcOutput("RiverHumanUses", humanuse = "non_agriculture", aggregate = FALSE,
+                                    lpjml = lpjml, climatetype = climatetype,
+                                    efrMethod = efrMethod, multicropping = multicropping,
                                     iniyear = iniyear, selectyears = selectyears)[, , "currHuman_wc"])
 
   if (com_ag) {
 
     # Committed agricultural human consumption that can be fulfilled by available water determined in previous river routings
-    CAgWC <- collapseNames(calcOutput("RiverHumanUses", humanuse = "committed_agriculture", aggregate = FALSE,
-                                      lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
+    cAgWC <- collapseNames(calcOutput("RiverHumanUses", humanuse = "committed_agriculture", aggregate = FALSE,
+                                      lpjml = lpjml, climatetype = climatetype,
+                                      efrMethod = efrMethod, multicropping = multicropping,
                                       iniyear = iniyear, selectyears = selectyears)[, , "currHuman_wc"])
   } else {
 
     # No committed agricultural human consumption considered
-    CAgWC <- new.magpie(cells_and_regions = getCells(NAgWC),
-                        years = getYears(NAgWC),
-                        names = getNames(NAgWC),
+    cAgWC <- new.magpie(cells_and_regions = getCells(nAgWC),
+                        years = getYears(nAgWC),
+                        names = getNames(nAgWC),
                         fill = 0)
   }
 
   # Yearly Runoff (on land and water)
-  yearlyRunoff <- collapseNames(calcOutput("YearlyRunoff",      aggregate = FALSE, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype))
+  yearlyRunoff <- collapseNames(calcOutput("YearlyRunoff", selectyears = selectyears,
+                                           lpjml = lpjml, climatetype = climatetype,
+                                           aggregate = FALSE))
   # Lake evaporation as calculated by natural flow river routing
-  lakeEvap     <- collapseNames(calcOutput("RiverNaturalFlows", aggregate = FALSE, lpjml = lpjml, selectyears = selectyears, climatetype = climatetype)[, , "lake_evap_nat"])
+  lakeEvap     <- collapseNames(calcOutput("RiverNaturalFlows", selectyears = selectyears,
+                                           lpjml = lpjml, climatetype = climatetype,
+                                           aggregate = FALSE)[, , "lake_evap_nat"])
 
   ## Transform object dimensions
   .transformObject <- function(x) {
     # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getCells(yearlyRunoff), years = getYears(yearlyRunoff), names = getNames(NAgWC), fill = 0, sets = c("x.y.iso", "year", "data"))
+    object0 <- new.magpie(cells_and_regions = getCells(yearlyRunoff),
+                          years = getYears(yearlyRunoff),
+                          names = getNames(nAgWC),
+                          fill = 0,
+                          sets = c("x.y.iso", "year", "data"))
     # bring object x to dimension of object0
     out     <- x + object0
     return(out)
@@ -66,8 +78,8 @@ calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatety
   ###### Transform object size   ########
   #######################################
   lakeEvap     <- as.array(.transformObject(lakeEvap))
-  CAgWC        <- as.array(.transformObject(CAgWC))
-  NAgWC        <- as.array(.transformObject(NAgWC))
+  cAgWC        <- as.array(.transformObject(cAgWC))
+  nAgWC        <- as.array(.transformObject(nAgWC))
   yearlyRunoff <- as.array(.transformObject(yearlyRunoff))
 
   # helper variables for river routing
@@ -92,7 +104,7 @@ calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatety
       avlWat[c, , ] <- inflow[c, , , drop = F] + yearlyRunoff[c, , , drop = F] - lakeEvap[c, , , drop = F]
 
       # discharge
-      discharge[c, , ] <- avlWat[c, , , drop = F] - NAgWC[c, , , drop = F] - CAgWC[c, , , drop = F]
+      discharge[c, , ] <- avlWat[c, , , drop = F] - nAgWC[c, , , drop = F] - cAgWC[c, , , drop = F]
 
       # inflow into nextcell
       if (rs$nextcell[c] > 0) {

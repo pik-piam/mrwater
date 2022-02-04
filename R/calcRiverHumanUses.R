@@ -2,16 +2,17 @@
 #' @description This function calculates human uses and reserved water along
 #'              the river
 #'
-#' @param lpjml       LPJmL version used
-#' @param selectyears Years to be returned
-#'                    (Note: does not affect years of harmonization or smoothing)
-#' @param humanuse    Human use type to which river routing shall be applied
-#'                    (non_agriculture or committed_agriculture).
-#' @param climatetype Switch between different climate scenarios
-#'                    or historical baseline "GSWP3-W5E5:historical"
-#' @param iniyear     Initialization year of irrigation system
-#' @param efrMethod   EFR method used including selected strictness of EFRs
-#'                    (Smakhtin:good, VMF:fair)
+#' @param lpjml         LPJmL version used
+#' @param selectyears   Years to be returned
+#'                      (Note: does not affect years of harmonization or smoothing)
+#' @param humanuse      Human use type to which river routing shall be applied
+#'                      (non_agriculture or committed_agriculture).
+#' @param climatetype   Switch between different climate scenarios
+#'                      or historical baseline "GSWP3-W5E5:historical"
+#' @param iniyear       Initialization year of irrigation system
+#' @param efrMethod     EFR method used including selected strictness of EFRs
+#'                      (Smakhtin:good, VMF:fair)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -27,7 +28,7 @@
 #' }
 #'
 calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
-                               iniyear, efrMethod) {
+                               iniyear, efrMethod, multicropping) {
 
   ### Read in river structure
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
@@ -43,8 +44,10 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   inputNonAgWC  <- collapseNames(watNonAg[, , "consumption"])
 
   # Committed agricultural uses per crop (in mio. m^3 / yr)
-  watComAg <- calcOutput("WaterUseCommittedAg", lpjml = lpjml, climatetype = climatetype,
-                           selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+  watComAg <- calcOutput("WaterUseCommittedAg",
+                         lpjml = lpjml, climatetype = climatetype,
+                         selectyears = selectyears, iniyear = iniyear,
+                         multicropping = multicropping, aggregate = FALSE)
   # Total committed agricultural withdrawals (in mio. m^3 / yr)
   watComAgWW <- collapseNames(dimSums(watComAg[, , "withdrawal"],  dim = 3))
   # Total committed agricultural consumption (in mio. m^3 / yr)
@@ -119,9 +122,11 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
 
   } else if (humanuse == "committed_agriculture") {
 
-    prevHuman_routing <- calcOutput("RiverHumanUses", lpjml = lpjml, climatetype = climatetype,
-                                    efrMethod = efrMethod, selectyears = selectyears,
-                                    iniyear = iniyear, humanuse = "non_agriculture", aggregate = FALSE)
+    prevHuman_routing <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
+                                    lpjml = lpjml, climatetype = climatetype,
+                                    efrMethod = efrMethod, multicropping = multicropping,
+                                    selectyears = selectyears, iniyear = iniyear,
+                                    aggregate = FALSE)
 
     # Minimum flow requirements determined by previous river routing:
     # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
