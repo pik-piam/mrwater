@@ -71,7 +71,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
     # Read in irrigation water requirements (withdrawals) for all crops
     # (in m^3 per hectare per year) [smoothed and harmonized]
     # Note: users would pay for consumption rather than withdrawals [D'Odorico et al. (2020)]
-    irrigReqWW <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
+    irrigReqWW <- calcOutput("IrrigWatRequirements", selectyears = selectyears, multicropping = multicropping,
                              lpjml = lpjml, climatetype = climatetype, aggregate = FALSE)
     irrigReqWW <- collapseNames(irrigReqWW[, , "withdrawal"])
     irrigReqWW <- irrigReqWW[, , intersect(gsub("[.].*", "", getNames(irrigReqWW)), croplist)]

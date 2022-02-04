@@ -12,7 +12,7 @@
 
 <meta name="author" content="Felicitas D. Beier" />
 
-<meta name="date" content="2021-12-23" />
+<meta name="date" content="2022-02-04" />
 
 <title>mrwater Documentation</title>
 
@@ -141,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">mrwater Documentation</h1>
 <h4 class="author">Felicitas D. Beier</h4>
-<h4 class="date">2021-12-23</h4>
+<h4 class="date">2022-02-04</h4>
 
 
 
@@ -272,7 +272,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="generation-of-potential-irrigation-area-pia-curves" class="section level3">
 <h3>Generation of potential irrigation area (PIA) curves</h3>
 <p>For a representation of irrigation potentials at various irrigation yield value gains, the river routing routine has to be executed for varying irrigation yield value gain thresholds. The generated data can be used to create PIA curves and/or aggregated to different scales (e.g. country-, basin-scale).</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>iad <span class="ot">&lt;-</span> <span class="fu">calcOutput</span>(<span class="st">&quot;EconOfIrrig&quot;</span>, <span class="at">scenario =</span> <span class="st">&quot;ssp2&quot;</span>, <span class="at">season =</span> <span class="st">&quot;single&quot;</span>, <span class="at">output =</span> <span class="st">&quot;IrrigArea&quot;</span>,</span>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>iad <span class="ot">&lt;-</span> <span class="fu">calcOutput</span>(<span class="st">&quot;EconOfIrrig&quot;</span>, <span class="at">scenario =</span> <span class="st">&quot;ssp2&quot;</span>, <span class="at">output =</span> <span class="st">&quot;IrrigArea&quot;</span>,</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">GT_range =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">250</span>, <span class="dv">500</span>, <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>), <span class="at">selectyears =</span> <span class="dv">2010</span>, <span class="at">iniyear =</span> <span class="dv">2010</span>,</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">lpjml =</span> lpjml, <span class="at">climatetype =</span> climatetype, <span class="at">efrMethod =</span> efrMethod, <span class="at">accessibilityrule =</span> accessibilityrule,</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">rankmethod =</span> rankmethod, <span class="at">yieldcalib =</span> yieldcalib,</span>

@@ -4,23 +4,31 @@
 \alias{calcActualIrrigWatRequirements}
 \title{calcActualIrrigWatRequirements}
 \usage{
-calcActualIrrigWatRequirements(lpjml, selectyears, climatetype, iniyear)
+calcActualIrrigWatRequirements(
+  selectyears,
+  iniyear,
+  lpjml,
+  climatetype,
+  multicropping
+)
 }
 \arguments{
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
-
 \item{selectyears}{Years to be returned}
+
+\item{iniyear}{Initialization year (for weight by cropland)}
+
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{iniyear}{Initialization year (for weight by cropland)}
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
 This function calculates actual irrigation water requirements
-             per cell given a certain irrigation system
+             per cell and season given a certain irrigation system
 }
 \examples{
 \dontrun{

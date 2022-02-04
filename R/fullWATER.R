@@ -328,10 +328,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "shrCurrIrrigFulfilled.mz")
 
   # LUH croparea
-  calcOutput("CropareaAdjusted", years = iniyear,
-             sectoral = "kcr", cells = "lpjcell",
-             physical = TRUE, cellular = TRUE,
-             irrigation = TRUE, aggregate = FALSE,
+  calcOutput("CropareaAdjusted", iniyear = iniyear,
+             aggregate = FALSE,
              file = "cropareaLUH.mz")
 
   # Water use (withdrawal and consumption) on current irrigated area

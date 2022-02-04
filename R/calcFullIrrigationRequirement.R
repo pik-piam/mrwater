@@ -41,7 +41,8 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   # read in irrigation water requirements for each irrigation system and season
   # [in m^3 per hectare per year] (smoothed & harmonized)
   irrigWat <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
-                          lpjml = lpjml, climatetype = climatetype, aggregate = FALSE)
+                         lpjml = lpjml, climatetype = climatetype,
+                         multicropping = multicropping, aggregate = FALSE)
   # pasture is not irrigated in MAgPIE
   irrigWat <- irrigWat[, , "pasture", invert = TRUE]
 

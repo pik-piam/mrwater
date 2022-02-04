@@ -15,8 +15,6 @@
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames
-#' @importFrom magpiesets addLocation
-#' @importFrom mrcommons toolGetMappingCoord2Country
 #' @importFrom utils tail
 
 calcIrrigAreaCommitted <- function(selectyears, iniyear) {
@@ -24,13 +22,10 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   # Set depreciation parameter
   depreciation <- 0.1
 
-  # Read in data: crop- and water supply type specific croparea (in Mha) in initialization year:
-  tmp <- calcOutput("CropareaAdjusted", years = iniyear,
-                    sectoral = "kcr", physical = TRUE,
-                    cells = "lpjcell", cellular = TRUE, irrigation = TRUE, aggregate = FALSE)
-
-  # Retrieve irrigated area (per crop)
-  tmp <- collapseNames(tmp[, , "irrigated"])
+  # Read in data: crop- and water supply type specific croparea per season
+  # (in Mha) in initialization year:
+  tmp <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
+                                   aggregate = FALSE)[, , "irrigated"])
 
   # Empty object to be filled with area reserved for irrigation in current and future time steps
   if (class(selectyears) == "character") {
@@ -40,8 +35,10 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
 
-  irrigArea <- new.magpie(getCells(tmp), seq(iniyear, tail(selectyears, 1), by = 1),
-                           getNames(tmp), sets = c("x.y.iso", "year", "data"))
+  irrigArea <- new.magpie(cells_and_regions = getCells(tmp),
+                          years = seq(iniyear, tail(selectyears, 1), by = 1),
+                          names = getNames(tmp),
+                          sets = c("x.y.iso", "year", "data"))
 
   # Each year certain share (parameter: "depreciation") of irrigated cropland is lost
   # Note: Depreciation in yearly time-steps!
@@ -66,6 +63,6 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   return(list(x            = irrigArea,
               weight       = NULL,
               unit         = "mio. ha",
-              description  = "Cropland area reserved for irrigation per crop",
+              description  = "Cropland area reserved for irrigation per crop and season",
               isocountries = FALSE))
 }

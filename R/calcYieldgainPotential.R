@@ -102,7 +102,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
   area <- cropareaShr * area
 
   # Potential yield gain per cell (in mio. USD)
-  x <- dimSums(yieldGain * area, dim = "MAG")
+  x <- dimSums(yieldGain * area, dim = "crop")
   u <- "mio. USD"
 
   out <- collapseNames(x)

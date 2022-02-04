@@ -74,12 +74,12 @@ selectyears <- 2010
 lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_bft_6277d36e")
 climatetype <- "GFDL-ESM4:ssp126"
 
-efr <- calcOutput("EnvmtlFlowRequirements", efrMethod = "VMF:fair", 
-                  selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
+efr <- calcOutput("EnvmtlFlowRequirements", efrMethod = "VMF:fair",
+                  selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
                   aggregate = FALSE)[, , "EFR"]
 
-inaccessibleQ <- calcOutput("DischargeInaccessible", accessibilityrule = "CV:2", 
-                            selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
+inaccessibleQ <- calcOutput("DischargeInaccessible", accessibilityrule = "CV:2",
+                            selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
                             aggregate = FALSE)
 
 efrMethod         <- "VMF:fair"
@@ -95,7 +95,7 @@ Human water abstractions are considered in consecutive river routing iterations 
 
 ```{r HumanDischarge}
 humanQ <- calcOutput("RiverDischargeNatAndHuman", iniyear = 2010, com_ag = TRUE,
-                     selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
+                     selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
                      efrMethod = efrMethod, aggregate = FALSE)
 
 iniyear <- 2010
@@ -130,11 +130,11 @@ The ``physical`` argument determines accounts for the cropping intensity in that
 Finally, the function ``calcRiverSurplusDischargeAllocation`` determines the allocation of "surplus discharge", i.e. the discharge of the estuary cell that is not (yet) consumed along the river in the last iteration of the previous river routings that reserved environmental and human water uses. The function returns the water that is potentially available for irrigation considering biophysical, economic and management constraints. 
 
 ```{r AllocationAlgorithm}
-iwp <- calcOutput("RiverSurplusDischargeAllocation", output = "potIrrigWat", 
-                   selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, 
+iwp <- calcOutput("RiverSurplusDischargeAllocation", output = "potIrrigWat",
+                   selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
                    efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                    iniyear = iniyear, com_ag = com_ag,
-                   allocationrule = "optimization", 
+                   allocationrule = "optimization",
                    rankmethod = "USD_ha:TRUE", yieldcalib = TRUE, cropmix = "hist_total",
                    thresholdtype = "USD_ha", gainthreshold = 500,
                    landScen = "potCropland:HalfEarth",
@@ -161,7 +161,7 @@ The ``cropmix`` argument determines the selection of crops ("hist_total" refers 
 ```{r YieldValueGain}
 yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
                         selectyears = selectyears, climatetype = climatetype, lpjml = lpjml, iniyear = iniyear,
-                        cropmix = "hist_total", yieldcalib = TRUE, 
+                        cropmix = "hist_total", yieldcalib = TRUE,
                         multicropping = FALSE, aggregate = FALSE)
 ```
 
@@ -185,7 +185,7 @@ For example ``landScen = "currCropland:NA"`` selects current cropland extent as 
 The ``calcIrrigatableArea`` function translates potential irrigation water (PIW) into potentially irrigated areas (PIA) and returns the area that can potentially be irrigated given the assumptions that are set via the arguments.
 
 ```{r IAP}
-allocationrule   <- "optimization" 
+allocationrule   <- "optimization"
 rankmethod       <- "USD_ha:TRUE"
 yieldcalib       <- TRUE
 cropmix          <- "hist_total"
@@ -196,12 +196,12 @@ irrigationsystem <- "initialization"
 multicropping    <- FALSE
 
 iap <- calcOutput("IrrigatableArea", selectyears = selectyears, iniyear = iniyear,
-                   lpjml = lpjml, climatetype = climatetype, 
+                   lpjml = lpjml, climatetype = climatetype,
                    efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                    rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                   thresholdtype = thresholdtype, gainthreshold = gainthreshold, 
+                   thresholdtype = thresholdtype, gainthreshold = gainthreshold,
                    irrigationsystem = irrigationsystem, landScen = landScen,
-                   cropmix = cropmix, com_ag = com_ag, 
+                   cropmix = cropmix, com_ag = com_ag,
                    potential_wat = TRUE, multicropping = FALSE, aggregate = FALSE)
 ```
 
@@ -212,7 +212,7 @@ For a representation of irrigation potentials at various irrigation yield value 
 The generated data can be used to create PIA curves and/or aggregated to different scales (e.g. country-, basin-scale).
 
 ```{r EconOfIrrig}
-iad <- calcOutput("EconOfIrrig", scenario = "ssp2", season = "single", output = "IrrigArea",
+iad <- calcOutput("EconOfIrrig", scenario = "ssp2", output = "IrrigArea",
              GT_range = c(0, 250, 500, 1000, 2000, 3000), selectyears = 2010, iniyear = 2010,
              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib,

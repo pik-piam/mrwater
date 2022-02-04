@@ -4,7 +4,13 @@
 \alias{calcWaterUseCommittedAg}
 \title{calcWaterUseCommittedAg}
 \usage{
-calcWaterUseCommittedAg(lpjml, climatetype, selectyears, iniyear)
+calcWaterUseCommittedAg(
+  lpjml,
+  climatetype,
+  selectyears,
+  iniyear,
+  multicropping
+)
 }
 \arguments{
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
@@ -14,6 +20,8 @@ calcWaterUseCommittedAg(lpjml, climatetype, selectyears, iniyear)
 \item{selectyears}{Years to be returned}
 
 \item{iniyear}{Year of initialization for cropland area}
+
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
 }
 \value{
 magpie object in cellular resolution

@@ -65,20 +65,14 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
   iniyear     <- 2010
   com_ag      <- TRUE
 
-  # LUH total irrigated area
-  irrigAreaLUH <- setYears(collapseNames(calcOutput("Croparea", years = iniyear, sectoral = "kcr", physical = TRUE,
-                           cells = "lpjcell", cellular = TRUE, irrigation = TRUE, aggregate = FALSE)[, , "irrigated"]),
-                           iniyear)
-  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
-  map                              <- toolGetMappingCoord2Country()
-  getCells(irrigAreaLUH)           <- paste(map$coords, map$iso, sep = ".")
-  names(dimnames(irrigAreaLUH))[1] <- "x.y.iso"
-  #### adjust cell name (until 67k cell names fully integrated in calcCroparea and calcLUH2v2!!!) ####
+  # LUH total physical irrigated area
+  irrigAreaLUH <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
+                                            aggregate = FALSE)[, , "irrigated"][, , "first"])
 
   if (output == "IrrigArea") {
 
     # Irrigated Area (LUH)
-    currLUH           <- dimSums(irrigAreaLUH, dim = "MAG")
+    currLUH           <- dimSums(irrigAreaLUH, dim = "crop")
     getSets(currLUH)  <- c("x", "y", "iso", "year", "type")
     getNames(currLUH) <- "irrig_area_LUH"
 
@@ -107,13 +101,13 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
                                            gainthreshold = gainthreshold,
                                            selectyears = selectyears, iniyear = iniyear,
                                            climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                        efrMethod = efrMethod, rankmethod = rankmethod,
-                                        yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                        thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                        landScen = "currCropland:2010",
-                                        cropmix = cropmix, potential_wat = TRUE,
-                                        com_ag = com_ag, multicropping = multicropping,
-                                        aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                           efrMethod = efrMethod, rankmethod = rankmethod,
+                                           yieldcalib = yieldcalib, allocationrule = allocationrule,
+                                           thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                           landScen = "currCropland:2010",
+                                           cropmix = cropmix, potential_wat = TRUE,
+                                           com_ag = com_ag, multicropping = multicropping,
+                                           aggregate = FALSE)[, , "irrigatable"][, , scenario])
     getSets(potIrrcurr)  <- c("x", "y", "iso", "year", "type")
     potIrrcurrSus             <- potIrrcurr[, , "on"]
     getNames(potIrrcurrSus)   <- "curr_irrig_currCropland_sus"
@@ -161,10 +155,12 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     }
 
     # Irrigated Water use (derived from LUH and crop irrigation requirements)
-    watReq   <- collapseNames(calcOutput("ActualIrrigWatRequirements", lpjml = lpjml, climatetype = climatetype,
-                           iniyear = iniyear, selectyears = selectyears, aggregate = FALSE)[, , type])
+    watReq   <- collapseNames(calcOutput("ActualIrrigWatRequirements",
+                                         lpjml = lpjml, climatetype = climatetype,
+                                         iniyear = iniyear, selectyears = selectyears,
+                                         multicropping = multicropping, aggregate = FALSE)[, , type])
     currLUH           <- irrigAreaLUH * watReq
-    currLUH           <- dimSums(currLUH, dim = "MAG")
+    currLUH           <- dimSums(currLUH, dim = "crop")
     getSets(currLUH)  <- c("x", "y", "iso", "year", "type")
     getNames(currLUH) <- "irrig_wat_LUH"
 

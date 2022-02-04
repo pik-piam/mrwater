@@ -46,22 +46,18 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
     if (landScen == "currCropland") {
 
-      # Total current cropland per cell:
-      land <- dimSums(calcOutput("CropareaAdjusted", years = iniyear,
-                                 sectoral = "kcr", cells = "lpjcell",
-                                 physical = TRUE, cellular = TRUE,
-                                 irrigation = FALSE, aggregate = FALSE),
+      # Total current physical cropland per cell:
+      land <- dimSums(calcOutput("CropareaAdjusted", iniyear = iniyear,
+                                 aggregate = FALSE)[, , "first"],
                       dim = 3)
 
     }
 
     if (landScen == "currIrrig") {
 
-      # Total irrigated cropland per cell:
-      land <- dimSums(collapseNames(calcOutput("CropareaAdjusted", years = iniyear,
-                                               sectoral = "kcr", cells = "lpjcell",
-                                               physical = TRUE, cellular = TRUE,
-                                               irrigation = TRUE, aggregate = FALSE)[, , "irrigated"]),
+      # Total irrigated physical cropland per cell:
+      land <- dimSums(collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
+                                               aggregate = FALSE)[, , "irrigated"][, , "first"]),
                       dim = 3)
     }
 
@@ -105,10 +101,10 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
   # Areas that are already irrigated (by committed agricultural uses)
   if (!is.null(comagyear)) {
 
-    # subtract area already reserved for irrigation by committed agricultural uses
+    # subtract physical area already reserved for irrigation by committed agricultural uses
     # (to avoid double accounting)
-    comIrrigArea  <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
-                                 iniyear = comagyear, aggregate = FALSE)
+    comIrrigArea  <- collapseNames(calcOutput("IrrigAreaCommitted", selectyears = selectyears,
+                                 iniyear = comagyear, aggregate = FALSE)[, , "first"])
     comIrrigArea  <- collapseNames(dimSums(comIrrigArea, dim = 3))
     land          <- land - comIrrigArea
   }

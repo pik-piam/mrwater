@@ -39,8 +39,9 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   irrigationSystem <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr", aggregate = FALSE)
 
   # Irrigation water requirements per crop (in m^3 per hectare per year) [smoothed and harmonized]
-  irrigWater <- calcOutput("IrrigWatRequirements", aggregate = FALSE, lpjml = lpjml,
-                           selectyears = selectyears, climatetype = climatetype)
+  irrigWater <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
+                           lpjml = lpjml, climatetype = climatetype,
+                           multicropping = multicropping, aggregate = FALSE)
   # Pasture is not irrigated in MAgPIE
   irrigWater <- irrigWater[, , "pasture", invert = TRUE]
 
