@@ -20,8 +20,10 @@ fullWATER(
 \item{efrMethod}{EFR method used including selected strictness of EFRs
 (Smakhtin:good, VMF:fair)}
 
-\item{accessibilityrule}{Method used: Quantile method (Q) or Coefficient of Variation (CV)
-combined with scalar value defining the strictness of accessibility restriction:
+\item{accessibilityrule}{Method used: Quantile method (Q) or
+Coefficient of Variation (CV)
+combined with scalar value defining the strictness
+of accessibility restriction:
 discharge that is exceeded x percent of the time on average throughout a year
 (Qx, e.g. Q75: 0.25, Q50: 0.5)
 or base value for exponential curve separated by : (CV:2)}
@@ -51,9 +53,11 @@ water allocation in upstreamfirst algorithm
 
 \item{protectLand}{Land protection scenario (e.g. HalfEarth, BH_FF, NULL)}
 
-\item{yieldcalib}{Boolean for whether LPJmL should be calibrated to FAO country yields (TRUE or FALSE)}
+\item{yieldcalib}{Boolean for whether LPJmL should be calibrated
+to FAO country yields (TRUE or FALSE)}
 
-\item{multicropping}{Boolean for whether multicropping is activated (TRUE) or not (FALSE)}
+\item{multicropping}{Boolean for whether multicropping is activated (TRUE)
+or not (FALSE)}
 }
 \description{
 Function that produces the objects for water outputs

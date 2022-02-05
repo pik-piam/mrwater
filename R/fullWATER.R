@@ -4,8 +4,10 @@
 #'
 #' @param efrMethod         EFR method used including selected strictness of EFRs
 #'                          (Smakhtin:good, VMF:fair)
-#' @param accessibilityrule Method used: Quantile method (Q) or Coefficient of Variation (CV)
-#'                          combined with scalar value defining the strictness of accessibility restriction:
+#' @param accessibilityrule Method used: Quantile method (Q) or
+#'                          Coefficient of Variation (CV)
+#'                          combined with scalar value defining the strictness
+#'                          of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
@@ -29,8 +31,10 @@
 #'                          water allocation in upstreamfirst algorithm
 #'                          (in same unit as thresholdtype)
 #' @param protectLand       Land protection scenario (e.g. HalfEarth, BH_FF, NULL)
-#' @param yieldcalib        Boolean for whether LPJmL should be calibrated to FAO country yields (TRUE or FALSE)
-#' @param multicropping     Boolean for whether multicropping is activated (TRUE) or not (FALSE)
+#' @param yieldcalib        Boolean for whether LPJmL should be calibrated
+#'                          to FAO country yields (TRUE or FALSE)
+#' @param multicropping     Boolean for whether multicropping is activated (TRUE)
+#'                          or not (FALSE)
 #'
 #' @author Felicitas Beier
 #'
@@ -321,7 +325,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "LPJmL_monthlyDischarge.mz")
 
   # Share current irrigation water that can be fulfilled by available water resources
-  calcOutput("ShrCurrIrrigFulfilled",
+  calcOutput("ShrCurrIrrigFulfilled", multicropping = multicropping,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, aggregate = FALSE,
