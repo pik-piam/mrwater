@@ -13,7 +13,8 @@ fullWATER(
   gainthreshold = 500,
   protectLand = "HalfEarth",
   yieldcalib = TRUE,
-  multicropping = FALSE
+  multicropping = FALSE,
+  cropmix = "hist_total"
 )
 }
 \arguments{
@@ -58,6 +59,11 @@ to FAO country yields (TRUE or FALSE)}
 
 \item{multicropping}{Boolean for whether multicropping is activated (TRUE)
 or not (FALSE)}
+
+\item{cropmix}{Selected cropmix (options:
+"hist_irrig" for historical cropmix on currently irrigated area,
+"hist_total" for historical cropmix on total cropland,
+or selection of proxycrops)#'}
 }
 \description{
 Function that produces the objects for water outputs

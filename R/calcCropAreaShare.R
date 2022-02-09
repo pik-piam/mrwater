@@ -22,7 +22,8 @@
 
 calcCropAreaShare <- function(iniyear, cropmix) {
 
-  # read in relevant physical croparea: total (irrigated + rainfed) or irrigated depending on chosen cropmix
+  # read in relevant physical croparea: total (irrigated + rainfed) or
+  # irrigated depending on chosen cropmix
   croparea <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
                                        aggregate = FALSE)[, , "first"])
 
