@@ -54,7 +54,7 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
     # harvested area
     irrigArea <- dimSums(calcOutput("CropareaAdjusted", iniyear = iniyear,
                                     aggregate = FALSE),
-                         dim = "season")
+                         dim = "season") ### PHYSICAL
 
   } else {
 

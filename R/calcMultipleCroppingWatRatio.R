@@ -16,6 +16,7 @@
 #'
 #' @importFrom mrcommons toolGetMappingCoord2Country
 #' @importFrom magclass new.magpie getYears getNames
+#' @importFrom stats runif
 
 calcMultipleCroppingWatRatio <- function(selectyears, lpjml, climatetype) {
 
@@ -32,7 +33,7 @@ calcMultipleCroppingWatRatio <- function(selectyears, lpjml, climatetype) {
   out     <- new.magpie(cells_and_regions = paste(mapping$coords, mapping$iso, sep = "."),
                         years = selectyears,
                         fill = NA)
-  out[, , ] <- 0.8
+  out[, , ]    <- runif(length(out), 0.7, 1.1)
   getSets(out) <- c("x", "y", "iso", "year", "data")
   #### PLACEHOLDER UNTIL LPJML OUTPUTS ARE READY ####
 

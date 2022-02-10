@@ -15,6 +15,7 @@
 #'
 #' @importFrom mrcommons toolGetMappingCoord2Country
 #' @importFrom magclass new.magpie getYears getNames
+#' @importFrom stats runif
 
 calcMultipleCroppingYieldRatio <- function(selectyears, lpjml, climatetype) {
 
@@ -26,14 +27,19 @@ calcMultipleCroppingYieldRatio <- function(selectyears, lpjml, climatetype) {
   #
   # out <- pmax(0, npp[,,"year"] / npp[,,"grper"] - 1)
 
+  ### Include threshold (if off-season not high enough yield
+  # (absolute or relative (to main season) threshold) not considered)
+  # Threshold will come from LPJmL 100gC/month grass GPP
+
   #### PLACEHOLDER UNTIL LPJML OUTPUTS ARE READY ####
   mapping <- toolGetMappingCoord2Country(pretty = TRUE)
   out     <- new.magpie(cells_and_regions = paste(mapping$coords, mapping$iso, sep = "."),
                         years = selectyears,
                         fill = NA)
-  out[, , ]    <- 0.8
+  out[, , ]    <- runif(length(out), 0.5, 1.3)
   out          <- add_dimension(out, dim = 3.1, add = "irrigation",
                                 nm = c("rainfed", "irrigated"))
+  out[, , "irrigated"] <- out[, , "irrigated"] + 0.1
   getSets(out) <- c("x", "y", "iso", "year", "irrigation")
   #### PLACEHOLDER UNTIL LPJML OUTPUTS ARE READY ####
 
