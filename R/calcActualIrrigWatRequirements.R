@@ -49,19 +49,8 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
   }
 
   # Weight: irrigated area (only used for aggregation)
-  if (multicropping) {
-
-    # harvested area
-    irrigArea <- dimSums(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                    aggregate = FALSE),
-                         dim = "season") ### PHYSICAL
-
-  } else {
-
-    # first season contains physical area
-    irrigArea <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
+  irrigArea <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
                                           aggregate = FALSE)[, , "first"])
-  }
 
   # Small additive term to account for places with 0 irrigated area
   irrigArea <- collapseNames(irrigArea[, , "irrigated"]) + 1e-9

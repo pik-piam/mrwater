@@ -366,7 +366,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              irrigationsystem = irrigationsystem, cropmix = cropmix,
              landScen = paste0("currIrrig:", "NULL"),
              potential_wat = FALSE, com_ag = TRUE,
-             multicropping = FALSE, aggregate = FALSE,
+             multicropping = multicropping, aggregate = FALSE,
              file = "irrigAreaCurrent.mz")
 
   # Yield gain through irrigation
