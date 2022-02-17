@@ -7,7 +7,9 @@
 readIrrigationSystem(subtype = "Jaegermeyr")
 }
 \arguments{
-\item{subtype}{Data source to be used: Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or LPJmL (dominant irrigation system per country)}
+\item{subtype}{Data source to be used:
+Jaegermeyr (irrigation system share based on FAO 2014, ICID 2012 and Rohwer et al. 2007) or
+LPJmL (dominant irrigation system per country)}
 }
 \value{
 MAgPIE object of at country-level
@@ -16,7 +18,9 @@ MAgPIE object of at country-level
 Read in irrigation system type for initialization
 }
 \examples{
-\dontrun{ readSource("IrrigationSystem", convert="onlycorrect") }
+\dontrun{
+readSource("IrrigationSystem", convert = "onlycorrect")
+}
 
 }
 \author{

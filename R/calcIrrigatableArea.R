@@ -91,7 +91,8 @@ calcIrrigatableArea <- function(lpjml, selectyears, iniyear, climatetype, efrMet
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
                           lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                           irrigationsystem = irrigationsystem, landScen = landScen,
-                          cropmix = cropmix, multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
+                          cropmix = cropmix, yieldcalib = yieldcalib,
+                          multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWatWW),
                                      years = getYears(avlWatWW),
                                      names = getNames(avlWatWW),
@@ -110,14 +111,17 @@ calcIrrigatableArea <- function(lpjml, selectyears, iniyear, climatetype, efrMet
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
   irrigareaWW <- pmin(avlWatWW / watReqWW, 1) * areaPotIrrig
   irrigareaWW[watReqWW == 0] <- 0      # cells with no water requirements also get no irrigated area assigned
-  irrigareaWW <- add_dimension(irrigareaWW, dim = 3.4, add = "type", nm = "irrigatable_ww")
+  irrigareaWW <- add_dimension(irrigareaWW, dim = 3.4, add = "type",
+                               nm = "irrigatable_ww")
 
   irrigareaWC <- pmin(avlWatWC / watReqWC, 1) * areaPotIrrig
   irrigareaWC[watReqWC == 0] <- 0
-  irrigareaWC <- add_dimension(irrigareaWC, dim = 3.4, add = "type", nm = "irrigatable_wc")
+  irrigareaWC <- add_dimension(irrigareaWC, dim = 3.4, add = "type",
+                               nm = "irrigatable_wc")
 
   irrigatableArea <- pmin(collapseNames(irrigareaWW), collapseNames(irrigareaWC))
-  irrigatableArea <- add_dimension(irrigatableArea, dim = 3.4, add = "type", nm = "irrigatable")
+  irrigatableArea <- add_dimension(irrigatableArea, dim = 3.4, add = "type",
+                                   nm = "irrigatable")
 
   out <- mbind(irrigatableArea, irrigareaWW, irrigareaWC)
 

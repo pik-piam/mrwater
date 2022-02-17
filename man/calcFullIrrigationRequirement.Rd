@@ -13,7 +13,8 @@ calcFullIrrigationRequirement(
   irrigationsystem,
   landScen,
   cropmix,
-  multicropping
+  multicropping,
+  yieldcalib
 )
 }
 \arguments{
@@ -45,6 +46,9 @@ or do not specify second part of the argument}
 or selection of proxycrops)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
+
+\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+If FALSE: uncalibrated LPJmL yields are used}
 }
 \value{
 magpie object in cellular resolution

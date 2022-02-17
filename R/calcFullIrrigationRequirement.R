@@ -22,6 +22,8 @@
 #'                         "hist_total" for historical cropmix on total cropland,
 #'                         or selection of proxycrops)
 #' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
+#' @param yieldcalib       If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                         If FALSE: uncalibrated LPJmL yields are used
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -36,7 +38,7 @@
 #' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
 
 calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear, iniyear,
-                                          irrigationsystem, landScen, cropmix, multicropping) {
+                                          irrigationsystem, landScen, cropmix, multicropping, yieldcalib) {
 
   # read in irrigation water requirements for each irrigation system and season
   # [in m^3 per hectare per year] (smoothed & harmonized)
@@ -45,6 +47,30 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
                          multicropping = multicropping, aggregate = FALSE)
   # pasture is not irrigated in MAgPIE
   irrigWat <- irrigWat[, , "pasture", invert = TRUE]
+
+  # correct irrigation water requirements where irrigation would lead to negative yield gains
+  # read in yield gain
+  yieldGain <- calcOutput("IrrigCropYieldGain", unit = "tDM",
+                          lpjml = lpjml, climatetype = climatetype,
+                          iniyear = iniyear, selectyears = selectyears,
+                          yieldcalib = yieldcalib, cropmix = cropmix,
+                          multicropping = multicropping, aggregate = FALSE)
+  tmp                 <- yieldGain
+  tmp[, , ]           <- NA
+  tmp[yieldGain < 0]  <- 0
+  tmp[yieldGain >= 0] <- 1
+
+  irrigWat <- irrigWat * tmp
+
+  if (multicropping) {
+    #### !!! HOW TO TREAT MULTICROPPING CASE?????
+    # (1) Should water requirements for crops in cells with negative yield gains
+    # be set to 0 in both seasons or would there have to be some form of accounting
+    # for multiple-cropping system and yield gains? (see calcIrrigYieldImprovementPotential)
+    # (2) Is this necessary if we harmonize the growing period? Should the
+    # growing period be harmonized (in general; for the case of multiple cropping;
+    # in MAgPIE / in mrwater only?)
+  }
 
   # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
   land <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,

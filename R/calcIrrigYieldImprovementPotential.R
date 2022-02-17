@@ -35,21 +35,17 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                                                iniyear, selectyears, cropmix,
                                                yieldcalib, multicropping) {
 
-  # read in cellular lpjml yields for each season [in tDM/ha]
-  yields    <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
+  # read in cellular lpjml yields for each season
+  yields    <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib, multicropping = multicropping,
-                          aggregate = FALSE)
-  # extract magpie crops
-  croplist  <- getNames(collapseNames(yields[, , "irrigated"][, , "first"]))
-
-  # read in crop output price in initialization year (USD05/tDM)
-  p         <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
-                          years = NULL, year = iniyear, aggregate = FALSE)[, , croplist]
-
-  # calculate yield gain per crop per season [in tDM/ha]
-  yieldGain <- (collapseNames(yields[, , "irrigated"]) -
-                  collapseNames(yields[, , "rainfed"]))
+                          yieldcalib = yieldcalib, unit = unit,
+                          multicropping = multicropping, aggregate = FALSE)
+  # read in yield gain
+  yieldGain <- calcOutput("IrrigCropYieldGain", unit = unit,
+                          lpjml = lpjml, climatetype = climatetype,
+                          iniyear = iniyear, selectyears = selectyears,
+                          yieldcalib = yieldcalib, cropmix = cropmix,
+                          multicropping = multicropping, aggregate = FALSE)
 
   # set negative yield gains to 0
   yieldGain[yieldGain < 0] <- 0
@@ -63,8 +59,8 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
     # Cells are bijectively assigned according to their single and multicropping
     # potentials under irrigated and rainfed conditions
     mc   <- calcOutput("MultipleCroppingZones", layers = 2, aggregate = FALSE)
-    rSiS <- new.magpie(cells_and_regions = getCells(yields),
-                       years = getYears(yields),
+    rSiS <- new.magpie(cells_and_regions = getCells(yieldGain),
+                       years = getYears(yieldGain),
                        fill = 0)
     rMiS <- rSiM <- rMiM <- rSiS
     rSiS[mc[, , "rainfed"] == 0 & mc[, , "irrigated"] == 0] <- 1
@@ -97,58 +93,6 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
 
   }
 
-
-  # Unit of yield gain to be returned
-  if (unit == "tDM") {
-
-    unit <- "tons per ha"
-
-  } else if (unit == "USD_ha") {
-
-    croplist <- intersect(croplist, getNames(p))
-
-    # Calculate monetary yield gain (in USD05/ha)
-    yieldGain   <- yieldGain * p
-    unit     <- "USD05 per ha"
-
-  } else if (unit == "USD_m3") {
-
-    croplist <- intersect(croplist, getNames(p))
-
-    # Calculate monetary yield gain (in USD05/ha)
-    yieldGain   <- yieldGain * p
-
-    # Read in irrigation water requirements (withdrawals) for all crops
-    # (in m^3 per hectare per year) [smoothed and harmonized]
-    # Note: users would pay for consumption rather than withdrawals [D'Odorico et al. (2020)]
-    irrigReqWW <- calcOutput("IrrigWatRequirements",
-                             selectyears = selectyears, multicropping = multicropping,
-                             lpjml = lpjml, climatetype = climatetype, aggregate = FALSE)
-    irrigReqWW <- collapseNames(irrigReqWW[, , "withdrawal"])
-    irrigReqWW <- irrigReqWW[, , intersect(gsub("[.].*", "", getNames(irrigReqWW)), croplist)]
-
-    # Read in irrigation system area initialization
-    irrigationSystem <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr", aggregate = FALSE)
-
-    # Calculate irrigation water requirements
-    irrigWatReq  <- dimSums((irrigationSystem[, , ] * irrigReqWW[, , ]), dim = 3.1)
-    irrigWatReq  <- irrigWatReq[, , croplist]
-
-    # Correction of small irrigWatReq: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
-    irrigWatReq[irrigWatReq < 10] <- 10
-    # Correction of very small yields: where < 10 USD/ha: 0
-    tmp <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
-                      lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-                      iniyear = iniyear, selectyears = selectyears, yieldcalib = yieldcalib,
-                      multicropping = multicropping, aggregate = FALSE)
-    irrigWatReq[dimSums(tmp, dim = 3) < 10] <- 0
-    # Yield gain in USD/m^3
-    yieldGain                   <- yieldGain / irrigWatReq
-    yieldGain[irrigWatReq <= 0] <- 0
-    unit                        <- "USD05 per m^3"
-
-  }
-
   # Selected crops
   if (!is.null(cropmix)) {
 
@@ -157,9 +101,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                               aggregate = FALSE)
 
     # average (rf/irr) yields over crops weighted with their croparea share
-    croplist  <- intersect(croplist, getNames(cropareaShr))
-    yieldGain <- dimSums(yieldGain[, , croplist] * cropareaShr[, , croplist],
-                         dim = "crop")
+    yieldGain <- dimSums(yieldGain * cropareaShr, dim = "crop")
 
     # description of output
     description <- "Yield improvement potential through irrigation given cropmix croparea share"

@@ -68,7 +68,7 @@ readIrrigationSystem <- function(subtype = "Jaegermeyr") {
                                                             "saint helena ascension and tristan da cunha" = "SHN",
                                                             "st. vincent and the grenadines" = "VCT",
                                                             "virgin islands" = "VIR"))
-    x         <- subset(x, !duplicated(x))
+    x <- subset(x, !duplicated(x))
 
     # Transform to MAgPIE object
     x <- as.magpie(x)
