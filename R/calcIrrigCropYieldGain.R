@@ -10,14 +10,14 @@
 #'                      USD_ha (USD per hectare) for area return, or
 #'                      USD_m3 (USD per cubic meter) for volumetric return
 #' @param iniyear       initialization year for food price and cropmix area
+#' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:
 #'                      "hist_irrig" for historical cropmix on currently irrigated area,
 #'                      "hist_total" for historical cropmix on total cropland,
 #'                      or selection of proxycrops)
 #'                      NULL returns all crops individually
-#' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
-#'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
@@ -32,14 +32,15 @@
 #' @importFrom magclass collapseNames
 
 calcIrrigCropYieldGain <- function(lpjml, climatetype, unit,
-                                   iniyear, selectyears, cropmix,
-                                   yieldcalib, multicropping) {
+                                   iniyear, selectyears,
+                                   yieldcalib, cropmix, multicropping) {
 
   # read in cellular lpjml yields for each season
   yields    <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib, unit = unit,
-                          multicropping = multicropping, aggregate = FALSE)
+                          multicropping = multicropping, cropmix = cropmix,
+                          aggregate = FALSE)
 
   # calculate yield gain per crop per season
   yieldGain <- (collapseNames(yields[, , "irrigated"]) -

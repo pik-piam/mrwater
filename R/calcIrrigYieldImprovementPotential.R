@@ -39,7 +39,8 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   yields    <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib, unit = unit,
-                          multicropping = multicropping, aggregate = FALSE)
+                          multicropping = multicropping, cropmix = cropmix,
+                          aggregate = FALSE)
   # read in yield gain
   yieldGain <- calcOutput("IrrigCropYieldGain", unit = unit,
                           lpjml = lpjml, climatetype = climatetype,

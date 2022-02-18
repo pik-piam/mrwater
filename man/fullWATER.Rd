@@ -63,7 +63,7 @@ or not (FALSE)}
 \item{cropmix}{Selected cropmix (options:
 "hist_irrig" for historical cropmix on currently irrigated area,
 "hist_total" for historical cropmix on total cropland,
-or selection of proxycrops)#'}
+or selection of proxycrops)}
 }
 \description{
 Function that produces the objects for water outputs
