@@ -61,6 +61,9 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
 
   } else if (unit == "USD_m3") {
 
+    yields <- yields * p
+    unit   <- "USD05 per m^3"
+
     # Read in irrigation water requirements (withdrawals) for all crops
     # (in m^3 per hectare per year) [smoothed and harmonized]
     # Note: users would pay for consumption rather than withdrawals [D'Odorico et al. (2020)]
@@ -71,7 +74,7 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
                                            aggregate = FALSE)[, , "withdrawal"])
     # expand dimension such that same as yields
     irrigReqWW <- add_dimension(irrigReqWW, dim = 3.3, add = "irrigation",
-                                nm = c("irrigated", "rainfed"))
+                                nm = c("irrigated", "rainfed"))[, , getNames(yields)]
 
     # Correction of small irrigWatReq: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
     irrigReqWW[irrigReqWW < 10] <- 0
@@ -81,15 +84,17 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
                       cropmix = cropmix, yieldcalib = yieldcalib,
                       iniyear = iniyear, selectyears = selectyears,
                       multicropping = multicropping, aggregate = FALSE)
-    irrigReqWW[dimSums(tmp, dim = 3) < 10] <- 0
+    tmp <- add_dimension(tmp, dim = 3.1, add = "crop",
+                         nm = getNames(dimSums(irrigReqWW, dim = c(3.2, 3.3))))
+    tmp <- add_dimension(tmp, dim = 3.2, add = "season",
+                         nm = getNames(dimSums(irrigReqWW, dim = c(3.1, 3.3))))
+    tmp <- add_dimension(tmp, dim = 3.3, add = "irrigation",
+                         nm = getNames(dimSums(irrigReqWW, dim = c(3.1, 3.2))))[, , getNames(yields)]
+    irrigReqWW[tmp < 10] <- 0
 
     # yield to water ratio per season [tDM / m^3]
     yields                  <- yields / irrigReqWW
     yields[irrigReqWW <= 0] <- 0
-
-    # Calculate yields per m^3 valued at prices (in USD05/m3)
-    yields <- yields * p
-    unit   <- "USD05 per m^3"
 
   }
 
