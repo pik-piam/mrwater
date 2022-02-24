@@ -303,7 +303,7 @@ currently irrigated area (currIrrig), current cropland area (currCropland) or
 potential cropland area (potCropland) can be selected, and (2) a protection
 component that selects which land areas shall be protected, i.e. no irrigation
 taking place in these areas. Possible selections are:
-WDPA, BH, FF, CPD, LW, BH_FF, HalfEarth.
+WDPA, BH, FF, CPD, LW, BH_IFL, HalfEarth.
 For example ``landScen = "currCropland:NA"`` selects current cropland extent as
 of the year set in iniyear without land protection;
 ``landScen = "potIrrig:HalfEarth"``

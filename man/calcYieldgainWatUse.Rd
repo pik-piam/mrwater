@@ -27,7 +27,7 @@ calcYieldgainWatUse(
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
-2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
 For case of no land protection select "NA"
 or do not specify second part of the argument}
 

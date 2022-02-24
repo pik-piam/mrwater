@@ -33,12 +33,12 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
   irrigReq   <- irrigReq[, , "pasture", invert = TRUE]
 
   # irrigation system share (share of irrigated area)
-  irrigSystemShr    <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr",
-                                  aggregate = FALSE)
+  irrigSystemShr <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr",
+                                aggregate = FALSE)
 
   # total irrigation water requirements per crop given irrigation system share (in m^3 per ha per yr)
-  irrigReq          <- dimSums(irrigSystemShr * irrigReq,
-                               dim = "system")
+  irrigReq       <- dimSums(irrigSystemShr * irrigReq,
+                            dim = "system")
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {

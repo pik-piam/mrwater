@@ -12,7 +12,7 @@
 
 <meta name="author" content="Felicitas D. Beier" />
 
-<meta name="date" content="2022-02-18" />
+<meta name="date" content="2022-02-24" />
 
 <title>mrwater Documentation</title>
 
@@ -141,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">mrwater Documentation</h1>
 <h4 class="author">Felicitas D. Beier</h4>
-<h4 class="date">2022-02-18</h4>
+<h4 class="date">2022-02-24</h4>
 
 
 
@@ -251,7 +251,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="cropland-extent" class="section level3">
 <h3>Cropland extent</h3>
-<p>The irrigation potentials can be calculated for various scenarios of potential cropland cover that are set via the <code>landScen</code> argument. It consists of two parts: (1) the potentially available land component where currently irrigated area (currIrrig), current cropland area (currCropland) or potential cropland area (potCropland) can be selected, and (2) a protection component that selects which land areas shall be protected, i.e. no irrigation taking place in these areas. Possible selections are: WDPA, BH, FF, CPD, LW, BH_FF, HalfEarth. For example <code>landScen = &quot;currCropland:NA&quot;</code> selects current cropland extent as of the year set in iniyear without land protection; <code>landScen = &quot;potIrrig:HalfEarth&quot;</code> is potential cropland while respecting a Half Earth land protection scenario.</p>
+<p>The irrigation potentials can be calculated for various scenarios of potential cropland cover that are set via the <code>landScen</code> argument. It consists of two parts: (1) the potentially available land component where currently irrigated area (currIrrig), current cropland area (currCropland) or potential cropland area (potCropland) can be selected, and (2) a protection component that selects which land areas shall be protected, i.e. no irrigation taking place in these areas. Possible selections are: WDPA, BH, FF, CPD, LW, BH_IFL, HalfEarth. For example <code>landScen = &quot;currCropland:NA&quot;</code> selects current cropland extent as of the year set in iniyear without land protection; <code>landScen = &quot;potIrrig:HalfEarth&quot;</code> is potential cropland while respecting a Half Earth land protection scenario.</p>
 </div>
 <div id="irrigation-area-potential-iap" class="section level3">
 <h3>Irrigation Area Potential (IAP)</h3>

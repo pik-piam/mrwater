@@ -15,7 +15,7 @@
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #' @param landScen      Land availability scenario consisting of two parts separated by ":":
 #'                      1. available land scenario (currCropland, currIrrig, potCropland)
-#'                      2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+#'                      2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
 #'                      For case of no land protection select "NA"
 #'                      or do not specify second part of the argument
 #' @param rangeGT       Range of gainthreshold for calculation of potentially
@@ -45,11 +45,6 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   # Pasture is not irrigated in MAgPIE
   irrigWater <- irrigWater[, , "pasture", invert = TRUE]
 
-  # Withdrawal requirements per crop
-  irrigReqW  <- collapseNames(irrigWater[, , "withdrawal"])
-  # Consumption requirements per crop
-  irrigReqC  <- collapseNames(irrigWater[, , "consumption"])
-
   ### Area to be irrigated ###
   # Area that can potentially be irrigated according to chosen scenario
   potArea    <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
@@ -76,25 +71,15 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
     tmp <- potArea
     tmp[potGain < gainthreshold] <- 0
 
-
-
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))
 
     # New cropped area by crop (in mio. ha)
     grownCrops <- cropShr * tmp
 
-    ### Agricultural water uses (in mio. m^3 per year) ###
-    # withdrawal
-    watAgWW           <- grownCrops * dimSums(irrigationSystem * irrigReqW, dim = "system")
-    getNames(watAgWW) <- paste(rep("withdrawal", 3), getNames(watAgWW), sep = ".")
-    # consumption
-    watAgWC           <- grownCrops * dimSums(irrigationSystem * irrigReqC, dim = "system")
-    getNames(watAgWC) <- paste(rep("consumption", 3), getNames(watAgWC), sep = ".")
-    # combine
-    watAgUse                     <- mbind(watAgWW, watAgWC)
-    # sum over crops
-    names(dimnames(watAgUse))[3] <- "wateruse.crop.GT"
-    watAgUse <- dimSums(watAgUse, dim = "crop")
+    # Agricultural water use (withdrawals and consumption) by season
+    watAgUse <- dimSums(grownCrops * dimSums(irrigationSystem * irrigWater,
+                                             dim = "system"),
+                        dim = "crop")
 
     x[[i]]   <- watAgUse
   }

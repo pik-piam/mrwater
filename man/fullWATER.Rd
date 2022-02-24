@@ -52,7 +52,7 @@ USD_m3 (USD per cubic meter) for volumetric return}
 water allocation in upstreamfirst algorithm
 (in same unit as thresholdtype)}
 
-\item{protectLand}{Land protection scenario (e.g. HalfEarth, BH_FF, NULL)}
+\item{protectLand}{Land protection scenario (e.g. HalfEarth, BH_IFL, NULL)}
 
 \item{yieldcalib}{Boolean for whether LPJmL should be calibrated
 to FAO country yields (TRUE or FALSE)}

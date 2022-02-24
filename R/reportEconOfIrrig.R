@@ -4,7 +4,7 @@
 #'
 #' @param region           regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)
 #' @param output           output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"
-#' @param GT_range         range of x-axis (gainthreshold) to be depicted on the curve
+#' @param gtRange         range of x-axis (gainthreshold) to be depicted on the curve
 #' @param scenario         non-agricultural water use scenario to be displayed in plot
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears      years for which irrigatable area is calculated
@@ -20,7 +20,7 @@
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param landScen          Land availability scenario consisting of two parts separated by ":":
 #'                          1. available land scenario (currCropland, currIrrig, potCropland)
-#'                          2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_FF, NA).
+#'                          2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
 #'                          For case of no land protection select "NA"
 #'                          or do not specify second part of the argument
 #' @param cropmix           Selected cropmix (options:
@@ -36,7 +36,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' reportEconOfIrrig(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
+#' reportEconOfIrrig(gtRange = seq(0, 10000, by = 100), scenario = "ssp2")
 #' }
 #'
 #' @importFrom madrat calcOutput
@@ -45,7 +45,7 @@
 #'
 #' @export
 
-reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml, iniyear,
+reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, iniyear,
                               selectyears, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib,
                               allocationrule, thresholdtype, irrigationsystem, landScen, cropmix,
                               potential_wat = TRUE, com_ag, multicropping) {
@@ -56,9 +56,10 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
 
   if (output == "IrrigArea") {
 
-    x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = 0,
+    x <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = 0,
+                                  lpjml = lpjml, climatetype = climatetype,
                                   selectyears = selectyears, iniyear = iniyear,
-                                  climatetype = climatetype, accessibilityrule = accessibilityrule,
+                                  accessibilityrule = accessibilityrule,
                                   efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
                                   cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
@@ -85,28 +86,40 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
   x  <- as.data.frame(toolRegionSums(x = x, region = region))
   df <- data.frame(EFP = x$Data1, Scen = x$Data2, GT0 = x$Value, stringsAsFactors = FALSE)
 
-  if (GT_range[1] == 0) {
-    GT_range <- GT_range[-1]
+  if (gtRange[1] == 0) {
+    gtRange <- gtRange[-1]
   }
 
-  for (gainthreshold in GT_range) {
+  for (gainthreshold in gtRange) {
 
     if (output == "IrrigArea") {
 
-      x <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml, gainthreshold = gainthreshold,
-                                    selectyears = selectyears, iniyear = iniyear,
-                                    climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                    efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                    thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, landScen = landScen,
-                                    cropmix = cropmix, potential_wat = potential_wat, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
+      x <- collapseNames(calcOutput("IrrigatableArea",
+                                    iniyear = iniyear, selectyears = selectyears,
+                                    lpjml = lpjml, climatetype = climatetype,
+                                    yieldcalib = yieldcalib, cropmix = cropmix,
+                                    gainthreshold = gainthreshold, rankmethod = rankmethod,
+                                    allocationrule = allocationrule, thresholdtype = thresholdtype,
+                                    accessibilityrule = accessibilityrule,
+                                    efrMethod = efrMethod,
+                                    irrigationsystem = irrigationsystem,
+                                    landScen = landScen,
+                                    potential_wat = potential_wat, com_ag = com_ag,
+                                    multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
 
     } else {
 
-      x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, gainthreshold = gainthreshold,
-                                    selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                    efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                    thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear,
-                                    landScen = landScen, cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
+      x <- collapseNames(calcOutput("WaterPotUse",
+                                    iniyear = iniyear, selectyears = selectyears,
+                                    lpjml = lpjml, climatetype = climatetype,
+                                    yieldcalib = yieldcalib, cropmix = cropmix,
+                                    gainthreshold = gainthreshold, rankmethod = rankmethod,
+                                    allocationrule = allocationrule, thresholdtype = thresholdtype,
+                                    accessibilityrule = accessibilityrule,
+                                    efrMethod = efrMethod,
+                                    irrigationsystem = irrigationsystem,
+                                    landScen = landScen, com_ag = com_ag,
+                                    multicropping = multicropping, aggregate = FALSE)[, , output])
       x <- x / 1000
 
     }
@@ -119,7 +132,8 @@ reportEconOfIrrig <- function(region = "GLO", output, GT_range, scenario, lpjml,
     df               <- merge(df, tmp)
   }
 
-  df        <- data.frame(t(data.frame(Scen = paste(output, df$EFP, df$Scen, sep = "."), df[-c(1, 2)])), stringsAsFactors = FALSE)
+  df        <- data.frame(t(data.frame(Scen = paste(output, df$EFP, df$Scen, sep = "."),
+                                       df[-c(1, 2)])), stringsAsFactors = FALSE)
   names(df) <- as.character(unlist(df[1, ]))
   df        <- df[-1, ]
   df        <- data.frame(GT = as.numeric(gsub("GT", "", rownames(df))), df, stringsAsFactors = FALSE)

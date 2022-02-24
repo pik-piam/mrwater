@@ -40,8 +40,8 @@ calcWaterUseCommittedAg <- function(lpjml, climatetype, selectyears, iniyear,
   }
 
   # Committed agricultural uses (in mio. m^3 per year)
-  comAg           <- dimSums(irrigReq * grownCrops,
-                             dim = "season")
+  comAg <- dimSums(irrigReq * grownCrops,
+                   dim = "season")
 
   return(list(x            = comAg,
               weight       = NULL,
