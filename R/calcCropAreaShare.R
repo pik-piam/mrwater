@@ -60,8 +60,9 @@ calcCropAreaShare <- function(iniyear, cropmix) {
     # equal crop area share for each proxycrop assumed
     cropareaShr              <- new.magpie(cells_and_regions = getCells(croparea),
                                            years = NULL,
-                                           names = cropmix,
-                                           sets = c("x.y.iso", "t", "data"))
+                                           names = getNames(collapseNames(croparea[, , "irrigated"])),
+                                           sets = c("x.y.iso", "t", "crop"),
+                                           fill = 0)
     cropareaShr[, , cropmix] <- 1 / length(cropmix)
   }
 

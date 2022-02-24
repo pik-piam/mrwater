@@ -7,7 +7,7 @@
 reportEconOfIrrig(
   region = "GLO",
   output,
-  GT_range,
+  gtRange,
   scenario,
   lpjml,
   iniyear,
@@ -32,7 +32,7 @@ reportEconOfIrrig(
 
 \item{output}{output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"}
 
-\item{GT_range}{range of x-axis (gainthreshold) to be depicted on the curve}
+\item{gtRange}{range of x-axis (gainthreshold) to be depicted on the curve}
 
 \item{scenario}{non-agricultural water use scenario to be displayed in plot}
 
@@ -85,7 +85,7 @@ reports potentially irrigated area depending on gainthreshold,
 }
 \examples{
 \dontrun{
-reportEconOfIrrig(GT_range = seq(0, 10000, by = 100), scenario = "ssp2")
+reportEconOfIrrig(gtRange = seq(0, 10000, by = 100), scenario = "ssp2")
 }
 
 }
