@@ -15,8 +15,7 @@
 #'
 #' @importFrom utils read.csv
 #' @importFrom madrat readSource
-#' @importFrom magclass getSets getCells collapseDim
-#' @importFrom magpiesets addLocation
+#' @importFrom magclass getSets getCells collapseDim new.magpie dimSums
 
 calcIrrigationSystem <- function(datasource) {
 
@@ -75,7 +74,7 @@ calcIrrigationSystem <- function(datasource) {
 
   return(list(x            = x,
               weight       = NULL,
-              unit         = "1",
+              unit         = "share",
               description  = "irrigation system share (share of irrigated area)",
               isocountries = FALSE))
 }

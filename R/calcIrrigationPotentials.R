@@ -75,11 +75,14 @@ calcIrrigationPotentials <- function(output, selectyears, iniyear, lpjml, climat
     # (1 mio. = 1e+06)
     x <- x / 1000
 
-    w <- NULL
-    d <- "Potential irrigation water"
-    u <- "km^3"
+    w       <- NULL
+    d       <- paste0("Potential irrigation water",
+                      ifelse(grepl("_ww", output), " (withdrawal)", " (consumption)"))
+    u       <- "km^3"
 
   }
+
+  x <- toolLPJcell2MAgPIEcell(x)
 
   return(list(x            = x,
               weight       = w,

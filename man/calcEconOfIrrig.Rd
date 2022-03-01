@@ -50,16 +50,24 @@ discharge that is exceeded x percent of the time on average throughout a year
 (Qx, e.g. Q75: 0.25, Q50: 0.5)
 or base value for exponential curve separated by : (CV:2)}
 
-\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{rankmethod}{Rank and optimization method consisting of
+Unit according to which rank is calculated:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return;
+and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 If FALSE: uncalibrated LPJmL yields are used}
 
-\item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
+\item{allocationrule}{Rule to be applied for river basin discharge allocation
+across cells of river basin ("optimization", "upstreamfirst", "equality")}
 
-\item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
+\item{thresholdtype}{TRUE: monetary yield gain (USD05/ha),
+FALSE: yield gain in tDM/ha}
 
-\item{irrigationsystem}{Irrigation system to be used for river basin discharge allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
+\item{irrigationsystem}{Irrigation system used
+("surface", "sprinkler", "drip", "initialization")}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
@@ -72,7 +80,8 @@ or do not specify second part of the argument}
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
 
-\item{potential_wat}{if TRUE: potential available water and areas used, if FALSE: currently reserved water on current irrigated cropland used}
+\item{potential_wat}{if TRUE: potential available water and areas used,
+if FALSE: currently reserved water on current irrigated cropland used}
 
 \item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
