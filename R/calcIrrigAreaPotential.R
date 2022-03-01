@@ -1,4 +1,4 @@
-#' @title       calcIrrigatableArea
+#' @title       calcIrrigAreaPotential
 #' @description Calculates area that can potentially be irrigated given
 #'              available water and land
 #'
@@ -49,13 +49,13 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("IrrigatableArea", aggregate = FALSE)
+#' calcOutput("IrrigAreaPotential", aggregate = FALSE)
 #' }
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames add_dimension add_columns mbind
 
-calcIrrigatableArea <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
+calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
                                 accessibilityrule, rankmethod, yieldcalib, allocationrule,
                                 thresholdtype, gainthreshold, irrigationsystem, landScen,
                                 cropmix, potential_wat, com_ag, multicropping) {
@@ -63,7 +63,7 @@ calcIrrigatableArea <- function(lpjml, selectyears, iniyear, climatetype, efrMet
   ## Read in water available for irrigation
   if (potential_wat) {
 
-    avlWat         <- calcOutput("WaterPotUse", selectyears = selectyears,
+    avlWat         <- calcOutput("WaterUsePotential", selectyears = selectyears,
                                   lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
                                   accessibilityrule = accessibilityrule, rankmethod = rankmethod,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,

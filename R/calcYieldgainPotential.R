@@ -81,7 +81,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
   } else {
 
     # Area that can potentially be irrigated given land and water constraints
-    area <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = gainthreshold,
+    area <- collapseNames(calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
                                      selectyears = selectyears, iniyear = iniyear,
                                      climatetype = climatetype, lpjml = lpjml,
                                      accessibilityrule = accessibilityrule, efrMethod = efrMethod,

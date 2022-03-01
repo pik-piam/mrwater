@@ -19,9 +19,8 @@
 #' calcOutput("ActualIrrigWatRequirements", aggregate = FALSE)
 #' }
 #'
-#' @importFrom magclass dimSums collapseNames getCells getSets
+#' @importFrom magclass dimSums collapseNames
 #' @importFrom madrat calcOutput
-#' @importFrom mrcommons toolGetMappingCoord2Country
 
 calcActualIrrigWatRequirements <- function(selectyears, iniyear,
                                            lpjml, climatetype, multicropping) {

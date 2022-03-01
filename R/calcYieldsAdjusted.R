@@ -18,9 +18,8 @@
 #' calcOutput("YieldsAdjusted", aggregate = FALSE)
 #' }
 #'
-#' @importFrom madrat calcOutput toolAggregate
-#' @importFrom magclass collapseNames getNames getCells getSets dimSums add_dimension
-#' @importFrom mrcommons toolGetMappingCoord2Country
+#' @importFrom madrat calcOutput
+#' @importFrom magclass getSets add_dimension
 
 calcYieldsAdjusted <- function(lpjml, climatetype,
                                iniyear, selectyears,

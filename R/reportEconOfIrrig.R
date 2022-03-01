@@ -56,7 +56,7 @@ reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, 
 
   if (output == "IrrigArea") {
 
-    x <- collapseNames(calcOutput("IrrigatableArea", gainthreshold = 0,
+    x <- collapseNames(calcOutput("IrrigAreaPotential", gainthreshold = 0,
                                   lpjml = lpjml, climatetype = climatetype,
                                   selectyears = selectyears, iniyear = iniyear,
                                   accessibilityrule = accessibilityrule,
@@ -68,11 +68,15 @@ reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, 
 
   } else {
 
-    x <- collapseNames(calcOutput("WaterPotUse",     lpjml = lpjml, gainthreshold = 0,
-                                  selectyears = selectyears, climatetype = climatetype, accessibilityrule = accessibilityrule,
-                                  efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                  thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear, landScen = landScen,
-                                  cropmix = cropmix, com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)[, , output])
+    x <- collapseNames(calcOutput("WaterUsePotential", gainthreshold = 0,
+                                  lpjml = lpjml, climatetype = climatetype,
+                                  selectyears = selectyears, iniyear = iniyear,
+                                  accessibilityrule = accessibilityrule, efrMethod = efrMethod,
+                                  rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                  thresholdtype = thresholdtype, allocationrule = allocationrule,
+                                  irrigationsystem = irrigationsystem, landScen = landScen,
+                                  cropmix = cropmix, com_ag = com_ag,
+                                  multicropping = multicropping, aggregate = FALSE)[, , output])
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)
     # (1 mio. = 1e+06)
@@ -94,7 +98,7 @@ reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, 
 
     if (output == "IrrigArea") {
 
-      x <- collapseNames(calcOutput("IrrigatableArea",
+      x <- collapseNames(calcOutput("IrrigAreaPotential",
                                     iniyear = iniyear, selectyears = selectyears,
                                     lpjml = lpjml, climatetype = climatetype,
                                     yieldcalib = yieldcalib, cropmix = cropmix,
@@ -109,7 +113,7 @@ reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, 
 
     } else {
 
-      x <- collapseNames(calcOutput("WaterPotUse",
+      x <- collapseNames(calcOutput("WaterUsePotential",
                                     iniyear = iniyear, selectyears = selectyears,
                                     lpjml = lpjml, climatetype = climatetype,
                                     yieldcalib = yieldcalib, cropmix = cropmix,

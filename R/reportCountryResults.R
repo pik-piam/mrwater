@@ -77,7 +77,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getNames(currLUH) <- "irrig_area_LUH"
 
     # Currently Irrigated Area [total, sustainable, unsustainable]
-    currIrr <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
+    currIrr <- collapseNames(calcOutput("IrrigAreaPotential", lpjml = lpjml,
                                         gainthreshold = gainthreshold,
                                         selectyears = selectyears, iniyear = iniyear,
                                         climatetype = climatetype, accessibilityrule = accessibilityrule,
@@ -97,7 +97,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getNames(currIrrTot)   <- "curr_irrig_tot"
 
     # Potentially Irrigated Area (on current Cropland) [total, sustainable, unsustainable]
-    potIrrcurr <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
+    potIrrcurr <- collapseNames(calcOutput("IrrigAreaPotential", lpjml = lpjml,
                                            gainthreshold = gainthreshold,
                                            selectyears = selectyears, iniyear = iniyear,
                                            climatetype = climatetype, accessibilityrule = accessibilityrule,
@@ -117,7 +117,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getNames(potIrrcurrTot)   <- "curr_irrig_currCropland_tot"
 
     # Potentially Irrigated Area (on potential Cropland) [total, sustainable, unsustainable]
-    potIrrpot <- collapseNames(calcOutput("IrrigatableArea", lpjml = lpjml,
+    potIrrpot <- collapseNames(calcOutput("IrrigAreaPotential", lpjml = lpjml,
                                           gainthreshold = gainthreshold,
                                           selectyears = selectyears, iniyear = iniyear,
                                           climatetype = climatetype, accessibilityrule = accessibilityrule,
@@ -179,7 +179,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getNames(currIrrTot)   <- "curr_irrig_tot"
 
     # Potential Irrigation Water (on current Cropland) [total, sustainable, unsustainable]
-    potIrrcurr <- collapseNames(calcOutput("WaterPotUse", lpjml = lpjml,
+    potIrrcurr <- collapseNames(calcOutput("WaterUsePotential", lpjml = lpjml,
                                            gainthreshold = gainthreshold, selectyears = selectyears,
                                            climatetype = climatetype, accessibilityrule = accessibilityrule,
                                            efrMethod = efrMethod, rankmethod = rankmethod,
@@ -197,7 +197,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
     getNames(potIrrcurrTot)   <- "curr_irrig_currCropland_tot"
 
     # Potentially Irrigated Area (on potential Cropland) [total, sustainable, unsustainable]
-    potIrrpot <- collapseNames(calcOutput("WaterPotUse", lpjml = lpjml,
+    potIrrpot <- collapseNames(calcOutput("WaterUsePotential", lpjml = lpjml,
                                           climatetype = climatetype, selectyears = selectyears,
                                           gainthreshold = gainthreshold, accessibilityrule = accessibilityrule,
                                           efrMethod = efrMethod, rankmethod = rankmethod, yieldcalib = yieldcalib,

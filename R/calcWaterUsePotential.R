@@ -1,4 +1,4 @@
-#' @title       calcWaterPotUse
+#' @title       calcWaterUsePotential
 #' @description This function returns the potential water quantity
 #'              available for different uses
 #'
@@ -43,18 +43,17 @@
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears add_dimension new.magpie
-#' @importFrom stringr str_split
+#' @importFrom magclass collapseNames getNames getCells mbind add_dimension new.magpie
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("WaterPotUse", aggregate = FALSE)
+#' calcOutput("WaterUsePotential", aggregate = FALSE)
 #' }
 #'
-calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
+calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             thresholdtype, gainthreshold, irrigationsystem, iniyear,
                             landScen, cropmix, com_ag, multicropping) {
@@ -65,7 +64,7 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
   }
 
   # Water potentially available for irrigation (accounting for previously committed agricultural uses)
-  watAvlAg    <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
+  watAvlAg  <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
                                         output = "potIrrigWat", selectyears = selectyears,
                                         lpjml = lpjml, climatetype = climatetype,
                                         efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -124,7 +123,7 @@ calcWaterPotUse <- function(lpjml, selectyears, climatetype, efrMethod,
   watTotWW <- add_dimension(watTotWW, dim = 3.4, add = "type", nm = "wat_tot_ww")
   watTotWC <- add_dimension(watTotWC, dim = 3.4, add = "type", nm = "wat_tot_wc")
 
-  out <- mbind(watAgWW, watAgWC, watTotWW, watTotWC)
+  out          <- mbind(watAgWW, watAgWC, watTotWW, watTotWC)
   getSets(out) <- c("x", "y", "iso", "year", "EFP", "scen", "type")
 
   return(list(x            = out,

@@ -359,7 +359,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              aggregate = FALSE,
              file = "nonAguses.mz")
   # Irrigatable areas with committed agricultural uses
-  calcOutput("IrrigatableArea", selectyears = selectyears, iniyear = iniyear,
+  calcOutput("IrrigAreaPotential", selectyears = selectyears, iniyear = iniyear,
              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
              accessibilityrule = accessibilityrule, rankmethod = rankmethod,
              yieldcalib = yieldcalib, allocationrule = allocationrule,

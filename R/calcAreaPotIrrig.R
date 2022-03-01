@@ -72,8 +72,10 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
   # No irrigation in protected areas (if protection scenario is activated) [in mio. ha]
   if (!is.na(protectSCEN)) {
+
     # read in protected area of selected scenario
-    protectArea <- collapseNames(calcOutput("ProtectArea", cells = "lpjcell", aggregate = FALSE)[, , protectSCEN])
+    protectArea <- collapseNames(calcOutput("ProtectArea", cells = "lpjcell",
+                                            aggregate = FALSE)[, , protectSCEN])
 
     # total land area (Note: constant over the years.)
     landarea <- setYears(collapseNames(dimSums(readSource("LUH2v2", subtype = "states",
