@@ -17,7 +17,6 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
 #' @importFrom stringr str_split
-#' @import mrmagpie
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke

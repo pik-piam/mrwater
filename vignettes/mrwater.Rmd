@@ -33,7 +33,6 @@ library(madrat)
 library(magclass)
 library(mrcommons)
 library(mrland)
-library(mrmagpie)
 ```
 
 ### Input data
@@ -47,7 +46,7 @@ folder must have the same name as the ``readSource`` function
 (e.g. readRamankutty refers to the inputdata/sources/Ramankutty folder).
 The read functions of this library and the underlying libraries necessary to
 run the code (e.g. ``mrwater:::readIrrigationSystem``; ``mrcommons:::readFAO``;
-``mrmagpie:::readZabel2014``) access this folder to include the required data.
+``mrland:::readZabel2014``) access this folder to include the required data.
 
 
 ## Motivation

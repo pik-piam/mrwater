@@ -44,9 +44,24 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
   # extract magpie crops
   croplist  <- getNames(collapseNames(yields[, , "irrigated"][, , "first"]))
 
-  # read in crop output price in initialization year (USD05/tDM)
-  p         <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
-                          years = NULL, year = iniyear, aggregate = FALSE)[, , croplist]
+  # read in global average crop output price averaging price fluctuations
+  # around the initialization year (USD05/tDM)
+  if (class(iniyear) == "character") {
+    iniyear <- as.numeric(gsub("y", "", iniyear))
+  }
+  avgYears <- c((iniyear - 2):(iniyear + 2))
+  p        <- NULL
+  for (i in avgYears) {
+    tmp <- setYears(calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
+                     years = NULL, year = i, aggregate = FALSE)[, , croplist], i)
+    p   <- mbind(p, tmp)
+  }
+  p <- dimSums(p, dim = "year") / length(getYears(p))
+
+  # @KRISTINE/BENNI:
+  # - take price of ini year?
+  # - take average of pervious 3-5 years?
+  # - take average around ini year?
 
   # Unit of yield gain to be returned
   if (unit == "tDM") {
