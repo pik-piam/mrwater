@@ -4,7 +4,13 @@
 \alias{calcBlueWaterConsumption}
 \title{calcBlueWaterConsumption}
 \usage{
-calcBlueWaterConsumption(selectyears, lpjml, climatetype, multicropping)
+calcBlueWaterConsumption(
+  selectyears,
+  lpjml,
+  climatetype,
+  fallowFactor = 0.75,
+  output
+)
 }
 \arguments{
 \item{selectyears}{Years to be returned}
@@ -13,7 +19,15 @@ calcBlueWaterConsumption(selectyears, lpjml, climatetype, multicropping)
 
 \item{climatetype}{Climate model or historical baseline "GSWP3-W5E5:historical"}
 
-\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
+\item{fallowFactor}{Factor determining water requirement reduction in off season due to
+fallow period between harvest of first (main) season and
+sowing of second (off) season}
+
+\item{output}{output to be returned by the function: combination of
+crop type ("crops" or "grass") and
+season ("main" (LPJmL growing period), "year" (entire year)),
+separated by ":"
+("crops:main", "crops:year", "grass:main", "grass:year")}
 }
 \value{
 magpie object in cellular resolution
@@ -30,5 +44,5 @@ calcOutput("BlueWaterConsumption", aggregate = FALSE)
 
 }
 \author{
-Felicitas Beier, Jens Heinke
+Felicitas Beier
 }

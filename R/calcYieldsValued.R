@@ -49,19 +49,18 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
   if (class(iniyear) == "character") {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
-  avgYears <- c((iniyear - 2):(iniyear + 2))
-  p        <- NULL
+  avgYears <- c((iniyear - 1):(iniyear + 2))
+  i        <- iniyear - 2
+  p        <- setYears(calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
+                                  years = NULL, year = i, aggregate = FALSE)[, , croplist], i)
   for (i in avgYears) {
     tmp <- setYears(calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
-                     years = NULL, year = i, aggregate = FALSE)[, , croplist], i)
+                                years = NULL, year = i, aggregate = FALSE)[, , croplist], i)
     p   <- mbind(p, tmp)
   }
-  p <- dimSums(p, dim = "year") / length(getYears(p))
+  p <- dimSums(p, dim = "Year") / length(getItems(p, dim = 2))
 
-  # @KRISTINE/BENNI:
-  # - take price of ini year?
-  # - take average of pervious 3-5 years?
-  # - take average around ini year?
+  # @KRISTINE: better way to average over IniFoodPrice (problem: can only read in one year at a time...)
 
   # Unit of yield gain to be returned
   if (unit == "tDM") {

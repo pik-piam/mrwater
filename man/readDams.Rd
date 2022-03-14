@@ -13,9 +13,8 @@ List of magpie objects with results on cellular level, weight, unit and descript
 Read dam file (no source information available)
 }
 \examples{
-
 \dontrun{
-  readSource("Dams", convert="onlycorrect")
+readSource("Dams", convert = "onlycorrect")
 }
 
 }

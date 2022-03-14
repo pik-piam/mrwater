@@ -6,240 +6,131 @@
 #' @param selectyears   Years to be returned
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Climate model or historical baseline "GSWP3-W5E5:historical"
-#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
+#' @param fallowFactor  Factor determining water requirement reduction in off season due to
+#'                      fallow period between harvest of first (main) season and
+#'                      sowing of second (off) season
+#' @param output        output to be returned by the function: combination of
+#'                      crop type ("crops" or "grass") and
+#'                      season ("main" (LPJmL growing period), "year" (entire year)),
+#'                      separated by ":"
+#'                      ("crops:main", "crops:year", "grass:main", "grass:year")
 #'
 #' @return magpie object in cellular resolution
-#' @author Felicitas Beier, Jens Heinke
+#' @author Felicitas Beier
 #'
 #' @examples
 #' \dontrun{
 #' calcOutput("BlueWaterConsumption", aggregate = FALSE)
 #' }
 #'
-#' @importFrom magclass collapseNames collapseDim getYears getCells getNames new.magpie add_dimension
-#' @importFrom madrat calcOutput toolAggregate toolGetMapping
-#' @importFrom mrcommons toolCell2isoCell
+#' @importFrom magclass collapseNames setYears getSets
+#' @importFrom madrat calcOutput
+#' @importFrom stats lm
 
-calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype, multicropping) {
+calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
+                                     fallowFactor = 0.75, output) {
 
-  ##############################
-  ######## Read in data ########
-  ##############################
-  # Monthly grass evapotranspiration (ET) under irrigation
-  grassET_ir <- calcOutput("LPJmL_new", subtype = "met_grass_ir",
-                           version = lpjml["crop"], climatetype = climatetype,
-                           stage = "raw", years = selectyears,
-                           aggregate = FALSE)
-  # ToDo change stage!!! (only raw until I have full LPJmL runs!!!)
-  #### @KRISTINE: stage: smoothed or harmonized2020???
+  ####################
+  ### Read in data ###
+  ####################
+  # Grass ET in the entire year (main + off season) (in m^3/ha)
+  grassETannual <- calcOutput("GrassET", season = "wholeYear",
+                               lpjml = lpjml, climatetype = climatetype,
+                               selectyears = selectyears, aggregate = FALSE)
 
-  # Monthly grass ET under rainfed conditions
-  grassET_rf <- calcOutput("LPJmL_new", subtype = "met_grass_rf",
-                           version = lpjml["crop"], climatetype = climatetype,
-                           stage = "raw", years = selectyears,
-                           aggregate = FALSE)
-  # ToDo change stage!!! (only raw until I have full LPJmL runs!!!)
+  # Grass ET in the growing period of LPJmL (main season) (in m^3/ha)
+  grassETgrper  <- calcOutput("GrassET", season = "mainSeason",
+                               lpjml = lpjml, climatetype = climatetype,
+                               selectyears = selectyears, aggregate = FALSE)
 
-  # Irrigated grass ET in rainfed/irrigated growing period of crop
-  cft_et_grass_ir <- calcOutput("LPJmL_new", subtype = "cft_et_grass_ir",
-                           version = lpjml["crop"], climatetype = climatetype,
-                           stage = "raw", years = selectyears,
-                           aggregate = FALSE)
-  # ToDo change stage!!! (only raw until I have full LPJmL runs!!!)
+  # Cells that are suitable for multiple cropping under irrigated/rainfed conditions
+  suitMC <- calcOutput("MulticroppingYieldIncrease", output = "multicroppingSuitability",
+                       lpjml = lpjml["crop"],
+                       climatetype = "GSWP3-W5E5:historical", ###ToDo: Switch to flexible climatetype argument (once LPJmL runs are ready)
+                       selectyears = selectyears,
+                       aggregate = FALSE)
 
-  # Rainfed grass ET in rainfed/irrigated growing period of crop
-  cft_et_grass_rf <- calcOutput("LPJmL_new", subtype = "cft_et_grass_rf",
+  # Crop blue water consumption in growing period (main season)
+  bwc1st <- collapseNames(setYears(calcOutput("LPJmL_new", subtype = "cwater_b",
                                 version = lpjml["crop"], climatetype = climatetype,
-                                stage = "raw", years = selectyears,
-                                aggregate = FALSE)
-  # ToDo change stage!!! (only raw until I have full LPJmL runs!!!)
+                                stage = "smoothed", years = selectyears,
+                                aggregate = FALSE),
+                     selectyears)[, , "irrigated"])
+  getSets(bwc1st)["d3.1"] <- "crop"
 
 
+  ####################
+  ### Calculations ###
+  ####################
+  # Delta ET (irrigated ET - rainfed ET) as proxy for blue water consumption (BWC)
+  # of grass throughout the whole year
+  annualBWCgrass <- grassETannual[, , "irrigated"] - grassETannual[, , "rainfed"]
 
-  ##############################
-  ######## Calculations ########
-  ##############################
-  # Annual grass ET
-  grassET_ir <- dimSums(grassET_ir, dim = 3)
-  grassET_rf <- dimSums(grassET_rf, dim = 3)
+  # Delta ET (irrigated ET - rainfed ET) as proxy for BWC
+  # of grass in growing period
+  grperBWCgrass <- grassETgrper[, , "irrigated"] - grassETgrper[, , "rainfed"]
 
-  # Delta ET (irrigated ET - rainfed ET) as proxy for blue water consumption of grass
-  delta_grassET_annual <- grassET_ir - grassET_rf
+  # Calculate grass BWC in off season where multiple cropping is suitable
+  grassBWC2nd <- (annualBWCgrass - grperBWCgrass) * fallowFactor * suitMC
 
-# temporary
-  out <- delta_grassET_annual
+  # Relationship between derived grass BWC in growing period of crop and crop BWC
+  # (Linear model with intercept at 0)
+  coeff <- lm(y ~ x + 0, data = data.frame(y = as.vector(bwc1st),
+                                           x = as.vector(grperBWCgrass)))$coefficients[1]
 
-#
-#
-#   ### Water requirements ###
-#
-#
-#   # Delta AET as proxy for blue water consumption
-#   # growing period grass ET
-#   delta_cft_et_grass <- data.cft_et_grass[,,"ir"] - data.cft_et_grass[,,"rf"]
-#   # annual grass ET
-#   delta_aet_grass    <- data.aet_grass[,,"ir"] - data.aet_grass[,,"rf"]
-#
-#   jpeg(filename = paste0(outputdir, "/ScatterIrrigatedET_", cft, ".jpeg"))
-#   plot(x = delta_cft_et_grass, y = data.cft_bcons,
-#        pch = 19, cex = 0.2,
-#        xlab = "Delta ET grass (irr ET - rf ET)", ylab = paste0("Blue water consumption of ", cft),
-#        main = paste0("RSE: ", round(summary(lm(as.vector(data.cft_bcons) ~ as.vector(delta_cft_et_grass) + 0))$sigma, digits = 2)),
-#        sub = paste0("Adj. R-squared: ", round(summary(lm(as.vector(data.cft_bcons) ~ as.vector(delta_cft_et_grass) + 0))$adj.r.squared, digits = 2)))
-#   abline(lm(as.vector(data.cft_bcons) ~ as.vector(delta_cft_et_grass) + 0),
-#          col = "blue", main = "fitted")
-#   dev.off()
-#
-#   # Calculate crop water use
-#   cft_et_grass_2nd <- ifelse(data.cft_gpp_grass_ir[,,"ir"]>100 & data.agpp_grass[,,"ir"]/data.cft_gpp_grass_ir[,,"ir"]>2,
-#                              0.75 * (delta_aet_grass - delta_cft_et_grass),
-#                              0)
-#
-#   et_grass_to_cft_bcons <- lm(y ~ x + 0, data = data.frame(y = as.vector(data.cft_bcons),
-#                                                            x = as.vector(delta_cft_et_grass)))$coefficients[1]
-#
-#   cft_bcons_2nd <- et_grass_to_cft_bcons * cft_et_grass_2nd
-#
-#   cft_bcons_1st   <- data.cft_bcons
-#   cft_bcons_total <- cft_bcons_1st + cft_bcons_2nd
-#
-#
-#   jpeg(filename = paste0(outputdir, "/BWCmain_", cft, ".jpeg"))
-#   image.plot(cft_bcons_1st,
-#              main = paste0("Blue water consumption (main season) for ", cft),
-#              legend.lab = "liter/m^2")
-#   dev.off()
-#
-#   jpeg(filename = paste0(outputdir, "/BWCtotal_", cft, ".jpeg"))
-#   image.plot(cft_bcons_total,
-#              main = paste0("Blue water consumption (whole year) for ", cft),
-#              legend.lab = "liter/m^2")
-#   dev.off()
-#
-#
-#
-#
-#
-#   ## Evapotranspiration ##
-#   subtype <- "LPJmL4_for_MAgPIE_44ac93de:GSWP3-W5E5:historical:met_grass_ir"
-#   mgpp_et_ir <- readSource("LPJmL_new", subtype = subtype, convert = FALSE)
-#
-#   subtype <- "LPJmL4_for_MAgPIE_44ac93de:GSWP3-W5E5:historical:met_grass_rf"
-#   mgpp_et_rf <- readSource("LPJmL_new", subtype = subtype, convert = FALSE)
-#
-#
-#   subtype <- "LPJmL4_for_MAgPIE_44ac93de:GSWP3-W5E5:historical:cft_et_grass_ir"
-#   cft_et_grass_ir <- readSource("LPJmL_new", subtype = subtype, convert = FALSE)
-#
-#   subtype <- "LPJmL4_for_MAgPIE_44ac93de:GSWP3-W5E5:historical:cft_et_grass_rf"
-#   cft_et_grass_rf <- readSource("LPJmL_new", subtype = subtype, convert = FALSE)
-#
-#
-#
-#
-#
-#
-#   ### Mappings
-#   lpj2mag <- toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
-#
-#   ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr):
-#   bwc <- collapseNames(setYears(calcOutput("LPJmL_new", subtype = "cwater_b",
-#                                             version = lpjml["crop"], climatetype = climatetype, stage = "smoothed",
-#                                             aggregate = FALSE, years = selectyears),
-#                                 selectyears))
-#   names(dimnames(bwc))[3] <- "crop"
-#   years                   <- getYears(bwc)
-#   cropnames               <- getNames(bwc)
-#   systemnames             <- c("drip", "sprinkler", "surface")
-#
-#   # Seasonality dimension
-#   bwc   <- add_dimension(bwc, dim = 3.2, add = "season", nm = c("first", "second"))
-#
-#   if (multicropping) {
-#
-#     # Reduce to areas where multicropping is relevant based on Multiple Cropping Zones
-#     mc <- calcOutput("MultipleCroppingZones", layers = 2, aggregate = FALSE)
-#     mc <- collapseNames(mc[, , "irrigated"])
-#
-#     # Irrigation water requirements of main-season ("first") and off-season ("second"):
-#     ratio <- calcOutput("MultipleCroppingWatRatio", selectyears = selectyears,
-#                         lpjml = lpjml, climatetype = climatetype, aggregate = FALSE)
-#     bwc[, , "second"] <- bwc[, , "second"] * ratio * mc
-#
-#   } else {
-#
-#     bwc[, , "second"] <- 0
-#
-#   }
-#
-#   ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
-#   #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-#   ### Alternatively: use regional efficiencies from Sauer et al. (2010), Table 5,
-#   fieldEff                <- new.magpie(cells_and_regions =  getCells(bwc),
-#                                         years = years,
-#                                         names = sort(paste(systemnames, rep(cropnames, 3), sep = ".")),
-#                                         sets = c("x.y.iso", "year", "system.crop"))
-#   fieldEff[, , "drip"]      <- 0.88 # Sauer: 0.8-0.93
-#   fieldEff[, , "sprinkler"] <- 0.78 # Sauer: 0.6-0.86
-#   fieldEff[, , "surface"]   <- 0.52 # Sauer: 0.25-0.5
-#   #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-#
-#   ### Conveyance efficiency proxy [placeholder]
-#   #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-#   convEff                <- new.magpie(cells_and_regions = getCells(bwc),
-#                                        years = years,
-#                                        names = sort(paste(systemnames, rep(cropnames, 3), sep = ".")),
-#                                        sets = c("x.y.iso", "year", "system.crop"))
-#   convEff[, , "drip"]      <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
-#   convEff[, , "sprinkler"] <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
-#   convEff[, , "surface"]   <- 0.7
-#   #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-#
-#   ##############################
-#   ######## Calculations ########
-#   ##############################
-#
-#   # Calculate project efficiency from given field and conveyance efficiencies
-#   projectEff <- fieldEff * convEff
-#
-#   # Water withdrawal = crop water consumption + field losses + conveyance losses
-#   watWW      <- bwc / projectEff
-#
-#   # Conveyance loss (from river to field)
-#   convLoss   <- watWW * (1 - convEff)
-#
-#   # consumptive irrigation water = consumptive plant transpiration + evaporative conveyance loss
-#   # (Note: According to Rost et al. (2008) 50% of conveyance loss are evaporative)
-#   # ["Half of conveyance losses are assumed to occur due to evaporation from open
-#   # water bodies and the remainder is added to the return flow as drainage." (Schaphoff 2018)]
-#   watWC      <- bwc + 0.5 * convLoss
-#
-#   # Output: irrigation water requirements (consumption and withdrawals)
-#   irrigReq   <- new.magpie(cells_and_regions = getCells(watWC),
-#                            years = getYears(watWC),
-#                            names = getNames(watWC),
-#                            sets = c("x.y.iso", "year", "crop.season.system"))
-#   irrigReq <- add_dimension(irrigReq, dim = 3.4, add = "irrig_type", nm = c("consumption", "withdrawal"))
-#   irrigReq[, , "consumption"] <- watWC
-#   irrigReq[, , "withdrawal"]  <- watWW
-#
-#   # Aggregate to MAgPIE crops
-#   irrigReq  <- toolAggregate(irrigReq, lpj2mag, from = "LPJmL", to = "MAgPIE",
-#                              dim = "crop", partrel = TRUE)
-#
-#   # Check for NAs and negative values
-#   if (any(is.na(irrigReq))) {
-#     stop("produced NA irrigation water requirements")
-#   }
-#   if (any(irrigReq < 0)) {
-#     stop("produced negative irrigation water requirements")
-#   }
+  # crop blue water consumption in off season
+  bwc2nd   <- coeff * grassBWC2nd
+  bwcTotal <- bwc1st + bwc2nd
+
+
+  ##############
+  ### Return ###
+  ##############
+  description <- "Blue water consumption of "
+  unit        <- " m^3/ha per year"
+
+  if (output == "crops:main") {
+
+    # main season BWC for crops (single cropping case)
+    out         <- bwc1st
+    description <- paste0(description, " crops in LPJmL growing period")
+
+  } else if (output == "grass:main") {
+
+    out         <- grperBWCgrass
+    description <- paste0(description, " grass in LPJmL growing period of crops")
+
+
+  } else if (output == "crops:year") {
+
+    out         <- bwcTotal
+    description <- paste0(description, " crops throughout the entire year")
+
+
+  } else if (output == "grass:year") {
+
+    out         <- annualBWCgrass
+    description <- paste0(description, " grass throughout the entire year")
+
+
+  } else {
+    stop("Please select valid output type for calcBlueWaterConsumption:
+         crops:main, grass:main, crops:year, grass:year")
+  }
+
+  ##############
+  ### Checks ###
+  ##############
+  if (any(is.na(out))) {
+    stop("produced NA irrigation water requirements")
+  }
+  if (any(out < 0)) {
+    stop("produced negative irrigation water requirements")
+  }
 
   return(list(x            = out,
               weight       = NULL,
-              unit         = "m^3 per ha per yr",
-              description  = "Irrigation water requirements for irrigation for
-                              different crop types in different seasons
-                              under different irrigation systems",
+              unit         = unit,
+              description  = description,
               isocountries = FALSE))
 }
