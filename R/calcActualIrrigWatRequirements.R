@@ -25,7 +25,7 @@
 calcActualIrrigWatRequirements <- function(selectyears, iniyear,
                                            lpjml, climatetype, multicropping) {
 
-  # irrigation water requirement per crop per system per season (in m^3 per ha per yr)
+  # irrigation water requirement per crop per system (in m^3 per ha per yr)
   irrigReq   <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                            lpjml = lpjml,  climatetype = climatetype,
                            multicropping = multicropping, aggregate = FALSE)
@@ -48,8 +48,8 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
   }
 
   # Weight: irrigated area (only used for aggregation)
-  irrigArea <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                          aggregate = FALSE)[, , "first"])
+  irrigArea <- calcOutput("CropareaAdjusted", iniyear = iniyear,
+                           aggregate = FALSE)
 
   # Small additive term to account for places with 0 irrigated area
   irrigArea <- collapseNames(irrigArea[, , "irrigated"]) + 1e-9

@@ -1,6 +1,6 @@
 #' @title       calcPotentialIrrigWatRequirements
 #' @description This function calculates actual irrigation water requirements
-#'              per cell and season given a certain irrigation system
+#'              per cell given a certain irrigation system
 #'
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years to be returned
@@ -42,7 +42,7 @@ calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
   rankmethod        <- "USD_ha:TRUE"
   thresholdtype     <- "USD_ha"
 
-  # irrigation water requirement per crop per system per season (in m^3 per ha per yr)
+  # irrigation water requirement per crop per system (in m^3 per ha per yr)
   irrigReq   <- collapseNames(calcOutput("IrrigWatRequirements", selectyears = selectyears,
                            lpjml = lpjml,  climatetype = climatetype,
                            multicropping = multicropping, aggregate = FALSE)[, , irrigwattype])
@@ -57,17 +57,6 @@ calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
   # total irrigation water requirements per crop given irrigation system share (in m^3 per ha per yr)
   irrigReq       <- dimSums(irrigSystemShr * irrigReq,
                             dim = "system")
-
-  # sum over seasons
-  if (multicropping) {
-    ### HERE: include multiple cropping mask (?????) ###
-    irrigReq <- dimSums(irrigReq, dim = "season")
-  } else {
-
-    # irrigation water requirements in main season
-    irrigReq <- dimSums(irrigReq[, , "first"], dim = "season")
-
-  }
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {

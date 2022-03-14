@@ -1,6 +1,6 @@
 #' @title       calcIrrigCropYieldGain
-#' @description This function calculates the yield gains per crop and season
-#'              (not accounting for multiple cropping zones and including negatives)
+#' @description This function calculates the yield gains per crop
+#'              (including negatives)
 #'
 #' @param lpjml         LPJmL version used for yields
 #' @param climatetype   Climate scenarios or historical baseline "GSWP3-W5E5:historical"
@@ -35,20 +35,26 @@ calcIrrigCropYieldGain <- function(lpjml, climatetype, unit,
                                    iniyear, selectyears,
                                    yieldcalib, cropmix, multicropping) {
 
-  # read in cellular lpjml yields for each season
+  # read in cellular lpjml yields
   yields    <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib, unit = unit,
                           multicropping = multicropping, cropmix = cropmix,
                           aggregate = FALSE)
 
-  # calculate yield gain per crop per season
+  # calculate yield gain per crop
   yieldGain <- (collapseNames(yields[, , "irrigated"]) -
                   collapseNames(yields[, , "rainfed"]))
 
   # Check for NAs
   if (any(is.na(yieldGain))) {
     stop("Function IrrigCropYieldGain produced NAs")
+  }
+
+  if (any(yieldGain < 0)) {
+    warning("There are negative yield gains for certain crops. These are set to 0.
+            Under single cropping, this is possible when the growing period is shifted
+            together with irrigation.")
   }
 
   return(list(x            = yieldGain,

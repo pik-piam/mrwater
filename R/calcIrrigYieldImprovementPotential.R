@@ -35,12 +35,6 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                                                iniyear, selectyears, cropmix,
                                                yieldcalib, multicropping) {
 
-  # read in cellular lpjml yields for each season
-  yields    <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
-                          iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib, unit = unit,
-                          multicropping = multicropping, cropmix = cropmix,
-                          aggregate = FALSE)
   # read in yield gain
   yieldGain <- calcOutput("IrrigCropYieldGain", unit = unit,
                           lpjml = lpjml, climatetype = climatetype,
@@ -54,45 +48,6 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   # (in cropping calendar version);
   # also: under N-stress, irrigation may lead to lower yields,
   # (the latter is only relevant for limited-N-LPJmL version, default: unlimited N))
-
-  if (multicropping) {
-
-    # Cells are bijectively assigned according to their single and multicropping
-    # potentials under irrigated and rainfed conditions
-    mc   <- calcOutput("MultipleCroppingZones", layers = 2, aggregate = FALSE)
-    rSiS <- new.magpie(cells_and_regions = getCells(yieldGain),
-                       years = getYears(yieldGain),
-                       fill = 0)
-    rMiS <- rSiM <- rMiM <- rSiS
-    rSiS[mc[, , "rainfed"] == 0 & mc[, , "irrigated"] == 0] <- 1
-    rMiS[mc[, , "rainfed"] == 1 & mc[, , "irrigated"] == 0] <- 1
-    rSiM[mc[, , "rainfed"] == 0 & mc[, , "irrigated"] == 1] <- 1
-    rMiM[mc[, , "rainfed"] == 1 & mc[, , "irrigated"] == 1] <- 1
-
-    tmp             <- yieldGain
-    yieldGain       <- dimSums(yieldGain, dim = "season")
-    yieldGain[, , ] <- NA
-
-    # cells where single cropping under rainfed conditions and
-    # single cropping under irrigated conditions (rSiS)
-    yieldGain[rSiS == 1] <- collapseNames(tmp[, , "first"])[rSiS == 1]
-
-    # cells where single cropping under rainfed conditions and
-    # multiple cropping under irrigated conditions (rSiM)
-    yieldGain[rSiM == 1] <- (collapseNames(tmp[, , "first"]) +
-                             collapseNames(yields[, , "second"][, , "irrigated"]))[rSiM == 1]
-
-    # cells where multiple cropping under rainfed conditions and
-    # multiple cropping under irrigated conditions (rMiM)
-    yieldGain[rMiM == 1] <- dimSums(tmp, dim = "season")[rMiM == 1]
-
-  } else {
-
-    # only one cropping season: off-season ("second") set to 0
-    yieldGain[, , "second"] <- 0
-    yieldGain <- dimSums(yieldGain, dim = "season")
-
-  }
 
   # Selected crops
   if (!is.null(cropmix)) {
@@ -109,7 +64,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
 
   } else {
 
-    description <- "Yield improvement potential through irrigation for all different crop types and seasons"
+    description <- "Yield improvement potential through irrigation for all different crop types"
 
   }
 

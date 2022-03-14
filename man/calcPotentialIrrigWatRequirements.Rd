@@ -20,7 +20,7 @@ magpie object in cellular resolution
 }
 \description{
 This function calculates actual irrigation water requirements
-             per cell and season given a certain irrigation system
+             per cell given a certain irrigation system
 }
 \examples{
 \dontrun{

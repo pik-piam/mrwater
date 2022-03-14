@@ -50,9 +50,6 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
                          selectyears = selectyears, iniyear = iniyear,
                          yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
 
-  # sum over all seasons
-  potGain <- dimSums(potGain, dim = 3)
-
   # remove areas below chosen gainthreshold
   potArea[potGain < gainthreshold] <- 0
 
@@ -68,6 +65,7 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
   return(list(x            = potArea,
               weight       = NULL,
               unit         = "mio. ha",
-              description  = "Area that could be irrigated when water was not a limiting factor given chosen gainthreshold and land constraint",
+              description  = "Area that could be irrigated when water would not be
+                              a limiting factor given chosen gainthreshold and land constraint",
               isocountries = FALSE))
 }

@@ -48,7 +48,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
       # Total current physical cropland per cell:
       land <- dimSums(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                 aggregate = FALSE)[, , "first"],
+                                 aggregate = FALSE),
                       dim = 3)
 
     }
@@ -57,7 +57,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
       # Total irrigated physical cropland per cell:
       land <- dimSums(collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                               aggregate = FALSE)[, , "irrigated"][, , "first"]),
+                                               aggregate = FALSE)[, , "irrigated"]),
                       dim = 3)
     }
 

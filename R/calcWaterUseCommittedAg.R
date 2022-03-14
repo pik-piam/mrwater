@@ -22,7 +22,7 @@
 calcWaterUseCommittedAg <- function(lpjml, climatetype, selectyears, iniyear,
                                     multicropping) {
 
-  # Irrigation water requirements per cell per crop per season given irrigation
+  # Irrigation water requirements per cell per crop given irrigation
   # system initialization (in m^3 per hectare per year)
   irrigReq <- calcOutput("ActualIrrigWatRequirements",
                          selectyears = selectyears, iniyear = iniyear,
@@ -33,15 +33,8 @@ calcWaterUseCommittedAg <- function(lpjml, climatetype, selectyears, iniyear,
   grownCrops <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
                            iniyear = iniyear, aggregate = FALSE)
 
-  if (!multicropping) {
-
-    grownCrops[, , "second"] <- 0
-
-  }
-
   # Committed agricultural uses (in mio. m^3 per year)
-  comAg <- dimSums(irrigReq * grownCrops,
-                   dim = "season")
+  comAg <- irrigReq * grownCrops
 
   return(list(x            = comAg,
               weight       = NULL,

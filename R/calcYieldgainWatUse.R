@@ -76,7 +76,7 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
     # New cropped area by crop (in mio. ha)
     grownCrops <- cropShr * tmp
 
-    # Agricultural water use (withdrawals and consumption) by season
+    # Agricultural water use (withdrawals and consumption)
     watAgUse <- dimSums(grownCrops * dimSums(irrigationSystem * irrigWater,
                                              dim = "system"),
                         dim = "crop")

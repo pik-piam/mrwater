@@ -48,23 +48,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
 
   }
 
-  # Seasonality dimension
-  yields          <- add_dimension(yields, dim = 3.2, add = "season",
-                                        nm = c("first", "second"))
-  getSets(yields) <- c("x", "y", "iso", "year", "crop", "season", "irrigation")
-
-  if (multicropping) {
-
-    ratio                <- calcOutput("MultipleCroppingYieldRatio",
-                                       lpjml = lpjml, climatetype = climatetype,
-                                       selectyears = selectyears, aggregate = FALSE)
-    yields[, , "second"] <- yields[, , "second"] * ratio
-
-  } else {
-
-    yields[, , "second"] <- 0
-
-  }
+  # getSets(yields) <- c("x", "y", "iso", "year", "crop", "irrigation")
 
   # only crops (pasture is not irrigated)
   yields <- yields[, , "pasture", invert = TRUE]

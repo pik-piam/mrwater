@@ -1,7 +1,6 @@
 #' @title       calcCropareaAdjusted
 #' @description This returns croparea as reported by FAO and LUH for the
 #'              initialization year and
-#'              splits croparea into first and second season croparea
 #'
 #' @param iniyear initialization year
 #'
@@ -25,14 +24,14 @@ calcCropareaAdjusted <- function(iniyear) {
                       cells = "lpjcell", cellular = TRUE,
                       aggregate = FALSE)
   # current multiple cropping factor from FAO
-  mc   <- calcOutput("Multicropping", extend_future = FALSE,
-                     factortype = "MC", aggregate = FALSE)[, iniyear, ]
-  countrylist <- intersect(sort(unique(getCells(dimSums(phys, dim = 1.2)))),
-                           sort(unique(getCells(mc))))
-  mc   <- mc[countrylist, , ]
-
-  # calculate area multicropped (in Mha)
-  harv <- phys * mc
+  # mc   <- calcOutput("Multicropping", extend_future = FALSE,
+  #                    factortype = "MC", aggregate = FALSE)[, iniyear, ]
+  # countrylist <- intersect(sort(unique(getCells(dimSums(phys, dim = 1.2)))),
+  #                          sort(unique(getCells(mc))))
+  # mc   <- mc[countrylist, , ]
+  #
+  # # calculate area multicropped (in Mha)
+  # harv <- phys * mc
 
   ### NOTE: Problem that mutlicropping potential is equally applied to rainfed
   ### and irrigated areas. In reality might specifically apply only to irrigated
@@ -42,21 +41,21 @@ calcCropareaAdjusted <- function(iniyear) {
   # tranform cell names such that they match with the rest of mrwater library
   map             <- toolGetMappingCoord2Country()
   getCells(phys)  <- paste(map$coords, map$iso, sep = ".")
-  getCells(harv)  <- paste(map$coords, map$iso, sep = ".")
+  # getCells(harv)  <- paste(map$coords, map$iso, sep = ".")
   ### UNTIL calcCroparea is adjusted for 67k cell names ###
 
   # area under multicropping
-  multicroppedArea <- pmax(harv - phys, 0)
+ # multicroppedArea <- pmax(harv - phys, 0)
 
   # croparea per season
-  croparea <- add_dimension(new.magpie(cells_and_regions = getCells(phys),
-                                       years = NULL,
-                                       names = getNames(phys),
-                                       fill = NA),
-                            dim = 3.2, add = "season", nm = c("first", "second"))
-  croparea[, , "first"]  <- phys
-  croparea[, , "second"] <- multicroppedArea
-  getSets(croparea)      <- c("x", "y", "iso", "year", "irrigation", "season", "crop")
+  # croparea <- add_dimension(new.magpie(cells_and_regions = getCells(phys),
+  #                                      years = NULL,
+  #                                      names = getNames(phys),
+  #                                      fill = NA),
+  #                           dim = 3.2, add = "season", nm = c("first", "second"))
+  # croparea[, , "first"]  <- phys
+  # croparea[, , "second"] <- multicroppedArea
+  # getSets(croparea)      <- c("x", "y", "iso", "year", "irrigation", "crop")
 
   ### NOTE: Assumption that everything that goes beyond physical area is assigned
   ### to off-season (second). In reality it is not clear which part of it is
@@ -66,6 +65,8 @@ calcCropareaAdjusted <- function(iniyear) {
   ### Both is not correct... Truth somewhere in the middle. Maybe covered in
   ### Sebastian's data set?
 
+  croparea <- phys
+
   # Check for NAs
   if (any(is.na(croparea))) {
     stop("Function calcCropareaAdjusted produced NAs")
@@ -74,6 +75,6 @@ calcCropareaAdjusted <- function(iniyear) {
   return(list(x            = croparea,
               weight       = NULL,
               unit         = "million ha",
-              description  = "cellular croparea per crop, season, management type",
+              description  = "cellular croparea per crop",
               isocountries = FALSE))
 }

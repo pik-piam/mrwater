@@ -45,8 +45,8 @@ NULL returns all crops individually}
 magpie object in cellular resolution
 }
 \description{
-This function calculates the yield gains per crop and season
-             (not accounting for multiple cropping zones and including negatives)
+This function calculates the yield gains per crop
+             (including negatives)
 }
 \examples{
 \dontrun{

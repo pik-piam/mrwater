@@ -40,7 +40,7 @@
 calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear, iniyear,
                                           irrigationsystem, landScen, cropmix, multicropping, yieldcalib) {
 
-  # read in irrigation water requirements for each irrigation system and season
+  # read in irrigation water requirements for each irrigation system
   # [in m^3 per hectare per year] (smoothed & harmonized)
   irrigWat <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                          lpjml = lpjml, climatetype = climatetype,
@@ -61,16 +61,6 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   tmp[yieldGain >= 0] <- 1
 
   irrigWat <- irrigWat * tmp
-
-  if (multicropping) {
-    #### !!! HOW TO TREAT MULTICROPPING CASE?????
-    # (1) Should water requirements for crops in cells with negative yield gains
-    # be set to 0 in both seasons or would there have to be some form of accounting
-    # for multiple-cropping system and yield gains? (see calcIrrigYieldImprovementPotential)
-    # (2) Is this necessary if we harmonize the growing period? Should the
-    # growing period be harmonized (in general; for the case of multiple cropping;
-    # in MAgPIE / in mrwater only?)
-  }
 
   # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
   land <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
@@ -114,9 +104,6 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
     irrigWat <- collapseNames(irrigWat[, , irrigationsystem])
 
   }
-
-  # Sum over seasons
-  irrigWat <- dimSums(irrigWat, dim = "season")
 
   # Checks
   if (any(is.na(irrigWat))) {

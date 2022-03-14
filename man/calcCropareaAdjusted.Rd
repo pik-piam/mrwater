@@ -15,7 +15,6 @@ magpie object in cellular resolution
 \description{
 This returns croparea as reported by FAO and LUH for the
              initialization year and
-             splits croparea into first and second season croparea
 }
 \examples{
 \dontrun{

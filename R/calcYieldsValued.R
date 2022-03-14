@@ -1,5 +1,5 @@
 #' @title       calcYieldsValued
-#' @description This function calculates yields per crop and season
+#' @description This function calculates yields per crop
 #'              valued at FAO prices (optionally per area unit (ha)
 #'              or water volume unit (m3))
 #'
@@ -36,13 +36,13 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
                              iniyear, selectyears, cropmix,
                              yieldcalib, multicropping) {
 
-  # read in cellular lpjml yields for each season [in tDM/ha]
+  # read in cellular lpjml yields [in tDM/ha]
   yields    <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib, multicropping = multicropping,
                           aggregate = FALSE)
   # extract magpie crops
-  croplist  <- getNames(collapseNames(yields[, , "irrigated"][, , "first"]))
+  croplist  <- getNames(collapseNames(yields[, , "irrigated"]))
 
   # read in global average crop output price averaging price fluctuations
   # around the initialization year (USD05/tDM)
@@ -100,13 +100,11 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
                       multicropping = multicropping, aggregate = FALSE)
     tmp <- add_dimension(tmp, dim = 3.1, add = "crop",
                          nm = getNames(dimSums(irrigReqWW, dim = c(3.2, 3.3))))
-    tmp <- add_dimension(tmp, dim = 3.2, add = "season",
-                         nm = getNames(dimSums(irrigReqWW, dim = c(3.1, 3.3))))
-    tmp <- add_dimension(tmp, dim = 3.3, add = "irrigation",
+    tmp <- add_dimension(tmp, dim = 3.2, add = "irrigation",
                          nm = getNames(dimSums(irrigReqWW, dim = c(3.1, 3.2))))[, , getNames(yields)]
     irrigReqWW[tmp < 10] <- 0
 
-    # yield to water ratio per season [tDM / m^3]
+    # yield to water ratio [tDM / m^3]
     yields                  <- yields / irrigReqWW
     yields[irrigReqWW <= 0] <- 0
 
@@ -125,6 +123,6 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
   return(list(x            = yields,
               weight       = NULL,
               unit         = unit,
-              description  = "Yields for all different crop types and seasons",
+              description  = "Yields for all different crop types",
               isocountries = FALSE))
 }

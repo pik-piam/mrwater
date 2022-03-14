@@ -24,8 +24,8 @@ calcCropAreaShare <- function(iniyear, cropmix) {
 
   # read in relevant physical croparea: total (irrigated + rainfed) or
   # irrigated depending on chosen cropmix
-  croparea <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                       aggregate = FALSE)[, , "first"])
+  croparea <- calcOutput("CropareaAdjusted", iniyear = iniyear,
+                                       aggregate = FALSE)
 
   # share of corp area by crop type
   if (length(cropmix) == 1 && grepl("hist", cropmix)) {

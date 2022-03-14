@@ -22,7 +22,7 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   # Set depreciation parameter
   depreciation <- 0.1
 
-  # Read in data: crop- and water supply type specific croparea per season
+  # Read in data: crop- and water supply type specific croparea
   # (in Mha) in initialization year:
   tmp <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
                                    aggregate = FALSE)[, , "irrigated"])
@@ -63,6 +63,6 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   return(list(x            = irrigArea,
               weight       = NULL,
               unit         = "mio. ha",
-              description  = "Cropland area reserved for irrigation per crop and season",
+              description  = "Cropland area reserved for irrigation per crop",
               isocountries = FALSE))
 }

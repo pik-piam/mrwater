@@ -67,7 +67,7 @@ reportCountryResults <- function(output, lpjml, climatetype, gainthreshold,
 
   # LUH total physical irrigated area
   irrigAreaLUH <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                            aggregate = FALSE)[, , "irrigated"][, , "first"])
+                                            aggregate = FALSE)[, , "irrigated"])
 
   if (output == "IrrigArea") {
 

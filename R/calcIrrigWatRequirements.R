@@ -31,35 +31,25 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype, multicropp
   ### Mappings
   lpj2mag <- toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
 
-  ### Read in blue water consumption for irrigated crops (in m^3 per ha per yr):
-  bwc <- collapseNames(setYears(calcOutput("LPJmL_new", subtype = "cwater_b",
-                                            version = lpjml["crop"], climatetype = climatetype, stage = "smoothed",
-                                            aggregate = FALSE, years = selectyears),
-                                selectyears))
-  names(dimnames(bwc))[3] <- "crop"
-  years                   <- getYears(bwc)
-  cropnames               <- getNames(bwc)
-  systemnames             <- c("drip", "sprinkler", "surface")
-
-  # Seasonality dimension
-  bwc   <- add_dimension(bwc, dim = 3.2, add = "season", nm = c("first", "second"))
-
   if (multicropping) {
 
-    # Reduce to areas where multicropping is relevant based on Multiple Cropping Zones
-    mc <- calcOutput("MultipleCroppingZones", layers = 2, aggregate = FALSE)
-    mc <- collapseNames(mc[, , "irrigated"])
-
-    # Irrigation water requirements of main-season ("first") and off-season ("second"):
-    ratio <- calcOutput("MultipleCroppingWatRatio", selectyears = selectyears,
-                        lpjml = lpjml, climatetype = climatetype, aggregate = FALSE)
-    bwc[, , "second"] <- bwc[, , "second"] * ratio * mc
+    # Read in whole-year blue water consumption for irrigated crops (in m^3 per ha per yr):
+    bwc <- calcOutput("BlueWaterConsumption", output = "crops:year",
+                      lpjml = lpjml, climatetype = climatetype,
+                      selectyears = selectyears, aggregate = FALSE)
 
   } else {
 
-    bwc[, , "second"] <- 0
+    # Read in main-season blue water consumption for irrigated crops (in m^3 per ha per yr):
+    bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
+                      lpjml = lpjml, climatetype = climatetype,
+                      selectyears = selectyears, aggregate = FALSE)
 
   }
+
+  years                   <- getItems(bwc, dim = 2)
+  cropnames               <- getItems(bwc, dim = "crop")
+  systemnames             <- c("drip", "sprinkler", "surface")
 
   ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
   #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
@@ -107,7 +97,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype, multicropp
   irrigReq   <- new.magpie(cells_and_regions = getCells(watWC),
                            years = getYears(watWC),
                            names = getNames(watWC),
-                           sets = c("x.y.iso", "year", "crop.season.system"))
+                           sets = c("x.y.iso", "year", "crop.system"))
   irrigReq <- add_dimension(irrigReq, dim = 3.4, add = "irrig_type", nm = c("consumption", "withdrawal"))
   irrigReq[, , "consumption"] <- watWC
   irrigReq[, , "withdrawal"]  <- watWW
@@ -128,7 +118,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype, multicropp
               weight       = NULL,
               unit         = "m^3 per ha per yr",
               description  = "Irrigation water requirements for irrigation for
-                              different crop types in different seasons
+                              different crop types
                               under different irrigation systems",
               isocountries = FALSE))
 }

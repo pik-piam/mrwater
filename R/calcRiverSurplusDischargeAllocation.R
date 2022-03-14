@@ -125,7 +125,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
                                years = getYears(discharge),
                                names = getNames(irrigGain),
                                fill = 0,
-                               sets = c("x.y.iso", "year", "EFP.scen.season"))
+                               sets = c("x.y.iso", "year", "EFP.scen"))
 
   # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
   glocellrank     <- setYears(calcOutput("IrrigCellranking", cellrankyear = selectyears,

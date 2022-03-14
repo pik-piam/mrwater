@@ -45,7 +45,7 @@ If FALSE: uncalibrated LPJmL yields are used}
 magpie object in cellular resolution
 }
 \description{
-This function calculates yields per crop and season
+This function calculates yields per crop
              valued at FAO prices (optionally per area unit (ha)
              or water volume unit (m3))
 }
