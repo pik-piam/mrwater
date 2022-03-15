@@ -34,7 +34,7 @@
 #' }
 #'
 #' @importFrom madrat calcOutput toolGetMapping
-#' @importFrom magclass collapseNames getCells getSets getYears getNames new.magpie dimSums
+#' @importFrom magclass collapseNames getItems new.magpie dimSums
 #' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
 
 calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear, iniyear,
@@ -45,8 +45,6 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   irrigWat <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                          lpjml = lpjml, climatetype = climatetype,
                          multicropping = multicropping, aggregate = FALSE)
-  # pasture is not irrigated in MAgPIE
-  irrigWat <- irrigWat[, , "pasture", invert = TRUE]
 
   # correct irrigation water requirements where irrigation would lead to negative yield gains
   # read in yield gain
@@ -78,7 +76,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   # land (mio ha -> ha): multiply with 1e6,
   # irrigation water requirements (m^3 per ha -> mio. m^3 per ha): divide by 1e6
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
-  irrigWat <- irrigWat[, , getNames(cropareaShr)] * land
+  irrigWat <- irrigWat[, , getItems(cropareaShr, dim = "crop")] * land
 
   # sum over crops
   irrigWat <- dimSums(irrigWat, dim = "crop")
@@ -89,9 +87,9 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
     # read in irrigation system area initialization [share of AEI by system] and expand to all years
     tmp               <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr",
                                     aggregate = FALSE)
-    irrigSystem       <- new.magpie(cells_and_regions = getCells(irrigWat),
-                                    years = getYears(irrigWat),
-                                    names = getNames(tmp),
+    irrigSystem       <- new.magpie(cells_and_regions = getItems(irrigWat, dim = 1),
+                                    years = getItems(irrigWat, dim = "year"),
+                                    names = getItems(tmp, dim = 3),
                                     sets = c("x.y.iso", "year", "system"))
     irrigSystem[, , ] <- tmp
 
@@ -109,11 +107,15 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   if (any(is.na(irrigWat))) {
     stop("produced NA full irrigation requirements")
   }
+  if (any(irrigWat < 0)) {
+    stop("produced negative full irrigation requirements")
+  }
 
   return(list(x            = irrigWat,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = "Full irrigation requirements per cell for selected cropmix
+              description  = "Full irrigation requirements per cell
+                              for selected cropmix
                               and irrigation system",
               isocountries = FALSE))
 }

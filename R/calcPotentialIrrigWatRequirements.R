@@ -46,7 +46,6 @@ calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
   irrigReq   <- collapseNames(calcOutput("IrrigWatRequirements", selectyears = selectyears,
                            lpjml = lpjml,  climatetype = climatetype,
                            multicropping = multicropping, aggregate = FALSE)[, , irrigwattype])
-  irrigReq   <- irrigReq[, , "pasture", invert = TRUE]
 
   #### HERE: irrigation system assumption for different irrigation efficiencies in MAgPIE ####
   # irrigation system share (share of irrigated area) [PLACEHOLDER: initialization]

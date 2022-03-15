@@ -13,7 +13,10 @@ calcIrrigWatRequirements(selectyears, lpjml, climatetype, multicropping)
 
 \item{climatetype}{Climate model or historical baseline "GSWP3-W5E5:historical"}
 
-\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)
+If TRUE: Irrigation water requirements for entire year
+If FALSE: Irrigation water requirements during main
+growing period of the crop}
 }
 \value{
 magpie object in cellular resolution

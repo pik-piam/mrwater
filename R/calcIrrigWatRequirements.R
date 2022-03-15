@@ -6,6 +6,9 @@
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Climate model or historical baseline "GSWP3-W5E5:historical"
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
+#'                      If TRUE: Irrigation water requirements for entire year
+#'                      If FALSE: Irrigation water requirements during main
+#'                      growing period of the crop
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -15,7 +18,7 @@
 #' calcOutput("IrrigWatRequirements", aggregate = FALSE)
 #' }
 #'
-#' @importFrom magclass collapseNames collapseDim getYears getCells getNames new.magpie add_dimension
+#' @importFrom magclass getItems new.magpie add_dimension
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping
 #' @importFrom mrcommons toolCell2isoCell
 
@@ -47,17 +50,18 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype, multicropp
 
   }
 
-  years                   <- getItems(bwc, dim = 2)
+  years                   <- getItems(bwc, dim = "year")
   cropnames               <- getItems(bwc, dim = "crop")
   systemnames             <- c("drip", "sprinkler", "surface")
 
   ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
   #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
   ### Alternatively: use regional efficiencies from Sauer et al. (2010), Table 5,
-  fieldEff                <- new.magpie(cells_and_regions =  getCells(bwc),
-                                        years = years,
-                                        names = sort(paste(systemnames, rep(cropnames, 3), sep = ".")),
-                                        sets = c("x.y.iso", "year", "system.crop"))
+  fieldEff                <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
+                                                      years = years,
+                                                      names = cropnames,
+                                                      sets = c("x.y.iso", "year", "crop")),
+                                           dim = 3.1, add = "system", nm = systemnames)
   fieldEff[, , "drip"]      <- 0.88 # Sauer: 0.8-0.93
   fieldEff[, , "sprinkler"] <- 0.78 # Sauer: 0.6-0.86
   fieldEff[, , "surface"]   <- 0.52 # Sauer: 0.25-0.5
@@ -65,10 +69,11 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype, multicropp
 
   ### Conveyance efficiency proxy [placeholder]
   #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-  convEff                <- new.magpie(cells_and_regions = getCells(bwc),
-                                       years = years,
-                                       names = sort(paste(systemnames, rep(cropnames, 3), sep = ".")),
-                                       sets = c("x.y.iso", "year", "system.crop"))
+  convEff                <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
+                                                     years = years,
+                                                     names = cropnames,
+                                                     sets = c("x.y.iso", "year", "crop")),
+                                          dim = 3.1, add = "system", nm = systemnames)
   convEff[, , "drip"]      <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
   convEff[, , "sprinkler"] <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
   convEff[, , "surface"]   <- 0.7
@@ -95,16 +100,20 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype, multicropp
 
   # Output: irrigation water requirements (consumption and withdrawals)
   irrigReq   <- new.magpie(cells_and_regions = getCells(watWC),
-                           years = getYears(watWC),
-                           names = getNames(watWC),
+                           years = years,
+                           names = getItems(watWC, dim = 3),
                            sets = c("x.y.iso", "year", "crop.system"))
-  irrigReq <- add_dimension(irrigReq, dim = 3.4, add = "irrig_type", nm = c("consumption", "withdrawal"))
+  irrigReq <- add_dimension(irrigReq, dim = 3.4, add = "irrig_type",
+                            nm = c("consumption", "withdrawal"))
   irrigReq[, , "consumption"] <- watWC
   irrigReq[, , "withdrawal"]  <- watWW
 
   # Aggregate to MAgPIE crops
   irrigReq  <- toolAggregate(irrigReq, lpj2mag, from = "LPJmL", to = "MAgPIE",
                              dim = "crop", partrel = TRUE)
+
+  # Pasture is not irrigated in MAgPIE
+  irrigWater <- irrigWater[, , "pasture", invert = TRUE]
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {

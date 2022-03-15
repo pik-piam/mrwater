@@ -21,14 +21,17 @@ calcActualIrrigWatRequirements(
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)
+If TRUE: Irrigation water requirements for entire year
+If FALSE: Irrigation water requirements during main
+growing period of the crop}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
 This function calculates actual irrigation water requirements
-             per cell and season given a certain irrigation system
+             per cell given a certain irrigation system
 }
 \examples{
 \dontrun{

@@ -1,12 +1,16 @@
 #' @title       calcWaterUseCommittedAg
 #' @description This function calculates committed agricultural water uses that
-#'              are used in the river routing algorithm for distributing available water across the basin
+#'              are used in the river routing algorithm for distributing
+#'              available water across the basin
 #'
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years to be returned
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear       Year of initialization for cropland area
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
+#'                      If TRUE: Irrigation water requirements for entire year
+#'                      If FALSE: Irrigation water requirements during main
+#'                      growing period of the crop
 #'
 #' @importFrom magclass collapseNames dimSums getNames mbind getRegions
 #' @importFrom madrat calcOutput toolAggregate

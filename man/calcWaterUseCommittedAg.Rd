@@ -21,14 +21,18 @@ calcWaterUseCommittedAg(
 
 \item{iniyear}{Year of initialization for cropland area}
 
-\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)
+If TRUE: Irrigation water requirements for entire year
+If FALSE: Irrigation water requirements during main
+growing period of the crop}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
 This function calculates committed agricultural water uses that
-             are used in the river routing algorithm for distributing available water across the basin
+             are used in the river routing algorithm for distributing
+             available water across the basin
 }
 \examples{
 \dontrun{

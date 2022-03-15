@@ -106,7 +106,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
     # subtract physical area already reserved for irrigation by committed agricultural uses
     # (to avoid double accounting)
     comIrrigArea  <- collapseNames(calcOutput("IrrigAreaCommitted", selectyears = selectyears,
-                                 iniyear = comagyear, aggregate = FALSE)[, , "first"])
+                                 iniyear = comagyear, aggregate = FALSE))
     comIrrigArea  <- collapseNames(dimSums(comIrrigArea, dim = 3))
     land          <- land - comIrrigArea
   }

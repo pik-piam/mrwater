@@ -42,8 +42,6 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   irrigWater <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                            lpjml = lpjml, climatetype = climatetype,
                            multicropping = multicropping, aggregate = FALSE)
-  # Pasture is not irrigated in MAgPIE
-  irrigWater <- irrigWater[, , "pasture", invert = TRUE]
 
   ### Area to be irrigated ###
   # Area that can potentially be irrigated according to chosen scenario

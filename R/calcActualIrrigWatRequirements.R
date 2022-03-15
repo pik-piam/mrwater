@@ -1,12 +1,15 @@
 #' @title       calcActualIrrigWatRequirements
 #' @description This function calculates actual irrigation water requirements
-#'              per cell and season given a certain irrigation system
+#'              per cell given a certain irrigation system
 #'
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years to be returned
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear       Initialization year (for weight by cropland)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE)
+#'                      If TRUE: Irrigation water requirements for entire year
+#'                      If FALSE: Irrigation water requirements during main
+#'                      growing period of the crop
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -29,7 +32,6 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
   irrigReq   <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                            lpjml = lpjml,  climatetype = climatetype,
                            multicropping = multicropping, aggregate = FALSE)
-  irrigReq   <- irrigReq[, , "pasture", invert = TRUE]
 
   # irrigation system share (share of irrigated area)
   irrigSystemShr <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr",
