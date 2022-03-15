@@ -153,10 +153,11 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   ### Checks ###
   ##############
   if (any(is.na(out))) {
-    stop("produced NA irrigation water requirements")
+    stop("calcBlueWaterConsumption produced NA irrigation water requirements")
   }
   if (any(out < 0)) {
-    stop("produced negative irrigation water requirements")
+    warning("calcBlueWaterConsumption produced negative irrigation water requirements")
+    #ToDo: Change to stop() when LPJmL runs are ready and smoothing can be activated
   }
 
   return(list(x            = out,
