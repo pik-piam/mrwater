@@ -113,7 +113,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype, multicropp
                              dim = "crop", partrel = TRUE)
 
   # Pasture is not irrigated in MAgPIE
-  irrigWater <- irrigWater[, , "pasture", invert = TRUE]
+  irrigReq <- irrigReq[, , "pasture", invert = TRUE]
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {

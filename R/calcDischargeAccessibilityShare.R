@@ -38,7 +38,7 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
 
   # Monthly Discharge from LPJmL (raw: including variation)
   monthlyDischargeLPJmL <- calcOutput("LPJmL_new", subtype = "mdischarge",
-                                        version = lpjml["natveg"], climatetype = climatetype,
+                                        version = lpjml[["natveg"]], climatetype = climatetype,
                                         stage = "raw", aggregate = FALSE)
 
   # Extract years
@@ -66,10 +66,10 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
 
       ### Quantile Variability Threshold ###
       # Get the variability discharge quantile (across selected long-term reference time period) with selected threshold
-      Discharge_quant   <- apply(monthlyDischarge, MARGIN = c(1), quantile, probs = coeff)
+      dischargeQuant   <- apply(monthlyDischarge, MARGIN = c(1), quantile, probs = coeff)
 
       # Share of monthly discharge that is accessible for human use
-      x <- apply(pmin(monthlyDischarge, Discharge_quant), MARGIN = 1, sum) /
+      x <- apply(pmin(monthlyDischarge, dischargeQuant), MARGIN = 1, sum) /
            apply(monthlyDischarge, MARGIN = 1, sum)
       x[apply(monthlyDischarge, MARGIN = 1, sum) == 0] <- 0
 

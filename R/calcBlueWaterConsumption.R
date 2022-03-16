@@ -35,7 +35,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   ####################
   # Cells that are suitable for multiple cropping under irrigated/rainfed conditions
   suitMC <- setYears(collapseNames(calcOutput("MulticroppingYieldIncrease", output = "multicroppingSuitability",
-                                  lpjml = lpjml["crop"],
+                                  lpjml = lpjml[["crop"]],
                                   climatetype = "GSWP3-W5E5:historical", ### ToDo: Switch to flexible climatetype argument (once LPJmL runs are ready)
                                   selectyears = selectyears,
                                   aggregate = FALSE)[, , "irrigated"]),
@@ -43,13 +43,13 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
   # Grass ET in the entire year (main + off season) (in m^3/ha)
   grassETannual <- setYears(calcOutput("GrassET", season = "wholeYear",
-                                       lpjml = lpjml["crop"], climatetype = climatetype,
+                                       lpjml = lpjml[["crop"]], climatetype = climatetype,
                                        selectyears = selectyears, aggregate = FALSE),
                             selectyears)
 
   # Grass ET in the growing period of LPJmL (main season) (in m^3/ha)
   grassETgrper  <- setYears(calcOutput("GrassET", season = "mainSeason",
-                                       lpjml = lpjml["crop"], climatetype = climatetype,
+                                       lpjml = lpjml[["crop"]], climatetype = climatetype,
                                        selectyears = selectyears, aggregate = FALSE),
                             selectyears)
 
@@ -66,7 +66,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
   # Crop blue water consumption in growing period (main season)
   bwc1st <- collapseNames(setYears(calcOutput("LPJmL_new", subtype = "cwater_b",
-                                version = lpjml["crop"], climatetype = climatetype,
+                                version = lpjml[["crop"]], climatetype = climatetype,
                                 stage = "smoothed", years = selectyears,
                                 aggregate = FALSE),
                      selectyears)[, , "irrigated"])
