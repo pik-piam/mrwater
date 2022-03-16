@@ -7,17 +7,20 @@
 calcYearlyRunoff(selectyears, lpjml, climatetype)
 }
 \arguments{
-\item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
+\item{selectyears}{Years to be returned
+(Note: does not affect years of harmonization or smoothing)}
 
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop. Note: Default version arguments need to be updated when new versions are used!}
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Switch between different climate scenarios or
+historical baseline "GSWP3-W5E5:historical"}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
-This function calculates yearly runoff from runoff on land and water provided by LPJmL
+This function calculates yearly runoff from runoff
+             on land and water provided by LPJmL
 }
 \examples{
 \dontrun{ calcOutput("YearlyRunoff", aggregate = FALSE) }

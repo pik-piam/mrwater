@@ -31,28 +31,28 @@ calcGrassET <- function(selectyears, lpjml, climatetype, season) {
   # monthly irrigated grass et
   monthlyIrrigated <- calcOutput("LPJmL_new", subtype = "met_grass_ir",
                                  years = selectyears,
-                                 stage = "raw", ###ToDo: Switch to smoothed or harmonized2020 (once LPJmL runs are ready)
-                                 version = lpjml, climatetype = climatetype, ###ToDo: set lpjml argument to lpjml["crop"] (once LPJmL runs are ready)
+                                 stage = "raw", ### ToDo: Switch to smoothed or harmonized2020 (once LPJmL runs are ready)
+                                 version = lpjml, climatetype = climatetype, ### ToDo: set lpjml argument to lpjml[["crop"]] (once LPJmL runs are ready)
                                  aggregate = FALSE)
   # monthly irrigated grass et
   monthlyRainfed <- calcOutput("LPJmL_new", subtype = "met_grass_rf",
                                years = selectyears,
-                               stage = "raw", ###ToDo: Switch to smoothed or harmonized2020 (once LPJmL runs are ready)
-                               version = lpjml, climatetype = climatetype, ###ToDo: set lpjml argument to lpjml["crop"] (once LPJmL runs are ready)
+                               stage = "raw", ### ToDo: Switch to smoothed or harmonized2020 (once LPJmL runs are ready)
+                               version = lpjml, climatetype = climatetype, ### ToDo: set lpjml argument to lpjml["crop"] (once LPJmL runs are ready)
                                aggregate = FALSE)
 
 
   # irrigated grass et in irrigated growing period of crop
   grperIrrigated <- calcOutput("LPJmL_new", subtype = "cft_et_grass_ir",
                                years = selectyears,
-                               stage = "raw", ###ToDo: Switch to smoothed or harmonized2020 (once LPJmL runs are ready)
-                               version = lpjml, climatetype = climatetype, ###ToDo: set lpjml argument to lpjml["crop"] (once LPJmL runs are ready)
+                               stage = "raw", ### ToDo: Switch to smoothed or harmonized2020 (once LPJmL runs are ready)
+                               version = lpjml, climatetype = climatetype, ### ToDo: set lpjml argument to lpjml["crop"] (once LPJmL runs are ready)
                                aggregate = FALSE)
   # rainfed grass et in rainfed growing period of crop
   grperRainfed <- calcOutput("LPJmL_new", subtype = "cft_et_grass_rf",
                              years = selectyears,
-                             stage = "raw", ###ToDo: Switch to smoothed or harmonized2020 (once LPJmL runs are ready)
-                             version = lpjml, climatetype = climatetype, ###ToDo: set lpjml argument to lpjml["crop"] (once LPJmL runs are ready)
+                             stage = "raw", ### ToDo: Switch to smoothed or harmonized2020 (once LPJmL runs are ready)
+                             version = lpjml, climatetype = climatetype, ### ToDo: set lpjml argument to lpjml["crop"] (once LPJmL runs are ready)
                              aggregate = FALSE)
 
 

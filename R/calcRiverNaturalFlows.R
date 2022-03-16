@@ -34,24 +34,26 @@ calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
   }
 
   # Yearly lake evapotranspiration (in mio. m^3 per year) [smoothed & harmonized]
-  lake_evap     <- as.array(setYears(calcOutput("LPJmL_new", version = lpjml["natveg"],
-                                                subtype = "lake_evap", stage = stage, years = selectyears,
-                                                climatetype = climatetype, aggregate = FALSE),
+  lakeEvap <- as.array(setYears(calcOutput("LPJmL_new", subtype = "lake_evap",
+                                            version = lpjml[["natveg"]], climatetype = climatetype,
+                                            stage = stage, years = selectyears,
+                                            aggregate = FALSE),
                                      selectyears))
 
   # Runoff (on land and water)
-  yearly_runoff <- as.array(collapseNames(calcOutput("YearlyRunoff", selectyears = selectyears,
-                                                     lpjml = lpjml, climatetype = climatetype, aggregate = FALSE)))
+  runoff   <- as.array(collapseNames(calcOutput("YearlyRunoff", selectyears = selectyears,
+                                                 lpjml = lpjml, climatetype = climatetype,
+                                                 aggregate = FALSE)))
 
   ############################################
   ###### River Routing: Natural Flows ########
   ############################################
 
   ## Empty arrays that will be filled by the following natural river routing algorithm
-  discharge_nat     <- yearly_runoff
-  discharge_nat[, , ] <- 0
-  inflow_nat        <- discharge_nat
-  lake_evap_new     <- discharge_nat
+  natDischarge       <- runoff
+  natDischarge[, , ] <- 0
+  natInflow          <- natDischarge
+  lakeEvapNEW        <- natDischarge
 
   ### River Routing 1: Natural flows ###
   # Determine natural discharge
@@ -64,25 +66,25 @@ calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
       ### Natural water balance
       # lake evap that can be fulfilled
       # (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
-      lake_evap_new[c, , ] <- pmin(lake_evap[c, , , drop = F],
-                                 inflow_nat[c, , , drop = F] + yearly_runoff[c, , , drop = F])
+      lakeEvapNEW[c, , ] <- pmin(lakeEvap[c, , , drop = F],
+                                 natInflow[c, , , drop = F] + runoff[c, , , drop = F])
       # natural discharge
-      discharge_nat[c, , ] <- inflow_nat[c, , , drop = F] +
-                              yearly_runoff[c, , , drop = F] -
-                              lake_evap_new[c, , , drop = F]
+      natDischarge[c, , ] <- natInflow[c, , , drop = F] +
+                              runoff[c, , , drop = F] -
+                              lakeEvapNEW[c, , , drop = F]
       # inflow into nextcell
       if (rs$nextcell[c] > 0) {
-        inflow_nat[rs$nextcell[c], , ] <- inflow_nat[rs$nextcell[c], , , drop = F] + discharge_nat[c, , , drop = F]
+        natInflow[rs$nextcell[c], , ] <- natInflow[rs$nextcell[c], , , drop = F] + natDischarge[c, , , drop = F]
       }
     }
   }
 
-  out <- new.magpie(cells_and_regions = getCells(discharge_nat),
-                    years = getYears(discharge_nat),
+  out <- new.magpie(cells_and_regions = getItems(natDischarge, dim = 1),
+                    years = getItems(natDischarge, dim = "year"),
                     names = c("discharge_nat", "lake_evap_nat"),
-                    sets = c("x.y.iso", "year", "data"))
-  out[, , "discharge_nat"] <- as.magpie(discharge_nat, spatial = 1, temporal = 2)
-  out[, , "lake_evap_nat"] <- as.magpie(lake_evap_new, spatial = 1, temporal = 2)
+                    sets  = c("x.y.iso", "year", "data"))
+  out[, , "discharge_nat"] <- as.magpie(natDischarge, spatial = 1, temporal = 2)
+  out[, , "lake_evap_nat"] <- as.magpie(lakeEvapNEW, spatial = 1, temporal = 2)
 
 return(list(x            = out,
             weight       = NULL,

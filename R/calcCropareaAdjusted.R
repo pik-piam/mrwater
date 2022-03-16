@@ -55,7 +55,6 @@ calcCropareaAdjusted <- function(iniyear) {
   #                           dim = 3.2, add = "season", nm = c("first", "second"))
   # croparea[, , "first"]  <- phys
   # croparea[, , "second"] <- multicroppedArea
-  # getSets(croparea)      <- c("x", "y", "iso", "year", "irrigation", "crop")
 
   ### NOTE: Assumption that everything that goes beyond physical area is assigned
   ### to off-season (second). In reality it is not clear which part of it is
@@ -65,7 +64,8 @@ calcCropareaAdjusted <- function(iniyear) {
   ### Both is not correct... Truth somewhere in the middle. Maybe covered in
   ### Sebastian's data set?
 
-  croparea <- phys
+  croparea          <- phys
+  getSets(croparea) <- c("x", "y", "iso", "year", "irrigation", "crop")
 
   # Check for NAs
   if (any(is.na(croparea))) {
