@@ -46,7 +46,7 @@ calcCropAreaShare <- function(iniyear, cropmix) {
     }
 
     # historical share of crop types in cropland per cell
-    cropareaShr <- croparea / dimSums(croparea, dim = 3)
+    cropareaShr <- croparea / dimSums(croparea, dim = "crop")
 
     # correct NAs: where no current cropland available,
     # representative crops (maize, rapeseed, pulses) assumed as proxy

@@ -48,7 +48,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
 
   }
 
-  # getSets(yields) <- c("x", "y", "iso", "year", "crop", "irrigation")
+  getSets(yields) <- c("x", "y", "iso", "year", "crop", "irrigation")
 
   # only crops (pasture is not irrigated)
   yields <- yields[, , "pasture", invert = TRUE]

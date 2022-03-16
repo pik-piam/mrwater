@@ -23,7 +23,9 @@ This function calculates yearly runoff from runoff
              on land and water provided by LPJmL
 }
 \examples{
-\dontrun{ calcOutput("YearlyRunoff", aggregate = FALSE) }
+\dontrun{
+calcOutput("YearlyRunoff", aggregate = FALSE)
+}
 
 }
 \author{
