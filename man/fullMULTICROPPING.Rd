@@ -4,66 +4,13 @@
 \alias{fullMULTICROPPING}
 \title{fullMULTICROPPING}
 \usage{
-fullMULTICROPPING(
-  efrMethod = "VMF:fair",
-  accessibilityrule = "CV:2",
-  allocationrule = "optimization",
-  rankmethod = "USD_ha:TRUE",
-  thresholdtype = "USD_ha",
-  gainthreshold = 500,
-  protectLand = "HalfEarth",
-  yieldcalib = TRUE,
-  multicropping = FALSE,
-  cropmix = "hist_total"
-)
+fullMULTICROPPING(suitability = "endogenous")
 }
 \arguments{
-\item{efrMethod}{EFR method used including selected strictness of EFRs
-(Smakhtin:good, VMF:fair)}
-
-\item{accessibilityrule}{Method used: Quantile method (Q) or
-Coefficient of Variation (CV)
-combined with scalar value defining the strictness
-of accessibility restriction:
-discharge that is exceeded x percent of the time on average throughout a year
-(Qx, e.g. Q75: 0.25, Q50: 0.5)
-or base value for exponential curve separated by : (CV:2)}
-
-\item{allocationrule}{Rule to be applied for river basin discharge allocation
-across cells of river basin ("optimization", "upstreamfirst")}
-
-\item{rankmethod}{Rank and optimization method consisting of
-Unit according to which rank is calculated:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return;
-and boolean indicating fullpotential (TRUE, i.e. cell
-receives full irrigation requirements in total area)
-or reduced potential (FALSE, reduced potential of cell
-receives at later stage in allocation algorithm);
-separated by ":"}
-
-\item{thresholdtype}{Unit of yield improvement potential used as threshold:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return}
-
-\item{gainthreshold}{Threshold of yield improvement potential required for
-water allocation in upstreamfirst algorithm
-(in same unit as thresholdtype)}
-
-\item{protectLand}{Land protection scenario (e.g. HalfEarth, BH_IFL, NULL)}
-
-\item{yieldcalib}{Boolean for whether LPJmL should be calibrated
-to FAO country yields (TRUE or FALSE)}
-
-\item{multicropping}{Boolean for whether multicropping is activated (TRUE)
-or not (FALSE)}
-
-\item{cropmix}{Selected cropmix (options:
-"hist_irrig" for historical cropmix on currently irrigated area,
-"hist_total" for historical cropmix on total cropland,
-or selection of proxycrops)}
+\item{suitability}{"endogenous": suitability for multiple cropping determined
+              by rules based on grass and crop productivity
+"exogenous": suitability for multiple cropping given by
+             GAEZ data set}
 }
 \description{
 Function that produces output for irrigation potentials

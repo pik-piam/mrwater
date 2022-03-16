@@ -14,6 +14,10 @@
 #'                      season ("main" (LPJmL growing period), "year" (entire year)),
 #'                      separated by ":"
 #'                      ("crops:main", "crops:year", "grass:main", "grass:year")
+#' @param suitability   "endogenous": suitability for multiple cropping determined
+#'                                    by rules based on grass and crop productivity
+#'                      "exogenous": suitability for multiple cropping given by
+#'                                   GAEZ data set
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -28,7 +32,7 @@
 #' @importFrom stats lm
 
 calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
-                                     fallowFactor = 0.75, output) {
+                                     fallowFactor = 0.75, output, suitability) {
 
   ####################
   ### Read in data ###
@@ -37,7 +41,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   suitMC <- setYears(collapseNames(calcOutput("MulticroppingYieldIncrease", output = "multicroppingSuitability",
                                   lpjml = lpjml[["crop"]],
                                   climatetype = "GSWP3-W5E5:historical", ### ToDo: Switch to flexible climatetype argument (once LPJmL runs are ready)
-                                  selectyears = selectyears,
+                                  selectyears = selectyears, suitability = suitability,
                                   aggregate = FALSE)[, , "irrigated"]),
                      selectyears)
 
@@ -157,7 +161,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   }
   if (any(out < 0)) {
     warning("calcBlueWaterConsumption produced negative irrigation water requirements")
-    #ToDo: Change to stop() when LPJmL runs are ready and smoothing can be activated
+    # ToDo: Change to stop() when LPJmL runs are ready and smoothing can be activated
   }
 
   return(list(x            = out,
