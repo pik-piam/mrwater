@@ -4,13 +4,29 @@
 \alias{fullMULTICROPPING}
 \title{fullMULTICROPPING}
 \usage{
-fullMULTICROPPING(suitability = "endogenous")
+fullMULTICROPPING(
+  multicropping = "TRUE:endogenous",
+  cropmix = c("maiz", "rapeseed", "puls_pro"),
+  yieldcalib = TRUE
+)
 }
 \arguments{
-\item{suitability}{"endogenous": suitability for multiple cropping determined
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
+Multiple Cropping Suitability mask selected
+("endogenous": suitability for multiple cropping determined
               by rules based on grass and crop productivity
 "exogenous": suitability for multiple cropping given by
-             GAEZ data set}
+             GAEZ data set),
+separated by ":"
+(e.g. TRUE:endogenous; TRUE:exogenous; FALSE)}
+
+\item{cropmix}{Selected cropmix (options:
+"hist_irrig" for historical cropmix on currently irrigated area,
+"hist_total" for historical cropmix on total cropland,
+or selection of proxycrops)}
+
+\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+If FALSE: uncalibrated LPJmL yields are used}
 }
 \description{
 Function that produces output for irrigation potentials

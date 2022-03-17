@@ -10,12 +10,20 @@
 #'                                   GAEZ data set),
 #'                      separated by ":"
 #'                      (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#' @param cropmix       Selected cropmix (options:
+#'                      "hist_irrig" for historical cropmix on currently irrigated area,
+#'                      "hist_total" for historical cropmix on total cropland,
+#'                      or selection of proxycrops)
+#' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                      If FALSE: uncalibrated LPJmL yields are used
 #'
 #' @author Felicitas Beier
 #'
 #' @export
 
-fullMULTICROPPING <- function(multicropping = "TRUE:endogenous") {
+fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
+                              cropmix = c("maiz", "rapeseed", "puls_pro"),
+                              yieldcalib = TRUE) {
 
   # Standard settings
   iniyear           <- 2010
@@ -35,8 +43,6 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous") {
   rankmethod        <- "USD_ha:TRUE"
   thresholdtype     <- "USD_ha"
   protectLand       <- "HalfEarth"
-  yieldcalib        <- TRUE
-  cropmix           <- "hist_total"
 
 
   ################
