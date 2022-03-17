@@ -19,7 +19,14 @@ calcShrCurrIrrigFulfilled(
 \item{climatetype}{Switch between different climate scenarios or
 historical baseline "GSWP3-W5E5:historical"}
 
-\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
+Multiple Cropping Suitability mask selected
+("endogenous": suitability for multiple cropping determined
+              by rules based on grass and crop productivity
+"exogenous": suitability for multiple cropping given by
+             GAEZ data set),
+separated by ":"
+(e.g. TRUE:endogenous; TRUE:exogenous; FALSE)}
 
 \item{selectyears}{Years to be returned}
 

@@ -38,7 +38,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   ### Read in data ###
   ####################
   # Cells that are suitable for multiple cropping under irrigated/rainfed conditions
-  suitMC <- setYears(collapseNames(calcOutput("MulticroppingYieldIncrease", output = "multicroppingSuitability",
+  suitMC <- setYears(collapseNames(calcOutput("MulticroppingSuitability",
                                   lpjml = lpjml[["crop"]],
                                   climatetype = "GSWP3-W5E5:historical", ### ToDo: Switch to flexible climatetype argument (once LPJmL runs are ready)
                                   selectyears = selectyears, suitability = suitability,

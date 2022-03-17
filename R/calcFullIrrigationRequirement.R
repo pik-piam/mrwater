@@ -21,7 +21,14 @@
 #'                         "hist_irrig" for historical cropmix on currently irrigated area,
 #'                         "hist_total" for historical cropmix on total cropland,
 #'                         or selection of proxycrops)
-#' @param multicropping    Multicropping activated (TRUE) or not (FALSE)
+#' @param multicropping    Multicropping activated (TRUE) or not (FALSE) and
+#'                         Multiple Cropping Suitability mask selected
+#'                         ("endogenous": suitability for multiple cropping determined
+#'                                       by rules based on grass and crop productivity
+#'                         "exogenous": suitability for multiple cropping given by
+#'                                      GAEZ data set),
+#'                         separated by ":"
+#'                         (e.g. TRUE:endogenous; FALSE:NULL)
 #' @param yieldcalib       If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                         If FALSE: uncalibrated LPJmL yields are used
 #'
@@ -38,13 +45,15 @@
 #' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
 
 calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear, iniyear,
-                                          irrigationsystem, landScen, cropmix, multicropping, yieldcalib) {
+                                          irrigationsystem, landScen, cropmix,
+                                          multicropping, yieldcalib) {
 
   # read in irrigation water requirements for each irrigation system
   # [in m^3 per hectare per year] (smoothed & harmonized)
   irrigWat <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                          lpjml = lpjml, climatetype = climatetype,
-                         multicropping = multicropping, aggregate = FALSE)
+                         multicropping = multicropping,
+                         aggregate = FALSE)
 
   # correct irrigation water requirements where irrigation would lead to negative yield gains
   # read in yield gain

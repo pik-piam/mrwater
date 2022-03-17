@@ -21,10 +21,14 @@ calcWaterUseCommittedAg(
 
 \item{iniyear}{Year of initialization for cropland area}
 
-\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)
-If TRUE: Irrigation water requirements for entire year
-If FALSE: Irrigation water requirements during main
-growing period of the crop}
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
+Multiple Cropping Suitability mask selected
+("endogenous": suitability for multiple cropping determined
+              by rules based on grass and crop productivity
+"exogenous": suitability for multiple cropping given by
+             GAEZ data set),
+separated by ":"
+(e.g. TRUE:endogenous; TRUE:exogenous; FALSE)}
 }
 \value{
 magpie object in cellular resolution

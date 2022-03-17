@@ -18,7 +18,14 @@
 #'                      NULL returns all crops individually
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                      If FALSE: uncalibrated LPJmL yields are used
-#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
+#'                      Multiple Cropping Suitability mask selected
+#'                      ("endogenous": suitability for multiple cropping determined
+#'                                    by rules based on grass and crop productivity
+#'                      "exogenous": suitability for multiple cropping given by
+#'                                   GAEZ data set),
+#'                      separated by ":"
+#'                      (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier

@@ -57,8 +57,14 @@ water allocation in upstreamfirst algorithm
 \item{yieldcalib}{Boolean for whether LPJmL should be calibrated
 to FAO country yields (TRUE or FALSE)}
 
-\item{multicropping}{Boolean for whether multicropping is activated (TRUE)
-or not (FALSE)}
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
+Multiple Cropping Suitability mask selected
+("endogenous": suitability for multiple cropping determined
+          by rules based on grass and crop productivity
+"exogenous": suitability for multiple cropping given by
+         GAEZ data set),
+separated by ":"
+(e.g. TRUE:endogenous; TRUE:exogenous; FALSE)}
 
 \item{cropmix}{Selected cropmix (options:
 "hist_irrig" for historical cropmix on currently irrigated area,

@@ -43,7 +43,14 @@
 #'                          if FALSE: currently reserved water on current irrigated cropland used
 #' @param com_ag            if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
-#' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
+#' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
+#'                          Multiple Cropping Suitability mask selected
+#'                          ("endogenous": suitability for multiple cropping determined
+#'                                         by rules based on grass and crop productivity
+#'                          "exogenous": suitability for multiple cropping given by
+#'                                       GAEZ data set),
+#'                          separated by ":"
+#'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier

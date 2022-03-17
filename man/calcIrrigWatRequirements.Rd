@@ -13,17 +13,22 @@ calcIrrigWatRequirements(selectyears, lpjml, climatetype, multicropping)
 
 \item{climatetype}{Climate model or historical baseline "GSWP3-W5E5:historical"}
 
-\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)
-If TRUE: Irrigation water requirements for entire year
-If FALSE: Irrigation water requirements during main
-growing period of the crop}
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
+Multiple Cropping Suitability mask selected
+("endogenous": suitability for multiple cropping determined
+              by rules based on grass and crop productivity
+"exogenous": suitability for multiple cropping given by
+             GAEZ data set),
+separated by ":"
+(e.g. TRUE:endogenous; FALSE:NULL)}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
 This function calculates irrigation water requirements based on
-             LPJmL blue water consumption of plants and considering irrigation efficiencies
+             LPJmL blue water consumption of crops and
+             considering irrigation efficiencies
 }
 \examples{
 \dontrun{

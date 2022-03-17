@@ -2,12 +2,14 @@
 #' @description calculates irrigation potentials in terms of potentially irrigated
 #'              areas and potential irrigation water for MAgPIE
 #'
-#' @param output           output to be returned: irrigated area (in Mha/yr) "IrrigArea" or
-#'                         available irrigation water for withdrawals (in km^3/yr) "wat_ag_ww"
-#'                         or available consumptive irrigation water (in km^3/yr) "wat_ag_wc"
+#' @param output           output to be returned:
+#'                         "IrrigArea": irrigated area (in Mha/yr) or
+#'                         "wat_ag_ww": available irrigation water for withdrawals (in km^3/yr) or
+#'                         "wat_ag_wc": available consumptive irrigation water (in km^3/yr)
 #' @param lpjml            LPJmL version required for respective inputs: natveg or crop
-#' @param climatetype      Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param selectyears      years for which irrigatable area is calculated
+#' @param climatetype      Switch between different climate scenarios or
+#'                         historical baseline "GSWP3-W5E5:historical"
+#' @param selectyears      years for which potentially irrigated area is calculated
 #' @param iniyear          initialization year
 #'
 #' @return magpie object

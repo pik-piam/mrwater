@@ -12,7 +12,14 @@
 #'                      or selection of proxycrops)
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                      If FALSE: uncalibrated LPJmL yields are used
-#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
+#'                      Multiple Cropping Suitability mask selected
+#'                      ("endogenous": suitability for multiple cropping determined
+#'                                    by rules based on grass and crop productivity
+#'                      "exogenous": suitability for multiple cropping given by
+#'                                   GAEZ data set),
+#'                      separated by ":"
+#'                      (e.g. TRUE:endogenous; FALSE:NULL)
 #' @param landScen      Land availability scenario consisting of two parts separated by ":":
 #'                      1. available land scenario (currCropland, currIrrig, potCropland)
 #'                      2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
@@ -33,7 +40,8 @@
 #' }
 
 calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landScen,
-                                cropmix, yieldcalib, multicropping, rangeGT) {
+                                cropmix, yieldcalib, multicropping,
+                                rangeGT) {
 
   # Irrigation system area initialization
   irrigationSystem <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr", aggregate = FALSE)
@@ -41,7 +49,8 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   # Irrigation water requirements per crop (in m^3 per hectare per year) [smoothed and harmonized]
   irrigWater <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                            lpjml = lpjml, climatetype = climatetype,
-                           multicropping = multicropping, aggregate = FALSE)
+                           multicropping = multicropping,
+                           aggregate = FALSE)
 
   ### Area to be irrigated ###
   # Area that can potentially be irrigated according to chosen scenario
@@ -88,6 +97,8 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3 per year",
-              description  = "total agricultural water use on yield gain areas for chosen cropmix",
+              description  = "total agricultural water use
+                              on yield gain areas
+                              for chosen cropmix",
               isocountries = FALSE))
 }

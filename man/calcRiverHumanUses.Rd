@@ -31,7 +31,14 @@ or historical baseline "GSWP3-W5E5:historical"}
 \item{efrMethod}{EFR method used including selected strictness of EFRs
 (Smakhtin:good, VMF:fair)}
 
-\item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}
+\item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
+Multiple Cropping Suitability mask selected
+("endogenous": suitability for multiple cropping determined
+              by rules based on grass and crop productivity
+"exogenous": suitability for multiple cropping given by
+             GAEZ data set),
+separated by ":"
+(e.g. TRUE:endogenous; TRUE:exogenous; FALSE)}
 }
 \value{
 magpie object in cellular resolution

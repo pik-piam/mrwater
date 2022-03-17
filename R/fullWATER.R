@@ -33,8 +33,14 @@
 #' @param protectLand       Land protection scenario (e.g. HalfEarth, BH_IFL, NULL)
 #' @param yieldcalib        Boolean for whether LPJmL should be calibrated
 #'                          to FAO country yields (TRUE or FALSE)
-#' @param multicropping     Boolean for whether multicropping is activated (TRUE)
-#'                          or not (FALSE)
+#' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
+#'                          Multiple Cropping Suitability mask selected
+#'                          ("endogenous": suitability for multiple cropping determined
+#'                                    by rules based on grass and crop productivity
+#'                          "exogenous": suitability for multiple cropping given by
+#'                                   GAEZ data set),
+#'                          separated by ":"
+#'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
 #' @param cropmix           Selected cropmix (options:
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,

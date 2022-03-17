@@ -7,17 +7,19 @@
 calcIrrigationPotentials(output, selectyears, iniyear, lpjml, climatetype)
 }
 \arguments{
-\item{output}{output to be returned: irrigated area (in Mha/yr) "IrrigArea" or
-available irrigation water for withdrawals (in km^3/yr) "wat_ag_ww"
-or available consumptive irrigation water (in km^3/yr) "wat_ag_wc"}
+\item{output}{output to be returned:
+"IrrigArea": irrigated area (in Mha/yr) or
+"wat_ag_ww": available irrigation water for withdrawals (in km^3/yr) or
+"wat_ag_wc": available consumptive irrigation water (in km^3/yr)}
 
-\item{selectyears}{years for which irrigatable area is calculated}
+\item{selectyears}{years for which potentially irrigated area is calculated}
 
 \item{iniyear}{initialization year}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Switch between different climate scenarios or
+historical baseline "GSWP3-W5E5:historical"}
 }
 \value{
 magpie object

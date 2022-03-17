@@ -1,14 +1,19 @@
 #' @title       calcIrrigWatRequirements
 #' @description This function calculates irrigation water requirements based on
-#'              LPJmL blue water consumption of plants and considering irrigation efficiencies
+#'              LPJmL blue water consumption of crops and
+#'              considering irrigation efficiencies
 #'
 #' @param selectyears   Years to be returned
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Climate model or historical baseline "GSWP3-W5E5:historical"
-#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
-#'                      If TRUE: Irrigation water requirements for entire year
-#'                      If FALSE: Irrigation water requirements during main
-#'                      growing period of the crop
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
+#'                      Multiple Cropping Suitability mask selected
+#'                      ("endogenous": suitability for multiple cropping determined
+#'                                    by rules based on grass and crop productivity
+#'                      "exogenous": suitability for multiple cropping given by
+#'                                   GAEZ data set),
+#'                      separated by ":"
+#'                      (e.g. TRUE:endogenous; FALSE:NULL)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -21,23 +26,31 @@
 #' @importFrom magclass getItems new.magpie add_dimension
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping
 #' @importFrom mrcommons toolCell2isoCell
+#' @importFrom stringr str_split
 
-calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype, multicropping) {
+calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
+                                     multicropping) {
 
   sizelimit <- getOption("magclass_sizeLimit")
   options(magclass_sizeLimit = 1e+12)
   on.exit(options(magclass_sizeLimit = sizelimit))
 
+  # Extract multiple cropping suitability mask
+  suitability   <- str_split(multicropping, ":")[[1]][2]
+  multicropping <- as.logical(str_split(multicropping, ":")[[1]][1])
+
   ##############################
   ######## Read in data ########
   ##############################
   ### Mappings
-  lpj2mag <- toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral", where = "mappingfolder")
+  lpj2mag <- toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral",
+                            where = "mappingfolder")
 
   if (multicropping) {
 
     # Read in whole-year blue water consumption for irrigated crops (in m^3 per ha per yr):
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:year",
+                      suitability = suitability,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 
@@ -45,6 +58,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype, multicropp
 
     # Read in main-season blue water consumption for irrigated crops (in m^3 per ha per yr):
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
+                      suitability = suitability,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 

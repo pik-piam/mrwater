@@ -12,7 +12,14 @@
 #' @param iniyear       Initialization year of irrigation system
 #' @param efrMethod     EFR method used including selected strictness of EFRs
 #'                      (Smakhtin:good, VMF:fair)
-#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
+#'                      Multiple Cropping Suitability mask selected
+#'                      ("endogenous": suitability for multiple cropping determined
+#'                                    by rules based on grass and crop productivity
+#'                      "exogenous": suitability for multiple cropping given by
+#'                                   GAEZ data set),
+#'                      separated by ":"
+#'                      (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums

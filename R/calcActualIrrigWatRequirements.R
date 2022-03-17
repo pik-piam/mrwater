@@ -6,10 +6,14 @@
 #' @param selectyears   Years to be returned
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear       Initialization year (for weight by cropland)
-#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
-#'                      If TRUE: Irrigation water requirements for entire year
-#'                      If FALSE: Irrigation water requirements during main
-#'                      growing period of the crop
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
+#'                      Multiple Cropping Suitability mask selected
+#'                      ("endogenous": suitability for multiple cropping determined
+#'                                    by rules based on grass and crop productivity
+#'                      "exogenous": suitability for multiple cropping given by
+#'                                   GAEZ data set),
+#'                      separated by ":"
+#'                      (e.g. TRUE:endogenous; FALSE:NULL)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -26,12 +30,14 @@
 #' @importFrom madrat calcOutput
 
 calcActualIrrigWatRequirements <- function(selectyears, iniyear,
-                                           lpjml, climatetype, multicropping) {
+                                           lpjml, climatetype,
+                                           multicropping) {
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
   irrigReq   <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                            lpjml = lpjml,  climatetype = climatetype,
-                           multicropping = multicropping, aggregate = FALSE)
+                           multicropping = multicropping,
+                           aggregate = FALSE)
 
   # irrigation system share (share of irrigated area)
   irrigSystemShr <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr",
@@ -60,6 +66,7 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
               weight       = irrigArea,
               unit         = "m^3 per ha per yr",
               description  = "Irrigation water requirements for irrigation for
-                             different crop types under selected irrigation system share per cell",
+                             different crop types
+                             under selected irrigation system share per cell",
               isocountries = FALSE))
 }
