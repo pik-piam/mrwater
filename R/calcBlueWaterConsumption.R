@@ -32,7 +32,8 @@
 #' @importFrom stats lm
 
 calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
-                                     fallowFactor = 0.75, output, suitability) {
+                                     fallowFactor = 0.75, suitability,
+                                     output) {
 
   ####################
   ### Read in data ###

@@ -57,8 +57,9 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
   } else {
 
     # Read in main-season blue water consumption for irrigated crops (in m^3 per ha per yr):
+    # (Note: suitability argument not relvant here)
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
-                      suitability = suitability,
+                      suitability = "endogenous",
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 
