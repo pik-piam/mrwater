@@ -106,9 +106,9 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
                       iniyear = iniyear, selectyears = selectyears,
                       multicropping = multicropping, aggregate = FALSE)
     tmp <- add_dimension(tmp, dim = 3.1, add = "crop",
-                         nm = getNames(dimSums(irrigReqWW, dim = c(3.2, 3.3))))
+                         nm = getItems(irrigReqWW, dim = "crop"))
     tmp <- add_dimension(tmp, dim = 3.2, add = "irrigation",
-                         nm = getNames(dimSums(irrigReqWW, dim = c(3.1, 3.2))))[, , getNames(yields)]
+                         nm = getItems(irrigReqWW, dim = "irrigation"))[, , getNames(yields)]
     irrigReqWW[tmp < 10] <- 0
 
     # yield to water ratio [tDM / m^3]

@@ -9,8 +9,8 @@ calcBlueWaterConsumption(
   lpjml,
   climatetype,
   fallowFactor = 0.75,
-  output,
-  suitability
+  suitability,
+  output
 )
 }
 \arguments{
@@ -24,16 +24,16 @@ calcBlueWaterConsumption(
 fallow period between harvest of first (main) season and
 sowing of second (off) season}
 
+\item{suitability}{"endogenous": suitability for multiple cropping determined
+              by rules based on grass and crop productivity
+"exogenous": suitability for multiple cropping given by
+             GAEZ data set}
+
 \item{output}{output to be returned by the function: combination of
 crop type ("crops" or "grass") and
 season ("main" (LPJmL growing period), "year" (entire year)),
 separated by ":"
 ("crops:main", "crops:year", "grass:main", "grass:year")}
-
-\item{suitability}{"endogenous": suitability for multiple cropping determined
-              by rules based on grass and crop productivity
-"exogenous": suitability for multiple cropping given by
-             GAEZ data set}
 }
 \value{
 magpie object in cellular resolution
