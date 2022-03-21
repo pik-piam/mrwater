@@ -54,7 +54,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
-             multicropping = TRUE, aggregate = FALSE,
+             multicropping = "TRUE:endogenous", aggregate = FALSE,
              file = paste0("yieldgain_USDha_multiple", ".mz"))
 
   # Yield gain through irrigation under single cropping

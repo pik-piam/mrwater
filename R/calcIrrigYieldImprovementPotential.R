@@ -67,11 +67,13 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
     yieldGain <- dimSums(yieldGain * cropareaShr, dim = "crop")
 
     # description of output
-    description <- "Yield improvement potential through irrigation given cropmix croparea share"
+    description <- "Yield improvement potential through irrigation
+                    given cropmix croparea share"
 
   } else {
 
-    description <- "Yield improvement potential through irrigation for all different crop types"
+    description <- "Yield improvement potential through irrigation
+                    for all different crop types"
 
   }
 
