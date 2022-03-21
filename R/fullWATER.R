@@ -45,6 +45,9 @@
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
 #'                          or selection of proxycrops)
+#' @param lpjml             LPJmL version required for respective inputs: natveg or crop
+#' @param climatetype       Switch between different climate scenarios or
+#'                          historical baseline "GSWP3-W5E5:historical"
 #'
 #' @author Felicitas Beier
 #'
@@ -54,19 +57,16 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
                       allocationrule = "optimization", rankmethod = "USD_ha:TRUE",
                       thresholdtype = "USD_ha", gainthreshold = 500,
                       protectLand = "HalfEarth", yieldcalib = TRUE,
-                      multicropping = FALSE, cropmix = "hist_total") {
+                      multicropping = FALSE, cropmix = "hist_total",
+                      climatetype = "MRI-ESM2-0:ssp370",
+                      lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
+                                crop = "ggcmi_phase3_nchecks_9ca735cb")) {
 
   # Standard settings
   iniyear          <- 2010
   selectyears      <- 2010
   plotyear         <- 2010
   ssp              <- "ssp2"
-
-  lpjml            <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                        crop = "ggcmi_phase3_nchecks_9ca735cb")
-  # climatetype      <- "GFDL-ESM4:ssp126"
-  climatetype      <- "MRI-ESM2-0:ssp370"
-
 
   irrigationsystem <- "initialization"
 

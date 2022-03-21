@@ -14,7 +14,10 @@ fullWATER(
   protectLand = "HalfEarth",
   yieldcalib = TRUE,
   multicropping = FALSE,
-  cropmix = "hist_total"
+  cropmix = "hist_total",
+  climatetype = "MRI-ESM2-0:ssp370",
+  lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop =
+    "ggcmi_phase3_nchecks_9ca735cb")
 )
 }
 \arguments{
@@ -70,6 +73,11 @@ separated by ":"
 "hist_irrig" for historical cropmix on currently irrigated area,
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
+
+\item{climatetype}{Switch between different climate scenarios or
+historical baseline "GSWP3-W5E5:historical"}
+
+\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 }
 \description{
 Function that produces the objects for water outputs

@@ -49,6 +49,24 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
   # MAIN RESULTS #
   ################
 
+  # Physical croparea
+  calcOutput("Croparea", years = iniyear, physical = TRUE, sectoral = "kcr",
+             irrigation = TRUE, cells = "lpjcell", cellular = TRUE,
+             aggregate = FALSE, file = "croparea_physical.mz")
+
+  # Potentially irrigated area on current cropland under single cropping
+  calcOutput("EconOfIrrig", scenario = ssp, output = "IrrigArea", GT_range = gtrange,
+             selectyears = plotyear, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule, thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, cropmix = cropmix,
+             landScen = "currCropland:NULL", potential_wat = TRUE, com_ag = FALSE,
+             multicropping = FALSE, aggregate = FALSE,
+             file = paste0("IrrigArea", "EconCURUNSUS", "_single.mz"))
+
+
   # Yield gain through irrigation under multiple cropping
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
              lpjml = lpjml, climatetype = climatetype,
@@ -69,19 +87,8 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
   # for range of yield value gain thresholds and different scenarios
   for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
 
-    # SUS and LANDPROTECT scenarios:
-    calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
-               selectyears = plotyear, iniyear = iniyear,
-               lpjml = lpjml, climatetype = climatetype,
-               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-               rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
-               irrigationsystem = irrigationsystem, cropmix = cropmix,
-               landScen = paste0("potCropland:", protectLand),
-               potential_wat = TRUE, com_ag = FALSE,
-               multicropping = multicropping, aggregate = FALSE,
-               file = paste0(o, "EconPOTSUS.mz"))
-
+    ## Land protection
+    # Current cropland
     calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
                selectyears = plotyear, iniyear = iniyear,
                lpjml = lpjml, climatetype = climatetype,
@@ -94,6 +101,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
                multicropping = multicropping, aggregate = FALSE,
                file = paste0(o, "EconCURSUS.mz"))
 
+    # Current irrigated area
     calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
                selectyears = plotyear, iniyear = iniyear,
                lpjml = lpjml, climatetype = climatetype,
@@ -106,18 +114,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
                multicropping = multicropping, aggregate = FALSE,
                file = paste0(o, "EconACTSUS.mz"))
 
-    calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
-               selectyears = plotyear, iniyear = iniyear,
-               lpjml = lpjml, climatetype = climatetype,
-               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-               rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
-               irrigationsystem = irrigationsystem, cropmix = cropmix,
-               landScen = paste0("potCropland:", protectLand),
-               potential_wat = TRUE, com_ag = TRUE,
-               multicropping = multicropping, aggregate = FALSE,
-               file = paste0(o, "EconPOTSUScomAg.mz"))
-
+    # Current cropland (committed agricultural uses reserved)
     calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
                selectyears = plotyear, iniyear = iniyear,
                lpjml = lpjml, climatetype = climatetype,
@@ -130,6 +127,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
                multicropping = multicropping, aggregate = FALSE,
                file = paste0(o, "EconCURSUScomAg.mz"))
 
+    # Current irrigated area (committed agricultural uses reserved)
     calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
                selectyears = plotyear, iniyear = iniyear,
                lpjml = lpjml, climatetype = climatetype,
@@ -142,18 +140,8 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
                multicropping = multicropping, aggregate = FALSE,
                file = paste0(o, "EconACTSUScomAg.mz"))
 
-    # UNSUS and WATPROTECT scenarios:
-    calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
-               selectyears = plotyear, iniyear = iniyear,
-               lpjml = lpjml, climatetype = climatetype,
-               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-               rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
-               irrigationsystem = irrigationsystem, cropmix = cropmix,
-               landScen = "potCropland:NULL", potential_wat = TRUE, com_ag = FALSE,
-               multicropping = multicropping, aggregate = FALSE,
-               file = paste0(o, "EconPOTUNSUS.mz"))
-
+    ## No land protection
+    # Current cropland
     calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
                selectyears = plotyear, iniyear = iniyear,
                lpjml = lpjml, climatetype = climatetype,
@@ -165,6 +153,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
                multicropping = multicropping, aggregate = FALSE,
                file = paste0(o, "EconCURUNSUS.mz"))
 
+    # Current irrigated area
     calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
                selectyears = plotyear, iniyear = iniyear,
                lpjml = lpjml, climatetype = climatetype,
@@ -176,17 +165,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
                multicropping = multicropping, aggregate = FALSE,
                file = paste0(o, "EconACTUNSUS.mz"))
 
-    calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
-               selectyears = plotyear, iniyear = iniyear,
-               lpjml = lpjml, climatetype = climatetype,
-               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-               rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
-               irrigationsystem = irrigationsystem, cropmix = cropmix,
-               landScen = "potCropland:NULL", potential_wat = TRUE, com_ag = TRUE,
-               multicropping = multicropping, aggregate = FALSE,
-               file = paste0(o, "EconPOTUNSUScomAg.mz"))
-
+    # Current cropland (committed agricultural uses reserved)
     calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
                selectyears = plotyear, iniyear = iniyear,
                lpjml = lpjml, climatetype = climatetype,
@@ -198,6 +177,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
                multicropping = multicropping, aggregate = FALSE,
                file = paste0(o, "EconCURUNSUScomAg.mz"))
 
+    # Current irrigated area (committed agricultural uses reserved)
     calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
                selectyears = plotyear, iniyear = iniyear,
                lpjml = lpjml, climatetype = climatetype,
@@ -225,11 +205,11 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
   calcOutput("MulticroppingSuitability",
              lpjml = lpjml[["crop"]], climatetype = climatetype,
              selectyears = selectyears, suitability = "exogenous",
-             aggregate = FALSE, file = "suitMC_LPJmL.mz")
+             aggregate = FALSE, file = "suitMC_GAEZ2.mz")
 
   # Multiple cropping suitability according to GAEZ
   calcOutput("MultipleCroppingZones", layers = 8,
-             aggregate = FALSE, file = "suitMC_GAEZ.mz")
+             aggregate = FALSE, file = "suitMC_GAEZ8.mz")
 
 
 }
