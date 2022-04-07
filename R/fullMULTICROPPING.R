@@ -50,7 +50,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:endogenous",
   ################
 
   # Physical croparea
-  calcOutput("Croparea", years = iniyear, physical = TRUE, sectoral = "kcr",
+  calcOutput("CropareaAdjusted", years = iniyear, physical = TRUE, sectoral = "kcr",
              irrigation = TRUE, cells = "lpjcell", cellular = TRUE,
              aggregate = FALSE, file = "croparea_physical.mz")
 

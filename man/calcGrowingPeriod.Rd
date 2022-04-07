@@ -35,5 +35,5 @@ calcOutput("GrowingPeriod", aggregate = FALSE)
 
 }
 \author{
-Kristine Karstens
+Kristine Karstens, Felicitas Beier
 }
