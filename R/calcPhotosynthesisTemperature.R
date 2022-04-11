@@ -62,7 +62,7 @@ calcPhotosynthesisTemperature <- function(threshold = 0.8) {
   }
 
   # Select crop (ToDo: full list of lpjml crop types)
-  croplist <- c("maize", "tece", "trce", "rice")
+  croplist <- names(tempPhotosLIST)
   minTemp  <- list()
   maxTemp  <- list()
 
