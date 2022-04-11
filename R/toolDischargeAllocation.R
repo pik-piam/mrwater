@@ -170,8 +170,8 @@ toolDischargeAllocation <- function(y, rs, l_inout, l_in, allocationrule, glocel
         IO_discharge[c(v_down, c), y, ][is_req_ww[c(v_ones, 1), , , drop = F]] <- (IO_discharge[c(v_down, c), y, , drop = F] -
                                                                                      I_reqWatFullirrigWC[c(v_cell, c), y, , drop = F] * IO_fracFullirrig[c(v_cell, c), y, , drop = F])[is_req_ww[c(v_ones, 1), , , drop = F]]
         # update minimum water required in cell:
-        IO_minWatReserved[c, y, ][is_req_ww[, , , drop = F]]    <- (IO_minWatReserved[c, y, , drop = F] +
-                                                                                   IO_fracFullirrig[c, y, , drop = F] * I_reqWatFullirrigWW[c, y, , drop = F])[is_req_ww[, , , drop = F]]
+        IO_minWatReserved[c, y, ][is_req_ww[, , , drop = F]] <- (IO_minWatReserved[c, y, , drop = F] +
+                                                                  IO_fracFullirrig[c, y, , drop = F] * I_reqWatFullirrigWW[c, y, , drop = F])[is_req_ww[, , , drop = F]]
       }
 
       l_inout <- list(discharge = IO_discharge,
