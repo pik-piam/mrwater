@@ -21,14 +21,19 @@
 #'                         "hist_irrig" for historical cropmix on currently irrigated area,
 #'                         "hist_total" for historical cropmix on total cropland,
 #'                         or selection of proxycrops)
-#' @param multicropping    Multicropping activated (TRUE) or not (FALSE) and
-#'                         Multiple Cropping Suitability mask selected
-#'                         ("endogenous": suitability for multiple cropping determined
-#'                                       by rules based on grass and crop productivity
-#'                         "exogenous": suitability for multiple cropping given by
-#'                                      GAEZ data set),
-#'                         separated by ":"
-#'                         (e.g. TRUE:endogenous; FALSE:NULL)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
+#'                      Multiple Cropping Suitability mask selected
+#'                      (mask can be:
+#'                      "none": no mask applied (only for development purposes)
+#'                      "actual:total": currently multicropped areas calculated from total harvested areas
+#'                                      and total physical areas per cell from readLanduseToolbox
+#'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+#'                      "actual:cropIrrig" (crop- and irrigation-specific) "total"
+#'                      "potential:endogenous": potentially multicropped areas given
+#'                                              temperature and productivity limits
+#'                      "potential:exogenous": potentially multicropped areas given
+#'                                             GAEZ suitability classification)
+#'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param yieldcalib       If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                         If FALSE: uncalibrated LPJmL yields are used
 #'

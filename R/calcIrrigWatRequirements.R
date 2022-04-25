@@ -8,12 +8,17 @@
 #' @param climatetype   Climate model or historical baseline "GSWP3-W5E5:historical"
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
-#'                      ("endogenous": suitability for multiple cropping determined
-#'                                    by rules based on grass and crop productivity
-#'                      "exogenous": suitability for multiple cropping given by
-#'                                   GAEZ data set),
-#'                      separated by ":"
-#'                      (e.g. TRUE:endogenous; FALSE:NULL)
+#'                      (mask can be:
+#'                      "none": no mask applied (only for development purposes)
+#'                      "actual:total": currently multicropped areas calculated from total harvested areas
+#'                                      and total physical areas per cell from readLanduseToolbox
+#'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+#'                      "actual:cropIrrig" (crop- and irrigation-specific) "total"
+#'                      "potential:endogenous": potentially multicropped areas given
+#'                                              temperature and productivity limits
+#'                      "potential:exogenous": potentially multicropped areas given
+#'                                             GAEZ suitability classification)
+#'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -36,7 +41,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
   on.exit(options(magclass_sizeLimit = sizelimit))
 
   # Extract multiple cropping suitability mask
-  suitability   <- str_split(multicropping, ":")[[1]][2]
+  areaMask      <- paste(str_split(multicropping, ":")[[1]][2], str_split(multicropping, ":")[[1]][3], sep = ":")
   multicropping <- as.logical(str_split(multicropping, ":")[[1]][1])
 
   ##############################
@@ -50,16 +55,16 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
 
     # Read in whole-year blue water consumption for irrigated crops (in m^3 per ha per yr):
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:year",
-                      suitability = suitability,
+                      areaMask = areaMask,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 
   } else {
 
     # Read in main-season blue water consumption for irrigated crops (in m^3 per ha per yr):
-    # (Note: suitability argument not relvant here)
+    # (Note: areaMask argument not relevant here, but needs to be set) ToDo: as soon as code review complete, set default
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
-                      suitability = "endogenous",
+                      areaMask = "potential:endogenous",
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 

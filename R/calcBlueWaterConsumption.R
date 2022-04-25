@@ -14,10 +14,16 @@
 #'                      season ("main" (LPJmL growing period), "year" (entire year)),
 #'                      separated by ":"
 #'                      ("crops:main", "crops:year", "grass:main", "grass:year")
-#' @param suitability   "endogenous": suitability for multiple cropping determined
-#'                                    by rules based on grass and crop productivity
-#'                      "exogenous": suitability for multiple cropping given by
-#'                                   GAEZ data set
+#' @param areaMask      Multicropping area mask to be used
+#'                      "none": no mask applied (only for development purposes)
+#'                      "actual:total": currently multicropped areas calculated from total harvested areas
+#'                                      and total physical areas per cell from readLanduseToolbox
+#'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+#'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
+#'                      "potential:endogenous": potentially multicropped areas given
+#'                                              temperature and productivity limits
+#'                      "potential:exogenous": potentially multicropped areas given
+#'                                             GAEZ suitability classification
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -32,7 +38,7 @@
 #' @importFrom stats lm
 
 calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
-                                     fallowFactor = 0.75, suitability,
+                                     fallowFactor = 0.75, areaMask,
                                      output) {
 
   ####################
@@ -50,13 +56,17 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
   if (output != "crops:main") {
 
-    # Cells that are suitable for multiple cropping under irrigated/rainfed conditions
-    suitMC <- setYears(collapseNames(calcOutput("MulticroppingSuitability",
-                                                lpjml = lpjml[["crop"]],
-                                                climatetype = "GSWP3-W5E5:historical", ### ToDo: Switch to flexible climatetype argument (once LPJmL runs are ready)
-                                                selectyears = selectyears, suitability = suitability,
-                                                aggregate = FALSE)[, , "irrigated"]),
-                       selectyears)
+    # Water requirements for multiple cropping case are only calculated for areas
+    # where multiple cropping is possible under the selected scenario
+    suitMC <- collapseNames(calcOutput("MulticroppingYieldIncrease",
+                                 areaMask = areaMask,
+                                 lpjml = "ggcmi_phase3_nchecks_9ca735cb",  ### ToDo: Switch to flexible lpjml argument (once LPJmL runs are ready)
+                                 climatetype = "GSWP3-W5E5:historical", ### ToDo: Switch to flexible climatetype argument (once LPJmL runs are ready)
+                                 selectyears = selectyears, #### ToDo: replace with all years (once LPJmL runs are ready)
+                                 aggregate = FALSE)[, , "irrigated"])
+    # where positive yield increase: multicropping is possible
+    suitMC[suitMC > 0]  <- 1
+    suitMC[suitMC != 1] <- 0
 
     # Grass ET in the entire year (main + off season) (in m^3/ha)
     grassETannual <- setYears(calcOutput("GrassET", season = "wholeYear",
