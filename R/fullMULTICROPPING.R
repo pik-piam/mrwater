@@ -55,7 +55,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
   ################
 
   # Physical croparea
-  calcOutput("CropareaAdjusted", years = iniyear,
+  calcOutput("CropareaAdjusted", iniyear = iniyear,
              aggregate = FALSE, file = "croparea_physical.mz")
 
   # Potentially irrigated area on current cropland under single cropping
