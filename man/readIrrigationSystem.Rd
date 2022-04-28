@@ -19,7 +19,7 @@ Read in irrigation system type for initialization
 }
 \examples{
 \dontrun{
-readSource("IrrigationSystem", convert = "onlycorrect")
+readSource("IrrigationSystem", convert = FALSE)
 }
 
 }

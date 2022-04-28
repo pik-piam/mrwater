@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' readSource("IrrigationSystem", convert = "onlycorrect")
+#' readSource("IrrigationSystem", convert = FALSE)
 #' }
 #'
 #' @importFrom madrat toolCountry2isocode toolCountryFill toolConditionalReplace
@@ -18,6 +18,8 @@
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
 readIrrigationSystem <- function(subtype = "Jaegermeyr") {
+
+  ### ToDo: Can be delted soon. Will be replaced by readJaegermeyr2015
 
   # Mapping
   map <- toolGetMappingCoord2Country()

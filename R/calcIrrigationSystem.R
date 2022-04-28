@@ -19,6 +19,8 @@
 
 calcIrrigationSystem <- function(datasource) {
 
+  ### ToDo: Delete. Will be replaced with calcIrrigSystemShr and subsequent function calcIrrigSystem
+
   # Jägermeyr et al. (2015): Shares of surface, sprinkler and drip irrigated areas
   # (Note: compiled from FAO (2014), ICID (2012), Rohwer et al. (2007))
   if (datasource == "Jaegermeyr") {
