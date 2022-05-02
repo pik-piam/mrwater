@@ -56,23 +56,23 @@ calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
                            lpjml = lpjml,  climatetype = climatetype,
                            multicropping = multicropping,
                            aggregate = FALSE)[, , irrigwattype])
+  cropsystemlist <- getItems(irrigReq, dim = 3)
 
-  #### HERE: irrigation system assumption for different irrigation efficiencies in MAgPIE ####
-  # irrigation system share (share of irrigated area) [PLACEHOLDER: initialization]
-  irrigSystemShr <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr",
-                                aggregate = FALSE)
-  #### HERE: irrigation system assumption for different irrigation efficiencies in MAgPIE ####
+  # Irrigation system area share per crop
+  irrigSystemShr <- calcOutput("IrrigSystemShr", iniyear = iniyear, aggregate = FALSE)
 
   # total irrigation water requirements per crop given irrigation system share (in m^3 per ha per yr)
-  irrigReq       <- dimSums(irrigSystemShr * irrigReq,
+  irrigReq       <- dimSums(irrigSystemShr[, , cropsystemlist] * irrigReq,
                             dim = "system")
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {
-    stop("produced NA irrigation water requirements")
+    stop("Problem in calcPotentialIrrigWatRequirements:
+         produced NA irrigation water requirements")
   }
   if (any(irrigReq < 0)) {
-    stop("produced negative irrigation water requirements")
+    stop("Problem in calcPotentialIrrigWatRequirements:
+         produced negative irrigation water requirements")
   }
 
   # Weight: potentially irrigated area (only used for aggregation)

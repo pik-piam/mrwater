@@ -13,8 +13,8 @@ calcIrrigSystemShr(iniyear)
 magpie object in cellular resolution
 }
 \description{
-This function returns the irrigation area
-             under a specific irrigation system type 
+This function returns the share of the
+             irrigation area under a specific irrigation system type
              (surface, sprinkler, drip)
              per crop type
 }

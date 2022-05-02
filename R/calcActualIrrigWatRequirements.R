@@ -26,7 +26,7 @@
 #' calcOutput("ActualIrrigWatRequirements", aggregate = FALSE)
 #' }
 #'
-#' @importFrom magclass dimSums collapseNames
+#' @importFrom magclass dimSums collapseNames getNames
 #' @importFrom madrat calcOutput
 
 calcActualIrrigWatRequirements <- function(selectyears, iniyear,
@@ -39,20 +39,21 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
                            multicropping = multicropping,
                            aggregate = FALSE)
 
-  # irrigation system share (share of irrigated area)
-  irrigSystemShr <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr",
-                                aggregate = FALSE)
+  # Irrigation system area share per crop
+  irrigSystemShr <- calcOutput("IrrigSystemShr", iniyear = iniyear, aggregate = FALSE)
 
   # total irrigation water requirements per crop given irrigation system share (in m^3 per ha per yr)
-  irrigReq       <- dimSums(irrigSystemShr * irrigReq,
+  irrigReq       <- dimSums(irrigSystemShr * irrigReq[, , getNames(irrigSystemShr)],
                             dim = "system")
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {
-    stop("produced NA irrigation water requirements")
+    stop("Problem in calcActualIrrigWatRequirements:
+         produced NA irrigation water requirements")
   }
   if (any(irrigReq < 0)) {
-    stop("produced negative irrigation water requirements")
+    stop("Problem in calcActualIrrigWatRequirements:
+         produced negative irrigation water requirements")
   }
 
   # Weight: irrigated area (only used for aggregation)
@@ -65,8 +66,9 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
   return(list(x            = irrigReq,
               weight       = irrigArea,
               unit         = "m^3 per ha per yr",
-              description  = "Irrigation water requirements for irrigation for
-                             different crop types
-                             under selected irrigation system share per cell",
+              description  = "Irrigation water requirements
+                             for different crop types
+                             under selected irrigation system share
+                             per cell and crop",
               isocountries = FALSE))
 }

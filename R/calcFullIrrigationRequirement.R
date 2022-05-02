@@ -92,23 +92,21 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
   irrigWat <- irrigWat[, , getItems(cropareaShr, dim = "crop")] * land
 
-  # sum over crops
-  irrigWat <- dimSums(irrigWat, dim = "crop")
-
   # calculate irrigation water requirements per crop [in mio. m^3 per year] given irrigation system share in use
   if (irrigationsystem == "initialization") {
 
     # read in irrigation system area initialization [share of AEI by system] and expand to all years
-    tmp               <- calcOutput("IrrigationSystem", datasource = "Jaegermeyr",
-                                    aggregate = FALSE)
-    irrigSystem       <- new.magpie(cells_and_regions = getItems(irrigWat, dim = 1),
+    tmp               <- calcOutput("IrrigSystemShr", iniyear = iniyear, aggregate = FALSE)
+
+    irrigSystemShr    <- new.magpie(cells_and_regions = getItems(irrigWat, dim = 1),
                                     years = getItems(irrigWat, dim = "year"),
                                     names = getItems(tmp, dim = 3),
-                                    sets = c("x.y.iso", "year", "system"))
-    irrigSystem[, , ] <- tmp
+                                    sets = c("x.y.iso", "year", "crop.system"))
+    irrigSystemShr[, , ] <- tmp
 
-    # every crop irrigated by same share of initialization irrigation system
-    irrigWat <- dimSums(irrigSystem * irrigWat, dim = "system")
+    # irrigation water requirements per cell (in mio. m^3)
+    irrigWat <- dimSums(irrigSystemShr * irrigWat[, , getNames(irrigSystemShr)],
+                        dim = c("system", "crop"))
 
   } else {
 
@@ -119,10 +117,12 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
 
   # Checks
   if (any(is.na(irrigWat))) {
-    stop("produced NA full irrigation requirements")
+    stop("calcFullIrrigationRequirements:
+         produced NA full irrigation requirements")
   }
   if (any(irrigWat < 0)) {
-    stop("produced negative full irrigation requirements")
+    stop("calcFullIrrigationRequirements:
+         produced negative full irrigation requirements")
   }
 
   return(list(x            = irrigWat,
