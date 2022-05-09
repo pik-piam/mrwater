@@ -27,10 +27,15 @@
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          ("optimization" or "upstreamfirst")
-#' @param thresholdtype     Unit of yield improvement potential used as threshold:
+#' @param thresholdtype     Unit of yield improvement potential used as threshold,
+#'                          consisting of unit and price aggregation level separated by ":".
+#'                          Unit:
 #'                          tDM (tons per dry matter),
 #'                          USD_ha (USD per hectare) for area return, or
-#'                          USD_m3 (USD per cubic meter) for volumetric return
+#'                          USD_m3 (USD per cubic meter) for volumetric return.
+#'                          Price aggregation:
+#'                          "GLO" for global average prices, or
+#'                          "ISO" for country-level prices
 #' @param gainthreshold     Threshold of yield improvement potential
 #'                          (same unit as thresholdtype)
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge

@@ -13,6 +13,7 @@ calcYieldgainWatUse(
   cropmix,
   yieldcalib,
   multicropping,
+  unit,
   rangeGT
 )
 }
@@ -47,6 +48,16 @@ Multiple Cropping Suitability mask selected
              GAEZ data set),
 separated by ":"
 (e.g. TRUE:endogenous; FALSE:NULL)}
+
+\item{unit}{Unit of yield improvement potential to be returned and
+level of price aggregation used, separated by ":".
+Unit:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return.
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices}
 
 \item{rangeGT}{Range of gainthreshold for calculation of potentially
 irrigated areas}

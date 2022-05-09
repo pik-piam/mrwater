@@ -18,15 +18,24 @@
 #'                          tDM (tons per dry matter),
 #'                          USD_ha (USD per hectare) for area return, or
 #'                          USD_m3 (USD per cubic meter) for volumetric return;
+#'                          Unit of yield improvement potential to be returned;
+#'                          Level of price aggregation used:
+#'                          "GLO" for global average prices, or
+#'                          "ISO" for country-level prices;
 #'                          and boolean indicating fullpotential (TRUE, i.e. cell
 #'                          receives full irrigation requirements in total area)
 #'                          or reduced potential (FALSE, reduced potential of cell
 #'                          receives at later stage in allocation algorithm);
 #'                          separated by ":"
-#' @param thresholdtype     Unit of yield improvement potential used as threshold:
+#' @param thresholdtype     Unit of yield improvement potential used as threshold,
+#'                          consisting of two components:
+#'                          Unit:
 #'                          tDM (tons per dry matter),
 #'                          USD_ha (USD per hectare) for area return, or
-#'                          USD_m3 (USD per cubic meter) for volumetric return
+#'                          USD_m3 (USD per cubic meter) for volumetric return.
+#'                          Price aggregation:
+#'                          "GLO" for global average prices, or
+#'                          "ISO" for country-level prices
 #' @param gainthreshold     Threshold of yield improvement potential required for
 #'                          water allocation in upstreamfirst algorithm
 #'                          (in same unit as thresholdtype)
@@ -54,8 +63,8 @@
 #' @export
 
 fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
-                      allocationrule = "optimization", rankmethod = "USD_ha:TRUE",
-                      thresholdtype = "USD_ha", gainthreshold = 500,
+                      allocationrule = "optimization", rankmethod = "USD_ha:GLO:TRUE",
+                      thresholdtype = "USD_ha:GLO", gainthreshold = 500,
                       protectLand = "HalfEarth", yieldcalib = TRUE,
                       multicropping = FALSE, cropmix = "hist_total",
                       climatetype = "MRI-ESM2-0:ssp370",
@@ -282,6 +291,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("currIrrig:", protectLand),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_actSUS.mz")
 
@@ -289,6 +299,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("currIrrig:", "NULL"),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_actUNSUS.mz")
 
@@ -296,6 +307,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("currCropland:", protectLand),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_curSUS.mz")
 
@@ -303,6 +315,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("currCropland:", "NULL"),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_curUNSUS.mz")
 
@@ -310,6 +323,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("potCropland:", protectLand),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_potSUS.mz")
 
@@ -317,6 +331,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("potCropland:", "NULL"),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_potUNSUS.mz")
 
@@ -379,7 +394,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "irrigAreaCurrent.mz")
 
   # Yield gain through irrigation
-  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+  calcOutput("IrrigYieldImprovementPotential", unit = paste("USD_ha", strsplit(rankmethod, ":")[[1]][2], sep = ":"),
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,

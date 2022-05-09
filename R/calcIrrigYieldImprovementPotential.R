@@ -5,10 +5,15 @@
 #' @param lpjml         LPJmL version used for yields
 #' @param climatetype   Climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param selectyears   Years to be returned by the function
-#' @param unit          Unit of yield improvement potential to be returned:
+#' @param unit          Unit of yield improvement potential to be returned and
+#'                      level of price aggregation used, separated by ":".
+#'                      Unit:
 #'                      tDM (tons per dry matter),
 #'                      USD_ha (USD per hectare) for area return, or
-#'                      USD_m3 (USD per cubic meter) for volumetric return
+#'                      USD_m3 (USD per cubic meter) for volumetric return.
+#'                      Price aggregation:
+#'                      "GLO" for global average prices, or
+#'                      "ISO" for country-level prices
 #' @param iniyear       initialization year for food price and cropmix area
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:

@@ -17,10 +17,15 @@
 #'                      or selection of proxycrops)
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                      If FALSE: uncalibrated LPJmL yields are used
-#' @param thresholdtype Unit of yield improvement potential used as threshold:
+#' @param thresholdtype Unit of yield improvement potential used as threshold,
+#'                      consisting of two components:
+#'                      Unit:
 #'                      tDM (tons per dry matter),
 #'                      USD_ha (USD per hectare) for area return, or
-#'                      USD_m3 (USD per cubic meter) for volumetric return
+#'                      USD_m3 (USD per cubic meter) for volumetric return.
+#'                      Price aggregation:
+#'                      "GLO" for global average prices, or
+#'                      "ISO" for country-level prices
 #' @param gainthreshold Threshold of yield improvement potential
 #'                      (same unit as thresholdtype)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and

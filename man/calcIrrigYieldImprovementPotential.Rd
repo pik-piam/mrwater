@@ -20,10 +20,15 @@ calcIrrigYieldImprovementPotential(
 
 \item{climatetype}{Climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{unit}{Unit of yield improvement potential to be returned:
+\item{unit}{Unit of yield improvement potential to be returned and
+level of price aggregation used, separated by ":".
+Unit:
 tDM (tons per dry matter),
 USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return}
+USD_m3 (USD per cubic meter) for volumetric return.
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices}
 
 \item{iniyear}{initialization year for food price and cropmix area}
 

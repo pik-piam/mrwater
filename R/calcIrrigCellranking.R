@@ -12,6 +12,9 @@
 #'                      tDM (tons per dry matter),
 #'                      USD_ha (USD per hectare) for area return, or
 #'                      USD_m3 (USD per cubic meter) for volumetric return;
+#'                      Price aggregation:
+#'                      "GLO" for global average prices, or
+#'                      "ISO" for country-level prices;
 #'                      and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
 #' @param cropmix       Selected cropmix (options:
 #'                      "hist_irrig" for historical cropmix on currently irrigated area,
@@ -40,8 +43,8 @@
 calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
                                  method, cropmix, iniyear, yieldcalib, multicropping) {
 
-  fullpotential <- as.logical(strsplit(method, ":")[[1]][2])
-  unit          <- strsplit(method, ":")[[1]][1]
+  fullpotential <- as.logical(strsplit(method, ":")[[1]][3])
+  unit          <- paste(strsplit(method, ":")[[1]][1], strsplit(method, ":")[[1]][2], sep = ":")
 
   # Read in average potential yield gain per cell (USD05 per ha)
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,

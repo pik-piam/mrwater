@@ -275,7 +275,7 @@ a selection of one or several proxycrop(s) can be selected. This setting is
 relevant when calculating irrigation potentials for the future).
 
 ```{r YieldValueGain}
-yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
                         selectyears = selectyears,
                         climatetype = climatetype, lpjml = lpjml,
                         iniyear = iniyear,
@@ -286,6 +286,9 @@ yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
 To represent economic aspects of irrigation, different yield value gain
 thresholds can be chosen to calculate the respective IWP. It is set via
 the arguments ``thresholdtype`` and ``gainthreshold``.
+The chosen valuation method is determined via the unit argument that determines
+whether water or irrigation area is valued (USD_ha or USD_m3) and whether 
+global average prices (GLO) or country-level agricultural prices (ISO) are used.
 
 ### Work-in-progress
 

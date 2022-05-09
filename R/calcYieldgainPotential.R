@@ -19,6 +19,9 @@
 #'                          tDM (tons per dry matter),
 #'                          USD_ha (USD per hectare) for area return, or
 #'                          USD_m3 (USD per cubic meter) for volumetric return;
+#'                          Price aggregation:
+#'                          "GLO" for global average prices, or
+#'                          "ISO" for country-level prices;
 #'                          and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                          If FALSE: uncalibrated LPJmL yields are used
@@ -68,7 +71,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                    gainthreshold, allocationrule,
                                    landScen, cropmix, multicropping, unlimited) {
 
-  thresholdtype <- strsplit(rankmethod, ":")[[1]][1]
+  thresholdtype <- paste(strsplit(rankmethod, ":")[[1]][1], strsplit(rankmethod, ":")[[1]][2], sep = ":")
 
   # Cellular yield improvement potential for all crops (in USD/ha)
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,

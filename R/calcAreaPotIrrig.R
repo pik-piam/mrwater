@@ -40,7 +40,8 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
   if (grepl("potCropland", landScen)) {
 
     # read in suitable land based on Zabel [in mio. ha]
-    land <- calcOutput("AvlCropland", aggregate = FALSE, cells = "lpjcell")[, , "q33_marginal"]
+    land <- calcOutput("AvlCropland", aggregate = FALSE,
+                       cells = "lpjcell")[, , "q33_marginal"]
 
   } else if (grepl("curr", landScen)) {
 

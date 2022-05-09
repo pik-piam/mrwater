@@ -12,6 +12,15 @@
 #'                      or selection of proxycrops)
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                      If FALSE: uncalibrated LPJmL yields are used
+#' @param unit          Unit of yield improvement potential to be returned and
+#'                      level of price aggregation used, separated by ":".
+#'                      Unit:
+#'                      tDM (tons per dry matter),
+#'                      USD_ha (USD per hectare) for area return, or
+#'                      USD_m3 (USD per cubic meter) for volumetric return.
+#'                      Price aggregation:
+#'                      "GLO" for global average prices, or
+#'                      "ISO" for country-level prices
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
 #'                      ("endogenous": suitability for multiple cropping determined
@@ -38,9 +47,9 @@
 #' \dontrun{
 #' calcOutput("YieldgainWatUse", aggregate = FALSE)
 #' }
-
+#'
 calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landScen,
-                                cropmix, yieldcalib, multicropping,
+                                cropmix, yieldcalib, multicropping, unit,
                                 rangeGT) {
 
   # Irrigation system area share per crop
@@ -58,7 +67,8 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
                            landScen = landScen, comagyear = NULL, aggregate = FALSE)
 
   # Yield gain potential through irrigation per grid cell
-  potGain    <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+  potGain    <- calcOutput("IrrigYieldImprovementPotential",
+                           unit = paste("USD_ha", strsplit(unit, ":")[[1]][2], sep = ":"),
                            lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                            selectyears = selectyears, iniyear = iniyear,
                            yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)

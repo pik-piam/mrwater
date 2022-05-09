@@ -6,10 +6,15 @@
 #' @param lpjml         LPJmL version used for yields
 #' @param climatetype   Climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param selectyears   Years to be returned by the function
-#' @param unit          Unit of yield improvement potential to be returned:
+#' @param unit          Unit of yield improvement potential to be returned and
+#'                      level of price aggregation used, separated by ":".
+#'                      Unit:
 #'                      tDM (tons per dry matter),
 #'                      USD_ha (USD per hectare) for area return, or
-#'                      USD_m3 (USD per cubic meter) for volumetric return
+#'                      USD_m3 (USD per cubic meter) for volumetric return.
+#'                      Price aggregation:
+#'                      "GLO" for global average prices, or
+#'                      "ISO" for country-level prices
 #' @param iniyear       initialization year for food price and cropmix area
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:
@@ -48,6 +53,10 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
                              iniyear, selectyears, cropmix,
                              yieldcalib, multicropping) {
 
+  # retrieve function arguments
+  priceAggregation <- strsplit(unit, split = ":")[[1]][2]
+  unit <- strsplit(unit, split = ":")[[1]][1]
+
   # read in cellular lpjml yields [in tDM/ha]
   yields    <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
@@ -56,23 +65,54 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
   # extract magpie crops
   croplist  <- getNames(collapseNames(yields[, , "irrigated"]))
 
-  # read in global average crop output price averaging price fluctuations
-  # around the initialization year (USD05/tDM)
-  if (class(iniyear) == "character") {
-    iniyear <- as.numeric(gsub("y", "", iniyear))
-  }
-  avgYears <- c((iniyear - 1):(iniyear + 2))
-  i        <- iniyear - 2
-  p        <- setYears(calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
-                                  years = NULL, year = i, aggregate = FALSE)[, , croplist], i)
-  for (i in avgYears) {
-    tmp <- setYears(calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
-                                years = NULL, year = i, aggregate = FALSE)[, , croplist], i)
-    p   <- mbind(p, tmp)
-  }
-  p <- dimSums(p, dim = "Year") / length(getItems(p, dim = 2))
+  # historical FAO producer prices
+  if (unit != "tDM") {
 
-  # @KRISTINE: better way to average over IniFoodPrice (problem: can only read in one year at a time...)
+    pGLO <- collapseDim(calcOutput(type = "PriceAgriculture",
+                                   datasource = "FAO", aggregate = "GLO"))
+
+    if (priceAggregation == "GLO") {
+
+      p <- pGLO
+
+    } else if (priceAggregation == "ISO") {
+
+      p <- collapseNames(calcOutput("PriceAgriculture", datasource = "FAO", aggregate = FALSE))
+      p <- p[getItems(yields, dim = "iso"), , ]
+
+    } else {
+      stop("Problem in calcYieldsValued:
+         Please select price aggregation level to GLO or ISO via
+         the unit argument.")
+    }
+
+    # missing crop types get proxy values of 2005 and average price development over time
+    proxyP <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
+                         years = NULL, year = "y2005", aggregate = FALSE)
+    pNormalized <- pGLO / setYears(pGLO[, 2005, ], NULL)
+    weight      <- dimSums(collapseDim(calcOutput("Production", products = "kcr", attributes = "dm",
+                                          aggregate = FALSE))[, getYears(pNormalized),
+                                                              intersect(croplist, getNames(p))],
+                           dim = 1)
+    averagePriceDevelopment <- dimSums(pNormalized[, , intersect(croplist, getNames(p))] *
+                                         (weight / dimSums(weight, dim = "ItemCodeItem")),
+                                       dim = "ItemCodeItem")
+    proxyP <- proxyP * averagePriceDevelopment
+
+    missingCrops <- setdiff(croplist, getNames(p))
+    p <- add_columns(p, addnm = missingCrops, dim = 3, fill = NA)[, , croplist]
+
+    p[, , missingCrops] <- proxyP[, , missingCrops]
+
+    # average price around initialization year to balance price fluctuations
+    if (class(iniyear) == "character") {
+      iniyear <- as.numeric(gsub("y", "", iniyear))
+    }
+    averageYears <- seq(iniyear - 2, iniyear + 2, 1)
+
+    p <- setYears(dimSums(p[, averageYears, ], dim = "Year") / length(averageYears),
+                  NULL)
+  }
 
   # Unit of yield gain to be returned
   if (unit == "tDM") {
@@ -105,7 +145,7 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
     # Correction of small irrigWatReq: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
     irrigReqWW[irrigReqWW < 10] <- 0
     # Correction of very small yields: where < 10 USD/ha: 0
-    tmp <- calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+    tmp <- calcOutput("IrrigYieldImprovementPotential", unit = paste("USD_ha", priceAggregation, sep = ":"),
                       lpjml = lpjml, climatetype = climatetype,
                       cropmix = cropmix, yieldcalib = yieldcalib,
                       iniyear = iniyear, selectyears = selectyears,

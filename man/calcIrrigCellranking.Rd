@@ -28,6 +28,9 @@ Unit according to which rank is calculated:
 tDM (tons per dry matter),
 USD_ha (USD per hectare) for area return, or
 USD_m3 (USD per cubic meter) for volumetric return;
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices;
 and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
 
 \item{cropmix}{Selected cropmix (options:

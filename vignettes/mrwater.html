@@ -12,7 +12,7 @@
 
 <meta name="author" content="Felicitas D. Beier" />
 
-<meta name="date" content="2022-03-07" />
+<meta name="date" content="2022-05-09" />
 
 <title>mrwater Documentation</title>
 
@@ -142,7 +142,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">mrwater Documentation</h1>
 <h4 class="author">Felicitas D. Beier</h4>
-<h4 class="date">2022-03-07</h4>
+<h4 class="date">2022-05-09</h4>
 
 
 
@@ -237,13 +237,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The yield value gain can be expressed in USD per hectare irrigated area or USD per cubic meter of irrigation water set via the <code>unit</code> argument in <code>calcIrrigYieldImprovementPotential</code> and via the <code>rankmethod</code> argument in <code>calcRiverSurplusDischargeAllocation</code>. The <code>rankmethod</code> argument consists of two components: the unit selections (“USD_ha” or “USD_m3”) and a boolean determining whether grid cells are ranked according to their full yield gain potential (TRUE) or taking a two step approach ranking according to their 75% potential and their full potential allocating 50% of irrigation water requirements in each of the two iterations (FALSE) separated by a “:”.</p>
 <p>The yield gain through irrigation - as calculated from LPJmL5 irrigated and rainfed yields - is valued with global average crop prices as provided by FAOSTAT (see <code>mrcommons:::calcOutput(&quot;IniFoodPrice&quot;, datasource = &quot;FAO&quot;, products = &quot;kcr&quot;, years = NULL, year = iniyear, aggregate = FALSE))</code>.</p>
 <p>Depending on the modeling application, LPJmL irrigated and rainfed crop yields can be calibrated to meet FAO crop yields via the <code>yieldcalib</code> argument. The <code>cropmix</code> argument determines the selection of crops (“hist_total” refers to the cellular cropmix as determined in <code>calcCroparea</code> considering irrigated and rainfed areas, “hist_irrig” refers to cellular cropmix as determined in <code>calcCroparea</code> considering only irrigated areas. Besides these crop mixes, a selection of one or several proxycrop(s) can be selected. This setting is relevant when calculating irrigation potentials for the future).</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>yieldGain <span class="ot">&lt;-</span> <span class="fu">calcOutput</span>(<span class="st">&quot;IrrigYieldImprovementPotential&quot;</span>, <span class="at">unit =</span> <span class="st">&quot;USD_ha&quot;</span>,</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>yieldGain <span class="ot">&lt;-</span> <span class="fu">calcOutput</span>(<span class="st">&quot;IrrigYieldImprovementPotential&quot;</span>, <span class="at">unit =</span> <span class="st">&quot;USD_ha:GLO&quot;</span>,</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">selectyears =</span> selectyears,</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">climatetype =</span> climatetype, <span class="at">lpjml =</span> lpjml,</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">iniyear =</span> iniyear,</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">cropmix =</span> <span class="st">&quot;hist_total&quot;</span>, <span class="at">yieldcalib =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">multicropping =</span> <span class="cn">FALSE</span>, <span class="at">aggregate =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p>To represent economic aspects of irrigation, different yield value gain thresholds can be chosen to calculate the respective IWP. It is set via the arguments <code>thresholdtype</code> and <code>gainthreshold</code>.</p>
+<p>To represent economic aspects of irrigation, different yield value gain thresholds can be chosen to calculate the respective IWP. It is set via the arguments <code>thresholdtype</code> and <code>gainthreshold</code>. The chosen valuation method is determined via the unit argument that determines whether water or irrigation area is valued (USD_ha or USD_m3) and whether global average prices (GLO) or country-level agricultural prices (ISO) are used.</p>
 </div>
 <div id="work-in-progress" class="section level3">
 <h3>Work-in-progress</h3>

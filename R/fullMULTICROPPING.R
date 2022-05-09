@@ -45,8 +45,8 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
   allocationrule    <- "optimization"
-  rankmethod        <- "USD_ha:TRUE"
-  thresholdtype     <- "USD_ha"
+  rankmethod        <- "USD_ha:GLO:TRUE"
+  thresholdtype     <- "USD_ha:GLO"
   protectLand       <- "HalfEarth"
 
 
@@ -72,7 +72,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
 
 
   # Yield gain through irrigation under multiple cropping
-  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
@@ -80,7 +80,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
              file = paste0("yieldgain_USDha_multiple", ".mz"))
 
   # Yield gain through irrigation under single cropping
-  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
