@@ -73,6 +73,7 @@ This function calculates water use on selected land areas
 \dontrun{
 calcOutput("YieldgainWatUse", aggregate = FALSE)
 }
+
 }
 \author{
 Felicitas Beier

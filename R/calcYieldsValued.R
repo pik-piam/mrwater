@@ -47,7 +47,7 @@
 #' }
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames getNames getCells dimSums
+#' @importFrom magclass collapseNames getNames getCells dimSums time_interpolate
 
 calcYieldsValued <- function(lpjml, climatetype, unit,
                              iniyear, selectyears, cropmix,
@@ -77,8 +77,43 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
 
     } else if (priceAggregation == "ISO") {
 
+      # country-level agricultural prices
       p <- collapseNames(calcOutput("PriceAgriculture", datasource = "FAO", aggregate = FALSE))
+
+      # fill with region averages where possible
+      pricesRegional <- collapseDim(calcOutput(type = "PriceAgriculture", datasource = "FAO",
+                                               aggregate = TRUE, regionmapping = "regionmappingH12.csv"))
+      pricesRegional <- toolAggregate(pricesRegional, rel = toolGetMapping("regionmappingH12.csv"),
+                                      from = "RegionCode", to = "CountryCode")
+      p[p == 0] <- pricesRegional[p == 0]
+
+      # fill countries that have zeros over whole time period with GLO values
+      for (i in getItems(p, dim = 1)) {
+        p[i, , where(dimSums(p[i, , ],
+                             dim = 2) == 0)$true$data] <- pGLO[, , where(dimSums(p[i, , ],
+                                                                                 dim = 2) == 0)$true$data]
+
+      }
+
+      # fill missing time gaps
+      p[p == 0] <- NA
+
+      for (c in getItems(p, dim = 3)) {
+        for (i in getItems(p, dim = 1)) {
+          if (length(where(is.na(p[i, , c]))$true$years) > 0) {
+
+            tmp <- p[i, , c]
+            tmp <- tmp[, where(is.na(p[i, , c]))$true$years, invert = TRUE]
+
+            p[i, , c] <- time_interpolate(tmp, where(is.na(p[i, , c]))$true$years,
+                                        integrate_interpolated_years = TRUE,
+                                        extrapolation_type = "linear")
+          }
+        }
+      }
+
       p <- p[getItems(yields, dim = "iso"), , ]
+
 
     } else {
       stop("Problem in calcYieldsValued:
