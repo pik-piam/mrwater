@@ -174,7 +174,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
   ################################################
   ####### River basin discharge allocation #######
   ################################################
-  if (class(selectyears) == "numeric") {
+  if (is.numeric(class(selectyears))) {
     selectyears <- paste0("y", selectyears)
   }
 

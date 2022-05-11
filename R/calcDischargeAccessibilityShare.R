@@ -43,7 +43,7 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
 
   # Extract years
   years         <- getYears(monthlyDischargeLPJmL, as.integer = TRUE)
-  if (class(selectyears) != "numeric") {
+  if (!is.numeric(class(selectyears))) {
     selectyears <- as.numeric(gsub("y", "", selectyears))
   }
 

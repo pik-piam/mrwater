@@ -92,7 +92,6 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
         p[i, , where(dimSums(p[i, , ],
                              dim = 2) == 0)$true$data] <- pGLO[, , where(dimSums(p[i, , ],
                                                                                  dim = 2) == 0)$true$data]
-
       }
 
       # fill missing time gaps
@@ -107,7 +106,7 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
 
             p[i, , c] <- time_interpolate(tmp, where(is.na(p[i, , c]))$true$years,
                                         integrate_interpolated_years = TRUE,
-                                        extrapolation_type = "linear")
+                                        extrapolation_type = "constant")
           }
         }
       }
@@ -140,7 +139,7 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
     p[, , missingCrops] <- proxyP[, , missingCrops]
 
     # average price around initialization year to balance price fluctuations
-    if (class(iniyear) == "character") {
+    if (is.character(class(iniyear))) {
       iniyear <- as.numeric(gsub("y", "", iniyear))
     }
     averageYears <- seq(iniyear - 2, iniyear + 2, 1)

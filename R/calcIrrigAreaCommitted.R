@@ -28,10 +28,10 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
                                    aggregate = FALSE)[, , "irrigated"])
 
   # Empty object to be filled with area reserved for irrigation in current and future time steps
-  if (class(selectyears) == "character") {
+  if (is.character(class(selectyears))) {
     selectyears <- as.numeric(gsub("y", "", selectyears))
   }
-  if (class(iniyear) == "character") {
+  if (is.character(class(iniyear))) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
 
