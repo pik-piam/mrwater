@@ -55,7 +55,7 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
 
   # retrieve function arguments
   priceAggregation <- strsplit(unit, split = ":")[[1]][2]
-  unit <- strsplit(unit, split = ":")[[1]][1]
+  unit             <- strsplit(unit, split = ":")[[1]][1]
 
   # read in cellular lpjml yields [in tDM/ha]
   yields    <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
@@ -121,8 +121,8 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
     }
 
     # missing crop types get proxy values of 2005 and average price development over time
-    proxyP <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
-                         years = NULL, year = "y2005", aggregate = FALSE)
+    proxyP      <- calcOutput("IniFoodPrice", datasource = "FAO", products = "kcr",
+                              years = NULL, year = "y2005", aggregate = FALSE)
     pNormalized <- pGLO / setYears(pGLO[, 2005, ], NULL)
     weight      <- dimSums(collapseDim(calcOutput("Production", products = "kcr", attributes = "dm",
                                           aggregate = FALSE))[, getYears(pNormalized),
@@ -139,7 +139,7 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
     p[, , missingCrops] <- proxyP[, , missingCrops]
 
     # average price around initialization year to balance price fluctuations
-    if (is.character(class(iniyear))) {
+    if (is.character(iniyear)) {
       iniyear <- as.numeric(gsub("y", "", iniyear))
     }
     averageYears <- seq(iniyear - 2, iniyear + 2, 1)
