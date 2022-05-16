@@ -63,15 +63,12 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
 
   ### Area to be irrigated ###
   # Area that can potentially be irrigated according to chosen scenario
-  potArea    <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
-                           landScen = landScen, comagyear = NULL, aggregate = FALSE)
-
-  # Yield gain potential through irrigation per grid cell
-  potGain    <- calcOutput("IrrigYieldImprovementPotential",
-                           unit = paste("USD_ha", strsplit(unit, ":")[[1]][2], sep = ":"),
-                           lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
+  potArea    <- calcOutput("YieldgainArea", rangeGT = rangeGT,
+                           lpjml = lpjml, climatetype = climatetype,
                            selectyears = selectyears, iniyear = iniyear,
-                           yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+                           cropmix = cropmix, multicropping = multicropping,
+                           yieldcalib = yieldcalib, thresholdtype = unit,
+                           landScen = landScen, aggregate = FALSE)
 
   # Crop share per cell according to chosen cropmix
   cropShr    <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
@@ -85,11 +82,7 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
 
     i <- i + 1
 
-    tmp <- potArea
-    tmp[potGain < gainthreshold] <- 0
-
-    tmp <- add_dimension(tmp, dim = 3.1, add = "GT",
-                         nm = as.character(gainthreshold))
+    tmp <- potArea[, , as.character(gainthreshold)]
 
     # New cropped area by crop (in mio. ha)
     grownCrops <- cropShr * tmp
@@ -102,7 +95,6 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   }
 
   out <- mbind(x)
-  out <- collapseNames(out)
 
   return(list(x            = out,
               weight       = NULL,

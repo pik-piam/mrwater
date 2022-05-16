@@ -43,10 +43,14 @@ discharge that is exceeded x percent of the time on average throughout a year
 or base value for exponential curve separated by : (CV:2)}
 
 \item{rankmethod}{Rank and optimization method consisting of
-Unit according to which rank is calculated:
+Unit according to which rank is calculated, consisting of:
+Unit:
 tDM (tons per dry matter),
 USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return;
+USD_m3 (USD per cubic meter) for volumetric return; and
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices;
 and boolean indicating fullpotential (TRUE, i.e. cell receives full
                                       irrigation requirements in total area)
 or reduced potential (FALSE, reduced potential of cell

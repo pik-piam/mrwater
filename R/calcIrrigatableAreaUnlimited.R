@@ -45,14 +45,14 @@
 #' calcOutput("IrrigatableAreaUnlimited", aggregate = FALSE)
 #' }
 #'
-#' @import magclass
-#' @import magpiesets
+#' @importFrom madrat calcOutput
 
 calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
                                          climatetype, cropmix, yieldcalib,
                                          thresholdtype, gainthreshold, multicropping) {
 
-  ## Area that can potentially be irrigated (including total potentially irrigatable area; defined by comagyear=NULL)
+  # Area that can potentially be irrigated (including total potentially
+  # irrigatable area; defined by comagyear=NULL)
   potArea <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
                          landScen = landScen, comagyear = NULL, aggregate = FALSE)
 
@@ -60,7 +60,8 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
   potGain <- calcOutput("IrrigYieldImprovementPotential", unit = thresholdtype,
                          lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                          selectyears = selectyears, iniyear = iniyear,
-                         yieldcalib = yieldcalib, multicropping = multicropping, aggregate = FALSE)
+                         yieldcalib = yieldcalib, multicropping = multicropping,
+                         aggregate = FALSE)
 
   # remove areas below chosen gainthreshold
   potArea[potGain < gainthreshold] <- 0

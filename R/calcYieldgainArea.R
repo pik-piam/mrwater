@@ -8,10 +8,17 @@
 #' @param selectyears   Years for which irrigatable area is calculated
 #' @param iniyear       Initialization year for cropland area
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param efrMethod     EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                      If FALSE: uncalibrated LPJmL yields are used
-#' @param thresholdtype TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
+#' @param thresholdtype Unit of yield improvement potential used as threshold,
+#'                      consisting of unit and price aggregation level separated by ":".
+#'                      Unit:
+#'                      tDM (tons per dry matter),
+#'                      USD_ha (USD per hectare) for area return, or
+#'                      USD_m3 (USD per cubic meter) for volumetric return.
+#'                      Price aggregation:
+#'                      "GLO" for global average prices, or
+#'                      "ISO" for country-level prices
 #' @param landScen      Land availability scenario consisting of two parts separated by ":":
 #'                      1. available land scenario (currCropland, currIrrig, potCropland)
 #'                      2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
@@ -45,7 +52,7 @@
 #' @export
 
 calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
-                              climatetype, efrMethod, yieldcalib, thresholdtype,
+                              climatetype, yieldcalib, thresholdtype,
                               landScen, cropmix, multicropping) {
 
   x <- vector(mode = "list", length = length(rangeGT))

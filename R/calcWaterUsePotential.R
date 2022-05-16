@@ -9,14 +9,20 @@
 #' @param accessibilityrule Strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx).
 #'                          (e.g. Q75: 0.25, Q50: 0.5)
-#' @param rankmethod        Method of calculating the rank:
-#'                          "meancellrank": mean over cellrank of proxy crops,
-#'                          "meancroprank": rank over mean of proxy crops (normalized),
-#'                          "meanpricedcroprank": rank over mean of proxy crops (normalized using price),
-#'                          "watervalue": rank over value of irrigation water;
-#'                          and fullpotentail TRUE/FALSE separated by ":"
-#'                          (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
-#'                          FALSE: reduced potential of cell receives at later stage in allocation algorithm)
+#' @param rankmethod        Rank and optimization method consisting of
+#'                          Unit according to which rank is calculated, consisting of:
+#'                          Unit:
+#'                          tDM (tons per dry matter),
+#'                          USD_ha (USD per hectare) for area return, or
+#'                          USD_m3 (USD per cubic meter) for volumetric return; and
+#'                          Price aggregation:
+#'                          "GLO" for global average prices, or
+#'                          "ISO" for country-level prices;
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell receives full
+#'                                                                irrigation requirements in total area)
+#'                          or reduced potential (FALSE, reduced potential of cell
+#'                                                receives at later stage in allocation algorithm);
+#'                          separated by ":"
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
@@ -136,6 +142,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = "potential water availability for agricultural use or total human water use",
+              description  = "potential water availability for agricultural usage
+                              or total human water usage",
               isocountries = FALSE))
 }

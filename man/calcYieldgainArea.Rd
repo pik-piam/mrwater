@@ -10,7 +10,6 @@ calcYieldgainArea(
   selectyears,
   iniyear,
   climatetype,
-  efrMethod,
   yieldcalib,
   thresholdtype,
   landScen,
@@ -30,12 +29,18 @@ irrigated areas}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
-
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 If FALSE: uncalibrated LPJmL yields are used}
 
-\item{thresholdtype}{TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
+\item{thresholdtype}{Unit of yield improvement potential used as threshold,
+consisting of unit and price aggregation level separated by ":".
+Unit:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return.
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)

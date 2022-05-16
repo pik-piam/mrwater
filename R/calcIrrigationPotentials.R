@@ -27,6 +27,8 @@
 
 calcIrrigationPotentials <- function(output, selectyears, iniyear, lpjml, climatetype) {
 
+  ### STILL IN USE OR CAN BE DELETED? ###
+
   # Standard settings
   potential_wat     <- TRUE
   com_ag            <- TRUE
