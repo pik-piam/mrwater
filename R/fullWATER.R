@@ -79,7 +79,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
 
   irrigationsystem <- "initialization"
 
-  gtrange          <- c(0, 10, 100, 250, 300, 500, 750, 900, 1000, 1500, 2000, 3000)
+  gtrange          <- c(0, 10, 50, 100, 250, 300, 500, 600, 750, 900, 1000, 1500, 2000, 3000)
 
   ################
   # MAIN RESULTS #
