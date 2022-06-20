@@ -388,11 +388,26 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "irrigAreaCurrent.mz")
 
   # Yield gain through irrigation
-  calcOutput("IrrigYieldImprovementPotential", unit = paste("USD_ha", strsplit(rankmethod, ":")[[1]][2], sep = ":"),
+  # With global crop prices
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
              multicropping = multicropping, aggregate = FALSE,
-             file = paste0("yieldgain_USDha", ".mz"))
+             file = paste0("yieldgain_USDha_GLO", ".mz"))
+  # with regional crop prices
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:ISO",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = plotyear,
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = multicropping, aggregate = FALSE,
+             file = paste0("yieldgain_USDha_ISO", ".mz"))
+  # with one price for all crops
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:CONSTANT",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = plotyear,
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = multicropping, aggregate = FALSE,
+             file = paste0("yieldgain_USDha_constant", ".mz"))
 
 }

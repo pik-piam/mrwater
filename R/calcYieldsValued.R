@@ -14,7 +14,8 @@
 #'                      USD_m3 (USD per cubic meter) for volumetric return.
 #'                      Price aggregation:
 #'                      "GLO" for global average prices, or
-#'                      "ISO" for country-level prices
+#'                      "ISO" for country-level prices, or
+#'                      "CONST" for same pric for all crops
 #' @param iniyear       initialization year for food price and cropmix area
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:
@@ -113,10 +114,14 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
 
       p <- p[getItems(yields, dim = "iso"), , ]
 
+    } else if (priceAggregation == "CONST") {
+
+      p       <- pGLO
+      p[, , ] <- 571.5455 # 691.9 (median price) # 571.5455 (mean yield value gain) # 117.93 (mean yield value gain)
 
     } else {
       stop("Problem in calcYieldsValued:
-         Please select price aggregation level to GLO or ISO via
+         Please select price aggregation level to GLO or ISO or CONST via
          the unit argument.")
     }
 

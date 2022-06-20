@@ -28,7 +28,8 @@ USD_ha (USD per hectare) for area return, or
 USD_m3 (USD per cubic meter) for volumetric return.
 Price aggregation:
 "GLO" for global average prices, or
-"ISO" for country-level prices}
+"ISO" for country-level prices, or
+"CONST" for same pric for all crops}
 
 \item{iniyear}{initialization year for food price and cropmix area}
 
