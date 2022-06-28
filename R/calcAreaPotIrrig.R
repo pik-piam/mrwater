@@ -41,7 +41,8 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
     # read in suitable land based on Zabel [in mio. ha]
     land <- calcOutput("AvlCropland", aggregate = FALSE,
-                       cells = "lpjcell")[, , "all_marginal:irrigated"]
+                       marginal_land = "all_marginal:irrigated",
+                       cells = "lpjcell")
 
   } else if (grepl("curr", landScen)) {
 
