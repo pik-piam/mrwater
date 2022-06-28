@@ -31,7 +31,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
   # retrieve function arguments
   protectSCEN <- as.list(strsplit(landScen, split = ":"))[[1]][2]
 
-  if (is.na(protectSCEN) | protectSCEN == "NULL" | protectSCEN == "NA") {
+  if (is.na(protectSCEN) || protectSCEN == "NULL" || protectSCEN == "NA") {
     protectSCEN <- NA
   }
 
@@ -41,7 +41,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
     # read in suitable land based on Zabel [in mio. ha]
     land <- calcOutput("AvlCropland", aggregate = FALSE,
-                       cells = "lpjcell")[, , "all_marginal"]
+                       cells = "lpjcell")[, , "all_marginal:irrigated"]
 
   } else if (grepl("curr", landScen)) {
 
