@@ -57,7 +57,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Cache R libraries
-        uses: actions/cache@v3
+        uses: pat-s/always-upload-cache@v3
         with:
           path: /usr/local/lib/R/
           key: ${{ runner.os }}-usr-local-lib-R-${{ hashFiles('DESCRIPTION') }}
@@ -72,7 +72,7 @@ jobs:
         run: |
           ./run.sh install_aptget libhdf5-dev
           ./run.sh install_all
-          ./run.sh install_r lucode2 covr
+          ./run.sh install_r lucode2 covr rstudioapi
 
       - name: Remove bspm integration # to get rid of error when running install.packages
         run: |

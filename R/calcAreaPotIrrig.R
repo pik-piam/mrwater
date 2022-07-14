@@ -40,8 +40,10 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
   if (grepl("potCropland", landScen)) {
 
     # read in suitable land based on Zabel [in mio. ha]
+    # land that is still marginal under irrigated conditions (< suitability index of 0.33)
+    # is excluded
     land <- calcOutput("AvlCropland", aggregate = FALSE,
-                       marginal_land = "all_marginal:irrigated",
+                       marginal_land = "no_marginal:irrigated",
                        cells = "lpjcell")
 
   } else if (grepl("curr", landScen)) {
