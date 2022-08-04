@@ -1,15 +1,15 @@
 #' @title fullMULTICROPPING
 #' @description Function that produces output for irrigation potentials
-#'              under multipl cropping on cellular resolution.
+#'              under multiple cropping on cellular resolution.
 #'
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
 #'                      (mask can be:
 #'                      "none": no mask applied (only for development purposes)
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
+#'                                      and total physical areas per cell from Landuse Toolbox data
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
-#'                      "actual:cropIrrig" (crop- and irrigation-specific) "total"
+#'                      "actual:cropIrrig" (crop- and irrigation-specific)
 #'                      "potential:endogenous": potentially multicropped areas given
 #'                                              temperature and productivity limits
 #'                      "potential:exogenous": potentially multicropped areas given
@@ -78,6 +78,14 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
              cropmix = cropmix, yieldcalib = yieldcalib,
              multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
              file = paste0("yieldgain_USDha_multiple", ".mz"))
+
+  # Yield gain through irrigation under multiple cropping
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = plotyear,
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = "TRUE:potential:exogenous", aggregate = FALSE,
+             file = paste0("yieldgain_USDha_multipleExogenous", ".mz"))
 
   # Yield gain through irrigation under single cropping
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",

@@ -16,9 +16,9 @@ Multiple Cropping Suitability mask selected
 (mask can be:
 "none": no mask applied (only for development purposes)
 "actual:total": currently multicropped areas calculated from total harvested areas
-                and total physical areas per cell from readLanduseToolbox
+                and total physical areas per cell from Landuse Toolbox data
 "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
-"actual:cropIrrig" (crop- and irrigation-specific) "total"
+"actual:cropIrrig" (crop- and irrigation-specific)
 "potential:endogenous": potentially multicropped areas given
                         temperature and productivity limits
 "potential:exogenous": potentially multicropped areas given
@@ -35,7 +35,7 @@ If FALSE: uncalibrated LPJmL yields are used}
 }
 \description{
 Function that produces output for irrigation potentials
-             under multipl cropping on cellular resolution.
+             under multiple cropping on cellular resolution.
 }
 \author{
 Felicitas Beier

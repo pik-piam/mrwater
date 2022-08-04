@@ -58,12 +58,19 @@ calcIrrigSystemShr <- function(iniyear) {
   irrigSuit <- irrigSuit[, , "pasture", invert = TRUE]
 
   # Adjust MAgPIE crop types that are not part of original suitability data:
-  irrigSuit[, , "others"] <- 1
-  irrigSuit[, , "oilpalm"] <- 1
-  irrigSuit[, , "potato"] <- 1
+  # Note: For categories that have no 1-1 equivalent in the crop types provided
+  # by Jägermeyr et al. (2015) (Vegetables, Fruits, Nuts; Oipalm; Potato; Cotton)
+  # we assume that all irrigation systems are possible.
+  irrigSuit[, , "others"]    <- 1
+  irrigSuit[, , "oilpalm"]   <- 1
+  irrigSuit[, , "potato"]    <- 1
   irrigSuit[, , "cottn_pro"] <- 1
   # MAgPIE cassava_sp contains: Sweet potatoes; Cassava; Yautia (cocoyam);
   # Taro (cocoyam); Yams; Roots and tubers; Bananas; Plantains
+  # Note: ecause our category of “Tropical roots (incl. cassava)” also contains
+  # Sweet potatoes; Cassava; Yautia (cocoyam); Taro (cocoyam); Yams; Roots and tubers;
+  # Bananas; Plantains that are reported to be irrigated in some place,
+  # we assume that all irrigation systems are suitable for this category.
   irrigSuit[, , "cassav_sp"] <- 1
   ### ToDo: use FAO country-share of cassava in cassav_sp category and assign irrigSystem share accordingly?
 
