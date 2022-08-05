@@ -31,9 +31,9 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
                               yieldcalib = TRUE) {
 
   # Standard settings
-  iniyear           <- 2010
-  selectyears       <- 2010
-  plotyear          <- 2010
+  iniyear           <- "y2010"
+  selectyears       <- "y2010"
+  plotyear          <- "y2010"
   ssp               <- "ssp2"
 
   lpjml             <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
