@@ -58,8 +58,10 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
   calcOutput("CropareaAdjusted", iniyear = iniyear,
              aggregate = FALSE, file = "croparea_physical.mz")
 
+
+  for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
   # Potentially irrigated area on current cropland under single cropping
-  calcOutput("EconOfIrrig", scenario = ssp, output = "IrrigArea", GT_range = gtrange,
+  calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
              selectyears = plotyear, iniyear = iniyear,
              lpjml = lpjml, climatetype = climatetype,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -68,8 +70,25 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
              irrigationsystem = irrigationsystem, cropmix = cropmix,
              landScen = "currCropland:NULL", potential_wat = TRUE, com_ag = FALSE,
              multicropping = FALSE, aggregate = FALSE,
-             file = paste0("IrrigArea", "EconCURUNSUS", "_single.mz"))
+             file = paste0(o, "EconCURUNSUS", "_single.mz"))
 
+  # Current irrigated area under single cropping
+  calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
+             selectyears = plotyear, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule, thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem, cropmix = cropmix,
+             landScen = "currIrrig:NULL", potential_wat = TRUE, com_ag = FALSE,
+             multicropping = FALSE, aggregate = FALSE,
+             file = paste0(o, "EconACTUNSUS", "_single.mz"))
+  }
+
+  # LUH croparea (irrigated and rainfed)
+  calcOutput("CropareaAdjusted", iniyear = iniyear,
+             aggregate = FALSE,
+             file = "cropareaLUH.mz")
 
   # Yield gain through irrigation under multiple cropping
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
