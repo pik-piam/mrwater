@@ -41,7 +41,7 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
   climatetype       <- "GSWP3-W5E5:historical"
 
   irrigationsystem  <- "initialization"
-  gtrange           <- c(0, 250, 500, 1000, 2000, 3000)
+  gtrange          <- c(0, 10, 50, 100, 250, 300, 500, 600, 750, 900, 1000, 1500, 2000, 3000)
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
   allocationrule    <- "optimization"
@@ -84,6 +84,80 @@ fullMULTICROPPING <- function(multicropping = "TRUE:potential:endogenous",
              multicropping = FALSE, aggregate = FALSE,
              file = paste0(o, "EconACTUNSUS", "_single.mz"))
   }
+
+  # Yield gain area (single cropping)
+  calcOutput("YieldgainArea", rangeGT = gtrange,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = plotyear, iniyear = iniyear,
+             cropmix = cropmix, multicropping = FALSE,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             landScen = paste0("currIrrig:", "NULL"),
+             aggregate = FALSE,
+             file = paste0("yieldgainarea_actUNSUS", "_single.mz"))
+
+  calcOutput("YieldgainArea", rangeGT = gtrange,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = plotyear, iniyear = iniyear,
+             cropmix = cropmix, multicropping = FALSE,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             landScen = paste0("currCropland:", "NULL"),
+             aggregate = FALSE,
+             file = paste0("yieldgainarea_curUNSUS", "_single.mz"))
+
+  # Yield gain area (single cropping)
+  calcOutput("YieldgainArea", rangeGT = gtrange,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = plotyear, iniyear = iniyear,
+             cropmix = cropmix, multicropping = multicropping,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             landScen = paste0("currIrrig:", "NULL"),
+             aggregate = FALSE,
+             file = paste0("yieldgainarea_actUNSUS", "_multiple.mz"))
+
+  calcOutput("YieldgainArea", rangeGT = gtrange,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = plotyear, iniyear = iniyear,
+             cropmix = cropmix, multicropping = multicropping,
+             yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             landScen = paste0("currCropland:", "NULL"),
+             aggregate = FALSE,
+             file = paste0("yieldgainarea_curUNSUS", "_multiple.mz"))
+
+  # Water requirements for irrigation of selected areas
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("currIrrig:", "NULL"),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
+             multicropping = FALSE, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_actUNSUS_single.mz")
+
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("currCropland:", "NULL"),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
+             multicropping = FALSE, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_curUNSUS_single.mz")
+
+  # Water requirements for irrigation of selected areas
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("currIrrig:", "NULL"),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
+             multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_actUNSUS_multiple.mz")
+
+  calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             landScen = paste0("currCropland:", "NULL"),
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             unit = thresholdtype,
+             multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
+             file = "yieldgainwater_curUNSUS_multiple.mz")
+
+
 
   # LUH croparea (irrigated and rainfed)
   calcOutput("CropareaAdjusted", iniyear = iniyear,
