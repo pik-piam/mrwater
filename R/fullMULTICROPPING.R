@@ -49,11 +49,11 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              file = paste0("calibYields", "_single.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears, aggregate = FALSE,
-             yieldcalib = FALSE, multicropping = "potential:endogenous",
+             yieldcalib = FALSE, multicropping = "TRUE:potential:endogenous",
              file = paste0("Yields", "_multiplePOT.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears, aggregate = FALSE,
-             yieldcalib = TRUE, multicropping = "potential:endogenous",
+             yieldcalib = TRUE, multicropping = "TRUE:potential:endogenous",
              file = paste0("calibYields", "_multiplePOT.mz"))
 
   # Yield gain through irrigation under multiple cropping
@@ -244,8 +244,8 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              selectyears = selectyears, aggregate = FALSE,
              file = "ToolboxPHYS.mz")
   calcOutput("CropareaToolbox", physical = FALSE, sectoral = "lpj",
-                     cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
-                     selectyears = selectyears, aggregate = FALSE,
+             cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
+             selectyears = selectyears, aggregate = FALSE,
              file = "ToolboxHARV.mz")
 
   calcOutput("MulticroppingCells", selectyears = selectyears,
