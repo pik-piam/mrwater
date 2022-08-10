@@ -5,26 +5,11 @@
 \title{fullMULTICROPPING}
 \usage{
 fullMULTICROPPING(
-  multicropping = "TRUE:potential:endogenous",
   cropmix = c("maiz", "rapeseed", "puls_pro"),
   yieldcalib = TRUE
 )
 }
 \arguments{
-\item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
-Multiple Cropping Suitability mask selected
-(mask can be:
-"none": no mask applied (only for development purposes)
-"actual:total": currently multicropped areas calculated from total harvested areas
-                and total physical areas per cell from Landuse Toolbox data
-"actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
-"actual:cropIrrig" (crop- and irrigation-specific)
-"potential:endogenous": potentially multicropped areas given
-                        temperature and productivity limits
-"potential:exogenous": potentially multicropped areas given
-                       GAEZ suitability classification)
-(e.g. TRUE:actual:total; TRUE:none; FALSE)}
-
 \item{cropmix}{Selected cropmix (options:
 "hist_irrig" for historical cropmix on currently irrigated area,
 "hist_total" for historical cropmix on total cropland,
