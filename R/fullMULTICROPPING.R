@@ -147,7 +147,6 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              multicropping = FALSE, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_curUNSUS_single.mz")
 
-
   # Irrigation potentials (IAP and IWP (consumption and withdrawal))
   # for range of yield value gain thresholds and different scenarios
 
@@ -179,7 +178,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                cropmix = cropmix, yieldcalib = yieldcalib,
                unit = thresholdtype,
                multicropping = m, rangeGT = gtrange, aggregate = FALSE,
-               file = paste0("yieldGainWater_IRRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz", ))
+               file = paste0("yieldGainWater_IRRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
 
     calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
@@ -187,7 +186,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                cropmix = cropmix, yieldcalib = yieldcalib,
                unit = thresholdtype,
                multicropping = m, rangeGT = gtrange, aggregate = FALSE,
-               file = paste0("yieldGainWater_CURRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz", ))
+               file = paste0("yieldGainWater_CURRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
 
 
     for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
@@ -202,7 +201,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                  irrigationsystem = irrigationsystem, cropmix = cropmix,
                  landScen = "currCropland:NULL", potential_wat = TRUE, com_ag = FALSE,
                  multicropping = m, aggregate = FALSE,
-                 file = paste0(o, "EconCURUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz", ))
+                 file = paste0(o, "EconCURUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
 
       # Current irrigated area
       calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
@@ -214,7 +213,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                  irrigationsystem = irrigationsystem, cropmix = cropmix,
                  landScen = "currIrrig:NULL", potential_wat = TRUE, com_ag = FALSE,
                  multicropping = m, aggregate = FALSE,
-                 file = paste0(o, "EconIRRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz", ))
+                 file = paste0(o, "EconIRRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
    }
   }
 
