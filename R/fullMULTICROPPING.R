@@ -160,7 +160,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                yieldcalib = yieldcalib, thresholdtype = thresholdtype,
                landScen = paste0("currIrrig:", "NULL"),
                aggregate = FALSE,
-               file = paste0("yieldGainArea_IRRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz", ))
+               file = paste0("yieldGainArea_IRRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
 
     calcOutput("YieldgainArea", rangeGT = gtrange,
                lpjml = lpjml, climatetype = climatetype,
@@ -169,7 +169,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                yieldcalib = yieldcalib, thresholdtype = thresholdtype,
                landScen = paste0("currCropland:", "NULL"),
                aggregate = FALSE,
-               file = paste0("yieldGainArea_CURRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz", ))
+               file = paste0("yieldGainArea_CURRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
 
     # Water requirements for irrigation of selected areas
     calcOutput("YieldgainWatUse", lpjml = lpjml, climatetype = climatetype,

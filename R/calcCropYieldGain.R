@@ -1,9 +1,11 @@
-#' @title       calcIrrigCropYieldGain
-#' @description This function calculates the yield gains per crop through irrigation
-#'              (including negatives)
+#' @title       calcCropYieldGain
+#' @description This function calculates the yield gains per crop through
+#'              irrigation or multiple cropping relative to rainfed-single system
+#'              production (including negatives)
 #'
 #' @param lpjml         LPJmL version used for yields
 #' @param climatetype   Climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param yieldgaintype Crop yield gain through "multicropping", "irrigation" or "both"
 #' @param selectyears   Years to be returned by the function
 #' @param unit          Unit of yield improvement potential to be returned and
 #'                      level of price aggregation used, separated by ":".
@@ -48,20 +50,48 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames
 
-calcIrrigCropYieldGain <- function(lpjml, climatetype, unit,
-                                   iniyear, selectyears,
-                                   yieldcalib, cropmix, multicropping) {
+calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
+                              iniyear, selectyears,
+                              yieldcalib, cropmix, multicropping) {
 
-  # read in cellular lpjml yields
-  yields    <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
+  # reference yield (rainfed-single cropping)
+  ref <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib, unit = unit,
-                          multicropping = multicropping, cropmix = cropmix,
-                          aggregate = FALSE)
+                          multicropping = FALSE, cropmix = cropmix,
+                          aggregate = FALSE)[, , "rainfed"])
+
+  if (yieldgaintype == "irrigation") {
+
+    # irrigated single-cropped yields
+    yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
+                                       iniyear = iniyear, selectyears = selectyears,
+                                       yieldcalib = yieldcalib, unit = unit,
+                                       multicropping = FALSE, cropmix = cropmix,
+                                       aggregate = FALSE)[, , "irrigated"])
+
+  } else if (yieldgaintype == "multicropping") {
+
+    # rainfed multicropped yields
+    yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
+                                       iniyear = iniyear, selectyears = selectyears,
+                                       yieldcalib = yieldcalib, unit = unit,
+                                       multicropping = multicropping, cropmix = cropmix,
+                                       aggregate = FALSE)[, , "rainfed"])
+
+  } else if (yieldgaintype == "irrigation_multicropping") {
+
+    # irrigated multicropped yields
+    yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
+                            iniyear = iniyear, selectyears = selectyears,
+                            yieldcalib = yieldcalib, unit = unit,
+                            multicropping = multicropping, cropmix = cropmix,
+                            aggregate = FALSE)[, , "irrigated"])
+
+  }
 
   # calculate yield gain per crop
-  yieldGain <- (collapseNames(yields[, , "irrigated"]) -
-                  collapseNames(yields[, , "rainfed"]))
+  yieldGain <- yields - ref
 
   # Check for NAs
   if (any(is.na(yieldGain))) {
@@ -77,6 +107,8 @@ calcIrrigCropYieldGain <- function(lpjml, climatetype, unit,
   return(list(x            = yieldGain,
               weight       = NULL,
               unit         = unit,
-              description  = "Yield gain potential through irrigation for all different crop types",
+              description  = paste0("Yield gain potential through",
+                                    yieldgaintype,
+                                    " for all different crop types"),
               isocountries = FALSE))
 }
