@@ -1,9 +1,12 @@
-#' @title       calcIrrigYieldImprovementPotential
+#' @title       calcYieldImprovementPotential
 #' @description This function calculates the yield improvement potential
-#'              through irrigation for all grid cells given a certain crop mix
+#'              through irrigation or multiple cropping per grid cell
+#'              for a given cropmix
 #'
 #' @param lpjml         LPJmL version used for yields
 #' @param climatetype   Climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param yieldgaintype Crop yield gain through "multicropping", "irrigation"
+#'                      or "irrigation_multicropping"
 #' @param selectyears   Years to be returned by the function
 #' @param unit          Unit of yield improvement potential to be returned and
 #'                      level of price aggregation used, separated by ":".
@@ -42,18 +45,18 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("IrrigYieldImprovementPotential", aggregate = FALSE)
+#' calcOutput("YieldImprovementPotential", aggregate = FALSE)
 #' }
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames getCells dimSums
 
-calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
-                                               iniyear, selectyears, cropmix,
-                                               yieldcalib, multicropping) {
+calcYieldImprovementPotential <- function(lpjml, climatetype, yieldgaintype, unit,
+                                          iniyear, selectyears, cropmix,
+                                          yieldcalib, multicropping) {
 
   # read in yield gain
-  yieldGain <- calcOutput("IrrigCropYieldGain", unit = unit,
+  yieldGain <- calcOutput("CropYieldGain", unit = unit, yieldgaintype = yieldgaintype,
                           lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib, cropmix = cropmix,

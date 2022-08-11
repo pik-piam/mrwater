@@ -5,7 +5,8 @@
 #'
 #' @param lpjml         LPJmL version used for yields
 #' @param climatetype   Climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param yieldgaintype Crop yield gain through "multicropping", "irrigation" or "both"
+#' @param yieldgaintype Crop yield gain through "multicropping", "irrigation"
+#'                      or "irrigation_multicropping"
 #' @param selectyears   Years to be returned by the function
 #' @param unit          Unit of yield improvement potential to be returned and
 #'                      level of price aggregation used, separated by ":".
@@ -44,7 +45,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("IrrigCropYieldGain", aggregate = FALSE)
+#' calcOutput("CropYieldGain", aggregate = FALSE)
 #' }
 #'
 #' @importFrom madrat calcOutput

@@ -63,7 +63,7 @@ magpie object in cellular resolution
 }
 \description{
 This function calculates the yield improvement potential
-             through irrigation for different crops
+             through irrigation for all grid cells given a certain crop mix
 }
 \examples{
 \dontrun{
