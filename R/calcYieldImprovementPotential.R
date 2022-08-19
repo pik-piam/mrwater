@@ -5,8 +5,11 @@
 #'
 #' @param lpjml         LPJmL version used for yields
 #' @param climatetype   Climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param yieldgaintype Crop yield gain through "multicropping", "irrigation"
-#'                      or "irrigation_multicropping"
+#' @param yieldgaintype Crop yield gain through
+#'                      multiple cropping under rainfed conditions "multicropping_rf",
+#'                      multiple cropping under irrigated conditions "multicropping_ir",
+#'                      irrigation under single cropping conditions "irrigation_singlecropping"
+#'                      irrigation and multiple cropping "irrigation_multicropping"
 #' @param selectyears   Years to be returned by the function
 #' @param unit          Unit of yield improvement potential to be returned and
 #'                      level of price aggregation used, separated by ":".

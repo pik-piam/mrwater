@@ -1,6 +1,6 @@
 # madrat based MAgPIE water Input Data Library
 
-R package **mrwater**, version **1.2.17**
+R package **mrwater**, version **1.2.18**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/mrwater)](https://cran.r-project.org/package=mrwater) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5801680.svg)](https://doi.org/10.5281/zenodo.5801680) [![R build status](https://github.com/pik-piam/mrwater/workflows/check/badge.svg)](https://github.com/pik-piam/mrwater/actions) [![codecov](https://codecov.io/gh/pik-piam/mrwater/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/mrwater) [![r-universe](https://pik-piam.r-universe.dev/badges/mrwater)](https://pik-piam.r-universe.dev/ui#builds)
 
@@ -47,7 +47,7 @@ In case of questions / problems please contact Felicitas Beier <beier@pik-potsda
 
 To cite package **mrwater** in publications use:
 
-Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2022). _mrwater: madrat based MAgPIE water Input Data Library_. doi: 10.5281/zenodo.5801680 (URL: https://doi.org/10.5281/zenodo.5801680), R package version 1.2.17, <URL: https://github.com/pik-piam/mrwater>.
+Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2022). _mrwater: madrat based MAgPIE water Input Data Library_. doi: 10.5281/zenodo.5801680 (URL: https://doi.org/10.5281/zenodo.5801680), R package version 1.2.18, <URL: https://github.com/pik-piam/mrwater>.
 
 A BibTeX entry for LaTeX users is
 
@@ -56,7 +56,7 @@ A BibTeX entry for LaTeX users is
   title = {mrwater: madrat based MAgPIE water Input Data Library},
   author = {Felicitas Beier and Jens Heinke and Kristine Karstens and Benjamin Leon Bodirsky and Jan Philipp Dietrich},
   year = {2022},
-  note = {R package version 1.2.17},
+  note = {R package version 1.2.18},
   doi = {10.5281/zenodo.5801680},
   url = {https://github.com/pik-piam/mrwater},
 }

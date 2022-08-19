@@ -21,8 +21,11 @@ calcYieldImprovementPotential(
 
 \item{climatetype}{Climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{yieldgaintype}{Crop yield gain through "multicropping", "irrigation"
-or "irrigation_multicropping"}
+\item{yieldgaintype}{Crop yield gain through
+multiple cropping under rainfed conditions "multicropping_rf",
+multiple cropping under irrigated conditions "multicropping_ir",
+irrigation under single cropping conditions "irrigation_singlecropping"
+irrigation and multiple cropping "irrigation_multicropping"}
 
 \item{unit}{Unit of yield improvement potential to be returned and
 level of price aggregation used, separated by ":".

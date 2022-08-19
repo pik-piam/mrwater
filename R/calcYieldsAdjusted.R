@@ -56,8 +56,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
       yieldLPJmLactual    <- calcOutput("Yields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
                                      climatetype = climatetype, multicropping = "TRUE:actual:irrig_crop",
                                      marginal_land = "no_marginal:irrigated",
-                                     supplementary = TRUE, cells = "lpjcell",
-                                     aggregate = FALSE)[, selectyears, ]
+                                     cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
       calibFactor <- calibYieldActual / yieldLPJmLactual
 
       # read in potential yields for chosen scenario that are calibrated with a
@@ -65,8 +64,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
       yieldLPJmLpotential <- calcOutput("Yields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
                                      climatetype = climatetype, multicropping = multicropping,
                                      marginal_land = "no_marginal:irrigated",
-                                     supplementary = TRUE, cells = "lpjcell",
-                                     aggregate = FALSE)[, selectyears, ]
+                                     cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
       yields <- calibFactor * yieldLPJmLpotential
 
     }

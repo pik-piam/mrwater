@@ -5,8 +5,11 @@
 #'
 #' @param lpjml         LPJmL version used for yields
 #' @param climatetype   Climate scenarios or historical baseline "GSWP3-W5E5:historical"
-#' @param yieldgaintype Crop yield gain through "multicropping", "irrigation"
-#'                      or "irrigation_multicropping"
+#' @param yieldgaintype Crop yield gain through
+#'                      multiple cropping under rainfed conditions "multicropping_rf",
+#'                      multiple cropping under irrigated conditions "multicropping_ir",
+#'                      irrigation under single cropping conditions "irrigation_singlecropping"
+#'                      irrigation and multiple cropping "irrigation_multicropping"
 #' @param selectyears   Years to be returned by the function
 #' @param unit          Unit of yield improvement potential to be returned and
 #'                      level of price aggregation used, separated by ":".
@@ -56,13 +59,13 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
                               yieldcalib, cropmix, multicropping) {
 
   # reference yield (rainfed-single cropping)
-  ref <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
+  ref <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib, unit = unit,
                           multicropping = FALSE, cropmix = cropmix,
-                          aggregate = FALSE)[, , "rainfed"])
+                          aggregate = FALSE)
 
-  if (yieldgaintype == "irrigation") {
+  if (yieldgaintype == "irrigation_singlecropping") {
 
     # irrigated single-cropped yields
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
@@ -71,7 +74,10 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
                                        multicropping = FALSE, cropmix = cropmix,
                                        aggregate = FALSE)[, , "irrigated"])
 
-  } else if (yieldgaintype == "multicropping") {
+    # yield gain through irrigation under single cropping conditions
+    yieldGain <- yields - collapseNames(ref[, , "rainfed"])
+
+  } else if (yieldgaintype == "multicropping_rf") {
 
     # rainfed multicropped yields
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
@@ -79,6 +85,20 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
                                        yieldcalib = yieldcalib, unit = unit,
                                        multicropping = multicropping, cropmix = cropmix,
                                        aggregate = FALSE)[, , "rainfed"])
+    # yield gain through multiple cropping under rainfed conditions
+    yieldGain <- yields - collapseNames(ref[, , "rainfed"])
+
+  } else if (yieldgaintype == "multicropping_ir") {
+
+    # irrigated multicropped yields
+    yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
+                                       iniyear = iniyear, selectyears = selectyears,
+                                       yieldcalib = yieldcalib, unit = unit,
+                                       multicropping = multicropping, cropmix = cropmix,
+                                       aggregate = FALSE)[, , "irrigated"])
+
+    # yield gain through multiple cropping under irrigated conditions
+    yieldGain <- yields - collapseNames(ref[, , "irrigated"])
 
   } else if (yieldgaintype == "irrigation_multicropping") {
 
@@ -89,10 +109,10 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
                             multicropping = multicropping, cropmix = cropmix,
                             aggregate = FALSE)[, , "irrigated"])
 
-  }
+    # yield gain through irrigation & multiple cropping
+    yieldGain <- yields - collapseNames(ref[, , "rainfed"])
 
-  # calculate yield gain per crop
-  yieldGain <- yields - ref
+  }
 
   # Check for NAs
   if (any(is.na(yieldGain))) {
