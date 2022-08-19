@@ -80,6 +80,64 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              multicropping = FALSE, aggregate = FALSE,
              file = paste0("yieldgain_USDha_single", ".mz"))
 
+  # Yield gain analysis
+  for (m in c("TRUE:actual:total", "TRUE:actual:irrig_crop", "TRUE:potential:endogenous")) {
+    calcOutput("YieldImprovementPotential", unit = "USD_ha:GLO", yieldgaintype = "irrigation",
+               lpjml = lpjml, climatetype = climatetype,
+               iniyear = iniyear, selectyears = selectyears,
+               cropmix = cropmix, yieldcalib = yieldcalib,
+               multicropping = m, aggregate = FALSE,
+               file = paste0("yieldgain_Irrigation_",
+                             as.list(strsplit(m, split = ":"))[[1]][2],
+                             as.list(strsplit(m, split = ":"))[[1]][3], ".mz"))
+    calcOutput("YieldImprovementPotential", unit = "USD_ha:GLO", yieldgaintype = "multicropping",
+               lpjml = lpjml, climatetype = climatetype,
+               iniyear = iniyear, selectyears = selectyears,
+               cropmix = cropmix, yieldcalib = yieldcalib,
+               multicropping = m, aggregate = FALSE,
+               file = paste0("yieldgain_Multicropping_",
+                             as.list(strsplit(m, split = ":"))[[1]][2],
+                             as.list(strsplit(m, split = ":"))[[1]][3], ".mz"))
+    calcOutput("YieldImprovementPotential", unit = "USD_ha:GLO", yieldgaintype = "irrigation_multicropping",
+               lpjml = lpjml, climatetype = climatetype,
+               iniyear = iniyear, selectyears = selectyears,
+               cropmix = cropmix, yieldcalib = yieldcalib,
+               multicropping = m, aggregate = FALSE,
+               file = paste0("yieldgain_IrrigationMulticropping_",
+                             as.list(strsplit(m, split = ":"))[[1]][2],
+                             as.list(strsplit(m, split = ":"))[[1]][3], ".mz"))
+  }
+
+  # Discharge determined by previous river routings (in mio. m^3 / yr)
+  calcOutput("RiverDischargeNatAndHuman", selectyears = selectyears, iniyear = iniyear,
+              lpjml = lpjml, climatetype = climatetype, efrMethod = "VMF:fair",
+              multicropping = "TRUE:actual:irrig_crop",
+              com_ag = TRUE, aggregate = FALSE,
+              file = "comAgdischarge_multi.mz")
+
+  calcOutput("RiverDischargeNatAndHuman", selectyears = selectyears, iniyear = iniyear,
+              lpjml = lpjml, climatetype = climatetype, efrMethod = "VMF:fair", multicropping = FALSE,
+              com_ag = TRUE, aggregate = FALSE,
+              file = "comAgdischarge_single.mz")
+
+  # Required water for full irrigation per cell (in mio. m^3)
+  calcOutput("FullIrrigationRequirement",
+              selectyears = selectyears, iniyear = iniyear, comagyear = iniyear,
+              lpjml = lpjml, climatetype = climatetype,
+              irrigationsystem = irrigationsystem, landScen = "currCropland:NULL",
+              cropmix = cropmix, yieldcalib = yieldcalib,
+              multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
+              file = "reqWatFullirrig_multi.mz")
+
+  calcOutput("FullIrrigationRequirement",
+             selectyears = selectyears, iniyear = iniyear, comagyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype,
+             irrigationsystem = irrigationsystem, landScen = "currCropland:NULL",
+             cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = FALSE, aggregate = FALSE,
+             file = "reqWatFullirrig_single.mz")
+
+
   # Physical croparea
   calcOutput("CropareaAdjusted", iniyear = iniyear,
              aggregate = FALSE, file = "croparea_physical.mz")
@@ -248,7 +306,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              file = "ToolboxHARV.mz")
 
   calcOutput("MulticroppingCells", selectyears = selectyears,
-             lpjml = lpjml, climatetype = climatetype, scenario = "actual:irrig",
+             lpjml = lpjml, climatetype = climatetype, scenario = "actual:irrig_crop",
              aggregate = FALSE, file = "ToolboxMulticropping.mz")
 
 }

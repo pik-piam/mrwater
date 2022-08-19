@@ -39,11 +39,37 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
 
   if (yieldcalib) {
 
-    # read in cellular LPJmL yields calibrated to FAO country values of iniyear [in tDM/ha]
-    yields <- calcOutput("YieldsCalibrated", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
-                         climatetype = climatetype, refYear = iniyear,
-                         multicropping = multicropping, marginal_land = "no_marginal:irrigated",
-                         cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
+    if (!multicropping) {
+      # read in cellular LPJmL yields calibrated to FAO country values of iniyear [in tDM/ha]
+      yields <- calcOutput("YieldsCalibrated", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
+                           climatetype = climatetype, refYear = iniyear,
+                           multicropping = multicropping, marginal_land = "no_marginal:irrigated",
+                           cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
+    } else {
+
+      # read in cellular LPJmL yields calibrated to FAO country values of iniyear
+      # considering currently multicropped areas according to Toolbox [in tDM/ha]
+      calibYieldActual    <- calcOutput("YieldsCalibrated", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
+                                     climatetype = climatetype, refYear = iniyear,
+                                     multicropping = "TRUE:actual:irrig_crop", marginal_land = "no_marginal:irrigated",
+                                     cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
+      yieldLPJmLactual    <- calcOutput("Yields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
+                                     climatetype = climatetype, multicropping = "TRUE:actual:irrig_crop",
+                                     marginal_land = "no_marginal:irrigated",
+                                     supplementary = TRUE, cells = "lpjcell",
+                                     aggregate = FALSE)[, selectyears, ]
+      calibFactor <- calibYieldActual / yieldLPJmLactual
+
+      # read in potential yields for chosen scenario that are calibrated with a
+      # common calibration factor
+      yieldLPJmLpotential <- calcOutput("Yields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
+                                     climatetype = climatetype, multicropping = multicropping,
+                                     marginal_land = "no_marginal:irrigated",
+                                     supplementary = TRUE, cells = "lpjcell",
+                                     aggregate = FALSE)[, selectyears, ]
+      yields <- calibFactor * yieldLPJmLpotential
+
+    }
 
     description <- "LPJmL yields calibrated to FAO yield levels for all different (MAgPIE) crop types"
 
