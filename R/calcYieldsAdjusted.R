@@ -57,7 +57,9 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
                                      climatetype = climatetype, multicropping = "TRUE:actual:irrig_crop",
                                      marginal_land = "no_marginal:irrigated",
                                      cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
-      calibFactor <- calibYieldActual / yieldLPJmLactual
+      calibFactor <- ifelse(yieldLPJmLactual > 0,
+                            calibYieldActual / yieldLPJmLactual,
+                            1) #### To Do: Discuss with Kristine (also: what if LPJmL yield 0?)
 
       # read in potential yields for chosen scenario that are calibrated with a
       # common calibration factor
