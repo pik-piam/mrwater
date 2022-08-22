@@ -112,6 +112,10 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
     # yield gain through irrigation & multiple cropping
     yieldGain <- yields - collapseNames(ref[, , "rainfed"])
 
+  } else {
+    stop("Please select yieldgaintype to be returned by calcCropYieldGain.R
+         Options are: irrigation_singlecropping, multicropping_rf, multicropping_ir,
+         irrigation_multicropping")
   }
 
   # Check for NAs
