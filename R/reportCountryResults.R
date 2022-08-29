@@ -15,6 +15,9 @@
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                               Also needs specification of refYields, separated by ":".
+#'                               Options: FALSE (for single cropping analyses) or
+#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param rankmethod        Rank and optimization method consisting of
 #'                          Unit according to which rank is calculated:

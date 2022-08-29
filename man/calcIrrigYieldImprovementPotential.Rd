@@ -42,6 +42,9 @@ or selection of proxycrops)
 NULL returns all crops individually}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+         Also needs specification of refYields, separated by ":".
+         Options: FALSE (for single cropping analyses) or
+                  "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and

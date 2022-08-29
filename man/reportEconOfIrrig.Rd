@@ -52,6 +52,9 @@ reportEconOfIrrig(
 \item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+     Also needs specification of refYields, separated by ":".
+     Options: FALSE (for single cropping analyses) or
+              "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}

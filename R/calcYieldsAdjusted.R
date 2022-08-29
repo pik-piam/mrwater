@@ -7,6 +7,9 @@
 #' @param selectyears   Years to be returned by the function
 #' @param iniyear       Year to be used for cropland of yield calibration
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                               Also needs specification of refYields, separated by ":".
+#'                               Options: FALSE (for single cropping analyses) or
+#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
@@ -37,11 +40,26 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
                                iniyear, selectyears,
                                yieldcalib, multicropping) {
 
+  # extract yield calibration arguments
+  refYields <- strsplit(yieldcalib, split = ":")[[1]][-1]
+  tmp <- refYields[1]
+  if (length(refYields) > 1) {
+    for (i in 2:length(refYields)) {
+      tmp <- paste(tmp, refYields[i], sep = ":")
+    }
+  } else if (refYields == "FALSE") {
+    refYields <- as.logical(refYields)
+  }
+  refYields <- tmp
+
+  yieldcalib <- as.logical(strsplit(yieldcalib, split = ":")[[1]][1])
+
   if (yieldcalib) {
 
     # read in cellular LPJmL yields calibrated to FAO country values of iniyear [in tDM/ha]
     yields <- calcOutput("YieldsCalibrated", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
-                         climatetype = climatetype, refYear = iniyear, areaSource = "Toolbox",
+                         climatetype = climatetype, refYear = iniyear,
+                         areaSource = "Toolbox", refYields = refYields,
                          multicropping = multicropping, marginal_land = "no_marginal:irrigated",
                          cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
 

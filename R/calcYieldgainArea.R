@@ -9,6 +9,9 @@
 #' @param iniyear       Initialization year for cropland area
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                               Also needs specification of refYields, separated by ":".
+#'                               Options: FALSE (for single cropping analyses) or
+#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param thresholdtype Unit of yield improvement potential used as threshold,
 #'                      consisting of unit and price aggregation level separated by ":".

@@ -40,8 +40,11 @@
 #'                          water allocation in upstreamfirst algorithm
 #'                          (in same unit as thresholdtype)
 #' @param protectLand       Land protection scenario (e.g. HalfEarth, BH_IFL, NULL)
-#' @param yieldcalib        Boolean for whether LPJmL should be calibrated
-#'                          to FAO country yields (TRUE or FALSE)
+#' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                               Also needs specification of refYields, separated by ":".
+#'                               Options: FALSE (for single cropping analyses) or
+#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
+#'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
 #'                          Multiple Cropping Suitability mask selected
 #'                          ("endogenous": suitability for multiple cropping determined
@@ -65,7 +68,7 @@
 fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
                       allocationrule = "optimization", rankmethod = "USD_ha:GLO:TRUE",
                       thresholdtype = "USD_ha:GLO", gainthreshold = 500,
-                      protectLand = "HalfEarth", yieldcalib = TRUE,
+                      protectLand = "HalfEarth", yieldcalib = "TRUE:FALSE",
                       multicropping = FALSE, cropmix = "hist_total",
                       climatetype = "MRI-ESM2-0:ssp370",
                       lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",

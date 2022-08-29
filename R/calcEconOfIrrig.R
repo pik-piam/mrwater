@@ -17,6 +17,9 @@
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                               Also needs specification of refYields, separated by ":".
+#'                               Options: FALSE (for single cropping analyses) or
+#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param rankmethod        Rank and optimization method consisting of
 #'                          Unit according to which rank is calculated:
@@ -41,7 +44,8 @@
 #'                          or selection of proxycrops)
 #' @param potential_wat     if TRUE: potential available water and areas used,
 #'                          if FALSE: currently reserved water on current irrigated cropland used
-#' @param com_ag            if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
+#' @param com_ag            if TRUE: the currently already irrigated areas
+#'                                   in initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
 #'                          Multiple Cropping Suitability mask selected

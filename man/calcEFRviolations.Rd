@@ -48,6 +48,9 @@ and fullpotentail TRUE/FALSE separated by ":"
 FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+     Also needs specification of refYields, separated by ":".
+     Options: FALSE (for single cropping analyses) or
+              "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation

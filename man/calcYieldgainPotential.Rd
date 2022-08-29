@@ -40,6 +40,9 @@ historical baseline "GSWP3-W5E5:historical"}
 (e.g. Smakhtin:good, VMF:fair)}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+     Also needs specification of refYields, separated by ":".
+     Options: FALSE (for single cropping analyses) or
+              "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
 
 \item{irrigationsystem}{Irrigation system used

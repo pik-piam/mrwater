@@ -22,6 +22,9 @@
 #'                      "ISO" for country-level prices
 #' @param iniyear       initialization year for food price and cropmix area
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                               Also needs specification of refYields, separated by ":".
+#'                               Options: FALSE (for single cropping analyses) or
+#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:
@@ -56,7 +59,8 @@
 
 calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
                               iniyear, selectyears,
-                              yieldcalib, cropmix, multicropping) {
+                              yieldcalib,
+                              cropmix, multicropping) {
 
   # reference yield (rainfed-single cropping)
   ref <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,

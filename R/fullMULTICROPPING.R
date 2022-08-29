@@ -7,6 +7,9 @@
 #'                      "hist_total" for historical cropmix on total cropland,
 #'                      or selection of proxycrops)
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                               Also needs specification of refYields, separated by ":".
+#'                               Options: FALSE (for single cropping analyses) or
+#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
 #'
 #' @author Felicitas Beier
@@ -14,7 +17,7 @@
 #' @export
 
 fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
-                              yieldcalib = TRUE) {
+                              yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
 
   # Standard settings
   iniyear           <- "y2010"
@@ -41,23 +44,28 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
   # Yields
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
-             yieldcalib = FALSE, multicropping = FALSE, aggregate = FALSE,
+             yieldcalib = FALSE,
+             multicropping = FALSE, aggregate = FALSE,
              file = paste0("Yields", "_single.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
-             yieldcalib = TRUE, multicropping = FALSE, aggregate = FALSE,
+             yieldcalib = TRUE,
+             multicropping = FALSE, aggregate = FALSE,
              file = paste0("calibYields", "_single.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears, aggregate = FALSE,
-             yieldcalib = FALSE, multicropping = "TRUE:potential:endogenous",
+             yieldcalib = FALSE,
+             multicropping = "TRUE:potential:endogenous",
              file = paste0("Yields", "_multiplePOT.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears, aggregate = FALSE,
-             yieldcalib = TRUE, multicropping = "TRUE:potential:endogenous",
+             yieldcalib = TRUE,
+             multicropping = "TRUE:potential:endogenous",
              file = paste0("calibYields", "_multiplePOT.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears, aggregate = FALSE,
-             yieldcalib = TRUE, multicropping = "TRUE:actual:irrig_crop",
+             yieldcalib = TRUE,
+             multicropping = "TRUE:actual:irrig_crop",
              file = paste0("calibYields", "_multipleACT.mz"))
 
   # Yield gain through irrigation under multiple cropping

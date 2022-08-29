@@ -24,6 +24,9 @@
 #'                      or selection of proxycrops)
 #'                      NULL returns all crops individually
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                               Also needs specification of refYields, separated by ":".
+#'                               Options: FALSE (for single cropping analyses) or
+#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
@@ -61,8 +64,8 @@ calcYieldsValued <- function(lpjml, climatetype, unit,
   # read in cellular lpjml yields [in tDM/ha]
   yields    <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib, multicropping = multicropping,
-                          aggregate = FALSE)
+                          yieldcalib = yieldcalib,
+                          multicropping = multicropping, aggregate = FALSE)
   # extract magpie crops
   croplist  <- getNames(collapseNames(yields[, , "irrigated"]))
 

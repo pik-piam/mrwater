@@ -24,6 +24,9 @@
 #'                          "ISO" for country-level prices;
 #'                          and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#'                               Also needs specification of refYields, separated by ":".
+#'                               Options: FALSE (for single cropping analyses) or
+#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
