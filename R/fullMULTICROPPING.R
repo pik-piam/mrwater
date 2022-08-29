@@ -55,6 +55,10 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              iniyear = iniyear, selectyears = selectyears, aggregate = FALSE,
              yieldcalib = TRUE, multicropping = "TRUE:potential:endogenous",
              file = paste0("calibYields", "_multiplePOT.mz"))
+  calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears, aggregate = FALSE,
+             yieldcalib = TRUE, multicropping = "TRUE:actual:irrig_crop",
+             file = paste0("calibYields", "_multipleACT.mz"))
 
   # Yield gain through irrigation under multiple cropping
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
@@ -122,13 +126,13 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
   calcOutput("RiverDischargeNatAndHuman", selectyears = selectyears, iniyear = iniyear,
-              lpjml = lpjml, climatetype = climatetype, efrMethod = "VMF:fair",
+              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
               multicropping = "TRUE:actual:irrig_crop",
               com_ag = TRUE, aggregate = FALSE,
               file = "comAgdischarge_multi.mz")
 
   calcOutput("RiverDischargeNatAndHuman", selectyears = selectyears, iniyear = iniyear,
-              lpjml = lpjml, climatetype = climatetype, efrMethod = "VMF:fair", multicropping = FALSE,
+              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, multicropping = FALSE,
               com_ag = TRUE, aggregate = FALSE,
               file = "comAgdischarge_single.mz")
 
