@@ -49,7 +49,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              file = paste0("Yields", "_single.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
-             yieldcalib = TRUE,
+             yieldcalib = yieldcalib,
              multicropping = FALSE, aggregate = FALSE,
              file = paste0("calibYields", "_single.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
@@ -59,12 +59,12 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              file = paste0("Yields", "_multiplePOT.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears, aggregate = FALSE,
-             yieldcalib = TRUE,
+             yieldcalib = yieldcalib,
              multicropping = "TRUE:potential:endogenous",
              file = paste0("calibYields", "_multiplePOT.mz"))
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears, aggregate = FALSE,
-             yieldcalib = TRUE,
+             yieldcalib = yieldcalib,
              multicropping = "TRUE:actual:irrig_crop",
              file = paste0("calibYields", "_multipleACT.mz"))
 
