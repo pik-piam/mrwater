@@ -86,7 +86,8 @@ or selection of proxycrops)}
 \item{potential_wat}{if TRUE: potential available water and areas used,
 if FALSE: currently reserved water on current irrigated cropland used}
 
-\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
+\item{com_ag}{if TRUE: the currently already irrigated areas
+         in initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
