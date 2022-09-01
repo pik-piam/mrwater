@@ -161,12 +161,6 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              multicropping = FALSE, aggregate = FALSE,
              file = "reqWatFullirrig_single.mz")
 
-
-  # Physical croparea
-  calcOutput("CropareaAdjusted", iniyear = iniyear,
-             aggregate = FALSE, file = "croparea_physical.mz")
-
-
   for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
   # Potentially irrigated area on current cropland under single cropping
   calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,

@@ -4,10 +4,14 @@
 \alias{calcCropareaAdjusted}
 \title{calcCropareaAdjusted}
 \usage{
-calcCropareaAdjusted(iniyear)
+calcCropareaAdjusted(iniyear, dataset = "Toolbox")
 }
 \arguments{
 \item{iniyear}{initialization year}
+
+\item{dataset}{LUH or Toolbox.
+Note: once migration to Toolbox data is complete, this function
+can be replaced with calcCropareaToolbox}
 }
 \value{
 magpie object in cellular resolution
