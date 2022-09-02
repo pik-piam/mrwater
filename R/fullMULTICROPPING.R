@@ -226,7 +226,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
   # Irrigation potentials (IAP and IWP (consumption and withdrawal))
   # for range of yield value gain thresholds and different scenarios
 
-  for (m in c("TRUE:actual:total", "TRUE:potential:endogenous")) {
+  for (m in c("TRUE:actual:total", "TRUE:actual:irrig_crop", "TRUE:potential:endogenous")) {
 
     # Yield gain area (multiple cropping)
     calcOutput("YieldgainArea", rangeGT = gtrange,
@@ -266,6 +266,19 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
 
 
     for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
+
+      # Potential cropland, but with protection
+      calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,
+                 selectyears = plotyear, iniyear = iniyear,
+                 lpjml = lpjml, climatetype = climatetype,
+                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                 rankmethod = rankmethod, yieldcalib = yieldcalib,
+                 allocationrule = allocationrule, thresholdtype = thresholdtype,
+                 irrigationsystem = irrigationsystem, cropmix = cropmix,
+                 landScen = paste0("potCropland:", "HalfEarth"),
+                 potential_wat = TRUE, com_ag = FALSE,
+                 multicropping = m, aggregate = FALSE,
+                 file = paste0(o, "EconPOTSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
 
       # Current cropland
       calcOutput("EconOfIrrig", scenario = ssp, output = o, GT_range = gtrange,

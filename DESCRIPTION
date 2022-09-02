@@ -1,7 +1,7 @@
 Package: mrwater
 Type: Package
 Title: madrat based MAgPIE water Input Data Library
-Version: 1.2.27
+Version: 1.2.28
 URL: https://github.com/pik-piam/mrwater, https://doi.org/10.5281/zenodo.5801680
 Date: 2022-09-02
 Authors@R: c(person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = c("aut","cre")),
