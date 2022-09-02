@@ -30,7 +30,7 @@ calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox") {
     map             <- toolGetMappingCoord2Country()
     getCells(phys)  <- paste(map$coords, map$iso, sep = ".")
   } else if (dataset == "Toolbox") {
-    phys <- calcOutput("CropareaToolbox", physical = TRUE, sectoral = "lpj",
+    phys <- calcOutput("CropareaToolbox", physical = TRUE, sectoral = "kcr",
                          cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
                          selectyears = iniyear, aggregate = FALSE)
   } else {
