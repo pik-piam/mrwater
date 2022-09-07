@@ -71,7 +71,7 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
 
   if (yieldgaintype == "irrigation_singlecropping") {
 
-    # irrigated single-cropped yields
+    # irrigated yield (single cropping)
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                                        iniyear = iniyear, selectyears = selectyears,
                                        yieldcalib = yieldcalib, unit = unit,
@@ -80,6 +80,17 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
 
     # yield gain through irrigation under single cropping conditions
     yieldGain <- yields - collapseNames(ref[, , "rainfed"])
+
+  } else if (yieldgaintype == "irrigation_multicropping") {
+
+    # irrigated multicropped yields
+    yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
+                                       iniyear = iniyear, selectyears = selectyears,
+                                       yieldcalib = yieldcalib, unit = unit,
+                                       multicropping = multicropping, cropmix = cropmix,
+                                       aggregate = FALSE)[, , "irrigated"])
+    # yield gain through multiple cropping under irrigated conditions
+    yieldGain <- yields - collapseNames(ref[, , "irrigated"])
 
   } else if (yieldgaintype == "multicropping_rf") {
 
@@ -104,7 +115,7 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, unit,
     # yield gain through multiple cropping under irrigated conditions
     yieldGain <- yields - collapseNames(ref[, , "irrigated"])
 
-  } else if (yieldgaintype == "irrigation_multicropping") {
+  } else if (yieldgaintype == "irrigation_and_multicropping") {
 
     # irrigated multicropped yields
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,

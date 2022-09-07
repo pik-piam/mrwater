@@ -99,6 +99,11 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
 
   out <- mbind(x)
 
+  # transform unit from mio. m^3 to km^3:
+  # (1 km^3 = 1e+09 m^3)
+  # (1 mio. = 1e+06)
+  out <- out / 1000
+
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3 per year",

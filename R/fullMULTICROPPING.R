@@ -41,6 +41,14 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
   # MAIN RESULTS #
   ################
 
+  # Non-Agricultural water uses (in mio. m^3 / yr) [smoothed]
+  calcOutput("RiverHumanUses", humanuse = "non_agriculture",
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             efrMethod = efrMethod, multicropping = FALSE,
+             aggregate = FALSE,
+             file = "nonAguses.mz")
+
   # Yields
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
@@ -100,7 +108,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                iniyear = iniyear, selectyears = selectyears,
                cropmix = cropmix, yieldcalib = yieldcalib,
                multicropping = m, aggregate = FALSE,
-               file = paste0("yieldgain_Irrigation_",
+               file = paste0("yieldgain_IrrigationSingle_",
                              as.list(strsplit(m, split = ":"))[[1]][2],
                              as.list(strsplit(m, split = ":"))[[1]][3], ".mz"))
     calcOutput("YieldImprovementPotential", unit = "USD_ha:GLO",
@@ -119,6 +127,15 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                cropmix = cropmix, yieldcalib = yieldcalib,
                multicropping = m, aggregate = FALSE,
                file = paste0("yieldgain_MulticroppingIrrigated_",
+                             as.list(strsplit(m, split = ":"))[[1]][2],
+                             as.list(strsplit(m, split = ":"))[[1]][3], ".mz"))
+    calcOutput("YieldImprovementPotential", unit = "USD_ha:GLO",
+               yieldgaintype = "irrigation_multicropping",
+               lpjml = lpjml, climatetype = climatetype,
+               iniyear = iniyear, selectyears = selectyears,
+               cropmix = cropmix, yieldcalib = yieldcalib,
+               multicropping = m, aggregate = FALSE,
+               file = paste0("yieldgain_IrrigationAndMulticropping_",
                              as.list(strsplit(m, split = ":"))[[1]][2],
                              as.list(strsplit(m, split = ":"))[[1]][3], ".mz"))
     calcOutput("YieldImprovementPotential", unit = "USD_ha:GLO",
