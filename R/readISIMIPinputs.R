@@ -41,7 +41,7 @@ readISIMIPinputs <- function(subtype = "ISIMIP3b:water:histsoc.waterabstraction"
 
     ## Read in data
     # read in raster brick
-    brick        <- brick(paste0(folder, "/domwc_", readyears, ".nc"))
+    brick        <- suppressWarnings(brick(paste0(folder, "/domwc_", readyears, ".nc")))
     # start year (with name X0) is 1901:
     names(brick) <- paste0("y", round(as.numeric(gsub("X", "", names(brick))), 0) + 1901)
     # transform to magpie object with coordinate data
@@ -49,9 +49,9 @@ readISIMIPinputs <- function(subtype = "ISIMIP3b:water:histsoc.waterabstraction"
     getNames(x)  <- brick@title
 
     # append data
-    for (i in (1:length(input))) {
+    for (i in seq_len(input)) {
 
-      brick         <- brick(input[i])
+      brick         <- suppressWarnings(brick(input[i]))
       # start year (with name X0) is 1901:
       names(brick)  <- paste0("y", round(as.numeric(gsub("X", "", names(brick))), 0) + 1901)
       # transform to magpie object with coordinate data

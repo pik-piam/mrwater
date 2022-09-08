@@ -38,7 +38,7 @@ readWATERGAP <- function(subtype = "WATCH_ISIMIP_WATERGAP") {
 
     ### Reading in files and combining to one magpie object:
     # read in raster brick
-    brick        <- brick(paste0(subtype, "/", input[[1]][["wc"]][1]))
+    brick        <- suppressWarnings(brick(paste0(subtype, "/", input[[1]][["wc"]][1])))
     # start year (with name X0) is 2005:
     names(brick) <- paste0("y", as.numeric(gsub("X", "", names(brick))) + 2005)
     # transform to magpie object with coordinate data
@@ -47,15 +47,15 @@ readWATERGAP <- function(subtype = "WATCH_ISIMIP_WATERGAP") {
     getNames(x)  <- paste0("sspX.", getNames(x))
 
     # Different SSPs:
-    for (i in (1:length(input))) {
+    for (i in seq_len(input)) {
 
       # Different water use types (withdrawal, consumption)
-      for (j in (1:length(input[["ssp1"]]))) {
+      for (j in seq_len(input[["ssp1"]])) {
 
         # Different industries (manufacturing, electricity, domestic)
-        for (k in (1:length(input[["ssp1"]][["wc"]]))) {
+        for (k in seq_len(input[["ssp1"]][["wc"]])) {
 
-          brick        <- brick(paste0(subtype, "/", input[[i]][[j]][k]))
+          brick        <- suppressWarnings(brick(paste0(subtype, "/", input[[i]][[j]][k])))
           # start year (with name X0) is 2005:
           names(brick) <- paste0("y", as.numeric(gsub("X", "", names(brick))) + 2005)
           # transform to magpie object with coordinate data
