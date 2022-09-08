@@ -6,7 +6,10 @@
 \usage{
 fullMULTICROPPING(
   cropmix = c("maiz", "rapeseed", "puls_pro"),
-  yieldcalib = "TRUE:TRUE:actual:irrig_crop"
+  yieldcalib = "TRUE:TRUE:actual:irrig_crop",
+  allocationrule = "optimization",
+  rankmethod = "USD_ha:GLO:TRUE",
+  thresholdtype = "USD_ha:GLO"
 )
 }
 \arguments{
@@ -16,10 +19,38 @@ fullMULTICROPPING(
 or selection of proxycrops)}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
-         Also needs specification of refYields, separated by ":".
-         Options: FALSE (for single cropping analyses) or
-                  "TRUE:actual:irrig_crop" (for multiple cropping analyses)
+        Also needs specification of refYields, separated by ":".
+        Options: FALSE (for single cropping analyses) or
+                 "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
+
+\item{allocationrule}{Rule to be applied for river basin discharge allocation
+across cells of river basin ("optimization", "upstreamfirst")}
+
+\item{rankmethod}{Rank and optimization method consisting of
+Unit according to which rank is calculated:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return;
+Unit of yield improvement potential to be returned;
+Level of price aggregation used:
+"GLO" for global average prices, or
+"ISO" for country-level prices;
+and boolean indicating fullpotential (TRUE, i.e. cell
+receives full irrigation requirements in total area)
+or reduced potential (FALSE, reduced potential of cell
+receives at later stage in allocation algorithm);
+separated by ":"}
+
+\item{thresholdtype}{Unit of yield improvement potential used as threshold,
+consisting of two components:
+Unit:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return.
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices}
 }
 \description{
 Function that produces output for irrigation potentials

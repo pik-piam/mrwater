@@ -2,22 +2,50 @@
 #' @description Function that produces output for irrigation potentials
 #'              under multiple cropping on cellular resolution.
 #'
-#' @param cropmix       Selected cropmix (options:
-#'                      "hist_irrig" for historical cropmix on currently irrigated area,
-#'                      "hist_total" for historical cropmix on total cropland,
-#'                      or selection of proxycrops)
-#' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+#' @param cropmix        Selected cropmix (options:
+#'                       "hist_irrig" for historical cropmix on currently irrigated area,
+#'                       "hist_total" for historical cropmix on total cropland,
+#'                       or selection of proxycrops)
+#' @param yieldcalib     If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
 #'                               Options: FALSE (for single cropping analyses) or
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
-#'                      If FALSE: uncalibrated LPJmL yields are used
+#'                       If FALSE: uncalibrated LPJmL yields are used
+#' @param allocationrule Rule to be applied for river basin discharge allocation
+#'                       across cells of river basin ("optimization", "upstreamfirst")
+#' @param rankmethod     Rank and optimization method consisting of
+#'                       Unit according to which rank is calculated:
+#'                       tDM (tons per dry matter),
+#'                       USD_ha (USD per hectare) for area return, or
+#'                       USD_m3 (USD per cubic meter) for volumetric return;
+#'                       Unit of yield improvement potential to be returned;
+#'                       Level of price aggregation used:
+#'                       "GLO" for global average prices, or
+#'                       "ISO" for country-level prices;
+#'                       and boolean indicating fullpotential (TRUE, i.e. cell
+#'                       receives full irrigation requirements in total area)
+#'                       or reduced potential (FALSE, reduced potential of cell
+#'                       receives at later stage in allocation algorithm);
+#'                       separated by ":"
+#' @param thresholdtype  Unit of yield improvement potential used as threshold,
+#'                       consisting of two components:
+#'                       Unit:
+#'                       tDM (tons per dry matter),
+#'                       USD_ha (USD per hectare) for area return, or
+#'                       USD_m3 (USD per cubic meter) for volumetric return.
+#'                       Price aggregation:
+#'                       "GLO" for global average prices, or
+#'                       "ISO" for country-level prices
 #'
 #' @author Felicitas Beier
 #'
 #' @export
 
 fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
-                              yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
+                              yieldcalib = "TRUE:TRUE:actual:irrig_crop",
+                              allocationrule = "optimization",
+                              rankmethod = "USD_ha:GLO:TRUE",
+                              thresholdtype = "USD_ha:GLO") {
 
   # Standard settings
   iniyear           <- "y2010"
@@ -33,9 +61,6 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
   gtrange          <- c(0, 10, 50, 100, 250, 300, 500, 600, 750, 900, 1000, 1500, 2000, 3000)
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
-  allocationrule    <- "optimization"
-  rankmethod        <- "USD_ha:GLO:TRUE"
-  thresholdtype     <- "USD_ha:GLO"
 
   ################
   # MAIN RESULTS #
@@ -102,6 +127,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
 
   # Yield gain analysis
   for (m in c("TRUE:actual:total", "TRUE:actual:irrig_crop", "TRUE:potential:endogenous")) {
+
     calcOutput("YieldImprovementPotential", unit = "USD_ha:GLO",
                yieldgaintype = "irrigation_singlecropping",
                lpjml = lpjml, climatetype = climatetype,
@@ -177,6 +203,18 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              cropmix = cropmix, yieldcalib = yieldcalib,
              multicropping = FALSE, aggregate = FALSE,
              file = "reqWatFullirrig_single.mz")
+
+  # Share current irrigation water that can be fulfilled by available water resources
+  calcOutput("ShrCurrIrrigFulfilled", multicropping = FALSE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             efrMethod = efrMethod, aggregate = FALSE,
+             file = "shrCurrIrrigFulfilledSingle.mz")
+  calcOutput("ShrCurrIrrigFulfilled", multicropping = "TRUE:actual:irrig_crop",
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             efrMethod = efrMethod, aggregate = FALSE,
+             file = "shrCurrIrrigFulfilledMultiple.mz")
 
   for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
   # Potentially irrigated area on current cropland under single cropping
