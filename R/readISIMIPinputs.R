@@ -49,7 +49,7 @@ readISIMIPinputs <- function(subtype = "ISIMIP3b:water:histsoc.waterabstraction"
     getNames(x)  <- brick@title
 
     # append data
-    for (i in seq_len(input)) {
+    for (i in seq_along(input)) {
 
       brick         <- suppressWarnings(brick(input[i]))
       # start year (with name X0) is 1901:
