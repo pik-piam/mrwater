@@ -47,13 +47,13 @@ readWATERGAP <- function(subtype = "WATCH_ISIMIP_WATERGAP") {
     getNames(x)  <- paste0("sspX.", getNames(x))
 
     # Different SSPs:
-    for (i in seq_len(input)) {
+    for (i in seq_along(input)) {
 
       # Different water use types (withdrawal, consumption)
-      for (j in seq_len(input[["ssp1"]])) {
+      for (j in seq_along(input[["ssp1"]])) {
 
         # Different industries (manufacturing, electricity, domestic)
-        for (k in seq_len(input[["ssp1"]][["wc"]])) {
+        for (k in seq_along(input[["ssp1"]][["wc"]])) {
 
           brick        <- suppressWarnings(brick(paste0(subtype, "/", input[[i]][[j]][k])))
           # start year (with name X0) is 2005:
