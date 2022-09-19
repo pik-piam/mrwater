@@ -40,8 +40,11 @@
 #' calcOutput("RiverWatReserved", aggregate = FALSE)
 #' }
 #'
+
 calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
-                                 efrMethod, accessibilityrule, com_ag, multicropping) {
+                                 efrMethod, accessibilityrule,
+                                 com_ag, # nolint
+                                 multicropping) {
 
   # Discharge that is inaccessible to human uses (mio m^3)
   inaccessibleDischarge <- calcOutput("DischargeInaccessible", selectyears = selectyears,
@@ -84,9 +87,15 @@ calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
 
   out <-  reservedRiverrouting + reservedEFR + inaccessibleDischarge
 
+  # Test
+  if (any(out < 0)) {
+    stop("calcRiverWatReserved produced negative water volumes.")
+  }
+
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = "Reserved discharge: Water that cannot be withdrawn for irrigation",
+              description  = "Reserved discharge:
+                              Water that cannot be withdrawn for irrigation",
               isocountries = FALSE))
 }

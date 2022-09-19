@@ -58,7 +58,8 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
   climatetype       <- "GSWP3-W5E5:historical"
 
   irrigationsystem  <- "initialization"
-  gtrange          <- c(0, 10, 50, 100, 250, 300, 500, 600, 750, 900, 1000, 1500, 2000, 3000)
+  gtrange          <- c(0, 10, 50, 100, 250, 300, 500, 600,
+                        750, 900, 1000, 1500, 2000, 3000)
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
 
@@ -106,8 +107,16 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
+             multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
+             file = paste0("yieldgain_USDha_multipleACT", ".mz"))
+
+  # Yield gain through irrigation under multiple cropping
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = plotyear,
+             cropmix = cropmix, yieldcalib = yieldcalib,
              multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
-             file = paste0("yieldgain_USDha_multiple", ".mz"))
+             file = paste0("yieldgain_USDha_multiplePOT", ".mz"))
 
   # Yield gain through irrigation under multiple cropping
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
