@@ -225,30 +225,32 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              efrMethod = efrMethod, aggregate = FALSE,
              file = "shrCurrIrrigFulfilledMultiple.mz")
 
-  for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
-  # Potentially irrigated area on current cropland under single cropping
-  calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
-             selectyears = plotyear, iniyear = iniyear,
-             lpjml = lpjml, climatetype = climatetype,
-             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-             rankmethod = rankmethod, yieldcalib = yieldcalib,
-             allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, cropmix = cropmix,
-             landScen = "currCropland:NULL", potentialWat = TRUE, comAg = FALSE,
-             multicropping = FALSE, aggregate = FALSE,
-             file = paste0(o, "EconCURUNSUS", "_single.mz"))
+  for (committed in c(TRUE, FALSE)) {
+    for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
+    # Potentially irrigated area on current cropland under single cropping
+    calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
+               selectyears = plotyear, iniyear = iniyear,
+               lpjml = lpjml, climatetype = climatetype,
+               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+               rankmethod = rankmethod, yieldcalib = yieldcalib,
+               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               irrigationsystem = irrigationsystem, cropmix = cropmix,
+               landScen = "currCropland:NULL", potentialWat = TRUE, comAg = committed,
+               multicropping = FALSE, aggregate = FALSE,
+               file = paste0(o, "EconCURUNSUS", "comAg", as.character(committed), "_single.mz"))
 
-  # Current irrigated area under single cropping
-  calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
-             selectyears = plotyear, iniyear = iniyear,
-             lpjml = lpjml, climatetype = climatetype,
-             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-             rankmethod = rankmethod, yieldcalib = yieldcalib,
-             allocationrule = allocationrule, thresholdtype = thresholdtype,
-             irrigationsystem = irrigationsystem, cropmix = cropmix,
-             landScen = "currIrrig:NULL", potentialWat = TRUE, comAg = FALSE,
-             multicropping = FALSE, aggregate = FALSE,
-             file = paste0(o, "EconACTUNSUS", "_single.mz"))
+    # Current irrigated area under single cropping
+    calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
+               selectyears = plotyear, iniyear = iniyear,
+               lpjml = lpjml, climatetype = climatetype,
+               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+               rankmethod = rankmethod, yieldcalib = yieldcalib,
+               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               irrigationsystem = irrigationsystem, cropmix = cropmix,
+               landScen = "currIrrig:NULL", potentialWat = TRUE, comAg = committed,
+               multicropping = FALSE, aggregate = FALSE,
+               file = paste0(o, "EconACTUNSUS", "comAg", as.character(committed), "_single.mz"))
+    }
   }
 
   # Yield gain area (single cropping)
@@ -328,46 +330,53 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                multicropping = m, rangeGT = gtrange, aggregate = FALSE,
                file = paste0("yieldGainWater_CURRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
 
+    for (committed in c(TRUE, FALSE)) {
+      for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
 
-    for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
+        # Potential cropland, but with protection
+        calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
+                   selectyears = plotyear, iniyear = iniyear,
+                   lpjml = lpjml, climatetype = climatetype,
+                   efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                   rankmethod = rankmethod, yieldcalib = yieldcalib,
+                   allocationrule = allocationrule, thresholdtype = thresholdtype,
+                   irrigationsystem = irrigationsystem, cropmix = cropmix,
+                   landScen = "potCropland:HalfEarth",
+                   potentialWat = TRUE, comAg = committed,
+                   multicropping = m, aggregate = FALSE,
+                   file = paste0(o, "EconPOTSUS", "comAg",
+                                 as.character(committed),
+                                 as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
 
-      # Potential cropland, but with protection
-      calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
-                 selectyears = plotyear, iniyear = iniyear,
-                 lpjml = lpjml, climatetype = climatetype,
-                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                 rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule, thresholdtype = thresholdtype,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
-                 landScen = "potCropland:HalfEarth",
-                 potentialWat = TRUE, comAg = FALSE,
-                 multicropping = m, aggregate = FALSE,
-                 file = paste0(o, "EconPOTSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
+        # Current cropland
+        calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
+                   selectyears = plotyear, iniyear = iniyear,
+                   lpjml = lpjml, climatetype = climatetype,
+                   efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                   rankmethod = rankmethod, yieldcalib = yieldcalib,
+                   allocationrule = allocationrule, thresholdtype = thresholdtype,
+                   irrigationsystem = irrigationsystem, cropmix = cropmix,
+                   landScen = "currCropland:NULL", potentialWat = TRUE, comAg = committed,
+                   multicropping = m, aggregate = FALSE,
+                   file = paste0(o, "EconCURUNSUS", "comAg",
+                                 as.character(committed),
+                                 as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
 
-      # Current cropland
-      calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
-                 selectyears = plotyear, iniyear = iniyear,
-                 lpjml = lpjml, climatetype = climatetype,
-                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                 rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule, thresholdtype = thresholdtype,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
-                 landScen = "currCropland:NULL", potentialWat = TRUE, comAg = FALSE,
-                 multicropping = m, aggregate = FALSE,
-                 file = paste0(o, "EconCURUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
-
-      # Current irrigated area
-      calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
-                 selectyears = plotyear, iniyear = iniyear,
-                 lpjml = lpjml, climatetype = climatetype,
-                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                 rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule, thresholdtype = thresholdtype,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
-                 landScen = "currIrrig:NULL", potentialWat = TRUE, comAg = FALSE,
-                 multicropping = m, aggregate = FALSE,
-                 file = paste0(o, "EconIRRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
-   }
+        # Current irrigated area
+        calcOutput("EconOfIrrig", scenario = ssp, output = o, gtrange = gtrange,
+                   selectyears = plotyear, iniyear = iniyear,
+                   lpjml = lpjml, climatetype = climatetype,
+                   efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                   rankmethod = rankmethod, yieldcalib = yieldcalib,
+                   allocationrule = allocationrule, thresholdtype = thresholdtype,
+                   irrigationsystem = irrigationsystem, cropmix = cropmix,
+                   landScen = "currIrrig:NULL", potentialWat = TRUE, comAg = committed,
+                   multicropping = m, aggregate = FALSE,
+                   file = paste0(o, "EconIRRUNSUS", "comAg",
+                                 as.character(committed),
+                                 as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
+      }
+    }
   }
 
   ##############

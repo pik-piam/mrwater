@@ -52,7 +52,14 @@ toolDischargeAllocation <- function(y, rs, inoutLIST, inLIST,
     reservedNEW  <- inoutLIST$minWatReserved
     fracNEW      <- inoutLIST$fracFullirrig
 
-    for (c in rs$cells[order(glocellrank[, y, ])]) {
+    for (o in (1:max(glocellrank[, y, ], na.rm = TRUE))) {
+
+      # Extract the cell number
+      c <- rs$cells[rs$coordinates == paste(strsplit(gsub(".*_", "",
+                                                          names(which(glocellrank[, y, ] == o))), "\\.")[[1]][1],
+                                            strsplit(gsub(".*_", "",
+                                                          names(which(glocellrank[, y, ] == o))), "\\.")[[1]][2],
+                                            sep = ".")]
 
       ### Potential Function Improvements:
       # (1) GENERALIZE: FLEXIBLE FOR YEARS AND CELLS
