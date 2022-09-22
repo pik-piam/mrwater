@@ -30,8 +30,8 @@ calcIrrigationPotentials <- function(output, selectyears, iniyear, lpjml, climat
   ### STILL IN USE OR CAN BE DELETED? ###
 
   # Standard settings
-  potential_wat     <- TRUE
-  com_ag            <- TRUE
+  potentialWat      <- TRUE
+  comAg             <- TRUE
   multicropping     <- FALSE
   cropmix           <- c("maiz", "rapeseed", "puls_pro")
   landScen          <- "potCropland:HalfEarth"
@@ -55,8 +55,8 @@ calcIrrigationPotentials <- function(output, selectyears, iniyear, lpjml, climat
                                   rankmethod = rankmethod, thresholdtype = thresholdtype,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   irrigationsystem = irrigationsystem,
-                                  landScen = landScen, cropmix = cropmix, potential_wat = potential_wat,
-                                  com_ag = com_ag, multicropping = multicropping,
+                                  landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
+                                  comAg = comAg, multicropping = multicropping,
                                   aggregate = FALSE)[, , "irrigatable"])
 
     w <- NULL
@@ -72,7 +72,7 @@ calcIrrigationPotentials <- function(output, selectyears, iniyear, lpjml, climat
                                   rankmethod = rankmethod, thresholdtype = thresholdtype,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   irrigationsystem = irrigationsystem,
-                                  landScen = landScen, cropmix = cropmix, com_ag = com_ag,
+                                  landScen = landScen, cropmix = cropmix, comAg = comAg,
                                   multicropping = multicropping, aggregate = FALSE)[, , output])
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)

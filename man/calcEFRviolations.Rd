@@ -19,7 +19,7 @@ calcEFRviolations(
   iniyear,
   landScen,
   cropmix,
-  com_ag,
+  comAg,
   multicropping,
   scenario,
   cellular = TRUE
@@ -78,7 +78,7 @@ or do not specify second part of the argument}
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
 
-\item{com_ag}{If TRUE: currently already irrigated areas in
+\item{comAg}{If TRUE: currently already irrigated areas in
          initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
 

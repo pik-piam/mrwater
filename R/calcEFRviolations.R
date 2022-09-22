@@ -40,7 +40,7 @@
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
 #'                          or selection of proxycrops)
-#' @param com_ag            If TRUE: currently already irrigated areas in
+#' @param comAg             If TRUE: currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
@@ -71,7 +71,7 @@
 calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             thresholdtype, gainthreshold, irrigationsystem, iniyear,
-                            landScen, cropmix, com_ag, multicropping,
+                            landScen, cropmix, comAg, multicropping,
                             scenario, cellular = TRUE) {
 
   # Check
@@ -84,7 +84,7 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod,
   rs$iso <- readRDS(system.file("extdata/mapCoords2Country.rds", package = "mrcommons"))$iso
 
 
-  discharge <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
+  discharge <- collapseNames(calcOutput("RiverDischargeAllocation",
                                         output = "discharge", selectyears = selectyears,
                                         lpjml = lpjml, climatetype = climatetype,
                                         efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -92,11 +92,12 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod,
                                         allocationrule = allocationrule, thresholdtype = thresholdtype,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
-                                        cropmix = cropmix, com_ag = com_ag,
+                                        cropmix = cropmix, comAg = comAg,
                                         multicropping = multicropping, aggregate = FALSE)[, , scenario])
 
-  envFlow   <- collapseNames(calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
-                             climatetype = climatetype, efrMethod = efrMethod, aggregate = FALSE)[, , "EFR"])
+  envFlow   <- collapseNames(calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
+                                        lpjml = lpjml, climatetype = climatetype,
+                                        efrMethod = efrMethod, aggregate = FALSE)[, , "EFR"])
 
   violation <- discharge - envFlow
   violation[violation > 0] <- 0

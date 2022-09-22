@@ -6,26 +6,27 @@
 \usage{
 calcRiverDischargeNatAndHuman(
   lpjml,
+  climatetype,
   selectyears,
   iniyear,
-  climatetype,
   efrMethod,
-  com_ag,
+  comAg,
   multicropping
 )
 }
 \arguments{
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
+\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+
 \item{selectyears}{Years to be returned (Note: does not affect years of harmonization or smoothing)}
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
-
 \item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 
-\item{com_ag}{if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
+\item{comAg}{if TRUE: the currently already irrigated areas in
+         initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
@@ -41,7 +42,10 @@ separated by ":"
 magpie object in cellular resolution
 }
 \description{
-This function calculates cellular discharge after considering known human consumption (non-agricultural and committed agricultural) along the river calculated and accounted for in previous river routings (see calcRiverNaturalFlows and calcRiverHumanUses)
+This function calculates cellular discharge after considering
+             known human consumption (non-agricultural and committed agricultural)
+             along the river calculated and accounted for in previous river
+             routings (see calcRiverNaturalFlows and calcRiverHumanUses)
 }
 \examples{
 \dontrun{

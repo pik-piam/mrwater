@@ -19,8 +19,8 @@ calcIrrigAreaPotential(
   irrigationsystem,
   landScen,
   cropmix,
-  potential_wat,
-  com_ag,
+  potentialWat,
+  comAg,
   multicropping
 )
 }
@@ -83,10 +83,10 @@ or do not specify second part of the argument}
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
 
-\item{potential_wat}{If TRUE: potential available water and areas used,
+\item{potentialWat}{If TRUE: potential available water and areas used,
 if FALSE: currently reserved water on current irrigated cropland used}
 
-\item{com_ag}{If TRUE: currently already irrigated areas in
+\item{comAg}{If TRUE: currently already irrigated areas in
          initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
 

@@ -1,4 +1,4 @@
-#' @title       calcRiverSurplusDischargeAllocation
+#' @title       calcRiverDischargeAllocation
 #' @description This function distributes surplus basin discharge after the
 #'              previous river routings following certain management assumptions
 #'
@@ -57,7 +57,7 @@
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
 #'                          or selection of proxycrops)
-#' @param com_ag            if TRUE: the currently already irrigated areas
+#' @param comAg            if TRUE: the currently already irrigated areas
 #'                                   in initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
@@ -71,21 +71,20 @@
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears
-#' @importFrom stringr str_split
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("RiverSurplusDischargeAllocation", aggregate = FALSE)
+#' calcOutput("RiverDischargeAllocation", aggregate = FALSE)
 #' }
 #'
-calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
-                                                selectyears, output, efrMethod, accessibilityrule,
-                                                rankmethod, yieldcalib, allocationrule, thresholdtype,
-                                                gainthreshold, irrigationsystem, iniyear, landScen,
-                                                cropmix, com_ag, multicropping) {
+calcRiverDischargeAllocation <- function(lpjml, climatetype,
+                                         selectyears, output, efrMethod, accessibilityrule,
+                                         rankmethod, yieldcalib, allocationrule, thresholdtype,
+                                         gainthreshold, irrigationsystem, iniyear, landScen,
+                                         cropmix, comAg, multicropping) {
 
   # Check
   if (!is.numeric(iniyear)) {
@@ -93,9 +92,9 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
   }
 
   # Retrieve arguments
-  if (com_ag == TRUE) {
+  if (comAg == TRUE) {
     comagyear <- iniyear
-  } else if (com_ag == FALSE) {
+  } else if (comAg == FALSE) {
     comagyear <- NULL
   }
 
@@ -103,7 +102,8 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
   ###### Read in Required Inputs ########
   #######################################
   # River Structure
-  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
+  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
+                            package = "mrwater"))
 
   # Minimum reserved flow requirements: Inaccessible discharge +
   #                                     Environmental Flow Requirements (adjusted for
@@ -113,7 +113,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
   minWatReserved <- calcOutput("RiverWatReserved", aggregate = FALSE,
                                 selectyears = selectyears, iniyear = iniyear,
                                 lpjml = lpjml, climatetype = climatetype,
-                                com_ag = com_ag, multicropping = multicropping,
+                                comAg = comAg, multicropping = multicropping,
                                 efrMethod = efrMethod, accessibilityrule = accessibilityrule)
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
@@ -121,7 +121,7 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
                                selectyears = selectyears, iniyear = iniyear,
                                lpjml = lpjml, climatetype = climatetype,
                                efrMethod = efrMethod, multicropping = multicropping,
-                               com_ag = com_ag, aggregate = FALSE)
+                               comAg = comAg, aggregate = FALSE)
 
   # Required water for full irrigation per cell (in mio. m^3)
   reqWatFullirrig   <- calcOutput("FullIrrigationRequirement",
@@ -186,36 +186,37 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
   }
 
   # list of objects that are inputs and outputs to the allocation function
-  l_inout <- list(discharge = discharge,
-                  minWatReserved = minWatReserved,
-                  fracFullirrig = fracFullirrig)
+  inoutLIST <- list(discharge = discharge,
+                    minWatReserved = minWatReserved,
+                    fracFullirrig = fracFullirrig)
 
   # list of objects that are inputs to the allocation function
-  l_in    <- list(irrigGain = irrigGain,
-                  reqWatFullirrigWW = reqWatFullirrigWW,
-                  reqWatFullirrigWC = reqWatFullirrigWC,
-                  gainthreshold = gainthreshold,
-                  avlWatWW = avlWatWW,
-                  avlWatWC = avlWatWC,
-                  multicropping = multicropping)
+  inLIST    <- list(irrigGain = irrigGain,
+                    reqWatFullirrigWW = reqWatFullirrigWW,
+                    reqWatFullirrigWC = reqWatFullirrigWC,
+                    gainthreshold = gainthreshold,
+                    avlWatWW = avlWatWW,
+                    avlWatWC = avlWatWC,
+                    multicropping = multicropping)
 
   for (y in selectyears) {
 
-    l_inout <- toolDischargeAllocation(y = y, rs = rs, l_inout = l_inout,
-                                       l_in = l_in, glocellrank = glocellrank,
-                                       allocationrule = allocationrule)
+    inoutLIST <- toolDischargeAllocation(y = y, rs = rs,
+                                         inoutLIST = inoutLIST, inLIST = inLIST,
+                                         glocellrank = glocellrank,
+                                         allocationrule = allocationrule)
   }
 
   if (output == "discharge") {
 
     # Main output for MAgPIE: water available for agricultural consumption
-    out         <- as.magpie(l_inout$discharge, spatial = 1)
+    out         <- as.magpie(inoutLIST$discharge, spatial = 1)
     description <- "Cellular discharge after surplus discharge allocation algorithm"
 
   } else if (output == "potIrrigWat") {
 
     # Main output for MAgPIE: water available for agricultural withdrawal
-    frac        <- as.magpie(l_inout$fracFullirrig, spatial = 1)
+    frac        <- as.magpie(inoutLIST$fracFullirrig, spatial = 1)
     out         <- frac * reqWatFullirrig
 
     description <- "Full irrigation requirements that can be fulfilled (consumption and withdrawal)"
@@ -226,10 +227,10 @@ calcRiverSurplusDischargeAllocation <- function(lpjml, climatetype,
 
   # check for NAs and negative values
   if (any(is.na(out))) {
-    stop("calcRiverSurplusDischargeAllocation produced NAs")
+    stop("calcRiverDischargeAllocation produced NAs")
   }
   if (any(round(out) < 0)) {
-    stop("calcRiverSurplusDischargeAllocation produced negative values")
+    stop("calcRiverDischargeAllocation produced negative values")
   }
 
   return(list(x            = out,

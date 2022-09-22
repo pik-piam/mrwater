@@ -11,7 +11,7 @@ calcRiverWatReserved(
   climatetype,
   efrMethod,
   accessibilityrule,
-  com_ag,
+  comAg,
   multicropping
 )
 }
@@ -35,7 +35,7 @@ discharge that is exceeded x percent of the time on average throughout a year
 (Qx, e.g. Q75: 0.25, Q50: 0.5)
 or base value for exponential curve separated by : (CV:2)}
 
-\item{com_ag}{If TRUE: currently already irrigated areas in initialization
+\item{comAg}{If TRUE: currently already irrigated areas in initialization
          year are reserved for irrigation,
 if FALSE: no irrigation areas are reserved (full irrigation potential)}
 

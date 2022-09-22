@@ -16,7 +16,7 @@
 #'                          discharge that is exceeded x percent of the time on average throughout a year
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
-#' @param com_ag            If TRUE: currently already irrigated areas in initialization
+#' @param comAg             If TRUE: currently already irrigated areas in initialization
 #'                                   year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas are reserved (full irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
@@ -43,8 +43,7 @@
 
 calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
                                  efrMethod, accessibilityrule,
-                                 com_ag, # nolint
-                                 multicropping) {
+                                 comAg, multicropping) {
 
   # Discharge that is inaccessible to human uses (mio m^3)
   inaccessibleDischarge <- calcOutput("DischargeInaccessible", selectyears = selectyears,
@@ -67,7 +66,7 @@ calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
                                                      aggregate = FALSE)[, , "EFR"])
 
   # Water reserved from previous river routing (including full EFRs)
-  if (com_ag) {
+  if (comAg) {
 
     reservedRiverrouting <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
                                        lpjml = lpjml, climatetype = climatetype,

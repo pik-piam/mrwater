@@ -1,12 +1,16 @@
 #' @title       calcRiverDischargeNatAndHuman
-#' @description This function calculates cellular discharge after considering known human consumption (non-agricultural and committed agricultural) along the river calculated and accounted for in previous river routings (see calcRiverNaturalFlows and calcRiverHumanUses)
+#' @description This function calculates cellular discharge after considering
+#'              known human consumption (non-agricultural and committed agricultural)
+#'              along the river calculated and accounted for in previous river
+#'              routings (see calcRiverNaturalFlows and calcRiverHumanUses)
 #'
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years to be returned (Note: does not affect years of harmonization or smoothing)
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear       Initialization year of irrigation system
 #' @param efrMethod     EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
-#' @param com_ag        if TRUE: the currently already irrigated areas in initialization year are reserved for irrigation,
+#' @param comAg         if TRUE: the currently already irrigated areas in
+#'                               initialization year are reserved for irrigation,
 #'                      if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
@@ -29,7 +33,9 @@
 #' calcOutput("RiverDischargeNatAndHuman", aggregate = FALSE)
 #' }
 #'
-calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatetype, efrMethod, com_ag, multicropping) {
+calcRiverDischargeNatAndHuman <- function(lpjml, climatetype,
+                                          selectyears, iniyear,
+                                          efrMethod, comAg, multicropping) {
 
   #######################################
   ###### Read in Required Inputs ########
@@ -43,9 +49,10 @@ calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatety
                                     efrMethod = efrMethod, multicropping = multicropping,
                                     iniyear = iniyear, selectyears = selectyears)[, , "currHuman_wc"])
 
-  if (com_ag) {
+  if (comAg) {
 
-    # Committed agricultural human consumption that can be fulfilled by available water determined in previous river routings
+    # Committed agricultural human consumption that can be fulfilled
+    # by available water determined in previous river routings
     cAgWC <- collapseNames(calcOutput("RiverHumanUses", humanuse = "committed_agriculture", aggregate = FALSE,
                                       lpjml = lpjml, climatetype = climatetype,
                                       efrMethod = efrMethod, multicropping = multicropping,
@@ -108,14 +115,14 @@ calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatety
     for (c in cells) {
 
       # available water
-      avlWat[c, , ] <- inflow[c, , , drop = F] + yearlyRunoff[c, , , drop = F] - lakeEvap[c, , , drop = F]
+      avlWat[c, , ] <- inflow[c, , , drop = FALSE] + yearlyRunoff[c, , , drop = FALSE] - lakeEvap[c, , , drop = FALSE]
 
       # discharge
-      discharge[c, , ] <- avlWat[c, , , drop = F] - nAgWC[c, , , drop = F] - cAgWC[c, , , drop = F]
+      discharge[c, , ] <- avlWat[c, , , drop = FALSE] - nAgWC[c, , , drop = FALSE] - cAgWC[c, , , drop = FALSE]
 
       # inflow into nextcell
       if (rs$nextcell[c] > 0) {
-        inflow[rs$nextcell[c], , ] <- inflow[rs$nextcell[c], , , drop = F] + discharge[c, , , drop = F]
+        inflow[rs$nextcell[c], , ] <- inflow[rs$nextcell[c], , , drop = FALSE] + discharge[c, , , drop = FALSE]
       }
     }
   }
@@ -130,6 +137,8 @@ calcRiverDischargeNatAndHuman <- function(lpjml, selectyears, iniyear, climatety
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = "Cellular discharge after accounting for environmental flow requirements and known human uses along the river",
+              description  = "Cellular discharge after accounting for
+                              environmental flow requirements and
+                              known human uses along the river",
               isocountries = FALSE))
 }

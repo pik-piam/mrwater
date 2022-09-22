@@ -7,7 +7,7 @@
 calcEconOfIrrig(
   scenario,
   output,
-  GT_range,
+  gtrange,
   selectyears,
   iniyear,
   lpjml,
@@ -21,8 +21,8 @@ calcEconOfIrrig(
   irrigationsystem,
   landScen,
   cropmix,
-  potential_wat = TRUE,
-  com_ag,
+  potentialWat = TRUE,
+  comAg,
   multicropping
 )
 }
@@ -32,7 +32,7 @@ calcEconOfIrrig(
 \item{output}{output to be displayed: irrigated area "IrrigArea" or
 available water volume "wat_ag_ww" "wat_ag_wc"}
 
-\item{GT_range}{range of x-axis (gainthreshold) to be depicted on the curve}
+\item{gtrange}{range of x-axis (gainthreshold) to be depicted on the curve}
 
 \item{selectyears}{years for which irrigatable area is calculated}
 
@@ -83,10 +83,10 @@ or do not specify second part of the argument}
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
 
-\item{potential_wat}{if TRUE: potential available water and areas used,
+\item{potentialWat}{if TRUE: potential available water and areas used,
 if FALSE: currently reserved water on current irrigated cropland used}
 
-\item{com_ag}{if TRUE: the currently already irrigated areas
+\item{comAg}{if TRUE: the currently already irrigated areas
          in initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
 

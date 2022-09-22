@@ -36,8 +36,8 @@ calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
 
   # Standard settings
   irrigwattype      <- "withdrawal"
-  potential_wat     <- TRUE
-  com_ag            <- TRUE
+  potentialWat      <- TRUE
+  comAg             <- TRUE
   cropmix           <- c("maiz", "rapeseed", "puls_pro")
   landScen          <- "potCropland:HalfEarth"
   irrigationsystem  <- "initialization"
@@ -83,8 +83,8 @@ calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
                                   rankmethod = rankmethod, thresholdtype = thresholdtype,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   irrigationsystem = irrigationsystem,
-                                  landScen = landScen, cropmix = cropmix, potential_wat = potential_wat,
-                                  com_ag = com_ag, multicropping = multicropping,
+                                  landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
+                                  comAg = comAg, multicropping = multicropping,
                                   aggregate = FALSE)[, , "irrigatable"])
 
   # Small additive term to account for places with 0 potentially irrigated area

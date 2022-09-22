@@ -37,7 +37,8 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
                                iniyear, efrMethod, multicropping) {
 
   ### Read in river structure
-  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
+  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
+                            package = "mrwater"))
 
   ## Human uses
   # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
@@ -61,8 +62,9 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
 
   ## Water inputs
   # Runoff (on land and water)
-  inputYearlyRunoff <- collapseNames(calcOutput("YearlyRunoff",      selectyears = selectyears,
-                                              lpjml = lpjml, climatetype = climatetype, aggregate = FALSE))
+  inputYearlyRunoff <- collapseNames(calcOutput("YearlyRunoff", selectyears = selectyears,
+                                              lpjml = lpjml, climatetype = climatetype,
+                                              aggregate = FALSE))
 
   # Lake evaporation as calculated by natural flow river routing
   lakeEvap          <- collapseNames(calcOutput("RiverNaturalFlows", selectyears = selectyears,
@@ -83,20 +85,20 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   }
 
   # bring all inputs to correct object size and transform to array for faster calculation
-  lakeEvap      <- as.array(.transformObject(lakeEvap))
-  watComAgWC    <- as.array(.transformObject(watComAgWC))
-  watComAgWW    <- as.array(.transformObject(watComAgWW))
-  nonAgWC       <- as.array(.transformObject(inputNonAgWC))
-  nonAgWW       <- as.array(.transformObject(inputNonAgWW))
-  yearlyRunoff  <- as.array(.transformObject(inputYearlyRunoff))
+  lakeEvap     <- as.array(.transformObject(lakeEvap))
+  watComAgWC   <- as.array(.transformObject(watComAgWC))
+  watComAgWW   <- as.array(.transformObject(watComAgWW))
+  nonAgWC      <- as.array(.transformObject(inputNonAgWC))
+  nonAgWW      <- as.array(.transformObject(inputNonAgWW))
+  yearlyRunoff <- as.array(.transformObject(inputYearlyRunoff))
 
   # helper variables for river routing
-  inflow        <- as.array(.transformObject(0))
-  avl_wat_act   <- as.array(.transformObject(0))
-  upstreamWC    <- as.array(.transformObject(0))
+  inflow     <- as.array(.transformObject(0))
+  avlWat     <- as.array(.transformObject(0))
+  upstreamWC <- as.array(.transformObject(0))
 
   # output variable that will be filled during river routing
-  discharge     <- as.array(.transformObject(0))
+  discharge  <- as.array(.transformObject(0))
 
 
   ########################################################
@@ -107,13 +109,13 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
 
     # Minimum flow requirements determined by natural flow river routing:
     # (full) Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
-    watReserved         <- new.magpie(cells_and_regions = getCells(yearlyRunoff),
-                                              years = getYears(yearlyRunoff),
-                                              names = c("on", "off"),
-                                              fill = 0)
+    watReserved           <- new.magpie(cells_and_regions = getCells(yearlyRunoff),
+                                        years = getYears(yearlyRunoff),
+                                        names = c("on", "off"),
+                                        fill = 0)
     watReserved[, , "on"] <- calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
-                                              climatetype = climatetype, efrMethod = efrMethod,
-                                              aggregate = FALSE)[, , "EFR"]
+                                         climatetype = climatetype, efrMethod = efrMethod,
+                                         aggregate = FALSE)[, , "EFR"]
     # Bring to correct object size
     watReserved <- as.array(.transformObject(watReserved))
 
@@ -128,7 +130,7 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
 
   } else if (humanuse == "committed_agriculture") {
 
-    prevHuman_routing <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
+    previousHumanUse <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
                                     lpjml = lpjml, climatetype = climatetype,
                                     efrMethod = efrMethod, multicropping = multicropping,
                                     selectyears = selectyears, iniyear = iniyear,
@@ -136,9 +138,9 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
 
     # Minimum flow requirements determined by previous river routing:
     # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
-    watReserved <- as.array(collapseNames(prevHuman_routing[, , "required_wat_min"]))
+    watReserved <- as.array(collapseNames(previousHumanUse[, , "required_wat_min"]))
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
-    prevHumanWC <- as.array(collapseNames(prevHuman_routing[, , "currHuman_wc"]))
+    prevHumanWC <- as.array(collapseNames(previousHumanUse[, , "currHuman_wc"]))
 
     ## Current human uses
     # Committed Water Withdrawals (in mio. m^3 / yr) [smoothed]
@@ -162,42 +164,48 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
     for (c in cells) {
 
       # Available water in cell
-      avl_wat_act[c, , ] <- inflow[c, , , drop = F] + yearlyRunoff[c, , , drop = F] - lakeEvap[c, , , drop = F]
+      avlWat[c, , ] <- inflow[c, , , drop = FALSE] +
+                         yearlyRunoff[c, , , drop = FALSE] -
+                           lakeEvap[c, , , drop = FALSE]
 
       ### Is there sufficient water available to fulfill previously determined requirements? ###
-      sufficient_water   <- (avl_wat_act[c, , , drop = F] >= watReserved[c, , , drop = F])
+      sufficientWat <- (avlWat[c, , , drop = FALSE] >= watReserved[c, , , drop = FALSE])
 
-      #### (1) Available Water in cell is sufficient to fulfill previously determined requirements     ####
-      ####     (avl_wat_act[c,,] >= watReserved[c,,])                                          ####
-      ####      -> further withdrawals possible                                                        ####
+      #### (1) Available Water in cell is sufficient to fulfill previously determined requirements ####
+      ####      -> further withdrawals possible                                                    ####
 
       # current withdrawals requested?
-      withdrawals        <- (currHumanWW[c, , , drop = F] > 0)
+      isWWreq  <- (currHumanWW[c, , , drop = FALSE] > 0)
+      # combined conditions
+      isSuffWW <- sufficientWat & isWWreq
 
       # (I) Water withdrawal constraint: All withdrawals that can be fulfilled considering
       #                                  local previously determined water requirements are served
-      frac_ww_constraint <- pmin((avl_wat_act[c, , , drop = F] -
-                                    watReserved[c, , , drop = F])[sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]] /
-                                   currHumanWW[c, , , drop = F][sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]],
+      fracWWconstraint <- pmin((avlWat[c, , , drop = FALSE] -
+                                 watReserved[c, , , drop = FALSE])[isSuffWW] /
+                                   currHumanWW[c, , , drop = FALSE][isSuffWW],
                                  1)
       # Current water uses (withdrawals and consumption) given withdrawal constraint
-      currHumanWC[c, , ][sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]] <- frac_ww_constraint * (currHumanWC[c, , , drop = F])[sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]]
-      currHumanWW[c, , ][sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]] <- frac_ww_constraint * (currHumanWW[c, , , drop = F])[sufficient_water[, , , drop = F] & withdrawals[, , , drop = F]]
+      currHumanWC[c, , ][isSuffWW] <- fracWWconstraint * (currHumanWC[c, , ,
+                                                                      drop = FALSE])[isSuffWW]
+      currHumanWW[c, , ][isSuffWW] <- fracWWconstraint * (currHumanWW[c, , ,
+                                                                      drop = FALSE])[isSuffWW]
 
       # Discharge in current cell for case where sufficient water available for requirements
       # (Subtract local water consumption in current cell (and previous if applicable)
-      discharge[c, , ][sufficient_water[, , , drop = F]] <- (avl_wat_act[c, , , drop = F] - currHumanWC[c, , , drop = F] - prevHumanWC[c, , , drop = F])[sufficient_water[, , , drop = F]]
+      discharge[c, , ][sufficientWat] <- (avlWat[c, , , drop = FALSE] -
+                                             currHumanWC[c, , , drop = FALSE] -
+                                                prevHumanWC[c, , , drop = FALSE])[sufficientWat]
 
       #### (2) Available Water in cell is not sufficient to fulfill previously determined requirements ####
-      ####     (avl_wat_act[c,,] < watReserved[c,,])                                           ####
       ####      -> no more water can be withdrawn locally (A + B)                                      ####
       ####      &  if possible: upstream consumption is reduced to release missing water    (A)        ####
       ####         if not: nothing can be consumed upstream (upstream consumption set to 0) (B)        ####
 
       # No water withdrawals locally if available water is not sufficient to fulfill
       # previously determined requirements
-      currHumanWC[c, , ][!sufficient_water[, , , drop = F]] <- 0
-      currHumanWW[c, , ][!sufficient_water[, , , drop = F]] <- 0
+      currHumanWC[c, , ][!sufficientWat] <- 0
+      currHumanWW[c, , ][!sufficientWat] <- 0
 
       # Update upstream cells' current consumption:
       if (length(rs$upstreamcells[[c]]) > 0) {
@@ -207,63 +215,74 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
         # vector of c in length of upstreamcells of c
         lc <- rep(c, length(rs$upstreamcells[[c]]))
         # vector of 1 in length of upstreamcells of c
-        cc <- rep(1:length(c), length(rs$upstreamcells[[c]]))
+        cc <- rep(1, length(rs$upstreamcells[[c]]))
 
         # Determine upstream current water consumption:
-        upstreamWC[c, , ]  <- colSums(currHumanWC[up, , , drop = F], dims = 1)
+        upstreamWC[c, , ]  <- colSums(currHumanWC[up, , , drop = FALSE], dims = 1)
 
         ### (A or B) Is there current upstream water consumption that can be reduced  ###
         ###          to release water required by previous (prioritary) uses?         ###
-        sufficient_upstream <- (upstreamWC[c, , , drop = F] > (watReserved[c, , , drop = F] -
-                                                                    avl_wat_act[c, , , drop = F]))
+        sufficientUP <- (upstreamWC[c, , , drop = FALSE] > (watReserved[c, , , drop = FALSE] -
+                                                              avlWat[c, , , drop = FALSE]))
+        # Combinations of conditions
+        fromUPcc <- (!sufficientWat[cc, , , drop = FALSE] & sufficientUP[cc, , , drop = FALSE])
+        fromUPc  <- (!sufficientWat & sufficientUP)
+        insuffWATcc <- (!sufficientWat[cc, , , drop = FALSE] & !sufficientUP[cc, , , drop = FALSE])
+        insuffWATc  <- (!sufficientWat & !sufficientUP)
 
         ## (A) upstreamWC high enough to release required water: ##
-        ## -> reduce upstream consumption respectively              ##
+        ## -> reduce upstream consumption respectively           ##
         # (II) Water consumption constraint: If water is required by priority
         #                                    use in downstream cell, cannot have
         #                                    been consumed for current use upstream
-        # fraction that stays in upstream cell(s) = 1 - fraction of water that needs to be released by each upstream cell
-        frac_wc_constraint <- (1 - (watReserved[lc, , , drop = F] -
-                                      avl_wat_act[lc, , , drop = F])[!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]] /
-                                 upstreamWC[lc, , , drop = F][!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]])
+        # fraction that stays in upstream cell(s) = 1 - fraction of water that
+        #                                               needs to be released by each upstream cell
+        fracWCconstraint <- (1 - (watReserved[lc, , , drop = FALSE] -
+                                      avlWat[lc, , , drop = FALSE])[fromUPcc] /
+                                        upstreamWC[lc, , , drop = FALSE][fromUPcc])
 
         # Current human uses (consumption and withdrawal) in upstreamcells is reduced by respective amount
-        currHumanWC[up, , ][!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]] <- frac_wc_constraint * (currHumanWC[up, , , drop = F])[!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]]
-        currHumanWW[up, , ][!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]] <- frac_wc_constraint * (currHumanWW[up, , , drop = F])[!sufficient_water[cc, , , drop = F] & sufficient_upstream[cc, , , drop = F]]
+        currHumanWC[up, , ][fromUPcc] <- fracWCconstraint * (currHumanWC[up, , , drop = FALSE])[fromUPcc]
+        currHumanWW[up, , ][fromUPcc] <- fracWCconstraint * (currHumanWW[up, , , drop = FALSE])[fromUPcc]
 
         # Discharge in current cell when water not sufficient to fulfill requirements,
         # but missing water water requirements can be fulfilled by upstream cells (A)
-        discharge[c, , ][!sufficient_water[, , , drop = F] & sufficient_upstream[, , , drop = F]]  <-  (watReserved[c, , , drop = F] - prevHumanWC[c, , , drop = F])[!sufficient_water[, , , drop = F] & sufficient_upstream[, , , drop = F]]
+        discharge[c, , ][fromUPc]  <-  (watReserved[c, , , drop = FALSE] -
+                                          prevHumanWC[c, , , drop = FALSE])[fromUPc]
 
         ## (B) upstreamWC not high enough to release required water:
         ## -> no water can be used upstream
         # Current human uses (consumption and withdrawal) in upstreamcells are set to 0
-        currHumanWC[up, , ][!sufficient_water[cc, , , drop = F] & !sufficient_upstream[cc, , , drop = F]] <- 0
-        currHumanWW[up, , ][!sufficient_water[cc, , , drop = F] & !sufficient_upstream[cc, , , drop = F]] <- 0
+        currHumanWC[up, , ][insuffWATcc] <- 0
+        currHumanWW[up, , ][insuffWATcc] <- 0
 
         # Discharge in current cell when water not sufficient to fulfill requirements
         # and missing water water requirements cannot be fulfilled by upstream cells
-        # (since there is not upstream consumption, this water is additionally available in the current cell)
-        discharge[c, , ][!sufficient_water[, , , drop = F] & !sufficient_upstream[, , , drop = F]] <- (avl_wat_act[c, , , drop = F] + upstreamWC[c, , , drop = F] - prevHumanWC[c, , , drop = F])[!sufficient_water[, , , drop = F] & !sufficient_upstream[, , , drop = F]]
+        # (since there is no upstream consumption, this water is additionally available in the current cell)
+        discharge[c, , ][insuffWATc] <- (avlWat[c, , , drop = FALSE] +
+                                           upstreamWC[c, , , drop = FALSE] -
+                                             prevHumanWC[c, , , drop = FALSE])[insuffWATc]
 
       } else {
 
         # Discharge when water is not sufficient to fulfill previously (priority)
         # requirements and there are no upstream cells
-        discharge[c, , ][!sufficient_water[, , , drop = F]]  <- (avl_wat_act[c, , , drop = F] -
-                                                                   prevHumanWC[c, , , drop = F])[!sufficient_water[, , , drop = F]]
+        discharge[c, , ][!sufficientWat]  <- (avlWat[c, , , drop = FALSE] -
+                                                 prevHumanWC[c, , , drop = FALSE])[!sufficientWat]
 
       }
 
       # Inflow to nextcell (if there is a downstreamcell)
       if (rs$nextcell[c] > 0) {
-        inflow[rs$nextcell[c], , ] <- inflow[rs$nextcell[c], , , drop = F] + discharge[c, , , drop = F]
+        inflow[rs$nextcell[c], , ] <- inflow[rs$nextcell[c], , , drop = FALSE] +
+                                         discharge[c, , , drop = FALSE]
       }
     }
   }
 
   # Update minimum water required in cell (for further river processing steps):
-  watReserved[, , ] <- watReserved[, , , drop = F] + currHumanWW[, , , drop = F]
+  watReserved[, , ] <- watReserved[, , , drop = FALSE] +
+                         currHumanWW[, , , drop = FALSE]
 
   ########################
   ### Output Variables ###

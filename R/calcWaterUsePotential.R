@@ -46,7 +46,7 @@
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
 #'                          or selection of proxycrops)
-#' @param com_ag            If TRUE: currently already irrigated areas in
+#' @param comAg             If TRUE: currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
@@ -72,7 +72,7 @@
 calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             thresholdtype, gainthreshold, irrigationsystem, iniyear,
-                            landScen, cropmix, com_ag, multicropping) {
+                            landScen, cropmix, comAg, multicropping) {
 
   # Check
   if (!is.numeric(iniyear)) {
@@ -80,7 +80,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   }
 
   # Water potentially available for irrigation (accounting for previously committed agricultural uses)
-  watAvlAg  <- collapseNames(calcOutput("RiverSurplusDischargeAllocation",
+  watAvlAg  <- collapseNames(calcOutput("RiverDischargeAllocation",
                                         output = "potIrrigWat", selectyears = selectyears,
                                         lpjml = lpjml, climatetype = climatetype,
                                         efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -88,7 +88,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                                         allocationrule = allocationrule, thresholdtype = thresholdtype,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
-                                        cropmix = cropmix, com_ag = com_ag,
+                                        cropmix = cropmix, comAg = comAg,
                                         multicropping = multicropping, aggregate = FALSE))
   watAvlAgWW <- collapseNames(watAvlAg[, , "withdrawal"])
   watAvlAgWC <- collapseNames(watAvlAg[, , "consumption"])
@@ -108,7 +108,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   watNonAgWW <- collapseNames(watNonAg[, , "currHuman_ww"])
   watNonAgWC <- collapseNames(watNonAg[, , "currHuman_wc"])
 
-  if (com_ag == TRUE) {
+  if (comAg == TRUE) {
 
     # Water already committed to irrigation
     currHuman <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",

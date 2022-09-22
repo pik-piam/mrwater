@@ -22,15 +22,17 @@ reportEconOfIrrig(
   irrigationsystem,
   landScen,
   cropmix,
-  potential_wat = TRUE,
-  com_ag,
+  potentialWat = TRUE,
+  comAg,
   multicropping
 )
 }
 \arguments{
-\item{region}{regional resolution (can be country iso-code, region name and respective mapping "EUR:H12", "GLO" for global)}
+\item{region}{regional resolution (can be country iso-code,
+region name and respective mapping "EUR:H12", "GLO" for global)}
 
-\item{output}{output to be displayed: irrigated area "IrrigArea" or available water volume "wat_ag_ww" "wat_ag_wc"}
+\item{output}{output to be displayed: irrigated area "IrrigArea" or
+available water volume "wat_ag_ww" "wat_ag_wc"}
 
 \item{gtRange}{range of x-axis (gainthreshold) to be depicted on the curve}
 
@@ -47,9 +49,28 @@ reportEconOfIrrig(
 \item{efrMethod}{EFR method used including selected strictness of EFRs
 (e.g. Smakhtin:good, VMF:fair)}
 
-\item{accessibilityrule}{Scalar value defining the strictness of accessibility restriction: discharge that is exceeded x percent of the time on average throughout a year (Qx). Default: 0.5 (Q50) (e.g. Q75: 0.25, Q50: 0.5)}
+\item{accessibilityrule}{Method used: Quantile method (Q) or
+Coefficient of Variation (CV)
+combined with scalar value defining the strictness
+of accessibility restriction:
+discharge that is exceeded x percent of the time on average throughout a year
+(Qx, e.g. Q75: 0.25, Q50: 0.5)
+or base value for exponential curve separated by : (CV:2)}
 
-\item{rankmethod}{method of calculating the rank: "meancellrank" (default): mean over cellrank of proxy crops, "meancroprank": rank over mean of proxy crops (normalized), "meanpricedcroprank": rank over mean of proxy crops (normalized using price), "watervalue": rank over value of irrigation water; and fullpotentail TRUE/FALSE separated by ":" (TRUE: Full irrigation potential (cell receives full irrigation requirements in total area). FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{rankmethod}{Rank and optimization method consisting of
+Unit according to which rank is calculated:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return;
+Unit of yield improvement potential to be returned;
+Level of price aggregation used:
+"GLO" for global average prices, or
+"ISO" for country-level prices;
+and boolean indicating fullpotential (TRUE, i.e. cell
+receives full irrigation requirements in total area)
+or reduced potential (FALSE, reduced potential of cell
+receives at later stage in allocation algorithm);
+separated by ":"}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
      Also needs specification of refYields, separated by ":".
@@ -57,9 +78,18 @@ reportEconOfIrrig(
               "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
 
-\item{allocationrule}{Rule to be applied for river basin discharge allocation across cells of river basin ("optimization" (default), "upstreamfirst", "equality")}
+\item{allocationrule}{Rule to be applied for river basin discharge allocation
+across cells of river basin ("optimization", "upstreamfirst")}
 
-\item{thresholdtype}{Thresholdtype of yield improvement potential required for water allocation in upstreamfirst algorithm: TRUE (default): monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
+\item{thresholdtype}{Unit of yield improvement potential used as threshold,
+consisting of two components:
+Unit:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return.
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices}
 
 \item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}
@@ -75,10 +105,10 @@ or do not specify second part of the argument}
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
 
-\item{potential_wat}{if TRUE: potential available water and areas used,
+\item{potentialWat}{if TRUE: potential available water and areas used,
 if FALSE: currently reserved water on current irrigated cropland used}
 
-\item{com_ag}{if TRUE: the currently already irrigated areas
+\item{comAg}{if TRUE: the currently already irrigated areas
          in initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
 

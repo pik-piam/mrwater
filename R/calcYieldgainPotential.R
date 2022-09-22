@@ -101,7 +101,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                      rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                      thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                      landScen = landScen, cropmix = cropmix, potential_wat = TRUE,
-                                     com_ag = FALSE, multicropping = multicropping,
+                                     comAg = FALSE, multicropping = multicropping,
                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
     d    <- "Potentially Irrigated Area considering land and water constraints"
 

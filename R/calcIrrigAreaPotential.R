@@ -46,9 +46,9 @@
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
 #'                          or selection of proxycrops)
-#' @param potential_wat     If TRUE: potential available water and areas used,
+#' @param potentialWat      If TRUE: potential available water and areas used,
 #'                          if FALSE: currently reserved water on current irrigated cropland used
-#' @param com_ag            If TRUE: currently already irrigated areas in
+#' @param comAg             If TRUE: currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
@@ -74,10 +74,10 @@
 calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
                                 accessibilityrule, rankmethod, yieldcalib, allocationrule,
                                 thresholdtype, gainthreshold, irrigationsystem, landScen,
-                                cropmix, potential_wat, com_ag, multicropping) {
+                                cropmix, potentialWat, comAg, multicropping) {
 
   ## Read in water available for irrigation
-  if (potential_wat) {
+  if (potentialWat) {
 
     avlWat         <- calcOutput("WaterUsePotential", selectyears = selectyears,
                                   lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
@@ -86,7 +86,7 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
                                   thresholdtype = thresholdtype, gainthreshold = gainthreshold,
                                   irrigationsystem = irrigationsystem, iniyear = iniyear,
                                   landScen = landScen, cropmix = cropmix,
-                                  com_ag = com_ag, multicropping = multicropping, aggregate = FALSE)
+                                  comAg = comAg, multicropping = multicropping, aggregate = FALSE)
     avlWatWC <- collapseNames(avlWat[, , "wat_ag_wc"])
     avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
 

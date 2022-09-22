@@ -5,7 +5,7 @@
 #' @param scenario          non-agricultural water use scenario
 #' @param output            output to be displayed: irrigated area "IrrigArea" or
 #'                          available water volume "wat_ag_ww" "wat_ag_wc"
-#' @param GT_range          range of x-axis (gainthreshold) to be depicted on the curve
+#' @param gtrange          range of x-axis (gainthreshold) to be depicted on the curve
 #' @param lpjml             LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears       years for which irrigatable area is calculated
 #' @param iniyear           initialization year
@@ -42,9 +42,9 @@
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
 #'                          or selection of proxycrops)
-#' @param potential_wat     if TRUE: potential available water and areas used,
+#' @param potentialWat      if TRUE: potential available water and areas used,
 #'                          if FALSE: currently reserved water on current irrigated cropland used
-#' @param com_ag            if TRUE: the currently already irrigated areas
+#' @param comAg             if TRUE: the currently already irrigated areas
 #'                                   in initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
@@ -69,11 +69,11 @@
 #'
 #' @export
 
-calcEconOfIrrig <- function(scenario, output, GT_range, selectyears, iniyear,
+calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                             lpjml, climatetype, efrMethod, accessibilityrule,
                             rankmethod, yieldcalib, allocationrule, thresholdtype,
                             irrigationsystem, landScen, cropmix,
-                            potential_wat = TRUE, com_ag, multicropping) {
+                            potentialWat = TRUE, comAg, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -87,8 +87,8 @@ calcEconOfIrrig <- function(scenario, output, GT_range, selectyears, iniyear,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                   rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                  landScen = landScen, cropmix = cropmix, potential_wat = potential_wat,
-                                  com_ag = com_ag, multicropping = multicropping,
+                                  landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
+                                  comAg = comAg, multicropping = multicropping,
                                   aggregate = FALSE)[, , "irrigatable"][, , scenario])
 
     d <- "Irrigatable Area for different gainthresholds"
@@ -101,7 +101,7 @@ calcEconOfIrrig <- function(scenario, output, GT_range, selectyears, iniyear,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                   rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear,
-                                  landScen = landScen, cropmix = cropmix, com_ag = com_ag,
+                                  landScen = landScen, cropmix = cropmix, comAg = comAg,
                                   multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario])
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)
@@ -114,11 +114,11 @@ calcEconOfIrrig <- function(scenario, output, GT_range, selectyears, iniyear,
 
   x <- add_dimension(x, dim = 3.1, add = "GT", nm = "0")
 
-  if (GT_range[1] == 0) {
-    GT_range <- GT_range[-1]
+  if (gtrange[1] == 0) {
+    gtrange <- gtrange[-1]
   }
 
-  for (gainthreshold in GT_range) {
+  for (gainthreshold in gtrange) {
 
     if (output == "IrrigArea") {
 
@@ -128,8 +128,8 @@ calcEconOfIrrig <- function(scenario, output, GT_range, selectyears, iniyear,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                       thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                      landScen = landScen, cropmix = cropmix, potential_wat = potential_wat,
-                                      com_ag = com_ag, multicropping = multicropping,
+                                      landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
+                                      comAg = comAg, multicropping = multicropping,
                                       aggregate = FALSE)[, , "irrigatable"][, , scenario])
     } else {
 
@@ -139,7 +139,7 @@ calcEconOfIrrig <- function(scenario, output, GT_range, selectyears, iniyear,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                       thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
-                                      landScen = landScen, cropmix = cropmix, com_ag = com_ag,
+                                      landScen = landScen, cropmix = cropmix, comAg = comAg,
                                       multicropping = multicropping, aggregate = FALSE)[, , output][, , scenario])
       tmp <- tmp / 1000
     }
