@@ -38,8 +38,8 @@ toolDischargeAllocation <- function(y, rs, inoutLIST, inLIST,
     reqWatFullirrigWW <- inLIST$reqWatFullirrigWW
     reqWatFullirrigWC <- inLIST$reqWatFullirrigWC
     irrigGain         <- inLIST$irrigGain
-    avlWatWW          <- inLIST$avlWatWW
-    avlWatWC          <- inLIST$avlWatWC
+    avlWatWW          <- inLIST$avlWatWW ## is this necessary?? (is calculated in algorithm, no?)
+    avlWatWC          <- inLIST$avlWatWC ## is this necessary?? (is calculated in algorithm, no?)
 
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
     allocationshare   <- 1 / (length(glocellrank[, 1, 1]) / 67420)

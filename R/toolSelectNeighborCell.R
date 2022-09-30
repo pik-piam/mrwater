@@ -1,22 +1,19 @@
 #' @title       toolSelectNeighborCell
 #' @description Selects cells in certain radius of current cell
 #'
-#' @param transDist Water transport distance allowed to fulfill locally
-#'                  unfulfilled water demand
+#' @param transDist     Water transport distance allowed to fulfill locally
+#'                      unfulfilled water demand
+#' @param rs            River structure list
+#' @param neighborCells List of neighboring cells for all river cells
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
-#'
+#' 
 
-toolSelectNeighborCell <- function(transDist) {
+toolSelectNeighborCell <- function(transDist,  rs = rs,
+                                   neighborCells = neighborCells) {
 
-  # read in neighbor cells and transform to list
-  neighborCells <- readSource("NeighborCells", convert = FALSE)
-  neighborCells <- attr(neighborCells, "data")
-
-  # read in river structure
-  rs              <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
-                                         package = "mrwater"))
+  # empty list to assign neighbor cells in river strucutre list
   rs$neighborcell <- vector("list", length(rs$cells))
 
   # append neighbor cells to river structure
@@ -25,7 +22,7 @@ toolSelectNeighborCell <- function(transDist) {
     if (!is.null(neighborCells[[i]])) {
 
       # Sort by distance
-      neighborCells[[i]] <- neighborCells[[i]][order(neighborCells[[i]]$dist), ]
+      neighborCells[[i]]   <- neighborCells[[i]][order(neighborCells[[i]]$dist), ]
 
       # Exclude cells above chosen distance
       rs$neighborcell[[i]] <- neighborCells[[i]]$cellid[neighborCells[[i]]$dist < transDist]

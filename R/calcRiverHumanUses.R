@@ -289,10 +289,11 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   ########################
   out <- new.magpie(cells_and_regions = getCells(watReserved),
                     years = getYears(watReserved),
-                    names = c("required_wat_min", "currHuman_ww", "currHuman_wc"),
+                    names = c("required_wat_min", "discharge", "currHuman_ww", "currHuman_wc"),
                     sets = c("x.y.iso", "year", "data"))
   out <- .transformObject(out)
   out[, , "required_wat_min"] <- as.magpie(watReserved, spatial = 1, temporal = 2)
+  out[, , "discharge"]        <- as.magpie(discharge, spatial = 1, temporal = 2)
   out[, , "currHuman_ww"]     <- as.magpie(currHumanWW, spatial = 1, temporal = 2)
   out[, , "currHuman_wc"]     <- as.magpie(currHumanWC, spatial = 1, temporal = 2)
   description <- paste0("river routing outputs taking human uses (", humanuse, ") into account")

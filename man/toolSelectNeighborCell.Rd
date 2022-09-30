@@ -4,11 +4,15 @@
 \alias{toolSelectNeighborCell}
 \title{toolSelectNeighborCell}
 \usage{
-toolSelectNeighborCell(transDist)
+toolSelectNeighborCell(transDist, rs = rs, neighborCells = neighborCells)
 }
 \arguments{
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand}
+
+\item{rs}{River structure list}
+
+\item{neighborCells}{List of neighboring cells for all river cells}
 }
 \value{
 magpie object in cellular resolution
