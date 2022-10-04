@@ -169,7 +169,7 @@ calcRiverDischargeNatAndHuman_new <- function(lpjml, climatetype,
 
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
-  if (all(abs(totalWat - mean(totalWat)) == 0)) {
+  if (!all(abs(totalWat - mean(totalWat)) == 0)) {
     stop("Scenarios differ. That should not be the case.
         Total water volume should always be the same")
   }

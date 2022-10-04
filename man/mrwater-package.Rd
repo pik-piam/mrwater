@@ -11,8 +11,7 @@ Provides functions for MAgPIE cellular input data generation and stand-alone wat
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/pik-piam/mrwater}
-  \item \doi{10.5281/zenodo.5801680}
+  \item \url{https://github.com/pik-piam/mrwater,}
 }
 
 }
