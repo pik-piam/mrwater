@@ -48,7 +48,7 @@ toolNeighborWaterProvision <- function(transDist, c,
     # Loop over neighbor cells (by distance) until water requirements fulfilled
     for (n in rs$neighborcell[[c]]) {
 
-      ### How to ensue that calcorder is met in neighbor cells? 
+      ### How to ensure that calcorder is met in neighbor cells?
       ### (Otherwise discharge seen might be different at different calculation steps)
       ### How do we do that in Discharge Allocation??
 

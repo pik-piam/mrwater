@@ -35,7 +35,6 @@
 #' calcOutput("RiverHumanUses_new", aggregate = FALSE)
 #' }
 #'
-
 calcRiverHumanUses_new <- function(humanuse, lpjml, climatetype, selectyears,
                                iniyear, efrMethod, multicropping, transDist) {
 
@@ -111,8 +110,8 @@ calcRiverHumanUses_new <- function(humanuse, lpjml, climatetype, selectyears,
   upstreamWC <- as.array(.transformObject(0))
 
   # output variable that will be filled during river routing
-  discharge  <- as.array(.transformObject(0))
-  resNeighborWC <- resNeighborWW <- as.array(.transformObject(0))
+  discharge           <- as.array(.transformObject(0))
+  resNeighborWC       <- resNeighborWW <- as.array(.transformObject(0))
   neighborProvisionWC <- neighborProvisionWW <- as.array(.transformObject(0))
 
   ########################################################
@@ -364,7 +363,7 @@ calcRiverHumanUses_new <- function(humanuse, lpjml, climatetype, selectyears,
   b <- dimSums(out[, , c("currHuman_wc_total")], dim = c("x", "y", "iso", "data"))
   if (any(summary(a - b) != 0)) {
       if (any(summary(a - b) > 0)) {
-        stop(paste0("Something is wrong with neighbor water provision algorithm 
+        stop(paste0("Something is wrong with neighbor water provision algorithm
         in calcRiverHumanUses:
         some of neighbor provision is not reported to total!
         The mismatch ranges between ", summary(a - b)))
@@ -380,23 +379,24 @@ calcRiverHumanUses_new <- function(humanuse, lpjml, climatetype, selectyears,
   natDischarge       <- collapseNames(out[, , "discharge"])
   natDischarge[, , ] <- collapseNames(naturalFlows[, , "discharge_nat"])
 
-  basinDischarge       <- out
+  basinDischarge       <- natDischarge
   basinDischarge[, , ] <- 0
-  basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , ]
+  basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
   totalWat <- dimSums(basinDischarge, dim = 1) + b
 
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
   if (all(abs(totalWat - mean(totalWat)) == 0)) {
     stop("Scenarios differ. That should not be the case.
-        Total water volume should always be the same")
+          Total water volume should always be the same")
   }
   # Total water (summed basin discharge + consumed)
   # must be same as natural summed basin discharge
   if (any(round(dimSums(natDischarge[unique(rs$endcell), , ],
-                        dim = 1) - totalWat[, , 1], 
+                        dim = 1) - totalWat[, , 1],
                 digits = 6) != 0)) {
-    stop("Water has been lost during the Neighbor Water Provision Algorithm")
+    stop("In calcRiverHumanUses:
+          Water has been lost during the Neighbor Water Provision Algorithm")
   }
 
   return(list(x            = out,

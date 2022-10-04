@@ -48,7 +48,7 @@ calcRiverDischargeNatAndHuman_new <- function(lpjml, climatetype,
 
   # Non-agricultural human consumption in current cell or provided to neighboring cells
   # that can be fulfilled by available water determined in previous river routings
-  nAgWC <- dimSums(calcOutput("RiverHumanUses_new", 
+  nAgWC <- dimSums(calcOutput("RiverHumanUses_new",
                               humanuse = "non_agriculture", aggregate = FALSE,
                               lpjml = lpjml, climatetype = climatetype,
                               efrMethod = efrMethod, multicropping = multicropping,
@@ -60,7 +60,7 @@ calcRiverDischargeNatAndHuman_new <- function(lpjml, climatetype,
 
     # Committed agricultural human consumption in current cell or provided to neighboring cells
     # that can be fulfilled by available water determined in previous river routings
-    cAgWC <- dimSums(calcOutput("RiverHumanUses_new", 
+    cAgWC <- dimSums(calcOutput("RiverHumanUses_new",
                                 humanuse = "committed_agriculture", aggregate = FALSE,
                                 lpjml = lpjml, climatetype = climatetype,
                                 efrMethod = efrMethod, multicropping = multicropping,
@@ -126,18 +126,18 @@ calcRiverDischargeNatAndHuman_new <- function(lpjml, climatetype,
     for (c in cells) {
 
       # available water
-      avlWat[c, , ] <- inflow[c, , , drop = FALSE] + 
-                        yearlyRunoff[c, , , drop = FALSE] - 
+      avlWat[c, , ] <- inflow[c, , , drop = FALSE] +
+                        yearlyRunoff[c, , , drop = FALSE] -
                           lakeEvap[c, , , drop = FALSE]
 
       # discharge
-      discharge[c, , ] <- avlWat[c, , , drop = FALSE] - 
-                            nAgWC[c, , , drop = FALSE] - 
+      discharge[c, , ] <- avlWat[c, , , drop = FALSE] -
+                            nAgWC[c, , , drop = FALSE] -
                               cAgWC[c, , , drop = FALSE]
 
       # inflow into nextcell
       if (rs$nextcell[c] > 0) {
-        inflow[rs$nextcell[c], , ] <- inflow[rs$nextcell[c], , , drop = FALSE] + 
+        inflow[rs$nextcell[c], , ] <- inflow[rs$nextcell[c], , , drop = FALSE] +
                                         discharge[c, , , drop = FALSE]
       }
     }
@@ -155,7 +155,7 @@ calcRiverDischargeNatAndHuman_new <- function(lpjml, climatetype,
   if (any(round(out, digits = 4) < 0)) {
     stop("calcRiverHumanUses produced negative values")
   }
-  
+
   # Test whether any water is lost
   natDischarge       <- out
   natDischarge[, , ] <- collapseNames(naturalFlows[, , "discharge_nat"])
@@ -166,7 +166,7 @@ calcRiverDischargeNatAndHuman_new <- function(lpjml, climatetype,
   totalWat <- dimSums(basinDischarge, dim = 1) +
                 dimSums(as.magpie(cAgWC, spatial = 1), dim = 1) +
                   dimSums(as.magpie(nAgWC, spatial = 1), dim = 1)
-  
+
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
   if (all(abs(totalWat - mean(totalWat)) == 0)) {
