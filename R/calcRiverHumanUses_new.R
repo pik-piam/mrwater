@@ -154,7 +154,8 @@ calcRiverHumanUses_new <- function(humanuse, lpjml, climatetype, selectyears,
     # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
     watReserved <- as.array(collapseNames(previousHumanUse[, , "required_wat_min"]))
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
-    prevHumanWC <- as.array(collapseNames(previousHumanUse[, , "currHuman_wc_local"]))
+    prevHumanWC <- as.array(collapseNames(previousHumanUse[, , "currHuman_wc_local"]) +
+                              collapseNames(previousHumanUse[, , "resNeighbor_wc"]))
 
     ## Current human uses
     # Committed Water Withdrawals (in mio. m^3 / yr) [smoothed]
