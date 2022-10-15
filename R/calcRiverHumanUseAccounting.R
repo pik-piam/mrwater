@@ -110,8 +110,8 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   nonAgWW      <- as.array(.transformObject(nonAgWWmag))
 
   ### Final magpie object structure to be filled
-  out <- new.magpie(cells_and_regions = getCells(prevReservedWW),
-                    years = getYears(prevReservedWW),
+  out <- new.magpie(cells_and_regions = getCells(magYearlyRunoff),
+                    years = getYears(magYearlyRunoff),
                     names = c("discharge",
                               # water reserved in current cell (for either local or neighboring cell)
                               # to be considered in following river water use accountings
