@@ -13,6 +13,8 @@
 #'                       that needs to come from surrounding cells
 #' @param inoutLIST      List of objects that are updated
 #'                       (discharge, watReserved, missingWW, missingWC)
+#' 
+#' @importFrom magclass new.magpie getCells getYears getSets
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke

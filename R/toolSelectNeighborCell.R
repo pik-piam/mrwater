@@ -8,13 +8,14 @@
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
-#' 
+#'
 
 toolSelectNeighborCell <- function(transDist,  rs = rs,
                                    neighborCells = neighborCells) {
 
   # empty list to assign neighbor cells in river strucutre list
   rs$neighborcell <- vector("list", length(rs$cells))
+  rs$neighbordist <- vector("list", length(rs$cells))
 
   # append neighbor cells to river structure
   for (i in seq_along(rs$cells)) {
@@ -28,12 +29,18 @@ toolSelectNeighborCell <- function(transDist,  rs = rs,
       rs$neighborcell[[i]] <- neighborCells[[i]]$cellid[neighborCells[[i]]$dist < transDist]
 
       # Exclude upstreamcells from neighbors
-      if (identical(rs$upstreamcells[[i]], numeric(0))) {
+      if (!identical(rs$upstreamcells[[i]], numeric(0))) {
         rs$neighborcell[[i]] <- setdiff(rs$neighborcell[[i]], rs$upstreamcells[[i]])
       }
       # Exclude downstreamcells from neighbors
-      if (identical(rs$downstreamcells[[i]], numeric(0))) {
+      if (!identical(rs$downstreamcells[[i]], numeric(0))) {
         rs$neighborcell[[i]] <- setdiff(rs$neighborcell[[i]], rs$downstreamcells[[i]])
+      }
+
+      # Assign distance to selected neighborcells
+      for (k in rs$neighborcell[[i]]) { #@Jan: Can this be done without a loop?
+        tmp <- neighborCells[[i]]$dist[neighborCells[[i]]$cellid == k]
+        rs$neighbordist[[i]] <- c(rs$neighbordist[[i]], tmp)
       }
     }
   }

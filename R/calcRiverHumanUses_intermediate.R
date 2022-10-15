@@ -1,4 +1,4 @@
-#' @title       calcRiverHumanUses_new
+#' @title       calcRiverHumanUses_intermediate
 #' @description FIRST TRY This function calculates human uses and reserved water along
 #'              the river
 #'
@@ -35,7 +35,7 @@
 #' calcOutput("RiverHumanUses_new", aggregate = FALSE)
 #' }
 #'
-calcRiverHumanUses_new <- function(humanuse, lpjml, climatetype, selectyears,
+calcRiverHumanUses_intermediate <- function(humanuse, lpjml, climatetype, selectyears,
                                iniyear, efrMethod, multicropping, transDist) {
 
   # Read in river structure
@@ -172,8 +172,6 @@ calcRiverHumanUses_new <- function(humanuse, lpjml, climatetype, selectyears,
   ###### River Routing considering Human Uses ########
   ####################################################
 
-
-  #### WRITE THIS PART INTO TOOL FUNCTION! (MAYBE EVEN SO GENERIC THAT IT CAN BE USED IN SURPLUS DISCHARGE ALLOCATION)
   for (o in 1:max(rs$calcorder)) {
     # Note: the calcorder ensures that the upstreamcells are calculated first
     cells <- which(rs$calcorder == o)
@@ -294,40 +292,35 @@ calcRiverHumanUses_new <- function(humanuse, lpjml, climatetype, selectyears,
         inflow[rs$nextcell[c], , ] <- inflow[rs$nextcell[c], , , drop = FALSE] +
                                          discharge[c, , , drop = FALSE]
       }
-    }
-  }
-
-  # Update minimum water required in cell (for further river processing steps):
-  watReserved <- watReserved + currHumanWWlocal
-
 
       # Locally missing water that might be fulfilled by surrounding cells
       missingWW <- currHumanWWtotal[c, , , drop = FALSE] - currHumanWWlocal[c, , , drop = FALSE]
       missingWC <- currHumanWCtotal[c, , , drop = FALSE] - currHumanWClocal[c, , , drop = FALSE]
 
       if (any(missingWW > 0) || any(missingWC > 0)) {
-        inoutLIST <- list(
-          discharge = discharge,
-          watReserved = watReserved,
-          resNeighborWC = resNeighborWC,
-          resNeighborWW = resNeighborWW,
-          neighborProvisionWW = neighborProvisionWW,
-          neighborProvisionWC = neighborProvisionWC
-        )
 
-        tmp <- toolNeighborWaterProvision(
-          transDist = transDist, c = c, rs = rs,
-          missingWW = missingWW, missingWC = missingWC,
-          inoutLIST = inoutLIST
-        )
-        discharge <- tmp$discharge
+        inoutLIST <- list(discharge = discharge,
+                          watReserved = watReserved,
+                          resNeighborWC = resNeighborWC,
+                          resNeighborWW = resNeighborWW,
+                          neighborProvisionWW = neighborProvisionWW,
+                          neighborProvisionWC = neighborProvisionWC)
+
+        tmp <- toolNeighborWaterProvision(transDist = transDist, c = c, rs = rs,
+                                          missingWW = missingWW, missingWC = missingWC,
+                                          inoutLIST = inoutLIST)
+        discharge   <- tmp$discharge
         watReserved <- tmp$watReserved
         resNeighborWC <- tmp$resNeighborWC
         resNeighborWW <- tmp$resNeighborWW
         neighborProvisionWW <- tmp$neighborProvisionWW
         neighborProvisionWC <- tmp$neighborProvisionWC
       }
+    }
+  }
 
+  # Update minimum water required in cell (for further river processing steps):
+  watReserved <- watReserved + currHumanWWlocal
 
   # Report water that is available for human consumption/withdrawal
   # when considering neighbor water provision
