@@ -232,8 +232,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                                               missingWW = missingWW))
   
     # Update minimum water required in cell (for further river processing steps):
-    prevReservedWW[, , ] <- prevReservedWW[, , , drop = FALSE] +
-                              tmp$toNeighborWW[, , , drop = FALSE]
+    prevReservedWW <- prevReservedWW + tmp$toNeighborWW
 
     # Update currently fulfilled water use
     currRequestWWtotal <- currRequestWWlocal + tmp$fromNeighborWW

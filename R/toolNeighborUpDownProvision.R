@@ -49,18 +49,20 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
   # Internal function assigning reserved water
   # in neighboring cell to respective main river cell
-  .assignTOmain <- function(missing, toNeighbor, fromNeighbor) {
+  .assignTOmain <- function(i, missing, toNeighbor, fromNeighbor) {
+
+    ### This function is a bottleneck. Takes very long.
 
     # loop through all cells
     for (s in 1:l) {
       # main cells that requested water from s
-      j <- as.numeric(names(which(unlist(lapply(rs$neighborcell, "[", 1)) == s)))
+      j <- as.numeric(names(which(unlist(lapply(rs$neighborcell, "[", i)) == s)))
 
       if (any(missing[j, , ] != 0)) {
 
         # order by distance
-        dist <- as.numeric(sort(unlist(lapply(rs$neighbordist[j], "[", 1))))
-        j    <- as.numeric(names(sort(unlist(lapply(rs$neighbordist[j], "[", 1)))))
+        dist <- as.numeric(sort(unlist(lapply(rs$neighbordist[j], "[", i))))
+        j    <- as.numeric(names(sort(unlist(lapply(rs$neighbordist[j], "[", i)))))
 
         checkStep <- 0
         for (m in 1:length(j)) {
@@ -111,11 +113,17 @@ toolNeighborUpDownProvision <- function(rs, transDist,
         }
       }
     }
+    return(list(toNeighbor = toNeighbor,
+                fromNeighbor = fromNeighbor))
   }
 
   # Loop through all neighboring cells within
   # certain distance sorted by distance
   for (i in 1:max(lengths(rs$neighborcell))) {
+
+    #@JENS/@JAN: This is a bottleneck...
+    # max is 226 --> calculations would repeat 226 times, even if it's only
+    # one or two cells that have that many neighbor cells... How to improve?
 
     print(paste0(i, "th round of neighbor water provision (loop over i)"))
 
@@ -168,13 +176,13 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
     ### Assign reserved water to respective main river cell(s) ###
     ### that had requested the water                           ###
-    tmp <- .assignTOmain(missing = missWW,
+    tmp <- .assignTOmain(i = i, missing = missWW,
                          toNeighbor = toNeighborWW,
                          fromNeighbor = fromNeighborWW)
     toNeighborWW   <- tmp$toNeighbor
     fromNeighborWW <- tmp$fromNeighbor
     rm(tmp)
-    tmp <- .assignTOmain(missing = missWC,
+    tmp <- .assignTOmain(i = i, missing = missWC,
                         toNeighbor = toNeighborWC,
                         fromNeighbor = fromNeighborWC)
     toNeighborWC   <- tmp$toNeighbor
