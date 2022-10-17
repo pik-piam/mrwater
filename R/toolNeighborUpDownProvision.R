@@ -25,6 +25,7 @@
 #' calcOutput("RiverHumanUses", aggregate = FALSE)
 #' }
 #'
+#' @export
 
 toolNeighborUpDownProvision <- function(rs, transDist,
                                         listNeighborIN) {
@@ -51,14 +52,15 @@ toolNeighborUpDownProvision <- function(rs, transDist,
   # in neighboring cell to respective main river cell
   .assignTOmain <- function(i, missing, toNeighbor, fromNeighbor) {
 
-    ### This function is a bottleneck. Takes very long.
+    ### This function is a bottleneck. Takes very long...
+    ### @JAN: How to improve? Maybe avoid for-loops, but not sure how?
 
     # loop through all cells
     for (s in 1:l) {
       # main cells that requested water from s
       j <- as.numeric(names(which(unlist(lapply(rs$neighborcell, "[", i)) == s)))
 
-      if (any(missing[j, , ] != 0)) {
+      if (!identical(j, numeric(0)) && any(missing[j, , ] != 0)) {
 
         # order by distance
         dist <- as.numeric(sort(unlist(lapply(rs$neighbordist[j], "[", i))))
@@ -79,7 +81,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           if (length(j[dist == dist[m]]) != 1) {
             # vector of s in correct length
             vS <- rep(s, length(j[dist == dist[m]]))
-            # temporary variable 
+            # temporary variable
             shr       <- toNeighbor
             shr[, , ] <- 0
             # share to be allocated to each cell
@@ -104,7 +106,8 @@ toolNeighborUpDownProvision <- function(rs, transDist,
             # allocate to closest first
             allocated <- pmin(missing[j[m], , , drop = FALSE],
                                 toNeighbor[s, , , drop = FALSE])
-            fromNeighbor[j[m], , ] <- fromNeighbor[j[m], , ] + allocated
+            fromNeighbor[j[m], , ] <- fromNeighbor[j[m], , , drop = FALSE] +
+                                        allocated
 
             toNeighbor[s, , ] <- toNeighbor[s, , , drop = FALSE] -
                                     allocated
@@ -176,12 +179,14 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
     ### Assign reserved water to respective main river cell(s) ###
     ### that had requested the water                           ###
+    print(paste0("Assigning reserved water in ", i, "th round of neighbor water provision. Step A: WW"))
     tmp <- .assignTOmain(i = i, missing = missWW,
                          toNeighbor = toNeighborWW,
                          fromNeighbor = fromNeighborWW)
     toNeighborWW   <- tmp$toNeighbor
     fromNeighborWW <- tmp$fromNeighbor
     rm(tmp)
+    print(paste0("Assigning reserved water in ", i, "th round of neighbor water provision. Step B: WC"))
     tmp <- .assignTOmain(i = i, missing = missWC,
                         toNeighbor = toNeighborWC,
                         fromNeighbor = fromNeighborWC)

@@ -316,7 +316,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   basinDischarge <- natDischarge
   basinDischarge[, , ] <- 0
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
-  totalWat <- dimSums(basinDischarge, dim = 1) + dimSums(out[, , c("currHumanWCtotal")],
+  totalWat <- dimSums(basinDischarge, dim = 1) + dimSums(out[, , "currHumanWCtotal"],
                                                           dim = c("x", "y", "iso", "data"))
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios

@@ -23,6 +23,7 @@
 #' @return list of magpie objects in cellular resolution
 #' @author Felicitas Beier, Jens Heinke, Jan Philipp Dietrich
 #'
+#' @export
 
 toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
