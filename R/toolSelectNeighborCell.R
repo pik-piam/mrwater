@@ -9,6 +9,7 @@
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
 #'
+#' @export
 
 toolSelectNeighborCell <- function(transDist,  rs = rs,
                                    neighborCells = neighborCells) {

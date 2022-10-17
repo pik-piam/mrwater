@@ -64,7 +64,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
         checkStep <- 0
         for (m in 1:length(j)) {
-          
+
           # Ensure that cell has not yet been calculated 
           # because of equal distance
           if (checkStep != 0) {
@@ -87,7 +87,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
             # allocation to respective neighboring cells
             allocated <- missing[j[dist == dist[m]], , , drop = FALSE] * shr[vS, , , drop = FALSE]
-            fromNeighbor[j[dist == dist[m]], , ] <- fromNeighbor[j[dist == dist[m]], , , drop = FALSE] + 
+            fromNeighbor[j[dist == dist[m]], , ] <- fromNeighbor[j[dist == dist[m]], , , drop = FALSE] +
                                                       allocated
             toNeighbor[s, , ] <- toNeighbor[s, , ] -
                                     colSums(allocated, dims = 1)
@@ -96,7 +96,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
             checkStep <- length(j[dist == dist[m]]) - 1
             ### @JAN / @JENS: Does that make sense?
             rm(allocated)
-            
+
           } else {
             # If distance is unique:
             # allocate to closest first
@@ -148,7 +148,6 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
       for (c in cells) {
         tmp <- toolRiverUpDownBalance(c = c, rs = rs,
-                                      transDist = transDist,
                                       inLIST = list(yearlyRunoff = runoff[c, , , drop = FALSE],
                                                     lakeEvap = evap[c, , , drop = FALSE],
                                                     prevReservedWW = prevWW,
@@ -160,10 +159,12 @@ toolNeighborUpDownProvision <- function(rs, transDist,
         # Updated flows
         discharge    <- tmp$discharge
         inflow       <- tmp$inflow
-        toNeighborWW <- tmp$currRequestWWlocal
-        toNeighborWC <- tmp$currRequestWClocal
+        currRequestWWlocal <- tmp$currRequestWWlocal
+        currRequestWClocal <- tmp$currRequestWClocal
       }
     }
+    toNeighborWW <- currRequestWWlocal
+    toNeighborWC <- currRequestWClocal
 
     ### Assign reserved water to respective main river cell(s) ###
     ### that had requested the water                           ###

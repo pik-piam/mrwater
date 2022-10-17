@@ -4,16 +4,13 @@
 \alias{toolRiverUpDownBalance}
 \title{toolRiverUpDownBalance}
 \usage{
-toolRiverUpDownBalance(c, rs, transDist, inLIST, inoutLIST)
+toolRiverUpDownBalance(c, rs, inLIST, inoutLIST)
 }
 \arguments{
 \item{c}{Current cell for which water shall be allocated}
 
 \item{rs}{River structure with information on upstreamcells,
 downstreamcells and neighboring cells and distances}
-
-\item{transDist}{Water transport distance allowed to fulfill locally
-unfulfilled water demand by surrounding cell water availability}
 
 \item{inLIST}{List of objects that are inputs to the function:
 yearly runoff in current cell; lake evaporation in current cell;

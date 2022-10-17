@@ -187,7 +187,6 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
     for (c in cells) {
       tmp <- toolRiverUpDownBalance(c = c, rs = rs,
-                                    transDist = transDist,
                                     inLIST = list(yearlyRunoff = yearlyRunoff[c, , , drop = FALSE],
                                                   lakeEvap = lakeEvap[c, , , drop = FALSE],
                                                   prevReservedWW = prevReservedWW,
@@ -211,8 +210,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   }
 
   # Update minimum water required in cell (for further river processing steps):
-  prevReservedWW[, , ] <- prevReservedWW[, , , drop = FALSE] +
-                            currRequestWWlocal[, , , drop = FALSE]
+  prevReservedWW <- prevReservedWW + currRequestWWlocal
 
   # What should be reported by calcHumanUseAccounting?
   # 1. discharge
@@ -226,7 +224,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   # may be fulfilled by surrounding cell water provision
   if (transDist != 0) {
     tmp <- toolNeighborUpDownProvision(rs = rs, transDist = transDist,
-                       listNeighborIN = list(yearlyRunoff = yearlyRunoff, 
+                       listNeighborIN = list(yearlyRunoff = yearlyRunoff,
                                               lakeEvap = lakeEvap,
                                               prevReservedWC = prevReservedWC,
                                               prevReservedWW = prevReservedWW,

@@ -7,8 +7,6 @@
 #' @param c              Current cell for which water shall be allocated
 #' @param rs             River structure with information on upstreamcells,
 #'                       downstreamcells and neighboring cells and distances
-#' @param transDist      Water transport distance allowed to fulfill locally
-#'                       unfulfilled water demand by surrounding cell water availability
 #' @param inLIST         List of objects that are inputs to the function:
 #'                       yearly runoff in current cell; lake evaporation in current cell;
 #'                       previously reservered withdrawal in all cells;
@@ -26,7 +24,7 @@
 #' @author Felicitas Beier, Jens Heinke, Jan Philipp Dietrich
 #'
 
-toolRiverUpDownBalance <- function(c, rs, transDist, inLIST, inoutLIST) {
+toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
   # Inputs (not altered in this algorithm):
   yearlyRunoff   <- inLIST$yearlyRunoff
