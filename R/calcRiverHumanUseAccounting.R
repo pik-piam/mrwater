@@ -314,6 +314,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                                             selectyears = selectyears,
                                             lpjml = lpjml, climatetype = climatetype,
                                             aggregate = FALSE)[, , "discharge_nat"])
+  natDischarge <- .transformObject(natDischarge)
   basinDischarge <- natDischarge
   basinDischarge[, , ] <- 0
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
