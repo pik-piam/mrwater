@@ -284,6 +284,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   ###############
   ### Outputs ###
   ###############
+  out <- .transformObject(out)
   # river discharge flows
   out[, , "discharge"] <- as.magpie(discharge, spatial = 1, temporal = 2)
   # water reserved in current cell (for either local or neighboring cell)
