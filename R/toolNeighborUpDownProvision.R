@@ -55,63 +55,72 @@ toolNeighborUpDownProvision <- function(rs, transDist,
     ### This function is a bottleneck. Takes very long...
     ### @JAN: How to improve? Maybe avoid for-loops, but not sure how?
 
-    # loop through all cells
+    # loop through all cells that have missing water
     for (s in 1:l) {
-      # main cells that requested water from s
-      j <- as.numeric(names(which(unlist(lapply(rs$neighborcell, "[", i)) == s)))
+      if (any(missing[s, , ]) != 0) {
+        # main cells that requested water from s
+        j <- as.numeric(names(which(unlist(lapply(rs$neighborcell, "[", i)) == s)))
 
-      if (!identical(j, numeric(0)) && any(missing[j, , ] != 0)) {
+        if (!identical(j, numeric(0)) && any(missing[j, , ] != 0)) {
 
-        # order by distance
-        dist <- as.numeric(sort(unlist(lapply(rs$neighbordist[j], "[", i))))
-        j    <- as.numeric(names(sort(unlist(lapply(rs$neighbordist[j], "[", i)))))
+          # order by distance
+          dist <- as.numeric(sort(unlist(lapply(rs$neighbordist[j], "[", i))))
+          j    <- as.numeric(names(sort(unlist(lapply(rs$neighbordist[j], "[", i)))))
 
-        checkStep <- 0
-        for (m in 1:length(j)) {
+          checkStep <- 0
+          for (m in 1:length(j)) {
 
-          # Ensure that cell has not yet been calculated 
-          # because of equal distance
-          if (checkStep != 0) {
-            checkStep <- checkStep - 1
-            next
+            # Ensure that cell has not yet been calculated 
+            # because of equal distance
+            if (checkStep != 0) {
+              checkStep <- checkStep - 1
+              next
+            }
+
+            # If more than one cell has equal distance:
+            # allocate proportionally
+            if (length(j[dist == dist[m]]) != 1) {
+              # vector of s in correct length
+              vS <- rep(s, length(j[dist == dist[m]]))
+              # temporary variable
+              shr       <- toNeighbor
+              shr[, , ] <- 0
+              # share to be allocated to each cell
+              allWW <- colSums(missing[j[dist == dist[m]], , , drop = FALSE],
+                              dims = 1)
+              shr[s, , ][allWW != 0] <- (toNeighbor[s, , ] / allWW)[allWW != 0]
+
+              # allocation to respective neighboring cells
+              allocated <- missing[j[dist == dist[m]], , , drop = FALSE] * shr[vS, , , drop = FALSE]
+              fromNeighbor[j[dist == dist[m]], , ] <- fromNeighbor[j[dist == dist[m]], , , drop = FALSE] +
+                                                        allocated
+              toNeighbor[s, , ] <- toNeighbor[s, , ] -
+                                      colSums(allocated, dims = 1)
+
+              # jump to next (all that had same distance should not be allocated again)
+              checkStep <- length(j[dist == dist[m]]) - 1
+              ### @JAN / @JENS: Does that make sense?
+              rm(allocated)
+
+            } else {
+              # If distance is unique:
+              # allocate to closest first
+              allocated <- pmin(missing[j[m], , , drop = FALSE],
+                                  toNeighbor[s, , , drop = FALSE])
+              fromNeighbor[j[m], , ] <- fromNeighbor[j[m], , , drop = FALSE] +
+                                          allocated
+
+              toNeighbor[s, , ] <- toNeighbor[s, , , drop = FALSE] -
+                                      allocated
+              rm(allocated)
+            }
           }
 
-          # If more than one cell has equal distance:
-          # allocate proportionally
-          if (length(j[dist == dist[m]]) != 1) {
-            # vector of s in correct length
-            vS <- rep(s, length(j[dist == dist[m]]))
-            # temporary variable
-            shr       <- toNeighbor
-            shr[, , ] <- 0
-            # share to be allocated to each cell
-            allWW <- colSums(missing[j[dist == dist[m]], , , drop = FALSE],
-                             dims = 1)
-            shr[s, , ][allWW != 0] <- (toNeighbor[s, , ] / allWW)[allWW != 0]
-
-            # allocation to respective neighboring cells
-            allocated <- missing[j[dist == dist[m]], , , drop = FALSE] * shr[vS, , , drop = FALSE]
-            fromNeighbor[j[dist == dist[m]], , ] <- fromNeighbor[j[dist == dist[m]], , , drop = FALSE] +
-                                                      allocated
-            toNeighbor[s, , ] <- toNeighbor[s, , ] -
-                                    colSums(allocated, dims = 1)
-
-            # jump to next (all that had same distance should not be allocated again)
-            checkStep <- length(j[dist == dist[m]]) - 1
-            ### @JAN / @JENS: Does that make sense?
-            rm(allocated)
-
-          } else {
-            # If distance is unique:
-            # allocate to closest first
-            allocated <- pmin(missing[j[m], , , drop = FALSE],
-                                toNeighbor[s, , , drop = FALSE])
-            fromNeighbor[j[m], , ] <- fromNeighbor[j[m], , , drop = FALSE] +
-                                        allocated
-
-            toNeighbor[s, , ] <- toNeighbor[s, , , drop = FALSE] -
-                                    allocated
-            rm(allocated)
+          if (toNeighbor[s, , ] <= 0) {
+            if (toNeighbor[s, , ] < 0) {
+              stop("Too much water was taken from Neighbor in toolNeighborUpDownProvision")
+            }
+            break
           }
         }
       }
@@ -150,6 +159,12 @@ toolNeighborUpDownProvision <- function(rs, transDist,
         # [1] 86206.43
       }
     }
+    
+    #### HERE MIGHT BE IMPROVEMENT POTENTIAL!
+    # instead of running over all cells again, determine where there has been
+    # a request
+    # calculate toolRiverUpDownBalance for that cell and all downstream cells of it.
+    # (performance gains further down the line)
 
     # Repeat Upstream-Downstream Reservation for
     # neighboring cells
@@ -158,20 +173,29 @@ toolNeighborUpDownProvision <- function(rs, transDist,
       cells <- which(rs$calcorder == o)
 
       for (c in cells) {
-        tmp <- toolRiverUpDownBalance(c = c, rs = rs,
-                                      inLIST = list(yearlyRunoff = runoff[c, , , drop = FALSE],
-                                                    lakeEvap = evap[c, , , drop = FALSE],
-                                                    prevReservedWW = prevWW,
-                                                    prevReservedWC = prevWC[c, , , drop = FALSE]),
-                                      inoutLIST = list(discharge = discharge,
-                                                      inflow = inflow,
-                                                      currRequestWClocal = currRequestWClocal,
-                                                      currRequestWWlocal = currRequestWWlocal))
-        # Updated flows
-        discharge    <- tmp$discharge
-        inflow       <- tmp$inflow
-        currRequestWWlocal <- tmp$currRequestWWlocal
-        currRequestWClocal <- tmp$currRequestWClocal
+
+        if (any(currRequestWWlocal[c, , ] != 0) || any(currRequestWClocal[c, , ] != 0)) {
+
+          for (k in c(c, rs$downstreamcells[c])) {
+            #@JENS: Does that make sense? I would only calculate again if there is actually missing water (curReq!=0)
+            # and then I would only calculate for that specific cell and its downstream cells. (because inflow is handed over)
+            # Or would I have to again calculate for all/more (e.g. also upstream cells)?
+            tmp <- toolRiverUpDownBalance(c = c, rs = rs,
+                                          inLIST = list(yearlyRunoff = runoff[c, , , drop = FALSE],
+                                                        lakeEvap = evap[c, , , drop = FALSE],
+                                                        prevReservedWW = prevWW,
+                                                        prevReservedWC = prevWC[c, , , drop = FALSE]),
+                                          inoutLIST = list(discharge = discharge,
+                                                          inflow = inflow,
+                                                          currRequestWClocal = currRequestWClocal,
+                                                          currRequestWWlocal = currRequestWWlocal))
+            # Updated flows
+            discharge    <- tmp$discharge
+            inflow       <- tmp$inflow
+            currRequestWWlocal <- tmp$currRequestWWlocal
+            currRequestWClocal <- tmp$currRequestWClocal
+        }
+       }
       }
     }
     toNeighborWW <- currRequestWWlocal

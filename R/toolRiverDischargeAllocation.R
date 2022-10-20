@@ -1,219 +1,248 @@
-# #' @title       toolRiverDischargeAllocation
-# #' @description This tool function allocates discharge
-# #'              for grid cells respecting upstream-downstream relationships
-# #'              and various water constraints
-# #'
-# #' @param c              Current cell for which water shall be allocated
-# #' @param rs             River structure with information on upstreamcells,
-# #'                       downstreamcells and neighboring cells and distances
-# #' @param iteration      Currently active iteration of river discharge allocation.
-# #'                       Arguments:
-# #'                       "main" for case of main river cells
-# #'                       "neighbor" for case of neighboring cells of main river cells
-# #' @param transDist      Water transport distance allowed to fulfill locally
-# #'                       unfulfilled water demand by surrounding cell water availability
-# #' @param inLIST         List of objects that are inputs to the function
-# #'                       irrigGain, gainthreshold,
-# #' @param inoutLIST      List of objects that are inputs to the function and
-# #'                       are updated by the function
-# #'
-# #' @return magpie object in cellular resolution
-# #' @author Felicitas Beier, Jens Heinke, Jan Philipp Dietrich
-# #'
+#' @title       toolRiverDischargeAllocation
+#' @description This tool function allocates discharge
+#'              for grid cells respecting upstream-downstream relationships
+#'              and various water constraints
+#'
+#' @param c              Current cell for which water shall be allocated
+#' @param rs             River structure with information on upstreamcells,
+#'                       downstreamcells and neighboring cells and distances
+#' @param iteration      Currently active iteration of river discharge allocation.
+#'                       Arguments:
+#'                       "main" for case of main river cells
+#'                       "neighbor" for case of neighboring cells of main river cells
+#' @param transDist      Water transport distance allowed to fulfill locally
+#'                       unfulfilled water demand by surrounding cell water availability
+#' @param inLIST         List of objects that are inputs to the function
+#'                       irrigGain, gainthreshold,
+#' @param inoutLIST      List of objects that are inputs to the function and
+#'                       are updated by the function
+#'
+#' @return magpie object in cellular resolution
+#' @author Felicitas Beier, Jens Heinke, Jan Philipp Dietrich
+#'
 
-# toolRiverDischargeAllocation <- function(c, rs, transDist, iteration, inLIST, inoutLIST) {
+toolRiverDischargeAllocation <- function(c, rs, transDist,
+                                         iteration, inLIST, inoutLIST) {
 
-#   # Helper vectors for subsetting of objects
-#   # vector of downstreamcells of c
-#   vDOWN <- unlist(rs$downstreamcells[[c]])
-#   # vector of c in length of downstreamcells of c
-#   vCELL <- rep(c, length(rs$downstreamcells[[c]]))
-#   # vector of 1s in length of downstreamcells of c
-#   vONES <- rep(1, length(rs$downstreamcells[[c]]))
+  # Helper vectors for subsetting of objects
+  # vector of downstreamcells of c
+  vDOWN <- unlist(rs$downstreamcells[[c]])
+  # vector of c in length of downstreamcells of c
+  vCELL <- rep(c, length(rs$downstreamcells[[c]]))
+  # vector of 1s in length of downstreamcells of c
+  vONES <- rep(1, length(rs$downstreamcells[[c]]))
 
-#   ###############################
-#   ### Import required objects ###
-#   ###############################
-#   # Inputs
-#   reqWatFullirrigWW <- inLIST$reqWatFullirrigWW
-#   reqWatFullirrigWC <- inLIST$reqWatFullirrigWC
+  ###############################
+  ### Import required objects ###
+  ###############################
+  # Inputs
+  currReqWW <- inLIST$currReqWW
+  currReqWC <- inLIST$currReqWC
 
+  # Inputs that are also outputs
+  # i.e. objects that are updated by this function)
+  discharge      <- inoutLIST$discharge
+  prevReservedWW <- inoutLIST$prevReservedWW
+  currWWlocal    <- inoutLIST$currWWlocal
+  currWClocal    <- inoutLIST$currWClocal
 
-#   # Inputs that are also outputs 
-#   # i.e. objects that are updated by this function)
+  # initialize objects to be filled
+  fracFulfilled <- discharge
+  fracFulfilled[, , ] <- 0
+  avlWatWW <- avlWatWC <- fracFulfilled
   
-#   # resNeighborWW, resNeighborWC
-#   # neighborProvisionWW, neighborProvisionWC
-#   # discharge, watReserved, 
-#   # currHumanWWlocal, currHumanWClocal
-#   # currHumanWWtotal, currHumanWCtotal
-#   dischargeNEW <- inoutLIST$discharge
-#   reservedNEW <- inoutLIST$reserved
-#   avlWatWW <- inoutLIST$avlWatWW ## or is it just input (double-check!!) (because loop over c is outside, it is input and output)
-#   avlWatWC <- inoutLIST$avlWatWC ## or is it just input (double-check!!)
+  ##################
+  ### Conditions ###
+  ##################
+  # For Surplus Discharge Allocation:
+  # only cells where irrigation potential exceeds
+  # certain minimum threshold are (additionally) irrigated
+  isGAIN <- (inLIST$irrigGain > inLIST$gainthreshold)
 
-#   # missingWW, missingWC (only input or input and output? (for case of neighbor irrigation both?))
+  # is water required for withdrawal in current grid cell?
+  isWW <- (currReqWW[c, , , drop = FALSE] > 0 & isGAIN)
 
-  
-#   ##################
-#   ### Conditions ###
-#   ##################
-#   # For Surplus Discharge Allocation:
-#   # only cells where irrigation potential exceeds
-#   # certain minimum threshold are (additionally) irrigated
-#   isGAIN <- (inLIST$irrigGain > inLIST$gainthreshold)
+  # is water required for consumption in current grid cell?
+  isWC <- (currReqWC[c, , , drop = FALSE] > 0 & isWW)
 
-#   # is water required for withdrawal in current grid cell?
-#   isWW <- (reqWatFullirrigWW[c, , , drop = FALSE] > 0 & isGAIN)
+  ##########################
+  ### Internal Functions ###
+  ##########################
+  .determineAvailability <- function(dis, res) {
+    # available water for additional irrigation withdrawals
+    return(pmax(apply(dis - res, MARGIN = 3, min), 0))
+  }
+  .determineFractionFulfilled <- function(avl, req, frac) {
+    # how much withdrawals can be fulfilled by available water
+    return(pmin(avl / req, frac))
+  }
+  .updateUse <- function(wat, frac) {
+    return(wat * frac)
+  }
+  .updateReserved <- function(curUse, res) {
+    return(res + curUse)
+  }
+  .subtractFlows <- function(a, b) {
+    return(a - b)
+  }
 
-#   # is water required for consumption in current grid cell?
-#   isWC <- (reqWatFullirrigWC[c, , , drop = FALSE] > 0 & isWW)
+  ##########################
+  ###  Water Allocation  ###
+  ##########################
 
-#   ##########################
-#   ### Internal Functions ###
-#   ##########################
-#   .determineAvailability <- function(dis, res) {
-#     # available water for additional irrigation withdrawals
-#     return(pmax(apply(dis - res, MARGIN = 3, min), 0))
-#   }
-#   .determineFractionFulfilled <- function(avl, req, frac) {
-#     # how much withdrawals can be fulfilled by available water
-#     return(pmin(avl / req, frac))
-#   }
-#   .updateUse <- function(wat, frac) {
-#     return(wat * frac)
-#   }
-#   .updateReserved <- function(curUse, res) {
-#     return(res + curUse)
-#   }
-#   .subtractFlows <- function(a, b) {
-#     return(a - b)
-#   }
+  # Water Availability
+  avlWatWW[c, , ][isGAIN] <- .determineAvailability(dis = discharge[c, , , drop = FALSE],
+                                                     res = prevReservedWW[c, , , drop = FALSE])[isGAIN]
 
-#   ##########################
-#   ###  Water Allocation  ###
-#   ##########################
+  # Withdrawal Constraint
+  fracFulfilled[c, , ][isWW] <- .determineFractionFulfilled(avl = avlWatWW[c, , , drop = FALSE][isWW],
+                                                            req = currReqWW[c, , , drop = FALSE][isWW],
+                                                            frac = 1)
 
-#   # Water Availability
-#   avlWatWW[c, , ][isGAIN] <- .determineAvailability(dis = dischargeNEW[c, , , drop = FALSE],
-#                                                      res = reservedNEW[c, , , drop = FALSE])[isGAIN]
+  # Account for downstream availability
+  if (length(vDOWN) > 0) {
 
-#   # Withdrawal Constraint
-#   fracNEW[c, y, ][isWW] <- .determineFractionFulfilled(avl = avlWatWW[c, , , drop = FALSE][isWW],
-#                                                        req = reqWatFullirrigWW[c, y, , drop = FALSE][isWW],
-#                                                        frac = 1)
+    # Water Availability (considering downstream availability)
+    avlWatWC[c, , ][isWC] <- .determineAvailability(dis = discharge[vDOWN, , , drop = FALSE],
+                                                     res = prevReservedWW[vDOWN, , , drop = FALSE])[isWC]
 
-#   if (length(vDOWN) > 0) {
+    # Consumption Constraint
+    fracFulfilled[c, , ][isWC] <- .determineFractionFulfilled(avl = avlWatWC[c, , , drop = FALSE][isWC],
+                                                         req = currReqWC[c, , , drop = FALSE][isWC],
+                                                         frac = fracFulfilled[c, , , drop = FALSE][isWC])
+  }
 
-#     # Water Availability (considering downstream availability)
-#     avlWatWC[c, , ][isWC] <- .determineAvailability(dis = dischargeNEW[vDOWN, , , drop = FALSE],
-#                                                      res = reservedNEW[vDOWN, , , drop = FALSE])[isWC]
+  # locally fulfilled water withdrawals and consumption
+  currWClocal[c, , ] <- .updateUse(wat  = currReqWC[c, , , drop = FALSE],
+                                    frac = fracFulfilled[c, , , drop = FALSE])
+  currWWlocal[c, , ] <- .updateUse(wat  = currReqWW[c, , , drop = FALSE],
+                                    frac = fracFulfilled[c, , , drop = FALSE])
 
-#     # Consumption Constraint
-#     fracNEW[c, y, ][isWC] <- .determineFractionFulfilled(avl = avlWatWC[c, , , drop = FALSE][isWC],
-#                                                          req = reqWatFullirrigWC[c, y, , drop = FALSE][isWC],
-#                                                          frac = fracNEW[c, y, , drop = FALSE][isWC])
-#   }
-
-#   # local irrigation water withdrawals and consumption
-#   currHumanWClocal[c, y, ] <- .updateUse(wat  = reqWatFullirrigWC[c, y, , drop = FALSE],
-#                                          frac = fracNEW[c, y, , drop = FALSE])
-#   currHumanWWlocal[c, y, ] <- .updateUse(wat  = reqWatFullirrigWW[c, y, , drop = FALSE],
-#                                          frac = fracNEW[c, y, , drop = FALSE])
-
-#   # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-#   dischargeNEW[c(vDOWN, c), , ][isWW[c(vONES, 1), , ,
-#                                  drop = FALSE]] <- .subtractFlows(a = dischargeNEW[c(vDOWN, c), , , drop = FALSE],
-#                                                                   b = currHumanWClocal[c(vCELL, c), y, , drop = FALSE]
-#                                                                   )[isWW[c(vONES, 1), , , drop = FALSE]]
-#   # update minimum water required in cell:
-#   reservedNEW[c, , ][isWW] <- .updateReserved(res = reservedNEW[c, , , drop = FALSE],
-#                                               curUse = currHumanWWlocal[c, y, , drop = FALSE])[isWW]
+  # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
+  discharge[c(vDOWN, c), , ][isWW[c(vONES, 1), , ,
+                                 drop = FALSE]] <- .subtractFlows(a = discharge[c(vDOWN, c), , , drop = FALSE],
+                                                                  b = currWClocal[c(vCELL, c), , , drop = FALSE]
+                                                                  )[isWW[c(vONES, 1), , , drop = FALSE]]
+  # update minimum water required in cell:
+  prevReservedWW[c, , ][isWW] <- .updateReserved(res = prevReservedWW[c, , , drop = FALSE],
+                                                 curUse = currWWlocal[c, , , drop = FALSE])[isWW]
 
 
+  # The following calculations are only relevant
+  # if the current cell c is a cell of the main river,
+  # i.e. water can be requested from neighboring cells
+  if (iteration == "main") {
 
-# #### CASE I: IF STANDARD ROUND (current cell c is cell of main routing)
+    # Inputs that are also outputs,
+    # but only relevant for neighbor water provision
+    # i.e. objects that are updated by this function
+    fromNeighborWW <- inoutLIST$fromNeighborWW
+    fromNeighborWC <- inoutLIST$fromNeighborWC
+    toNeighborWW   <- inoutLIST$toNeighborWW
+    toNeighborWC   <- inoutLIST$toNeighborWC
 
-# # Case 0: No neighbor irrigation
-# #         Routing is already complete -> report all outputs and jump to next cell
-# #         Once loop through all cells complete: finish
-  
-#   if (iteration == "main") {
-#     # Neighbor Irrigation (under "optimization" scenario)
-#     if (transDist != 0) {
-#       if (allocationrule == "optimization") {
-#         # Locally missing water that might be fulfilled by surrounding cells
-#         missingWW <- .subtractFlows(a = reqWatFullirrigWW[c, y, , drop = FALSE],
-#                                     b = currHumanWWlocal[c, y, , drop = FALSE])
-#         missingWC <- .subtractFlows(a = reqWatFullirrigWC[c, y, , drop = FALSE],
-#                                     b = currHumanWClocal[c, y, , drop = FALSE])
-#         # Water Allocation in neighboring cells of c
-#         tmp <- toolRiverDischargeAllocation(c = n, rs = rs, iteration = "neighbor")
-#         ### update objects
-#       }
-#     }
-#   } else if (iteration == "neighbor") {
+    # Locally missing water that might be fulfilled by surrounding cells
+    missingWW[c, , ] <- .subtractFlows(a = currReqWW[c, , , drop = FALSE],
+                                       b = currWWlocal[c, , , drop = FALSE])
+    missingWC[c, , ] <- .subtractFlows(a = currReqWC[c, , , drop = FALSE],
+                                       b = currWClocal[c, , , drop = FALSE])
 
-#     # current neighbor use
-#     currNeighborWW <- .updateUse(wat  = missingWW,
-#                                  frac = fracNEW[c, , , drop = FALSE])
-#     currNeighborWC <- .updateUse(wat  = missingWC,
-#                                  frac = fracNEW[c, , , drop = FALSE])
+    # Neighbor Irrigation (under "optimization" scenario)
+    if ((transDist != 0) &&
+        !is.null(rs$neighborcell[[c]]) &&
+        (any(missingWW[c, , ] != 0) || any(missingWC[c, , ] != 0))) {
 
-#     # update reserved water in respective neighboring cell (current cell)
-#     resNeighborWW[c, , ] <- .updateReserved(res    = resNeighborWW[c, , , drop = FALSE],
-#                                             curUse = currNeighborWW)
-#     resNeighborWC[c, , ] <- .updateReserved(res = resNeighborWC[c, , , drop = FALSE],
-#                                             curUse = currNeighborWC)
+      # Irrigation gain is not necessary to consider in case of neighbor irrigation
+      # and is therefore set to be fulfilled for all cells
+      irrigGainNeighbor <- inLIST$irrigGain
+      irrigGainNeighbor[, , ] <- inLIST$gainthreshold
 
-#     # update water provided by neighboring cell to original cell that had missing water
-#     neighborProvisionWW[k, , ] <- .updateReserved(res    = neighborProvisionWW[k, , , drop = FALSE],
-#                                                   curUse = currNeighborWW)
-#     neighborProvisionWC[k, , ] <- .updateReserved(res    = neighborProvisionWC[k, , , drop = FALSE],
-#                                                   curUse = currNeighborWC)
+      neighborWWlocal <- neighborWClocal <- discharge
+      neighborWWlocal[, , ] <- 0
+      neighborWClocal[, , ] <- 0
+      # Water Allocation in neighboring cells of c
+      # Loop over neighbor cells (by distance) until water requirements fulfilled
+      for (n in rs$neighborcell[[c]]) {
+        inLISTneighbor <- list(irrigGain = irrigGainNeighbor,
+                              gainthreshold = inLIST$gainthreshold,
+                              currReqWW = missingWW,
+                              currReqWC = missingWC)
 
-#     # Update locally missing water in c
-#     missingWW <- missingWW - currNeighborWW
-#     missingWC <- missingWC - currNeighborWC
+        inoutLISTneighbor <- list(discharge = discharge,
+                                  reserved = prevReservedWW,
+                                  fromNeighborWC = fromNeighborWC,
+                                  fromNeighborWW = fromNeighborWW,
+                                  toNeighborWW = toNeighborWW,
+                                  toNeighborWC = toNeighborWC,
+                                  currWWlocal = neighborWWlocal,
+                                  currWClocal = neighborWClocal)
 
-#     if (allocationrule == "optimization") {
-#       # Exit Neighbor Water Provision
-#       if (any(missingWW < 0)) {
-#         stop(paste0("More water than necessary provided to missingWW
-#                      in toolNeighborWaterProvision in cell ", k,
-#                      " by neighborcell ", c))
-#       }
-#       if (any(missingWC < 0)) {
-#         stop(paste0("More water than necessary provided to missingWC
-#                     in toolNeighborWaterProvision in cell ", k,
-#                     " by neighborcell ", c))
-#       }
-#       if (all(missingWW <= 0) && all(missingWC <= 0)) {
-#         break
-#       }
-#     } else {
+        tmp <- toolRiverDischargeAllocation(c = n, rs = rs,
+                                            iteration = "neighbor",
+                                            inLIST = inLISTneighbor,
+                                            inoutLIST = inoutLISTneighbor)
+        discharge <- tmp$discharge
+        prevReservedWW <- tmp$prevReservedWW
+        neighborWWlocal <- tmp$currWWlocal
+        neighborWClocal <- tmp$currWClocal
 
-#     }
+        # update reserved water in respective neighboring cell (current cell)
+        fromNeighborWW[c, , ] <- .updateReserved(res = fromNeighborWW[c, , , drop = FALSE],
+                                                curUse = tmp$currWWlocal[n, , , drop = FALSE])
+        fromNeighborWC[c, , ] <- .updateReserved(res = fromNeighborWC[c, , , drop = FALSE],
+                                                curUse = tmp$currWClocal[n, , , drop = FALSE])
 
-#   } else {
-#     stop("In toolRiverDischargeAllocation:
-#           Please select `main` or `neighbor` for `iteration` argument
-#           to indicate stage of discharge allocation.")
-#   }
+        # update water provided by neighboring cell to original cell that had missing water
+        toNeighborWW[n, , ] <- .updateReserved(res = toNeighborWW[n, , , drop = FALSE],
+                                                      curUse = tmp$currWWlocal[n, , , drop = FALSE])
+        toNeighborWC[n, , ] <- .updateReserved(res = toNeighborWC[n, , , drop = FALSE],
+                                                      curUse = tmp$currWClocal[n, , , drop = FALSE])
 
-#   inoutLIST <- list()
+        # Update locally missing water in c
+        missingWW[c, , ] <- missingWW[c, , , drop = FALSE] - tmp$currWWlocal[n, , , drop = FALSE]
+        missingWC[c, , ] <- missingWC[c, , , drop = FALSE] - tmp$currWClocal[n, , , drop = FALSE]
 
-#   return(inoutLIST)
-# }
-# # Case N.1: Upstream-Downstream Routing: missingWW and missingWC are outputs of function; routing runs completely through
-#             # (1) all missingWater is reported to the respective closest neighbor cell
-#             # (2) routing is repeated with neighbor cell as c 
-#             #     (neighbor cells try to fulfill the missing water that has been reported to them)
-#             # (3) water is allocated to the cell that have asked for it (proportional to their demand / by distance)
-# # Case N.2: Optimization: Neighbor Irrigation is integrated into routing (try to fulfill on the go)
-#             # (1) missingWater of c is reported to toolRiverDischargeAllocation
-#             # (2) toolRiverDischargeAllocation is run again for n (Selbst-Aufruf innerhalb von toolRiverDischargeAllocation)
-#             #     (loop through all neighboring cells of c and report back / update 
-#             #      currNeighborWW, currNeighborWC, resNeighborWW, resNeighborWC)
-#             #     Make sure to build in correct break/jumping out of function
-#             # (3) Original river routing continues for next main cell
+        # Checks
+        if (any(missingWW < 0)) {
+          stop(paste0("More water than necessary provided to missingWW
+                      in toolRiverDischargeAllocation by neighborcell ", c))
+        }
+        if (any(missingWC < 0)) {
+          stop(paste0("More water than necessary provided to missingWC
+                      in toolRiverDischargeAllocation by neighborcell ", c))
+        }
+        # Exit Neighbor Water Provision when enough water provided
+        if (all(missingWW <= 0) && all(missingWC <= 0)) {
+          break
+        }
+      }
+    } else {
+      stop("In toolRiverDischargeAllocation:
+            Please select `main` or `neighbor` in `iteration` argument
+            to indicate stage of discharge allocation.")
+    }
+  }
+
+  out <- list(discharge = discharge,
+              prevReservedWW = prevReservedWW,
+              fromNeighborWC = fromNeighborWC,
+              fromNeighborWW = fromNeighborWW,
+              toNeighborWW = toNeighborWW,
+              toNeighborWC = toNeighborWC,
+              currWWlocal = currWWlocal,
+              currWClocal = currWClocal)
+  return(out)
+}
+
+# Case N.1: Upstream-Downstream Routing: missingWW and missingWC are outputs of function; routing runs completely through
+            # (1) all missingWater is reported to the respective closest neighbor cell
+            # (2) routing is repeated with neighbor cell as c 
+            #     (neighbor cells try to fulfill the missing water that has been reported to them)
+            # (3) water is allocated to the cell that have asked for it (proportional to their demand / by distance)
+# Case N.2: Optimization: Neighbor Irrigation is integrated into routing (try to fulfill on the go)
+            # (1) missingWater of c is reported to toolRiverDischargeAllocation
+            # (2) toolRiverDischargeAllocation is run again for n (Selbst-Aufruf innerhalb von toolRiverDischargeAllocation)
+            #     (loop through all neighboring cells of c and report back / update 
+            #      currNeighborWW, currNeighborWC, fromNeighborWW, fromNeighborWC)
+            #     Make sure to build in correct break/jumping out of function
+            # (3) Original river routing continues for next main cell
