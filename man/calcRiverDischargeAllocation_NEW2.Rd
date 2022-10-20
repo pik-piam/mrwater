@@ -118,7 +118,7 @@ This function distributes surplus basin discharge after the
 }
 \examples{
 \dontrun{
-calcOutput("RiverDischargeAllocation", aggregate = FALSE)
+calcOutput("RiverDischargeAllocation_NEW2", aggregate = FALSE)
 }
 
 }

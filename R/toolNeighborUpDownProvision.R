@@ -53,75 +53,74 @@ toolNeighborUpDownProvision <- function(rs, transDist,
   .assignTOmain <- function(i, missing, toNeighbor, fromNeighbor) {
 
     ### This function is a bottleneck. Takes very long...
-    ### @JAN: How to improve? Maybe avoid for-loops, but not sure how?
+    ### @JAN/JENS: How to improve? Maybe avoid for-loops, but not sure how?
 
     # loop through all cells that have missing water
     for (s in 1:l) {
-      if (any(missing[s, , ]) != 0) {
-        # main cells that requested water from s
-        j <- as.numeric(names(which(unlist(lapply(rs$neighborcell, "[", i)) == s)))
+    
+      # main cells that requested water from s
+      j <- as.numeric(names(which(unlist(lapply(rs$neighborcell, "[", i)) == s)))
 
-        if (!identical(j, numeric(0)) && any(missing[j, , ] != 0)) {
+      if (!identical(j, numeric(0)) && any(missing[j, , ] != 0)) {
 
-          # order by distance
-          dist <- as.numeric(sort(unlist(lapply(rs$neighbordist[j], "[", i))))
-          j    <- as.numeric(names(sort(unlist(lapply(rs$neighbordist[j], "[", i)))))
+        # order by distance
+        dist <- as.numeric(sort(unlist(lapply(rs$neighbordist[j], "[", i))))
+        j    <- as.numeric(names(sort(unlist(lapply(rs$neighbordist[j], "[", i)))))
 
-          checkStep <- 0
-          for (m in 1:length(j)) {
+        checkStep <- 0
+        for (m in 1:length(j)) {
 
-            # Ensure that cell has not yet been calculated 
-            # because of equal distance
-            if (checkStep != 0) {
-              checkStep <- checkStep - 1
-              next
-            }
-
-            # If more than one cell has equal distance:
-            # allocate proportionally
-            if (length(j[dist == dist[m]]) != 1) {
-              # vector of s in correct length
-              vS <- rep(s, length(j[dist == dist[m]]))
-              # temporary variable
-              shr       <- toNeighbor
-              shr[, , ] <- 0
-              # share to be allocated to each cell
-              allWW <- colSums(missing[j[dist == dist[m]], , , drop = FALSE],
-                              dims = 1)
-              shr[s, , ][allWW != 0] <- (toNeighbor[s, , ] / allWW)[allWW != 0]
-
-              # allocation to respective neighboring cells
-              allocated <- missing[j[dist == dist[m]], , , drop = FALSE] * shr[vS, , , drop = FALSE]
-              fromNeighbor[j[dist == dist[m]], , ] <- fromNeighbor[j[dist == dist[m]], , , drop = FALSE] +
-                                                        allocated
-              toNeighbor[s, , ] <- toNeighbor[s, , ] -
-                                      colSums(allocated, dims = 1)
-
-              # jump to next (all that had same distance should not be allocated again)
-              checkStep <- length(j[dist == dist[m]]) - 1
-              ### @JAN / @JENS: Does that make sense?
-              rm(allocated)
-
-            } else {
-              # If distance is unique:
-              # allocate to closest first
-              allocated <- pmin(missing[j[m], , , drop = FALSE],
-                                  toNeighbor[s, , , drop = FALSE])
-              fromNeighbor[j[m], , ] <- fromNeighbor[j[m], , , drop = FALSE] +
-                                          allocated
-
-              toNeighbor[s, , ] <- toNeighbor[s, , , drop = FALSE] -
-                                      allocated
-              rm(allocated)
-            }
+          # Ensure that cell has not yet been calculated 
+          # because of equal distance
+          if (checkStep != 0) {
+            checkStep <- checkStep - 1
+            next
           }
 
-          if (toNeighbor[s, , ] <= 0) {
-            if (toNeighbor[s, , ] < 0) {
-              stop("Too much water was taken from Neighbor in toolNeighborUpDownProvision")
-            }
-            break
+          # If more than one cell has equal distance:
+          # allocate proportionally
+          if (length(j[dist == dist[m]]) != 1) {
+            # vector of s in correct length
+            vS <- rep(s, length(j[dist == dist[m]]))
+            # temporary variable
+            shr       <- toNeighbor
+            shr[, , ] <- 0
+            # share to be allocated to each cell
+            allWW <- colSums(missing[j[dist == dist[m]], , , drop = FALSE],
+                            dims = 1)
+            shr[s, , ][allWW != 0] <- (toNeighbor[s, , ] / allWW)[allWW != 0]
+
+            # allocation to respective neighboring cells
+            allocated <- missing[j[dist == dist[m]], , , drop = FALSE] * shr[vS, , , drop = FALSE]
+            fromNeighbor[j[dist == dist[m]], , ] <- fromNeighbor[j[dist == dist[m]], , , drop = FALSE] +
+                                                      allocated
+            toNeighbor[s, , ] <- toNeighbor[s, , ] -
+                                    colSums(allocated, dims = 1)
+
+            # jump to next (all that had same distance should not be allocated again)
+            checkStep <- length(j[dist == dist[m]]) - 1
+            ### @JAN / @JENS: Does that make sense?
+            rm(allocated)
+
+          } else {
+            # If distance is unique:
+            # allocate to closest first
+            allocated <- pmin(missing[j[m], , , drop = FALSE],
+                                toNeighbor[s, , , drop = FALSE])
+            fromNeighbor[j[m], , ] <- fromNeighbor[j[m], , , drop = FALSE] +
+                                        allocated
+
+            toNeighbor[s, , ] <- toNeighbor[s, , , drop = FALSE] -
+                                    allocated
+            rm(allocated)
           }
+        }
+
+        if (any(toNeighbor[s, , ] <= 0)) {
+          if (any(toNeighbor[s, , ] < 0)) {
+            stop("Too much water was taken from Neighbor in toolNeighborUpDownProvision")
+          }
+          break
         }
       }
     }
