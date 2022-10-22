@@ -138,8 +138,8 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   if (humanuse == "non_agriculture") {
 
     # Inflow and discharge from previous routing
-    inflow <- collapseNames(natFlows[, , "inflow_nat"])
-    discharge <- natDischarge
+    inflow <- as.array(.transformObject(collapseNames(natFlows[, , "inflow_nat"])))
+    discharge <- as.array(.transformObject(natDischarge))
 
     # Minimum flow requirements determined by natural flow river routing:
     # (full) Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
@@ -172,8 +172,8 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                                     aggregate = FALSE)
     
     # Inflow and discharge from previous routing
-    inflow <- collapseNames(previousHumanUse[, , "inflow"])
-    discharge <- collapseNames(previousHumanUse[, , "discharge"])
+    inflow <- as.array(collapseNames(previousHumanUse[, , "inflow"]))
+    discharge <- as.array(collapseNames(previousHumanUse[, , "discharge"]))
 
     # Minimum flow requirements determined by previous river routing:
     # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)

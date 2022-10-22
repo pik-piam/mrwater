@@ -28,7 +28,7 @@
 toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
   # Inputs (not altered in this algorithm):
-  runoffEvap     <- inLIST$runoffWOEvap
+  runoffEvap     <- inLIST$runoffEvap
   prevReservedWW <- inLIST$prevReservedWW
   prevReservedWC <- inLIST$prevReservedWC
   currRequestWWlocal <- inLIST$currRequestWWlocal
