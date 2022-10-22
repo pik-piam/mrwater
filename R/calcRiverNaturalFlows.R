@@ -22,7 +22,8 @@
 calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
 
   ### Read in river structure
-  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
+  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
+                            package = "mrwater"))
 
   ### Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
   if (grepl("historical", climatetype)) {
@@ -66,12 +67,12 @@ calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
       ### Natural water balance
       # lake evap that can be fulfilled
       # (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
-      lakeEvapNEW[c, , ] <- pmin(lakeEvap[c, , , drop = F],
-                                 natInflow[c, , , drop = F] + runoff[c, , , drop = F])
+      lakeEvapNEW[c, , ] <- pmin(lakeEvap[c, , , drop = FALSE],
+                                 natInflow[c, , , drop = FALSE] + runoff[c, , , drop = FALSE])
       # natural discharge
-      natDischarge[c, , ] <- natInflow[c, , , drop = F] +
-                              runoff[c, , , drop = F] -
-                              lakeEvapNEW[c, , , drop = F]
+      natDischarge[c, , ] <- natInflow[c, , , drop = FALSE] +
+                              runoff[c, , , drop = FALSE] -
+                              lakeEvapNEW[c, , , drop = FALSE]
       # inflow into nextcell
       if (rs$nextcell[c] > 0) {
         natInflow[rs$nextcell[c], , ] <- natInflow[rs$nextcell[c], , , drop = F] + natDischarge[c, , , drop = F]
@@ -81,10 +82,11 @@ calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
 
   out <- new.magpie(cells_and_regions = getItems(natDischarge, dim = 1),
                     years = getItems(natDischarge, dim = "year"),
-                    names = c("discharge_nat", "lake_evap_nat"),
+                    names = c("discharge_nat", "lake_evap_nat", "inflow_nat"),
                     sets  = c("x.y.iso", "year", "data"))
   out[, , "discharge_nat"] <- as.magpie(natDischarge, spatial = 1, temporal = 2)
   out[, , "lake_evap_nat"] <- as.magpie(lakeEvapNEW, spatial = 1, temporal = 2)
+  out[, , "inflow_nat"]    <- as.magpie(natInflow, spatial = 1, temporal = 2)
 
 return(list(x            = out,
             weight       = NULL,

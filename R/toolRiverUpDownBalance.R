@@ -28,21 +28,26 @@
 toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
   # Inputs (not altered in this algorithm):
-  yearlyRunoff   <- inLIST$yearlyRunoff
-  lakeEvap       <- inLIST$lakeEvap
+  runoffEvap     <- inLIST$runoffWOEvap
   prevReservedWW <- inLIST$prevReservedWW
   prevReservedWC <- inLIST$prevReservedWC
+  currRequestWWlocal <- inLIST$currRequestWWlocal
 
   # Inputs that are also outputs (updated by this algorithm):
   discharge          <- inoutLIST$discharge
   inflow             <- inoutLIST$inflow
   currRequestWClocal <- inoutLIST$currRequestWClocal
-  currRequestWWlocal <- inoutLIST$currRequestWWlocal
 
   # Initialize function-internal variables with correct dimension:
   avlWat <- upstreamWC <- discharge
   avlWat[, , ]     <- 0
   upstreamWC[, , ] <- 0
+
+  dischargeOLD <- discharge[c, , , drop = FALSE]
+
+  # vector of downstreamcells of c
+  down <- unlist(rs$downstreamcells[[c]])
+  vCELL <- rep(c, length(rs$downstreamcells[[c]]))
 
   ############################################
   ### Upstream-Downstream Water Accounting ###
@@ -51,8 +56,7 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
   # Available water in cell
   avlWat[c, , ] <- inflow[c, , , drop = FALSE] +
-                      yearlyRunoff -
-                        lakeEvap
+                      runoffEvap
 
   ### Is there sufficient water available to fulfill previously determined requirements? ###
   sufficientWat <- (avlWat[c, , , drop = FALSE] >= prevReservedWW[c, , , drop = FALSE])
@@ -74,7 +78,7 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
   # Current water uses (withdrawals and consumption) given withdrawal constraint
   currRequestWClocal[c, , ][isSuffWW] <- fracFulfilled * (currRequestWClocal[c, , ,
                                                                   drop = FALSE])[isSuffWW]
-  currRequestWWlocal[c, , ][isSuffWW] <- fracFulfilled * (currRequestWWlocal[c, , ,
+  currRequestWWlocal[c, , ][isSuffWW] <- fracFulfilled * (currRequestWWlocal[c, , , # OPTIMIZE: do only in the very end
                                                                   drop = FALSE])[isSuffWW]
 
   # Discharge in current cell for case where sufficient water available for requirements
@@ -159,17 +163,19 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
   }
 
-  # Inflow to nextcell (if there is a downstreamcell)
-  if (rs$nextcell[c] > 0) {
-    inflow[rs$nextcell[c], , ] <- inflow[rs$nextcell[c], , , drop = FALSE] +
-                                      discharge[c, , , drop = FALSE]
+  # Update inflow and discharge in all downstream cells
+  if (length(down) > 0) {
+    discharge[down, , ] <- discharge[down, , , drop = FALSE] + 
+                            (discharge[vCELL, , , drop = FALSE] - 
+                               dischargeOLD[vCELL, , , drop = FALSE])
+    inflow[down, , ] <- inflow[down, , , drop = FALSE] + discharge[down, , , drop = FALSE]
   }
 
-  inoutLIST <- list(discharge = discharge,
-                    inflow = inflow,
-                    currRequestWClocal = currRequestWClocal,
-                    currRequestWWlocal = currRequestWWlocal)
+  outLIST <- list(discharge = discharge,
+                  inflow = inflow,
+                  currRequestWClocal = currRequestWClocal,
+                  frac = fracFulfilled)
 
-  return(inoutLIST)
+  return(outLIST)
 
 }
