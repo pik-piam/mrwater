@@ -43,7 +43,7 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
   avlWat[, , ]     <- 0
   upstreamWC[, , ] <- 0
 
-  dischargeOLD <- discharge[c, , , drop = FALSE]
+  dischargeOLD <- discharge
 
   # vector of downstreamcells of c
   down <- unlist(rs$downstreamcells[[c]])
