@@ -92,13 +92,14 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
   runoffWOEvap <- magYearlyRunoff - lakeEvap
 
+  scenarios <- c(paste("on", getNames(nonAgWWmag), sep = "."),
+             paste("off", getNames(nonAgWWmag), sep = "."))
   ## Transform object dimensions
   .transformObject <- function(x) {
     # empty magpie object structure
     object0 <- new.magpie(cells_and_regions = getCells(magYearlyRunoff),
                           years = getYears(magYearlyRunoff),
-                          names = c(paste("on", getNames(nonAgWWmag), sep = "."),
-                                    paste("off", getNames(nonAgWWmag), sep = ".")),
+                          names = scenarios,
                           fill = 0, sets = c("x.y.iso", "year", "EFP.scen"))
     # bring object x to dimension of object0
     out     <- object0 + x
@@ -195,7 +196,6 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   ####################################################
   ###### River Routing considering Human Uses ########
   ####################################################
-  scenarios <- getItems(nonAgWWmag, dim = 3)
   years     <- getItems(nonAgWWmag, dim = 2)
 
  # for (y in years) {
