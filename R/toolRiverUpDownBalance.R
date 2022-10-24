@@ -47,7 +47,8 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
   # vector of downstreamcells of c
   down <- unlist(rs$downstreamcells[[c]])
-  vCELL <- rep(c, length(rs$downstreamcells[[c]]))
+  # vector of upstreamcells of c
+  up <- unlist(rs$upstreamcells[[c]])
 
   ############################################
   ### Upstream-Downstream Water Accounting ###
@@ -78,8 +79,8 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
   # Current water uses (withdrawals and consumption) given withdrawal constraint
   currRequestWClocal[c, , ][isSuffWW] <- fracFulfilled * (currRequestWClocal[c, , ,
                                                                   drop = FALSE])[isSuffWW]
-  currRequestWWlocal[c, , ][isSuffWW] <- fracFulfilled * (currRequestWWlocal[c, , , # OPTIMIZE: do only in the very end
-                                                                  drop = FALSE])[isSuffWW]
+  #currRequestWWlocal[c, , ][isSuffWW] <- fracFulfilled * (currRequestWWlocal[c, , , # OPTIMIZE: do only in the very end
+                                                                  #drop = FALSE])[isSuffWW]
 
   # Discharge in current cell for case where sufficient water available for requirements
   # (Subtract local water consumption in current cell (and previous if applicable)
@@ -95,17 +96,15 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
   # No water withdrawals locally if available water is not sufficient to fulfill
   # previously determined requirements
   currRequestWClocal[c, , ][!sufficientWat] <- 0
-  currRequestWWlocal[c, , ][!sufficientWat] <- 0
+  #currRequestWWlocal[c, , ][!sufficientWat] <- 0
 
   # Update upstream cells' current consumption:
-  if (length(rs$upstreamcells[[c]]) > 0) {
+  if (length(up) > 0) {
 
-    # vector of upstreamcells of c
-    up <- unlist(rs$upstreamcells[[c]])
     # vector of c in length of upstreamcells of c
-    lc <- rep(c, length(rs$upstreamcells[[c]]))
+    lc <- rep(c, length(up))
     # vector of 1 in length of upstreamcells of c
-    cc <- rep(1, length(rs$upstreamcells[[c]]))
+    cc <- rep(1, length(up))
 
     # Determine upstream current water consumption:
     upstreamWC[c, , ]  <- colSums(currRequestWClocal[up, , , drop = FALSE],
@@ -134,7 +133,7 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
     # Current human uses (consumption and withdrawal) in upstreamcells is reduced by respective amount
     currRequestWClocal[up, , ][fromUPcc] <- fracFulfilled * (currRequestWClocal[up, , , drop = FALSE])[fromUPcc]
-    currRequestWWlocal[up, , ][fromUPcc] <- fracFulfilled * (currRequestWWlocal[up, , , drop = FALSE])[fromUPcc]
+    #currRequestWWlocal[up, , ][fromUPcc] <- fracFulfilled * (currRequestWWlocal[up, , , drop = FALSE])[fromUPcc]
 
     # Discharge in current cell when water not sufficient to fulfill requirements,
     # but missing water water requirements can be fulfilled by upstream cells (A)
@@ -145,7 +144,7 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
     ## -> no water can be used upstream
     # Current human uses (consumption and withdrawal) in upstreamcells are set to 0
     currRequestWClocal[up, , ][insuffWATcc] <- 0
-    currRequestWWlocal[up, , ][insuffWATcc] <- 0
+    #currRequestWWlocal[up, , ][insuffWATcc] <- 0
 
     # Discharge in current cell when water not sufficient to fulfill requirements
     # and missing water water requirements cannot be fulfilled by upstream cells
@@ -160,11 +159,11 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
     # requirements and there are no upstream cells
     discharge[c, , ][!sufficientWat]  <- (avlWat[c, , , drop = FALSE] -
                                               prevReservedWC)[!sufficientWat]
-
   }
 
   # Update inflow and discharge in all downstream cells
   if (length(down) > 0) {
+    vCELL <- rep(c, length(rs$downstreamcells[[c]]))
     discharge[down, , ] <- discharge[down, , , drop = FALSE] + 
                             (discharge[vCELL, , , drop = FALSE] - 
                                dischargeOLD[vCELL, , , drop = FALSE])
@@ -173,8 +172,7 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
   outLIST <- list(discharge = discharge,
                   inflow = inflow,
-                  currRequestWClocal = currRequestWClocal,
-                  frac = fracFulfilled)
+                  currRequestWClocal = currRequestWClocal)
 
   return(outLIST)
 

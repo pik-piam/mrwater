@@ -212,7 +212,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
               #                               inLIST = list(runoffEvap = runoffWOEvap[c, y, scen],
               #                                             prevReservedWW = prevReservedWW[, y, scen],
               #                                             prevReservedWC = prevReservedWC[c, y, scen],
-              #                                             currRequestWWlocal = currRequestWWlocal[, y, scen])
+              #                                             currRequestWWlocal = currRequestWWlocal[, y, scen]),
               #                               inoutLIST = list(discharge = discharge[, y, scen],
               #                                               inflow = inflow[, y, scen],
               #                                               currRequestWClocal = currRequestWClocal[, y, scen]))
@@ -236,21 +236,30 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
               discharge <- tmp$discharge
               inflow <- tmp$inflow
               currRequestWClocal <- tmp$currRequestWClocal
-              currRequestWWlocal <- tmp$currRequestWWlocal
+              #currRequestWWlocal <- tmp$currRequestWWlocal
+              #fracFulfilled[c, , ] <- tmp$frac
 
-              # Locally missing water that might be fulfilled by surrounding cells
-              missingWW[c, , ] <- currRequestWWtotal[c, , , drop = FALSE] -
-                                    currRequestWWlocal[c, , , drop = FALSE]
-              missingWC[c, , ] <- currRequestWCtotal[c, , , drop = FALSE] -
-                                    currRequestWClocal[c, , , drop = FALSE]
+              # # Locally missing water that might be fulfilled by surrounding cells
+              # missingWW[c, , ] <- currRequestWWtotal[c, , , drop = FALSE] -
+              #                       currRequestWWlocal[c, , , drop = FALSE]
+              # missingWC[c, , ] <- currRequestWCtotal[c, , , drop = FALSE] -
+              #                       currRequestWClocal[c, , , drop = FALSE]
             }
          # }
         #}
       }
-    
 
-  # Update minimum water required in cell (for further river processing steps):
-  prevReservedWW <- prevReservedWW + currRequestWWlocal    #### To Check: Would this need to be updated in the loop?
+      fracFulfilled <- currRequestWClocal / currRequestWCtotal
+
+      # Update current water withdrawal
+      currRequestWWlocal <- currRequestWWlocal * fracFulfilled
+
+      # Locally missing water that might be fulfilled by surrounding cells
+      missingWW <- currRequestWWtotal - currRequestWWlocal
+      missingWC <- currRequestWCtotal - currRequestWClocal
+
+      # Update minimum water required in cell (for further river processing steps):
+      prevReservedWW <- prevReservedWW + currRequestWWlocal
 
   # What should be reported by calcHumanUseAccounting?
   # 1. discharge
