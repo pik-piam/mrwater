@@ -1,7 +1,7 @@
 #' @title       toolRiverUpDownBalanceSINGLE
 #' @description This function calculates the cell water balance
 #'              under consideration of different reserved human uses
-#'              (non-agricultural, neighbor water requirements, 
+#'              (non-agricultural, neighbor water requirements,
 #'               committed-agricultural uses)
 #'
 #' @param c              Current cell for which water shall be allocated

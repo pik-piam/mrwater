@@ -57,7 +57,7 @@ toolRiverDischargeAllocation <- function(c, rs, transDist,
   # For Surplus Discharge Allocation:
   # only cells where irrigation potential exceeds
   # certain minimum threshold are (additionally) irrigated
-  isGAIN <- (inLIST$irrigGain > inLIST$gainthreshold)
+  isGAIN <- (inLIST$irrigGain[c, , , drop = FALSE] > inLIST$gainthreshold)
 
   # is water required for withdrawal in current grid cell?
   isWW <- (currReqWW[c, , , drop = FALSE] > 0 & isGAIN)
