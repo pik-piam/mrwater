@@ -211,7 +211,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
                     (tmpDischarge[c] < prevWW[c, y, scen])) {
 
                     tmp <- toolRiverUpDownBalanceSINGLE(c = c, rs = rs,
-                                                inLIST = list(dischargeOLD = iniDischarge,
+                                                inLIST = list(dischargeOLD = iniDischarge[c],
                                                               currRequestWWlocal = tmpRequestWWlocal[c],
                                                               prevReservedWW = prevWW[, y, scen],
                                                               prevReservedWC = prevWC[c, y, scen]),

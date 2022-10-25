@@ -216,7 +216,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
         if ((tmpRequestWWlocal[c] > epsilon) ||
             (tmpDischarge[c] < prevReservedWW[c, y, scen])) {
           tmp <- toolRiverUpDownBalanceSINGLE(c = c, rs = rs,
-                                              inLIST = list(dischargeOLD = iniDischarge,
+                                              inLIST = list(dischargeOLD = iniDischarge[c],
                                                             currRequestWWlocal = tmpRequestWWlocal[c],
                                                             prevReservedWW = prevReservedWW[, y, scen],
                                                             prevReservedWC = prevReservedWC[c, y, scen]),
