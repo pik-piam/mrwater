@@ -50,10 +50,10 @@ toolRiverUpDownBalanceSINGLE <- function(c, rs, inLIST, inoutLIST) {
   # Is there sufficient water available to fulfill previously determined requirements?
   if ((discharge[c] - prevWW[c]) > 0) {
     # Are current withdrawals requested?
-    if (currRequestWWlocal[c] > 0) {
+    if (currRequestWWlocal > 0) {
       # (I) Water withdrawal constraint: All withdrawals that can be fulfilled considering
       #                                  local previously determined water requirements are served
-      frac <- min((discharge[c] - prevWW[c]) / currRequestWWlocal[c],
+      frac <- min((discharge[c] - prevWW[c]) / currRequestWWlocal,
                             1)
 
       # Current water uses fulfilled given withdrawal constraint
