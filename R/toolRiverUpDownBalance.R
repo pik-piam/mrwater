@@ -45,11 +45,6 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
 
   dischargeOLD <- discharge
 
-  # vector of downstreamcells of c
-  down <- unlist(rs$downstreamcells[[c]])
-  # vector of upstreamcells of c
-  up <- unlist(rs$upstreamcells[[c]])
-
   ############################################
   ### Upstream-Downstream Water Accounting ###
   ###         and flow reservation         ###
@@ -99,8 +94,10 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
   #currRequestWWlocal[c, , ][!sufficientWat] <- 0
 
   # Update upstream cells' current consumption:
-  if (length(up) > 0) {
+  if (length(rs$upstreamcells[[c]]) > 0) {
 
+    # vector of upstreamcells of c
+    up <- unlist(rs$upstreamcells[[c]])
     # vector of c in length of upstreamcells of c
     lc <- rep(c, length(up))
     # vector of 1 in length of upstreamcells of c
@@ -162,12 +159,16 @@ toolRiverUpDownBalance <- function(c, rs, inLIST, inoutLIST) {
   }
 
   # Update inflow and discharge in all downstream cells
-  if (length(down) > 0) {
-    vCELL <- rep(c, length(rs$downstreamcells[[c]]))
+  if (length(rs$downstreamcells[[c]]) > 0) {
+    # vector of downstreamcells of c
+    down  <- unlist(rs$downstreamcells[[c]])
+    vCELL <- rep(c, length(down))
     discharge[down, , ] <- discharge[down, , , drop = FALSE] + 
                             (discharge[vCELL, , , drop = FALSE] - 
                                dischargeOLD[vCELL, , , drop = FALSE])
-    inflow[down, , ] <- inflow[down, , , drop = FALSE] + discharge[down, , , drop = FALSE]
+    inflow[down, , ] <- inflow[down, , , drop = FALSE] + 
+                          (discharge[vCELL, , , drop = FALSE] -
+                            dischargeOLD[vCELL, , , drop = FALSE])
   }
 
   outLIST <- list(discharge = discharge,
