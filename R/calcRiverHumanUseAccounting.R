@@ -235,7 +235,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                                                               currRequestWClocal = tmpRequestWClocal[cellsRequest]))
 
           # Updated flows
-          tmpDischarge[cellsDischarge] <- tmp$discharge
+          tmpDischarge[cellsDischarge]    <- tmp$discharge
           tmpRequestWClocal[cellsRequest] <- tmp$currRequestWClocal
         }
       }
