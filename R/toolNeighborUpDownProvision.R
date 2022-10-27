@@ -49,7 +49,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
   names(rs$neighbordist) <- 1:l
 
   ### Internal Function ###
-  .assignToMain <- function(requestingList,
+  .assignToMain <- function(requestingList, epsilon,
                             missing, toNeighbor) {
     fracAssigned <- numeric(length(missing))
     cellsGiving <- which(toNeighbor > 0)
@@ -60,7 +60,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
       fromNeighbor <- shr * toNeighbor[s]
 
-      fracAssigned[cellReceiving] <- ifelse(missing[cellReceiving] > 0,
+      fracAssigned[cellReceiving] <- ifelse(missing[cellReceiving] > epsilon,
                                               fromNeighbor / missing[cellReceiving],
                                             0)
     }
@@ -72,7 +72,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
   #####################################
   for (y in years) {
     for (scen in scenarios) {
-        
+
         # initialize objects
         tmpDischarge <- iniDischarge <- dischargeOLD[, y, scen]
         tmpRequestWWlocal <- numeric(l)
@@ -99,7 +99,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
             requestingList <- vector("list", l)
             for (k in 1:l) {
 
-                if (tmpMissWW[k] > epsilon && 
+                if (tmpMissWW[k] > epsilon &&
                 !is.null(rs$neighborcell[[k]]) &&
                 !is.na(rs$neighborcell[[k]][nskipped[k] + i])) {
 

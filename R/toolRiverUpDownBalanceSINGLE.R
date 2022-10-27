@@ -25,13 +25,13 @@
 toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
 
   # Inputs (not altered in this iteration of the algorithm):
-  dischargeOLD <- inLIST$dischargeOLD
-  prevWW <- inLIST$prevReservedWW
-  prevWC <- inLIST$prevReservedWC
+  dischargeOLD       <- inLIST$dischargeOLD
+  prevWW             <- inLIST$prevReservedWW
+  prevWC             <- inLIST$prevReservedWC
   currRequestWWlocal <- inLIST$currRequestWWlocal
 
   # Inputs that are also outputs (updated by this algorithm):
-  discharge <- inoutLIST$discharge
+  discharge          <- inoutLIST$discharge
   currRequestWClocal <- inoutLIST$currRequestWClocal
 
   ############################################
@@ -50,10 +50,8 @@ toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
     if (currRequestWWlocal > 0) {
       # (I) Water withdrawal constraint: All withdrawals that can be fulfilled considering
       #                                  local previously determined water requirements are served
-      frac <- min(
-        (discharge[1] - prevWW) / currRequestWWlocal,
-        1
-      )
+      frac <- min((discharge[1] - prevWW) / currRequestWWlocal,
+                  1)
 
       # Current water uses fulfilled given withdrawal constraint
       currRequestWClocal[1] <- frac * currRequestWClocal[1]
@@ -80,7 +78,7 @@ toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
     if (length(currRequestWClocal) > 1) {
 
       # vector of upstreamcells of c
-      up <- seq_along(currRequestWClocal)[-1]
+      up <- seq(2, length(currRequestWClocal), 1)
 
       # Determine upstream current water consumption:
       upstreamWC <- sum(currRequestWClocal[up])
@@ -127,15 +125,13 @@ toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
   # Update discharge in all downstream cells
   if (length(discharge) > 1) {
     # vector of downstreamcells of c
-    down <- seq_along(discharge)[-1]
+    down <- seq(2, length(discharge), 1)
 
     discharge[down] <- discharge[down] + (discharge[1] - dischargeOLD)
   }
 
-  outLIST <- list(
-    discharge = discharge,
-    currRequestWClocal = currRequestWClocal
-  )
+  outLIST <- list(discharge = discharge,
+                  currRequestWClocal = currRequestWClocal)
 
   return(outLIST)
 }
