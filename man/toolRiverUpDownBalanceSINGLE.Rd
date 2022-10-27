@@ -4,14 +4,9 @@
 \alias{toolRiverUpDownBalanceSINGLE}
 \title{toolRiverUpDownBalanceSINGLE}
 \usage{
-toolRiverUpDownBalanceSINGLE(c, rs, inLIST, inoutLIST)
+toolRiverUpDownBalanceSINGLE(inLIST, inoutLIST)
 }
 \arguments{
-\item{c}{Current cell for which water shall be allocated}
-
-\item{rs}{River structure with information on upstreamcells,
-downstreamcells and neighboring cells and distances}
-
 \item{inLIST}{List of objects that are inputs to the function:
 yearly runoff in current cell; lake evaporation in current cell;
 previously reservered withdrawal in all cells;

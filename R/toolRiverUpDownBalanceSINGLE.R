@@ -4,9 +4,6 @@
 #'              (non-agricultural, neighbor water requirements,
 #'               committed-agricultural uses)
 #'
-#' @param c              Current cell for which water shall be allocated
-#' @param rs             River structure with information on upstreamcells,
-#'                       downstreamcells and neighboring cells and distances
 #' @param inLIST         List of objects that are inputs to the function:
 #'                       yearly runoff in current cell; lake evaporation in current cell;
 #'                       previously reservered withdrawal in all cells;
@@ -25,16 +22,16 @@
 #'
 #' @export
 
-toolRiverUpDownBalanceSINGLE <- function(c, rs, inLIST, inoutLIST) {
+toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
 
   # Inputs (not altered in this iteration of the algorithm):
-  dischargeOLD       <- inLIST$dischargeOLD
-  prevWW             <- inLIST$prevReservedWW
-  prevWC             <- inLIST$prevReservedWC
+  dischargeOLD <- inLIST$dischargeOLD
+  prevWW <- inLIST$prevReservedWW
+  prevWC <- inLIST$prevReservedWC
   currRequestWWlocal <- inLIST$currRequestWWlocal
 
   # Inputs that are also outputs (updated by this algorithm):
-  discharge          <- inoutLIST$discharge
+  discharge <- inoutLIST$discharge
   currRequestWClocal <- inoutLIST$currRequestWClocal
 
   ############################################
@@ -43,30 +40,28 @@ toolRiverUpDownBalanceSINGLE <- function(c, rs, inLIST, inoutLIST) {
   ############################################
 
   # Available water in cell
-  localWat <- discharge[c]
+  localWat <- discharge[1]
 
   #### (1) Available Water in cell is sufficient to fulfill previously determined requirements ####
   ####      -> further withdrawals possible                                                    ####
   # Is there sufficient water available to fulfill previously determined requirements?
-  if ((discharge[c] - prevWW[c]) > 0) {
+  if ((discharge[1] - prevWW) > 0) {
     # Are current withdrawals requested?
     if (currRequestWWlocal > 0) {
       # (I) Water withdrawal constraint: All withdrawals that can be fulfilled considering
       #                                  local previously determined water requirements are served
-      frac <- min((discharge[c] - prevWW[c]) / currRequestWWlocal,
-                            1)
+      frac <- min(
+        (discharge[1] - prevWW) / currRequestWWlocal,
+        1
+      )
 
       # Current water uses fulfilled given withdrawal constraint
-      tmp <- frac * currRequestWClocal[c]
-      currRequestWClocal[c] <- tmp
+      currRequestWClocal[1] <- frac * currRequestWClocal[1]
     }
 
     # Discharge in current cell for case where sufficient water available for requirements
     # (Subtract local water consumption in current cell (and previous if applicable)
-    discharge[c] <- (localWat -
-                        prevWC -
-                          currRequestWClocal[c])
-
+    discharge[1] <- (localWat - prevWC - currRequestWClocal[1])
   } else {
 
     #### (2) Available Water in cell is not sufficient to fulfill previously determined requirements ####
@@ -76,23 +71,23 @@ toolRiverUpDownBalanceSINGLE <- function(c, rs, inLIST, inoutLIST) {
 
     # No local water consumption if available water is not sufficient to fulfill
     # previously determined requirements
-    currRequestWClocal[c] <- 0
+    currRequestWClocal[1] <- 0
 
     # Update upstream cells' current consumption:
     # (Note: This is necessary to allocate the release of water
     #        equally to all upstream cells (considering all
     #        tributaries and all cells in each of them))
-    if (length(rs$upstreamcells[[c]]) > 0) {
+    if (length(currRequestWClocal) > 1) {
 
       # vector of upstreamcells of c
-      up <- unlist(rs$upstreamcells[[c]])
+      up <- seq_along(currRequestWClocal)[-1]
 
       # Determine upstream current water consumption:
       upstreamWC <- sum(currRequestWClocal[up])
 
       ### (A or B) Is there current upstream water consumption that can be reduced  ###
       ###          to release water required by previous (prioritary) uses?         ###
-      if (upstreamWC > (prevWW[c] - localWat)) {
+      if (upstreamWC > (prevWW - localWat)) {
 
 
         ## (A) upstreamWC high enough to release required water: ##
@@ -102,7 +97,7 @@ toolRiverUpDownBalanceSINGLE <- function(c, rs, inLIST, inoutLIST) {
         #                                    been consumed for current use upstream
         # fraction that stays in upstream cell(s) = 1 - fraction of water that
         #                                               needs to be released by each upstream cell
-        frac <- (1 - (prevWW[c] - localWat) / upstreamWC)
+        frac <- (1 - (prevWW - localWat) / upstreamWC)
 
         # Current human uses (consumption and withdrawal) in upstreamcells is reduced by respective amount
         tmp <- frac * currRequestWClocal[up]
@@ -110,8 +105,7 @@ toolRiverUpDownBalanceSINGLE <- function(c, rs, inLIST, inoutLIST) {
 
         # Discharge in current cell when water not sufficient to fulfill requirements,
         # but missing water water requirements can be fulfilled by upstream cells (A)
-        discharge[c] <- prevWW[c] - prevWC
-
+        discharge[1] <- prevWW - prevWC
       } else {
         ## (B) upstreamWC not high enough to release required water:
         ## -> no water can be used upstream
@@ -121,27 +115,27 @@ toolRiverUpDownBalanceSINGLE <- function(c, rs, inLIST, inoutLIST) {
         # Discharge in current cell when water not sufficient to fulfill requirements
         # and missing water water requirements cannot be fulfilled by upstream cells
         # (since there is no upstream consumption, this water is additionally available in the current cell)
-        discharge[c] <- localWat + upstreamWC - prevWC
+        discharge[1] <- localWat + upstreamWC - prevWC
       }
     } else {
       # Discharge when water is not sufficient to fulfill previously (priority)
       # requirements and there are no upstream cells
-      discharge[c] <- localWat - prevWC
+      discharge[1] <- localWat - prevWC
     }
   }
 
   # Update discharge in all downstream cells
-  if (length(rs$downstreamcells[[c]]) > 0) {
+  if (length(discharge) > 1) {
     # vector of downstreamcells of c
-    down <- unlist(rs$downstreamcells[[c]])
+    down <- seq_along(discharge)[-1]
 
-    tmp <- discharge[down]
-    discharge[down] <- tmp + (discharge[c] - dischargeOLD)
+    discharge[down] <- discharge[down] + (discharge[1] - dischargeOLD)
   }
 
-  outLIST <- list(discharge = discharge,
-                  currRequestWClocal = currRequestWClocal)
+  outLIST <- list(
+    discharge = discharge,
+    currRequestWClocal = currRequestWClocal
+  )
 
   return(outLIST)
-
 }
