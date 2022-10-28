@@ -146,15 +146,13 @@ toolNeighborUpDownProvision <- function(rs, transDist,
                     (tmpDischarge[c] < prevWW[c, y, scen])) {
 
                     cellsRequest <- cellsDischarge <- c
-
-                    if (length(rs$downstreamcells[[c]]) > 0) {
-                      up <- unlist(rs$upstreamcells[[c]])
-                      cellsRequest <- c(cellsRequest, up)
+                    if (length(rs$upstreamcells[[c]]) > 0) {
+                      cellsRequest <- c(cellsRequest, unlist(rs$upstreamcells[[c]]))
                     }
                     if (length(rs$downstreamcells[[c]]) > 0) {
-                      down <- unlist(rs$downstreamcells[[c]])
-                      cellsDischarge <- c(cellsDischarge, down)
+                      cellsDischarge <- c(cellsDischarge, unlist(rs$downstreamcells[[c]]))
                     }
+                    cellsDischarge <- unique(c(cellsRequest, cellsDischarge))
 
                     tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(dischargeOLD = iniDischarge[c],
                                                               currRequestWWlocal = tmpRequestWWlocal[c],

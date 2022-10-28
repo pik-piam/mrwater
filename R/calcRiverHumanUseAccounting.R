@@ -211,32 +211,32 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
       cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
       cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
+      # All cells (only for testing)
+      #cellsCalc <- 1:67420
+      #cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
+
       for (c in cellsCalc) {
 
         if ((tmpRequestWWlocal[c] > epsilon) ||
             (tmpDischarge[c] < prevReservedWW[c, y, scen])) {
 
           cellsRequest <- cellsDischarge <- c
-
-          if (length(rs$downstreamcells[[c]]) > 0) {
-            up <- unlist(rs$upstreamcells[[c]])
-            cellsRequest <- c(cellsRequest, up)
+          if (length(rs$upstreamcells[[c]]) > 0) {
+            cellsRequest <- c(cellsRequest, unlist(rs$upstreamcells[[c]]))
           }
           if (length(rs$downstreamcells[[c]]) > 0) {
-            down <- unlist(rs$downstreamcells[[c]])
-            cellsDischarge <- c(cellsDischarge, down)
+            cellsDischarge <- c(cellsDischarge, unlist(rs$downstreamcells[[c]]))
           }
+          cellsDischarge <- unique(c(cellsRequest, cellsDischarge))
 
-          tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(dischargeOLD = iniDischarge[c],
-                                                            currRequestWWlocal = tmpRequestWWlocal[c],
-                                                            prevReservedWW = prevReservedWW[c, y, scen],
-                                                            prevReservedWC = prevReservedWC[c, y, scen]),
-                                              inoutLIST = list(discharge = tmpDischarge[cellsDischarge],
-                                                              currRequestWClocal = tmpRequestWClocal[cellsRequest]))
+          tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWW = tmpRequestWWlocal[c],
+                                                            currWW = prevReservedWW[c, y, scen]),
+                                              inoutLIST = list(q = tmpDischarge[cellsDischarge],
+                                                               currWC = tmpRequestWClocal[cellsRequest]))
 
           # Updated flows
-          tmpDischarge[cellsDischarge]    <- tmp$discharge
-          tmpRequestWClocal[cellsRequest] <- tmp$currRequestWClocal
+          tmpDischarge[cellsDischarge]    <- tmp$q
+          tmpRequestWClocal[cellsRequest] <- tmp$currWC
         }
       }
       # Update flows
@@ -244,6 +244,11 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
       currRequestWClocal[, y, scen] <- tmpRequestWClocal
     }
   }
+  ### NOTE: some water is lost --> I think something is wrong with cellsCalc
+  # > sum(natDischarge)
+  # [1] 828670074
+  # > sum(tmpDischarge) + sum(tmpRequestWClocal) + sum(prevReservedWC[,,8])
+  # [1] 826365654
 
   fracFulfilled <- tmpRequestWClocal / currRequestWCtotal
   fracFulfilled[currRequestWCtotal == 0] <- 0
