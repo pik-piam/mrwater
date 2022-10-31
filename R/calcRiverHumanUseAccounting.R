@@ -218,7 +218,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
       for (c in cellsCalc) {
 
         if ((tmpRequestWWlocal[c] > epsilon) ||
-            (tmpDischarge[c] < prevReservedWW[c, y, scen])) {
+            (tmpDischarge[c] <= prevReservedWW[c, y, scen])) {
 
           cellsRequest <- cellsDischarge <- c
           if (length(rs$upstreamcells[[c]]) > 0) {
@@ -244,16 +244,24 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
       currRequestWClocal[, y, scen] <- tmpRequestWClocal
     }
   }
-  ### NOTE: some water is lost --> I think something is wrong with cellsCalc
-  # > sum(natDischarge)
-  # [1] 828670074
-  # > sum(tmpDischarge) + sum(tmpRequestWClocal) + sum(prevReservedWC[,,8])
-  # [1] 826365654
 
-  fracFulfilled <- tmpRequestWClocal / currRequestWCtotal
+  # Requested water (before algorithm)
+  # sum(currRequestWClocal[, , "on.ssp2"])
+  # 204837.1
+  # Requested water that can be fulfilled (after algorithm)
+  # 184451.4
+  # Basin discharge (under natural conditions)
+  # sum(natDischarge[unique(rs$endcell), , ])
+  # 48876335
+  # Basin discharge (after algorithm) + water consumed
+  # sum(discharge[unique(rs$endcell), , "on.ssp2"]) + sum(currRequestWClocal[, , "on.ssp2"])
+  # 48876335
+  # sum(discharge[unique(rs$endcell), , "off.ssp2"]) + sum(currRequestWClocal[, , "off.ssp2"])
+  # 48876335
+
+  fracFulfilled <- currRequestWClocal / currRequestWCtotal
   fracFulfilled[currRequestWCtotal == 0] <- 0
 
-  currRequestWClocal <- fracFulfilled * currRequestWCtotal
   currRequestWWlocal <- fracFulfilled * currRequestWWtotal
 
   # Locally missing water that might be fulfilled by surrounding cells
@@ -361,7 +369,12 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   if (any(round(out) < 0)) {
     stop("calcRiverHumanUseAccounting produced negative values")
   }
-  # No water should be lost
+  # Check if too much water has been allocated
+  # (currRequestWClocal should always be smaller than currRequestWCtotal)
+  if (any((out[, , "currRequestWClocal"] - out[, , "currRequestWCtotal"]) > epsilon)) {
+    stop("Too much water has been allocated")
+  }
+  # Check whether water has been lost
   natDischarge <- .transformObject(natDischarge)
   basinDischarge <- natDischarge
   basinDischarge[, , ] <- 0
@@ -377,9 +390,9 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   }
   # Total water (summed basin discharge + consumed)
   # must be same as natural summed basin discharge
-  if (any(round(dimSums(natDischarge[unique(rs$endcell), , ],
+  if (any(abs(round(dimSums(natDischarge[unique(rs$endcell), , ],
                         dim = 1) - totalWat[, , 1],
-                digits = 6) != 0)) {
+                digits = 6)) > 1e6)) {
     stop("In calcRiverHumanUseAccounting:
           Water has been lost during the Neighbor Water Provision Algorithm")
   }

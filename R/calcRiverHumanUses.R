@@ -71,6 +71,13 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
                                               lpjml = lpjml, climatetype = climatetype,
                                               aggregate = FALSE)[, , "lake_evap_nat"])
 
+
+  # Natural discharge (for cross-checking of results)
+  natDischarge <- collapseNames(calcOutput("RiverNaturalFlows",
+                                        selectyears = selectyears,
+                                        lpjml = lpjml, climatetype = climatetype,
+                                        aggregate = FALSE)[, , "discharge_nat"])
+
   ## Transform object dimensions
   .transformObject <- function(x) {
     # empty magpie object structure
@@ -297,6 +304,38 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   out[, , "currHuman_ww"]     <- as.magpie(currHumanWW, spatial = 1, temporal = 2)
   out[, , "currHuman_wc"]     <- as.magpie(currHumanWC, spatial = 1, temporal = 2)
   description <- paste0("river routing outputs taking human uses (", humanuse, ") into account")
+
+  ##############
+  ### Checks ###
+  ##############
+  if (any(is.na(out))) {
+    stop("calcRiverHumanUseAccounting produced NAs!")
+  }
+  if (any(round(out) < 0)) {
+    stop("calcRiverHumanUseAccounting produced negative values")
+  }
+  # No water should be lost
+  natDischarge <- .transformObject(natDischarge)
+  basinDischarge <- natDischarge
+  basinDischarge[, , ] <- 0
+  basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
+  totalWat <- dimSums(basinDischarge, dim = 1) + dimSums(out[, , "currHuman_wc"],
+                      dim = c("x", "y", "iso", "data"))
+  # Total water (summed basin discharge + consumed)
+  # must be identical across scenarios
+  if (!all(abs(totalWat - mean(totalWat)) < 1e-06)) {
+    stop("In calcRiverHumanUseAccounting:
+          Scenarios differ. That should not be the case.
+          Total water volume should always be the same")
+  }
+  # Total water (summed basin discharge + consumed)
+  # must be same as natural summed basin discharge
+  if (any(abs(round(dimSums(natDischarge[unique(rs$endcell), , ],
+                            dim = 1) - totalWat[, , 1],
+                    digits = 6)) > 1e6)) {
+    stop("In calcRiverHumanUseAccounting:
+          Water has been lost during the Neighbor Water Provision Algorithm")
+  }
 
   return(list(x            = out,
               weight       = NULL,
