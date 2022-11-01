@@ -74,7 +74,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
     for (scen in scenarios) {
 
         # initialize objects
-        tmpDischarge <- iniDischarge <- dischargeOLD[, y, scen]
+        tmpDischarge <- dischargeOLD[, y, scen]
         tmpRequestWWlocal <- numeric(l)
         tmpRequestWClocal <- numeric(l)
         tmpMissWW <- missWW[, y, scen]
@@ -166,8 +166,8 @@ toolNeighborUpDownProvision <- function(rs, transDist,
             }
 
             fracFromNeighbor <- .assignToMain(requestingList = requestingList,
-                                                        missing = tmpMissWC,
-                                                        toNeighbor = tmpRequestWClocal)
+                                              missing = tmpMissWC, epsilon = epsilon,
+                                              toNeighbor = tmpRequestWClocal)
 
            # stop("Stopp")
 

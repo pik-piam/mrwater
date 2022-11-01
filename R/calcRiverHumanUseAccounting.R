@@ -179,9 +179,9 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
     # Minimum flow requirements determined by previous river routing:
     # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
-    prevReservedWW <- as.array(collapseNames(previousHumanUse[, , "required_wat_min"]))
+    prevReservedWW <- as.array(collapseNames(previousHumanUse[, , "reservedWW"]))
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
-    prevReservedWC <- as.array(collapseNames(previousHumanUse[, , "currHuman_wc"]))
+    prevReservedWC <- as.array(collapseNames(previousHumanUse[, , "currHumanWClocal"]))
     ### ToDo: Needs to be updated (account for reserved for neighbors...)
     previousTotal <- collapseNames(previousHumanUse[, , "currHumanWCtotal"])
 
@@ -373,7 +373,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   }
   # Check if too much water has been allocated
   # (currRequestWClocal should always be smaller than currRequestWCtotal)
-  if (any((out[, , "currRequestWClocal"] - out[, , "currRequestWCtotal"]) > epsilon)) {
+  if (any((out[, , "currHumanWClocal"] - out[, , "currHumanWCtotal"]) > epsilon)) {
     stop("Too much water has been allocated")
   }
   # Check whether water has been lost
