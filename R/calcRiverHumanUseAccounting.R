@@ -164,14 +164,15 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
     # There are no previous human uses yet to be considered (empty arrays)
     prevReservedWC <- as.array(.transformObject(0))
+    previousTotal  <- as.magpie(prevReservedWC, spatial = 1, temporal = 2)
 
   } else if (humanuse == "committed_agriculture") {
 
-    previousHumanUse <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
+    previousHumanUse <- calcOutput("RiverHumanUseAccounting", humanuse = "non_agriculture",
                                     lpjml = lpjml, climatetype = climatetype,
                                     efrMethod = efrMethod, multicropping = multicropping,
                                     selectyears = selectyears, iniyear = iniyear,
-                                    aggregate = FALSE)
+                                    transDist = transDist, aggregate = FALSE)
     
     # Discharge from previous routing
     discharge <- as.array(collapseNames(previousHumanUse[, , "discharge"]))
@@ -182,6 +183,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
     prevReservedWC <- as.array(collapseNames(previousHumanUse[, , "currHuman_wc"]))
     ### ToDo: Needs to be updated (account for reserved for neighbors...)
+    previousTotal <- collapseNames(previousHumanUse[, , "currHumanWCtotal"])
 
     ## Current human uses
     # Committed Water Withdrawals (in mio. m^3 / yr) [smoothed]
@@ -204,7 +206,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
       tmpRequestWWlocal <- currRequestWWlocal[, y, scen]
       tmpRequestWClocal <- currRequestWClocal[, y, scen]
-      tmpDischarge <- iniDischarge <- discharge[, y, scen]
+      tmpDischarge      <- discharge[, y, scen]
 
       # Cells to be calculated
       cellsCalc <- which(tmpRequestWWlocal > epsilon)
@@ -229,8 +231,8 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
           }
           cellsDischarge <- unique(c(cellsRequest, cellsDischarge))
 
-          tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWW = tmpRequestWWlocal[c],
-                                                            currWW = prevReservedWW[c, y, scen]),
+          tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWW = prevReservedWW[c, y, scen],
+                                                            currWW = tmpRequestWWlocal[c]),
                                               inoutLIST = list(q = tmpDischarge[cellsDischarge],
                                                                currWC = tmpRequestWClocal[cellsRequest]))
 
@@ -379,8 +381,10 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   basinDischarge <- natDischarge
   basinDischarge[, , ] <- 0
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
-  totalWat <- dimSums(basinDischarge, dim = 1) + dimSums(out[, , "currHumanWCtotal"],
-                                                          dim = c("x", "y", "iso", "data"))
+  totalWat <- dimSums(basinDischarge, dim = 1) + 
+                dimSums(out[, , "currHumanWCtotal"],
+                        dim = c("x", "y", "iso", "data")) +
+                  dimSums(previousTotal, dim = 1)
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
   if (!all(abs(totalWat - mean(totalWat)) < 1e-06)) {

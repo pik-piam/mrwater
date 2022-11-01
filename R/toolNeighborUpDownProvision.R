@@ -136,14 +136,14 @@ toolNeighborUpDownProvision <- function(rs, transDist,
             print(paste0("The number of calculated cells are: ", length(cellsCalc)))
             print(paste0("Remaining missing water is: ", round(sum(tmpMissWC))))
             print(paste0("Sum requested from neighbor is: ", round(sum(tmpRequestWClocal))))
-            print(paste0("Number of real neighbors: ", sum(tmpRequestWClocal>epsilon)))
+            print(paste0("Number of real neighbors: ", sum(tmpRequestWClocal > epsilon)))
 
             # Repeat Upstream-Downstream Reservation for
             # neighboring cells
             for (c in cellsCalc) {
 
                 if ((tmpRequestWWlocal[c] > epsilon) ||
-                    (tmpDischarge[c] < prevWW[c, y, scen])) {
+                    (tmpDischarge[c] <= prevWW[c, y, scen])) {
 
                     cellsRequest <- cellsDischarge <- c
                     if (length(rs$upstreamcells[[c]]) > 0) {
@@ -154,15 +154,14 @@ toolNeighborUpDownProvision <- function(rs, transDist,
                     }
                     cellsDischarge <- unique(c(cellsRequest, cellsDischarge))
 
-                    tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(dischargeOLD = iniDischarge[c],
-                                                              currRequestWWlocal = tmpRequestWWlocal[c],
-                                                              prevReservedWW = prevWW[c, y, scen],
-                                                              prevReservedWC = prevWC[c, y, scen]),
-                                                        inoutLIST = list(discharge = tmpDischarge[cellsDischarge],
-                                                                         currRequestWClocal = tmpRequestWClocal[cellsRequest]))
+                    tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(currWW = tmpRequestWWlocal[c],
+                                                                      prevWW = prevWW[c, y, scen]),
+                                                        inoutLIST = list(q = tmpDischarge[cellsDischarge],
+                                                                         currWC = tmpRequestWClocal[cellsRequest]))
+
                     # Updated flows
-                    tmpDischarge[cellsDischarge] <- tmp$discharge
-                    tmpRequestWClocal[cellsRequest] <- tmp$currRequestWClocal
+                    tmpDischarge[cellsDischarge] <- tmp$q
+                    tmpRequestWClocal[cellsRequest] <- tmp$currWC
                 }
             }
 

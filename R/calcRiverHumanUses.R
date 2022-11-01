@@ -319,8 +319,11 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   basinDischarge <- natDischarge
   basinDischarge[, , ] <- 0
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
-  totalWat <- dimSums(basinDischarge, dim = 1) + dimSums(out[, , "currHuman_wc"],
-                      dim = c("x", "y", "iso", "data"))
+  totalWat <- dimSums(basinDischarge, dim = 1) + 
+                dimSums(out[, , "currHuman_wc"],
+                        dim = c("x", "y", "iso", "data")) + 
+                  dimSums(as.magpie(prevHumanWC, spatial = 1, temporal = 2), 
+                          dim = 1)
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
   if (!all(abs(totalWat - mean(totalWat)) < 1e-06)) {
