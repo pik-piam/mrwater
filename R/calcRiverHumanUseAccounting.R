@@ -91,9 +91,9 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   # Lake evaporation as calculated by natural flow river routing
   lakeEvap          <- collapseNames(calcOutput("RiverNaturalFlows", selectyears = selectyears,
                                               lpjml = lpjml, climatetype = climatetype,
-                                              aggregate = FALSE)[, , "lake_evap_nat"])
+                                              aggregate = FALSE)[, , "lake_evap_nat"]) # can be deleted
 
-  runoffWOEvap <- magYearlyRunoff - lakeEvap # To Do: if performance tests successfull: can be deleted.
+  runoffWOEvap <- magYearlyRunoff - lakeEvap
 
   scenarios <- c(paste("on", getNames(nonAgWWmag), sep = "."),
              paste("off", getNames(nonAgWWmag), sep = "."))
@@ -220,7 +220,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
       for (c in cellsCalc) {
 
         if ((tmpRequestWWlocal[c] > epsilon) ||
-            (tmpDischarge[c] <= prevReservedWW[c, y, scen])) {
+            ((tmpDischarge[c] + prevReservedWC[c, y, scen]) < prevReservedWW[c, y, scen])) {
 
           cellsRequest <- cellsDischarge <- c
           if (length(rs$upstreamcells[[c]]) > 0) {
@@ -229,9 +229,9 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
           if (length(rs$downstreamcells[[c]]) > 0) {
             cellsDischarge <- c(cellsDischarge, unlist(rs$downstreamcells[[c]]))
           }
-          cellsDischarge <- unique(c(cellsRequest, cellsDischarge))
 
-          tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWW = prevReservedWW[c, y, scen],
+          tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWC = prevReservedWC[c, y, scen],
+                                                            prevWW = prevReservedWW[c, y, scen],
                                                             currWW = tmpRequestWWlocal[c]),
                                               inoutLIST = list(q = tmpDischarge[cellsDischarge],
                                                                currWC = tmpRequestWClocal[cellsRequest]))
@@ -241,25 +241,16 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
           tmpRequestWClocal[cellsRequest] <- tmp$currWC
         }
       }
-      # Update flows
-      discharge[, y, scen] <- tmpDischarge
+      # Save result for respective scenario
       currRequestWClocal[, y, scen] <- tmpRequestWClocal
     }
   }
 
-  # Requested water (before algorithm)
-  # sum(currRequestWClocal[, , "on.ssp2"])
-  # 204837.1
-  # Requested water that can be fulfilled (after algorithm)
-  # 184451.4
-  # Basin discharge (under natural conditions)
-  # sum(natDischarge[unique(rs$endcell), , ])
-  # 48876335
-  # Basin discharge (after algorithm) + water consumed
-  # sum(discharge[unique(rs$endcell), , "on.ssp2"]) + sum(currRequestWClocal[, , "on.ssp2"])
-  # 48876335
-  # sum(discharge[unique(rs$endcell), , "off.ssp2"]) + sum(currRequestWClocal[, , "off.ssp2"])
-  # 48876335
+  # Update discharge given reserved water (consumptive)
+  prevReservedWC <- prevReservedWC + currRequestWClocal
+  discharge <- toolRiverDischargeUpdate(rs = rs,
+                                        runoffWOEvap = runoffWOEvap,
+                                        watCons = prevReservedWC)
 
   fracFulfilled <- currRequestWClocal / currRequestWCtotal
   fracFulfilled[currRequestWCtotal == 0] <- 0
@@ -273,14 +264,6 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   # Update minimum water required in cell (for further river processing steps):
   prevReservedWW <- prevReservedWW + currRequestWWlocal
 
-  # What should be reported by calcHumanUseAccounting?
-  # 1. discharge
-  # 2. reserved flows (reservedWW (-> replace required_wat_min), reservedWC)
-  # 3. currHumanWWlocal, currHumanWClocal (locally reserved water for specific use (non-ag or com-ag))
-  # 4. currHumanWWtotal, currHumanWCtotal (total water that can be used for specific use (non-ag or com-ag) when considering neighbor water provision)
-  # 5. toNeighborWW, toNeighborWC (previously called: resNeighborWW, resNeighborWC) (water that is reserved in current cell for use in another cell)
-  # 6. fromNeighborWW, fromNeighborWC (should be same as currHumanWWtotal - currHumanWWlocal)
-
   # If local water is not sufficient:
   # may be fulfilled by surrounding cell water provision
   if (transDist != 0) {
@@ -291,8 +274,9 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                                              prevReservedWC = prevReservedWC,
                                              prevReservedWW = prevReservedWW,
                                              missingWC = missingWC,
-                                             missingWW = missingWW))
-  
+                                             missingWW = missingWW,
+                                             runoffWOEvap = runoffWOEvap))
+
     # Update minimum water required in cell (for further river processing steps):
     prevReservedWW <- prevReservedWW + tmp$toNeighborWW
 
@@ -381,7 +365,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   basinDischarge <- natDischarge
   basinDischarge[, , ] <- 0
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
-  totalWat <- dimSums(basinDischarge, dim = 1) + 
+  totalWat <- dimSums(basinDischarge, dim = 1) +
                 dimSums(out[, , "currHumanWCtotal"],
                         dim = c("x", "y", "iso", "data")) +
                   dimSums(previousTotal, dim = 1)
@@ -396,7 +380,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   # must be same as natural summed basin discharge
   if (any(abs(round(dimSums(natDischarge[unique(rs$endcell), , ],
                         dim = 1) - totalWat[, , 1],
-                digits = 6)) > 1e6)) {
+                digits = 6)) > 1e-6)) {
     stop("In calcRiverHumanUseAccounting:
           Water has been lost during the Neighbor Water Provision Algorithm")
   }

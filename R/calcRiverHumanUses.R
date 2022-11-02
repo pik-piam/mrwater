@@ -319,10 +319,10 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   basinDischarge <- natDischarge
   basinDischarge[, , ] <- 0
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
-  totalWat <- dimSums(basinDischarge, dim = 1) + 
+  totalWat <- dimSums(basinDischarge, dim = 1) +
                 dimSums(out[, , "currHuman_wc"],
-                        dim = c("x", "y", "iso", "data")) + 
-                  dimSums(as.magpie(prevHumanWC, spatial = 1, temporal = 2), 
+                        dim = c("x", "y", "iso", "data")) +
+                  dimSums(as.magpie(prevHumanWC, spatial = 1, temporal = 2),
                           dim = 1)
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
@@ -335,7 +335,7 @@ calcRiverHumanUses <- function(humanuse, lpjml, climatetype, selectyears,
   # must be same as natural summed basin discharge
   if (any(abs(round(dimSums(natDischarge[unique(rs$endcell), , ],
                             dim = 1) - totalWat[, , 1],
-                    digits = 6)) > 1e6)) {
+                    digits = 6)) > 1e-6)) {
     stop("In calcRiverHumanUseAccounting:
           Water has been lost during the Neighbor Water Provision Algorithm")
   }
