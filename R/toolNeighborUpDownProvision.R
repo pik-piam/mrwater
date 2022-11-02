@@ -187,16 +187,17 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           }
         }
 
-        # Update discharge given reserved water (consumptive)
-        discharge <- toolRiverDischargeUpdate(rs = rs,
-                                              runoffWOEvap = listNeighborIN$runoffWOEvap,
-                                              watCons = currRequestWClocal + prevWC)
         # Save result for respective scenario
         currRequestWClocal[, y, scen] <- tmpRequestWClocal
         missWW[, y, scen] <- tmpMissWW
         missWC[, y, scen] <- tmpMissWC
      }
    }
+
+    # Update discharge given reserved water (consumptive)
+    discharge <- toolRiverDischargeUpdate(rs = rs,
+                                          runoffWOEvap = listNeighborIN$runoffWOEvap,
+                                          watCons = currRequestWClocal + prevWC)
    
    # Update local water consumption/withdrawal
    fracFulfilled <- currRequestWClocal / currRequestWCtotal
