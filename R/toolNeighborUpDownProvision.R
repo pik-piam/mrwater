@@ -51,19 +51,20 @@ toolNeighborUpDownProvision <- function(rs, transDist,
   # initialize objects
   fracFulfilled <- missWW
   fracFulfilled[, , ] <- NA
-  currRequestWClocal <- currRequestWCtotal <- currRequestWWtotal <- fracFulfilled
+  toNeighborWW <- toNeighborWC <- discharge <- fracFulfilled
+  fromNeighborWW <- fromNeighborWC <- fracFulfilled
 
   ### Internal Function ###
   # assign fulfilled water to neighbor cell that requested water
   .assignToMain <- function(requestingList, epsilon,
                             missing, toNeighbor) {
     fracAssigned <- numeric(length(missing))
-    cellsGiving <- which(toNeighbor > 0)
+    cellsGiving  <- which(toNeighbor > 0)
 
     for (s in cellsGiving) {
       cellReceiving <- requestingList[[s]]
-      shr <- missing[cellReceiving] / sum(missing[cellReceiving])
-
+      shr           <- missing[cellReceiving] / sum(missing[cellReceiving])
+      # volume assigned to neighbor
       fromNeighbor <- shr * toNeighbor[s]
 
       fracAssigned[cellReceiving] <- ifelse(missing[cellReceiving] > epsilon,
@@ -81,27 +82,36 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
         # initialize objects
         tmpDischarge <- dischargeOLD[, y, scen]
-        tmpRequestWWlocal <- numeric(l)
-        tmpRequestWClocal <- numeric(l)
         tmpMissWW <- missWW[, y, scen]
         tmpMissWC <- missWC[, y, scen]
+        tmpPrevWW <- prevWW[, y, scen]
+        tmpPrevWC <- prevWC[, y, scen]
 
         # exclude cells with insufficient available water
-        flag <- which(dischargeOLD[, y, scen] - prevWW[, y, scen] < epsilon)
-
+        flag <- which(tmpDischarge - tmpPrevWW < epsilon)
         flaggedEmpty <- numeric(l)
         for (j in flag) {
             flaggedEmpty[c(j, rs$upstreamcells[[j]])] <- 1
         }
-
+        # neighbor cells that will be skipped
         nskipped <- numeric(l)
 
+        ###################################################
+        ### Iterations of Neighbor Cell Water Provision ###
+        ###################################################
+        fromWW <- fromWC <- toWW <- toWC <- numeric(l)
         # Loop through all neighboring cells within
         # certain distance sorted by distance
         for (i in 1:max(lengths(rs$neighborcell))) {
 
+          # initialize requested water
+          tmpRequestWWlocal <- numeric(l)
+          tmpRequestWClocal <- numeric(l)
+
+          # For development purposes only: print statements
           print(paste0(i, "th round of neighbor water provision (loop over i)"))
 
+          # Loop over main cells (k) to request water from neighbors (n)
           requestingList <- vector("list", l)
           for (k in 1:l) {
 
@@ -109,28 +119,32 @@ toolNeighborUpDownProvision <- function(rs, transDist,
                 !is.null(rs$neighborcell[[k]]) &&
                 !is.na(rs$neighborcell[[k]][nskipped[k] + i])) {
 
-                n <- rs$neighborcell[[k]][nskipped[k] + i]
-
-                while (!is.na(n) && flaggedEmpty[n]) {
-                    nskipped[k] <- nskipped[k] + 1
-                    n <- rs$neighborcell[[k]][nskipped[k] + i]
-                }
-
-                if (!is.na(n)) {
-                    tmpRequestWWlocal[n] <- tmpRequestWWlocal[n] + tmpMissWW[k]
-                    tmpRequestWClocal[n] <- tmpRequestWClocal[n] + tmpMissWC[k]
-
-                    if (is.null(requestingList[[n]])) {
-                      requestingList[[n]] <- k
-                    } else {
-                      requestingList[[n]] <- c(requestingList[[n]], k)
-                    }
-                  }
+              # Select cells that may provide water
+              n <- rs$neighborcell[[k]][nskipped[k] + i]
+              while (!is.na(n) && flaggedEmpty[n]) {
+                  nskipped[k] <- nskipped[k] + 1
+                  n <- rs$neighborcell[[k]][nskipped[k] + i]
               }
-          }
-          currRequestWCtotal[, y, scen] <- tmpRequestWClocal
-          currRequestWWtotal[, y, scen] <- tmpRequestWWlocal
 
+              # Assign water requested from main cell k by neighboring cell n
+              if (!is.na(n)) {
+                tmpRequestWWlocal[n] <- tmpRequestWWlocal[n] + tmpMissWW[k]
+                tmpRequestWClocal[n] <- tmpRequestWClocal[n] + tmpMissWC[k]
+
+                # Extract list of cells that have requested water from neighbor cell
+                if (is.null(requestingList[[n]])) {
+                  requestingList[[n]] <- k
+                } else {
+                  requestingList[[n]] <- c(requestingList[[n]], k)
+                }
+              }
+            }
+          }
+          # Total water requested in this round of neighbor water provision
+          tmpRequestWCtotal <- tmpRequestWClocal
+          tmpRequestWWtotal <- tmpRequestWWlocal
+
+          # Select cells to be calculated
           cellsCalc <- which(tmpRequestWWlocal > epsilon)
           cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
           cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
@@ -138,7 +152,8 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           # cellsCalc <- 1:l
           # cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
           # Test this for where we have the double loop
-
+          
+          # For development purposes only: print statements
           print(paste0("The number of calculated cells are: ", length(cellsCalc)))
           print(paste0("Remaining missing water is: ", round(sum(tmpMissWC))))
           print(paste0("Sum requested from neighbor is: ", round(sum(tmpRequestWClocal))))
@@ -149,7 +164,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           for (c in cellsCalc) {
 
             if ((tmpRequestWWlocal[c] > epsilon) ||
-                ((tmpDischarge[c] + prevWC[c, y, scen]) < prevWW[c, y, scen])) {
+                ((tmpDischarge[c] + tmpPrevWC[c]) < tmpPrevWW[c])) {
               # Select cells for subsetting objects
               cellsRequest <- cellsDischarge <- c
               if (length(rs$upstreamcells[[c]]) > 0) {
@@ -158,10 +173,10 @@ toolNeighborUpDownProvision <- function(rs, transDist,
               if (length(rs$downstreamcells[[c]]) > 0) {
                 cellsDischarge <- c(cellsDischarge, unlist(rs$downstreamcells[[c]]))
               }
-              
+
               # Reserved Water Use Accounting
-              tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWC = prevWC[c, y, scen],
-                                                                prevWW = prevWW[c, y, scen],
+              tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWC = tmpPrevWC[c],
+                                                                prevWW = tmpPrevWW[c],
                                                                 currWW = tmpRequestWWlocal[c]),
                                                   inoutLIST = list(q = tmpDischarge[cellsDischarge],
                                                                    currWC = tmpRequestWClocal[cellsRequest]))
@@ -171,48 +186,62 @@ toolNeighborUpDownProvision <- function(rs, transDist,
               tmpRequestWClocal[cellsRequest] <- tmp$currWC
             }
           }
+          # Water reserved in this round is reserved as previous use
+          # before next round of neighbor water provision
+          tmpPrevWC <- tmpPrevWC + tmpRequestWClocal
+          fracFulfilled <- ifelse(tmpRequestWCtotal > 0,
+                                     tmpRequestWClocal / tmpRequestWCtotal,
+                                  0)
+          tmpRequestWWlocal <- fracFulfilled * tmpRequestWWtotal
+          tmpPrevWW <- tmpPrevWW + tmpRequestWWlocal
+
+          # Update discharge given reserved water (consumptive)
+          tmpDischarge <- toolRiverDischargeUpdate(rs = rs,
+                                                   runoffWOEvap = listNeighborIN$runoffWOEvap[, y, scen],
+                                                   watCons = tmpPrevWC)
 
           # Assign reserved flows to cell that had requested the water
           fracFromNeighbor <- .assignToMain(requestingList = requestingList,
                                             missing = tmpMissWC, epsilon = epsilon,
                                             toNeighbor = tmpRequestWClocal)
 
+          # Water provided from neighbor
+          fromWW <- fromWW + tmpMissWW * fracFromNeighbor
+          fromWC <- fromWC + tmpMissWC * fracFromNeighbor
+
+          # Water provided to neighbor
+          toWC <- toWC + tmpRequestWClocal
+          toWW <- toWW + tmpRequestWWlocal
+
           # Update water that is still missing in main river cell(s)
           tmpMissWW <- tmpMissWW * (1 - fracFromNeighbor)
           tmpMissWC <- tmpMissWC * (1 - fracFromNeighbor)
 
           # repeat until no more missing water OR no more neighbor cells
-          if (all(tmpMissWW <= 0) && all(tmpMissWC <= 0)) {
+          if (all(tmpMissWW <= epsilon) && all(tmpMissWC <= epsilon)) {
             break
           }
         }
 
         # Save result for respective scenario
-        currRequestWClocal[, y, scen] <- tmpRequestWClocal
-        missWW[, y, scen] <- tmpMissWW
-        missWC[, y, scen] <- tmpMissWC
+        discharge[, y, scen]      <- tmpDischarge
+        toNeighborWC[, y, scen]   <- toWC
+        toNeighborWW[, y, scen]   <- toWW
+        missWW[, y, scen]         <- tmpMissWW
+        missWC[, y, scen]         <- tmpMissWC
+        fromNeighborWW[, y, scen] <- fromWW
+        fromNeighborWC[, y, scen] <- fromWC
      }
    }
-
-    # Update discharge given reserved water (consumptive)
-    discharge <- toolRiverDischargeUpdate(rs = rs,
-                                          runoffWOEvap = listNeighborIN$runoffWOEvap,
-                                          watCons = currRequestWClocal + prevWC)
-   
-   # Update local water consumption/withdrawal
-   fracFulfilled <- currRequestWClocal / currRequestWCtotal
-   fracFulfilled[currRequestWCtotal == 0] <- 0
-
-   currRequestWWlocal <- fracFulfilled * currRequestWWtotal
 
   # Return output
   out <- list(discharge = discharge,
               missingWW = missWW,
               missingWC = missWC,
-              toNeighborWW = currRequestWWlocal,
-              toNeighborWC = currRequestWClocal,
-              fromNeighborWW = fracFromNeighbor * missWW,
-              fromNeighborWC = fracFromNeighbor * missWC)
+              toNeighborWW = toNeighborWW,
+              toNeighborWC = toNeighborWC,
+              fromNeighborWW = fromNeighborWW,
+              fromNeighborWC = fromNeighborWC)
 
   return(out)
 }

@@ -51,7 +51,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   # Calculate river structure including neighbor cells
   rs <- toolSelectNeighborCell(transDist = transDist, rs = rs,
                                neighborCells = neighborCells)
-  
+
   ## Natural flows
   natFlows <- calcOutput("RiverNaturalFlows",
                           selectyears = selectyears,
@@ -248,9 +248,14 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
   # Update discharge given reserved water (consumptive)
   prevReservedWC <- prevReservedWC + currRequestWClocal
-  discharge <- toolRiverDischargeUpdate(rs = rs,
-                                        runoffWOEvap = runoffWOEvap,
-                                        watCons = prevReservedWC)
+  for (y in years) {
+    for (scen in scenarios) {
+      tmp <- toolRiverDischargeUpdate(rs = rs,
+                                      runoffWOEvap = runoffWOEvap[, y, scen],
+                                      watCons = prevReservedWC[, y, scen])
+      discharge[, y, scen] <- tmp
+    }
+  }
 
   fracFulfilled <- currRequestWClocal / currRequestWCtotal
   fracFulfilled[currRequestWCtotal == 0] <- 0
@@ -291,7 +296,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
     fromNeighborWW <- as.magpie(tmp$fromNeighborWW, spatial = 1, temporal = 2)
     fromNeighborWC <- as.magpie(tmp$fromNeighborWC, spatial = 1, temporal = 2)
 
-    if (round(dimSums(toNeighborWW, dim = 1) - dimSums(fromNeighborWW, dim = 1), digits = 4) != 0) {
+    if (any(abs(round(dimSums(toNeighborWW, dim = 1) - dimSums(fromNeighborWW, dim = 1))) > epsilon)) {
       if (any(dimSums(toNeighborWW, dim = 1) - dimSums(fromNeighborWW, dim = 1) > 0)) {
         warning(paste0("More water was provided to requesting main cells than 
                       was reserved in neighboring cells
@@ -306,7 +311,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                   humanuse, " some water was not properly allocated.
                   See warnings() for further information."))
     }
-    if (round(dimSums(toNeighborWC, dim = 1) - dimSums(fromNeighborWC, dim = 1), digits = 4) != 0) {
+    if (any(abs(round(dimSums(toNeighborWC, dim = 1) - dimSums(fromNeighborWC, dim = 1))) > epsilon)) {
       if (any(dimSums(toNeighborWC, dim = 1) - dimSums(fromNeighborWC, dim = 1) > 0)) {
         warning(paste0("More water was provided to requesting main cells than
                       was reserved in neighboring cells

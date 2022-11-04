@@ -19,9 +19,7 @@ toolRiverDischargeUpdate <- function(rs, runoffWOEvap, watCons) {
 
   # helper variables in correct dimension
   # (initialized to zero)
-  inflow <- runoffWOEvap
-  inflow[, , ] <- 0
-  avlWat <- discharge <- inflow
+  inflow <- avlWat <- discharge <- numeric(length(runoffWOEvap))
 
   ###########################################
   ###### River Discharge Calculation ########
@@ -34,14 +32,14 @@ toolRiverDischargeUpdate <- function(rs, runoffWOEvap, watCons) {
     for (c in cells) {
 
       # available water
-      avlWat[c, , ] <- inflow[c, , , drop = FALSE] + runoffWOEvap[c, , , drop = FALSE]
+      avlWat[c] <- inflow[c] + runoffWOEvap[c]
 
       # discharge
-      discharge[c, , ] <- avlWat[c, , , drop = FALSE] - watCons[c, , , drop = FALSE]
+      discharge[c] <- avlWat[c] - watCons[c]
 
       # inflow into nextcell
       if (rs$nextcell[c] > 0) {
-        inflow[rs$nextcell[c], , ] <- inflow[rs$nextcell[c], , , drop = FALSE] + discharge[c, , , drop = FALSE]
+        inflow[rs$nextcell[c]] <- inflow[rs$nextcell[c]] + discharge[c]
       }
     }
   }
