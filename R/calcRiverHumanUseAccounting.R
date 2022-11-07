@@ -39,9 +39,6 @@
 calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyears,
                                         iniyear, efrMethod, multicropping, transDist) {
 
-  # set tolerance
-  epsilon <- 1e-6
-
   ### Read in river structure
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
                             package = "mrwater"))
@@ -199,7 +196,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   ####################################################
   ###### River Routing considering Human Uses ########
   ####################################################
-  years     <- getItems(nonAgWWmag, dim = 2)
+  years <- getItems(nonAgWWmag, dim = 2)
 
   for (y in years) {
     for (scen in scenarios) {
@@ -209,7 +206,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
       tmpDischarge      <- discharge[, y, scen]
 
       # Cells to be calculated
-      cellsCalc <- which(tmpRequestWWlocal > epsilon)
+      cellsCalc <- which(tmpRequestWWlocal > 0)
       cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
       cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
@@ -219,7 +216,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
       for (c in cellsCalc) {
 
-        if ((tmpRequestWWlocal[c] > epsilon) ||
+        if ((tmpRequestWWlocal[c] > 0) ||
             ((tmpDischarge[c] + prevReservedWC[c, y, scen]) < prevReservedWW[c, y, scen])) {
 
           cellsRequest <- cellsDischarge <- c
@@ -246,8 +243,16 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
     }
   }
 
-  # Update discharge given reserved water (consumptive)
+  # Update current withdrawal
+  fracFulfilled <- currRequestWClocal / currRequestWCtotal
+  fracFulfilled[currRequestWCtotal == 0] <- 0
+  currRequestWWlocal <- fracFulfilled * currRequestWWtotal
+
+  # Update minimum water required in cell (for further river processing steps):
+  prevReservedWW <- prevReservedWW + currRequestWWlocal
   prevReservedWC <- prevReservedWC + currRequestWClocal
+
+  # Update discharge given reserved water (consumptive)
   for (y in years) {
     for (scen in scenarios) {
       tmp <- toolRiverDischargeUpdate(rs = rs,
@@ -257,17 +262,9 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
     }
   }
 
-  fracFulfilled <- currRequestWClocal / currRequestWCtotal
-  fracFulfilled[currRequestWCtotal == 0] <- 0
-
-  currRequestWWlocal <- fracFulfilled * currRequestWWtotal
-
   # Locally missing water that might be fulfilled by surrounding cells
   missingWW <- currRequestWWtotal - currRequestWWlocal
   missingWC <- currRequestWCtotal - currRequestWClocal
-
-  # Update minimum water required in cell (for further river processing steps):
-  prevReservedWW <- prevReservedWW + currRequestWWlocal
 
   # If local water is not sufficient:
   # may be fulfilled by surrounding cell water provision
@@ -281,6 +278,9 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                                              missingWC = missingWC,
                                              missingWW = missingWW,
                                              runoffWOEvap = runoffWOEvap))
+
+    # Update discharge
+    discharge <- tmp$discharge
 
     # Update minimum water required in cell (for further river processing steps):
     prevReservedWW <- prevReservedWW + tmp$toNeighborWW
@@ -296,7 +296,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
     fromNeighborWW <- as.magpie(tmp$fromNeighborWW, spatial = 1, temporal = 2)
     fromNeighborWC <- as.magpie(tmp$fromNeighborWC, spatial = 1, temporal = 2)
 
-    if (any(abs(round(dimSums(toNeighborWW, dim = 1) - dimSums(fromNeighborWW, dim = 1))) > epsilon)) {
+    if (any(abs(round(dimSums(toNeighborWW, dim = 1) - dimSums(fromNeighborWW, dim = 1), digits = 6)) > 1e-6)) {
       if (any(dimSums(toNeighborWW, dim = 1) - dimSums(fromNeighborWW, dim = 1) > 0)) {
         warning(paste0("More water was provided to requesting main cells than 
                       was reserved in neighboring cells
@@ -311,7 +311,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                   humanuse, " some water was not properly allocated.
                   See warnings() for further information."))
     }
-    if (any(abs(round(dimSums(toNeighborWC, dim = 1) - dimSums(fromNeighborWC, dim = 1))) > epsilon)) {
+    if (any(abs(round(dimSums(toNeighborWC, dim = 1) - dimSums(fromNeighborWC, dim = 1), digits = 6)) > 1e-6)) {
       if (any(dimSums(toNeighborWC, dim = 1) - dimSums(fromNeighborWC, dim = 1) > 0)) {
         warning(paste0("More water was provided to requesting main cells than
                       was reserved in neighboring cells
@@ -362,7 +362,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   }
   # Check if too much water has been allocated
   # (currRequestWClocal should always be smaller than currRequestWCtotal)
-  if (any((out[, , "currHumanWClocal"] - out[, , "currHumanWCtotal"]) > epsilon)) {
+  if (any((out[, , "currHumanWClocal"] - out[, , "currHumanWCtotal"]) > 1e-6)) {
     stop("Too much water has been allocated")
   }
   # Check whether water has been lost
@@ -384,7 +384,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   # Total water (summed basin discharge + consumed)
   # must be same as natural summed basin discharge
   if (any(abs(round(dimSums(natDischarge[unique(rs$endcell), , ],
-                        dim = 1) - totalWat[, , 1],
+                        dim = 1) - totalWat,
                 digits = 6)) > 1e-6)) {
     stop("In calcRiverHumanUseAccounting:
           Water has been lost during the Neighbor Water Provision Algorithm")
