@@ -124,6 +124,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                               # water reserved in current cell (for either local or neighboring cell)
                               # to be considered in following river water use accountings
                               "reservedWW", # (note: was previously required_wat_min, needs to be adjusted)
+                              "reservedWC",
                               # water available for specified use from local sources and surrounding cells:
                               "currHumanWWtotal", "currHumanWCtotal",
                               # water available for specified use from local sources
@@ -178,7 +179,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
     # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
     prevReservedWW <- as.array(collapseNames(previousHumanUse[, , "reservedWW"]))
     ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
-    prevReservedWC <- as.array(collapseNames(previousHumanUse[, , "currHumanWClocal"]))
+    prevReservedWC <- as.array(collapseNames(previousHumanUse[, , "reservedWC"]))
     ### ToDo: Needs to be updated (account for reserved for neighbors...)
     previousTotal <- collapseNames(previousHumanUse[, , "currHumanWCtotal"])
 
@@ -284,6 +285,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
     # Update minimum water required in cell (for further river processing steps):
     prevReservedWW <- prevReservedWW + tmp$toNeighborWW
+    prevReservedWC <- prevReservedWC + tmp$toNeighborWC
 
     # Update currently fulfilled water use
     currRequestWWtotal <- currRequestWWlocal + tmp$fromNeighborWW
@@ -341,6 +343,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   # water reserved in current cell (for either local or neighboring cell)
   # to be considered in following river water use accountings
   out[, , "reservedWW"] <- as.magpie(prevReservedWW, spatial = 1, temporal = 2)
+  out[, , "reservedWC"] <- as.magpie(prevReservedWC, spatial = 1, temporal = 2)
   # water use that is fulfilled locally
   out[, , "currHumanWClocal"] <- as.magpie(currRequestWClocal, spatial = 1, temporal = 2)
   out[, , "currHumanWWlocal"] <- as.magpie(currRequestWWlocal, spatial = 1, temporal = 2)
