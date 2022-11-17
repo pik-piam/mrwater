@@ -59,6 +59,8 @@
 #'                                       GAEZ data set),
 #'                          separated by ":"
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#' @param transDist         Water transport distance allowed to fulfill locally
+#'                          unfulfilled water demand by surrounding cell water availability
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -74,7 +76,7 @@
 calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
                                 accessibilityrule, rankmethod, yieldcalib, allocationrule,
                                 thresholdtype, gainthreshold, irrigationsystem, landScen,
-                                cropmix, potentialWat, comAg, multicropping) {
+                                cropmix, potentialWat, comAg, multicropping, transDist) {
 
   ## Read in water available for irrigation
   if (potentialWat) {
@@ -86,20 +88,23 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
                                   thresholdtype = thresholdtype, gainthreshold = gainthreshold,
                                   irrigationsystem = irrigationsystem, iniyear = iniyear,
                                   landScen = landScen, cropmix = cropmix,
-                                  comAg = comAg, multicropping = multicropping, aggregate = FALSE)
+                                  comAg = comAg, multicropping = multicropping, 
+                                  transDist = transDist, aggregate = FALSE)
     avlWatWC <- collapseNames(avlWat[, , "wat_ag_wc"])
     avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
 
   } else {
 
-    avlWat         <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
+    avlWat         <- calcOutput("RiverHumanUseAccounting", 
+                                 iteration = "committed_agriculture",
                                  selectyears = selectyears, iniyear = iniyear,
                                  lpjml = lpjml, climatetype = climatetype,
                                  efrMethod = efrMethod, multicropping = multicropping,
+                                 transDist = transDist, comAg = comAg,
                                  aggregate = FALSE)
 
-    avlWatWC <- collapseNames(avlWat[, , "currHuman_wc"])
-    avlWatWW <- collapseNames(avlWat[, , "currHuman_ww"])
+    avlWatWC <- collapseNames(avlWat[, , "currHumanWCtotal"])
+    avlWatWW <- collapseNames(avlWat[, , "currHumanWWtotal"])
 
   }
 

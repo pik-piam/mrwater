@@ -79,6 +79,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   selectyears      <- 2010
   plotyear         <- 2010
   ssp              <- "ssp2"
+  transDist        <- 0
 
   irrigationsystem <- "initialization"
 
@@ -348,11 +349,12 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "LPJmL_monthlyDischarge.mz")
 
   # Share current irrigation water that can be fulfilled by available water resources
-  calcOutput("ShrCurrIrrigFulfilled", multicropping = multicropping,
+  calcOutput("ShrHumanUsesFulfilled", 
+             multicropping = multicropping, transDist = transDist,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, aggregate = FALSE,
-             file = "shrCurrIrrigFulfilled.mz")
+             file = "shrHumanUsesFulfilled.mz")
 
   # LUH croparea
   calcOutput("CropareaAdjusted", iniyear = iniyear,
@@ -365,17 +367,20 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              lpjml = lpjml, climatetype = climatetype,
              aggregate = FALSE, file = "watComAg.mz")
   # Committed agricultural water uses that can be fulfilled by local resources
-  calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
+  calcOutput("RiverHumanUseAccounting",
+             iteration = "committed_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, multicropping = multicropping,
+             transDist = transDist, comAg = FALSE,
              aggregate = FALSE,
              file = "comAguses.mz")
   # Non-Agricultural water uses (in mio. m^3 / yr) [smoothed]
-  calcOutput("RiverHumanUses", humanuse = "non_agriculture",
+  calcOutput("RiverHumanUseAccounting", iteration = "non_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, multicropping = multicropping,
+             transDist = transDist, comAg = FALSE,
              aggregate = FALSE,
              file = "nonAguses.mz")
   # Irrigatable areas with committed agricultural uses
@@ -386,7 +391,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              thresholdtype = thresholdtype, gainthreshold = gainthreshold,
              irrigationsystem = irrigationsystem, cropmix = cropmix,
              landScen = paste0("currIrrig:", "NULL"),
-             potentialWat = FALSE, comAg = TRUE,
+             potentialWat = FALSE, comAg = TRUE, transDist = transDist,
              multicropping = multicropping, aggregate = FALSE,
              file = "irrigAreaCurrent.mz")
 

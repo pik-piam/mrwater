@@ -17,6 +17,7 @@ calcYieldgainPotential(
   rankmethod,
   gainthreshold,
   allocationrule,
+  transDist = transDist,
   landScen,
   cropmix,
   multicropping,
@@ -67,6 +68,9 @@ and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst", "equality")}
+
+\item{transDist}{Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)

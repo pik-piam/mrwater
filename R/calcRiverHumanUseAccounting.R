@@ -5,8 +5,8 @@
 #' @param lpjml         LPJmL version used
 #' @param selectyears   Years to be returned
 #'                      (Note: does not affect years of harmonization or smoothing)
-#' @param humanuse      Human use type to which river routing shall be applied
-#'                      (non_agriculture or committed_agriculture).
+#' @param iteration     Water use to be allocated in this river routing iteration
+#'                      (non_agriculture, committed_agriculture, potential).
 #' @param climatetype   Switch between different climate scenarios
 #'                      or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear       Initialization year of irrigation system
@@ -22,6 +22,10 @@
 #'                      (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
 #' @param transDist      Water transport distance allowed to fulfill locally
 #'                       unfulfilled water demand by surrounding cell water availability
+#' @param comAg         if TRUE: the currently already irrigated areas
+#'                               in initialization year are reserved for irrigation,
+#'                      if FALSE: no irrigation areas reserved (irrigation potential).
+#'                      Only relevant for iteration = potential
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -36,8 +40,14 @@
 #' }
 #'
 
-calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyears,
-                                        iniyear, efrMethod, multicropping, transDist) {
+calcRiverHumanUseAccounting <- function(iteration,
+                                        lpjml, climatetype,
+                                        selectyears, iniyear,
+                                        efrMethod, multicropping,
+                                        transDist, comAg) {
+  ##############################
+  ###### Read in Inputs ########
+  ##############################
 
   ### Read in river structure
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
@@ -49,159 +59,67 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   rs <- toolSelectNeighborCell(transDist = transDist, rs = rs,
                                neighborCells = neighborCells)
 
-  ## Natural flows
+  ### Inputs from previous river routings
+  inputData <- calcOutput("RiverRoutingInputs",
+                          iteration = iteration,
+                          lpjml = lpjml, climatetype = climatetype,
+                          transDist = transDist, comAg = comAg,
+                          selectyears = selectyears, iniyear = iniyear,
+                          efrMethod = efrMethod, multicropping = multicropping,
+                          aggregate = FALSE)
+  discharge <- collapseNames(inputData[, , "discharge"])
+
+  # Internal Function: Transform object dimensions
+  .transformObject <- function(x) {
+    # empty magpie object structure
+    object0 <- new.magpie(cells_and_regions = getItems(discharge, dim = 1),
+                          years = getItems(discharge, dim = 2),
+                          names = getItems(discharge, dim = 3),
+                          fill = 0, sets = c("x.y.iso", "year", "EFP.scen"))
+    # bring object x to dimension of object0
+    out <- object0 + x
+    return(out)
+  }
+
+  ### Water inputs
+  # Natural flows
   natFlows <- calcOutput("RiverNaturalFlows",
                           selectyears = selectyears,
                           lpjml = lpjml, climatetype = climatetype,
                           aggregate = FALSE)
-  natDischarge <- collapseNames(natFlows[, , "discharge_nat"])
-
-  ## Human uses
-  # Non-Agricultural Water Withdrawals and Consumption (in mio. m^3 / yr) [smoothed]
-  watNonAg <- calcOutput("WaterUseNonAg",
-                          selectyears = selectyears, cells = "lpjcell",
-                          datasource = "WATERGAP_ISIMIP", usetype = "total",
-                          seasonality = "total", harmonType = "average",
-                          lpjml = NULL, climatetype = NULL, aggregate = FALSE)
-
-  nonAgWWmag <- collapseNames(watNonAg[, , "withdrawal"])
-  nonAgWCmag <- collapseNames(watNonAg[, , "consumption"])
-
-  # Committed agricultural uses per crop (in mio. m^3 / yr)
-  watComAg <- calcOutput("WaterUseCommittedAg",
-                         lpjml = lpjml, climatetype = climatetype,
-                         selectyears = selectyears, iniyear = iniyear,
-                         multicropping = multicropping, aggregate = FALSE)
-  # Total committed agricultural withdrawals (in mio. m^3 / yr)
-  comAgWW <- collapseNames(dimSums(watComAg[, , "withdrawal"],
-                                   dim = "crop"))
-  # Total committed agricultural consumption (in mio. m^3 / yr)
-  comAgWC <- collapseNames(dimSums(watComAg[, , "consumption"],
-                                   dim = "crop"))
-
-  ## Water inputs
-  # Runoff (on land and water)
-  magYearlyRunoff <- collapseNames(calcOutput("YearlyRunoff", selectyears = selectyears,
-                                              lpjml = lpjml, climatetype = climatetype,
-                                              aggregate = FALSE))
-
+  # Natural discharge (for checks)
+  natDischarge <- .transformObject(collapseNames(natFlows[, , "discharge_nat"]))
   # Lake evaporation as calculated by natural flow river routing
-  lakeEvap          <- collapseNames(calcOutput("RiverNaturalFlows", selectyears = selectyears,
-                                              lpjml = lpjml, climatetype = climatetype,
-                                              aggregate = FALSE)[, , "lake_evap_nat"]) # can be deleted
+  lakeEvap <- collapseNames(natFlows[, , "lake_evap_nat"])
+  # Runoff (on land and water)
+  yearlyRunoff <- collapseNames(calcOutput("YearlyRunoff",
+                                          selectyears = selectyears,
+                                          lpjml = lpjml, climatetype = climatetype,
+                                          aggregate = FALSE))
+  # Reduce to one object (for performance reasons)
+  runoffWOEvap <- yearlyRunoff - lakeEvap
 
-  runoffWOEvap <- magYearlyRunoff - lakeEvap
+  # Initialize river routing variables and dimensions
+  fracFulfilled <- missingWW <- missingWC <- as.array(.transformObject(0))
+  # Extract scenarios and years
+  years     <- getItems(discharge, dim = 2)
+  scenarios <- getItems(discharge, dim = 3)
+  # Adjust object dimension and type
+  runoffWOEvap   <- as.array(.transformObject(runoffWOEvap))
+  discharge      <- as.array(discharge)
+  prevReservedWW <- as.array(collapseNames(inputData[, , "prevReservedWW"]))
+  prevReservedWC <- as.array(collapseNames(inputData[, , "prevReservedWC"]))
+  previousTotal  <- collapseNames(inputData[, , "previousTotal"])
+  currRequestWWlocal <- currRequestWWtotal <- as.array(collapseNames(inputData[, , "currRequestWWlocal"]))
+  currRequestWClocal <- currRequestWCtotal <- as.array(collapseNames(inputData[, , "currRequestWClocal"]))
 
-  scenarios <- c(paste("on", getNames(nonAgWWmag), sep = "."),
-             paste("off", getNames(nonAgWWmag), sep = "."))
-  ## Transform object dimensions
-  .transformObject <- function(x) {
-    # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getCells(magYearlyRunoff),
-                          years = getYears(magYearlyRunoff),
-                          names = scenarios,
-                          fill = 0, sets = c("x.y.iso", "year", "EFP.scen"))
-    # bring object x to dimension of object0
-    out     <- object0 + x
-    return(out)
-  }
-
-  # initialize river routing variables
-  fracFulfilled <- as.array(.transformObject(0))
-  missingWW <- missingWC <- as.array(.transformObject(0))
-
-  # bring all inputs to correct object size and transform to array for faster calculation
-  runoffWOEvap <- as.array(.transformObject(runoffWOEvap))
-  comAgWC      <- as.array(.transformObject(comAgWC))
-  comAgWW      <- as.array(.transformObject(comAgWW))
-  nonAgWC      <- as.array(.transformObject(nonAgWCmag))
-  nonAgWW      <- as.array(.transformObject(nonAgWWmag))
-
-  ### Final magpie object structure to be filled
-  out <- new.magpie(cells_and_regions = getCells(magYearlyRunoff),
-                    years = getYears(magYearlyRunoff),
-                    names = c("discharge",
-                              # water reserved in current cell (for either local or neighboring cell)
-                              # to be considered in following river water use accountings
-                              "reservedWW", # (note: was previously required_wat_min, needs to be adjusted)
-                              "reservedWC",
-                              # water available for specified use from local sources and surrounding cells:
-                              "currHumanWWtotal", "currHumanWCtotal",
-                              # water available for specified use from local sources
-                              "currHumanWWlocal", "currHumanWClocal"),
-                    sets = c("x.y.iso", "year", "data"),
-                    fill = NA)
-
-  ########################################################
-  ### River Routing accounting for Human Uses and EFRs ###
-  ########################################################
-  ## Inputs from previous river routings
-  if (humanuse == "non_agriculture") {
-
-    # Discharge from previous routing
-    discharge <- as.array(.transformObject(natDischarge))
-
-    # Minimum flow requirements determined by natural flow river routing:
-    # (full) Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
-    prevReservedWW           <- new.magpie(cells_and_regions = getCells(magYearlyRunoff),
-                                        years = getYears(magYearlyRunoff),
-                                        names = c(paste("on", getNames(nonAgWWmag), sep = "."),
-                                                  paste("off", getNames(nonAgWWmag), sep = ".")),
-                                        fill = 0)
-    prevReservedWW[, , "on"] <- calcOutput("EnvmtlFlowRequirements", lpjml = lpjml, selectyears = selectyears,
-                                         climatetype = climatetype, efrMethod = efrMethod,
-                                         aggregate = FALSE)[, , "EFR"]
-    # Bring to correct object size
-    prevReservedWW <- as.array(.transformObject(prevReservedWW))
-
-    ## Current human uses
-    # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-    currRequestWWlocal <- currRequestWWtotal <- nonAgWW
-    # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
-    currRequestWClocal <- currRequestWCtotal <- nonAgWC
-
-    # There are no previous human uses yet to be considered (empty arrays)
-    prevReservedWC <- as.array(.transformObject(0))
-    previousTotal  <- as.magpie(prevReservedWC, spatial = 1, temporal = 2)
-
-  } else if (humanuse == "committed_agriculture") {
-
-    previousHumanUse <- calcOutput("RiverHumanUseAccounting", humanuse = "non_agriculture",
-                                    lpjml = lpjml, climatetype = climatetype,
-                                    efrMethod = efrMethod, multicropping = multicropping,
-                                    selectyears = selectyears, iniyear = iniyear,
-                                    transDist = transDist, aggregate = FALSE)
-    
-    # Discharge from previous routing
-    discharge <- as.array(collapseNames(previousHumanUse[, , "discharge"]))
-
-    # Minimum flow requirements determined by previous river routing:
-    # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
-    prevReservedWW <- as.array(collapseNames(previousHumanUse[, , "reservedWW"]))
-    ## Previous human uses (determined in non-agricultural uses river routing) (in mio. m^3 / yr):
-    prevReservedWC <- as.array(collapseNames(previousHumanUse[, , "reservedWC"]))
-    ### ToDo: Needs to be updated (account for reserved for neighbors...)
-    previousTotal <- collapseNames(previousHumanUse[, , "currHumanWCtotal"])
-
-    ## Current human uses
-    # Committed Water Withdrawals (in mio. m^3 / yr) [smoothed]
-    currRequestWWlocal <- currRequestWWtotal <- comAgWW
-    # Committed Water Consumption (in mio. m^3 / yr) [smoothed]
-    currRequestWClocal <- currRequestWCtotal <- comAgWC
-
-  } else {
-    stop("Please specify for which type of human uses river routing shall be calculated:
-         non_agriculture or committed_agriculture")
-  }
-
-  ####################################################
-  ###### River Routing considering Human Uses ########
-  ####################################################
-  years <- getItems(nonAgWWmag, dim = 2)
-
+  ##################################################
+  ###### Upstream-Downstream River Routing  ########
+  ##################################################
   for (y in years) {
     for (scen in scenarios) {
 
+      # Select scenario and reduce object size (for performance)
       tmpRequestWWlocal <- currRequestWWlocal[, y, scen]
       tmpRequestWClocal <- currRequestWClocal[, y, scen]
       tmpDischarge      <- discharge[, y, scen]
@@ -210,10 +128,6 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
       cellsCalc <- which(tmpRequestWWlocal > 0)
       cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
       cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
-
-      # All cells (only for testing)
-      #cellsCalc <- 1:67420
-      #cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
       for (c in cellsCalc) {
 
@@ -245,8 +159,9 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   }
 
   # Update current withdrawal
-  fracFulfilled <- currRequestWClocal / currRequestWCtotal
-  fracFulfilled[currRequestWCtotal == 0] <- 0
+  fracFulfilled <- ifelse(currRequestWCtotal > 0,
+                            currRequestWClocal / currRequestWCtotal,
+                          0)
   currRequestWWlocal <- fracFulfilled * currRequestWWtotal
 
   # Update minimum water required in cell (for further river processing steps):
@@ -270,7 +185,6 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   # If local water is not sufficient:
   # may be fulfilled by surrounding cell water provision
   if (transDist != 0) {
-
     tmp <- toolNeighborUpDownProvision(rs = rs, transDist = transDist,
                                        years = years, scenarios = scenarios,
                        listNeighborIN = list(discharge = discharge,
@@ -279,7 +193,6 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
                                              missingWC = missingWC,
                                              missingWW = missingWW,
                                              runoffWOEvap = runoffWOEvap))
-
     # Update discharge
     discharge <- tmp$discharge
 
@@ -293,51 +206,43 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
     ### Checks ###
     # All reserved water needs to end up somewhere
-    toNeighborWW <- as.magpie(tmp$toNeighborWW, spatial = 1, temporal = 2)
-    toNeighborWC <- as.magpie(tmp$toNeighborWC, spatial = 1, temporal = 2)
-    fromNeighborWW <- as.magpie(tmp$fromNeighborWW, spatial = 1, temporal = 2)
-    fromNeighborWC <- as.magpie(tmp$fromNeighborWC, spatial = 1, temporal = 2)
-
-    if (any(abs(round(dimSums(toNeighborWW, dim = 1) - dimSums(fromNeighborWW, dim = 1), digits = 6)) > 1e-6)) {
-      if (any(dimSums(toNeighborWW, dim = 1) - dimSums(fromNeighborWW, dim = 1) > 0)) {
-        warning(paste0("More water was provided to requesting main cells than 
-                      was reserved in neighboring cells
-                      in Neighbor Water Provision of calcRiverHumanUseAccounting"))
-      }
-      if (any(dimSums(toNeighborWW, dim = 1) - dimSums(fromNeighborWW, dim = 1) < 0)) {
-        warning(paste0("More water was reserved in neighboring cells than 
-                        was provided to requesting main cells
-                        in Neighbor Water Provision of calcRiverHumanUseAccounting"))
-      }
-      stop(paste0("After Neighbor Water Provision in calcRiverHumanUseAccounting with humanuse = ",
-                  humanuse, " some water was not properly allocated.
-                  See warnings() for further information."))
+    if (any(abs(round(apply(tmp$toNeighborWW, MARGIN = 3, FUN = sum) -
+                        apply(tmp$fromNeighborWW, MARGIN = 3, FUN = sum),
+                      digits = 6)) > 1e-6)) {
+      stop(paste0("After Neighbor Water Provision in 
+                   calcRiverHumanUseAccounting with iteration = ",
+                   iteration, " some water was not properly allocated."))
     }
-    if (any(abs(round(dimSums(toNeighborWC, dim = 1) - dimSums(fromNeighborWC, dim = 1), digits = 6)) > 1e-6)) {
-      if (any(dimSums(toNeighborWC, dim = 1) - dimSums(fromNeighborWC, dim = 1) > 0)) {
-        warning(paste0("More water was provided to requesting main cells than
-                      was reserved in neighboring cells
-                      in Neighbor Water Provision of calcRiverHumanUseAccounting"))
-      }
-      if (any(dimSums(toNeighborWC, dim = 1) - dimSums(fromNeighborWC, dim = 1) < 0)) {
-        warning(paste0("More water was reserved in neighboring cells than
-                      was provided to requesting main cells
-                      in Neighbor Water Provision of calcRiverHumanUseAccounting"))
-      }
-      stop(paste0("After Neighbor Water Provision in calcRiverHumanUseAccounting with humanuse = ",
-                  humanuse, " some water was not properly allocated.
-                  See warnings() for further information."))
+    if (any(abs(round(apply(tmp$toNeighborWC, MARGIN = 3, FUN = sum) -
+                        apply(tmp$fromNeighborWC, MARGIN = 3, FUN = sum),
+                      digits = 6)) > 1e-6)) {
+      stop(paste0("After Neighbor Water Provision in 
+                   calcRiverHumanUseAccounting with iteration = ",
+                   iteration, " some water was not properly allocated."))
     }
   } else {
-  # total and local currently requested water fulfilled is the same in this case
-  currRequestWWtotal <- currRequestWWlocal
-  currRequestWCtotal <- currRequestWClocal
+    # total and local currently requested water fulfilled is the same in this case
+    currRequestWWtotal <- currRequestWWlocal
+    currRequestWCtotal <- currRequestWClocal
   }
 
   ###############
   ### Outputs ###
   ###############
-  out <- .transformObject(out)
+  ### Final magpie object structure to be filled
+  out <- .transformObject(new.magpie(cells_and_regions = getItems(natDischarge, dim = 1),
+                          years = getItems(natDischarge, dim = 2),
+                          names = c("discharge",
+                                    # water reserved in current cell (for either local or neighboring cell)
+                                    # to be considered in following river water use accountings
+                                    "reservedWW", # (note: was previously required_wat_min, needs to be adjusted)
+                                    "reservedWC",
+                                    # water available for specified use from local sources and surrounding cells:
+                                    "currHumanWWtotal", "currHumanWCtotal",
+                                    # water available for specified use from local sources
+                                    "currHumanWWlocal", "currHumanWClocal"),
+                          sets = c("x.y.iso", "year", "data"),
+                          fill = NA))
   # river discharge flows
   out[, , "discharge"] <- as.magpie(discharge, spatial = 1, temporal = 2)
   # water reserved in current cell (for either local or neighboring cell)
@@ -366,12 +271,11 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
   # Check if too much water has been allocated
   # (currRequestWClocal should always be smaller than currRequestWCtotal)
   if (any((out[, , "currHumanWClocal"] - out[, , "currHumanWCtotal"]) > 1e-6)) {
-    stop("Too much water has been allocated")
+    stop("Too much water has been allocated
+          in calcRiverHumanUseAccounting.")
   }
   # Check whether water has been lost
-  natDischarge <- .transformObject(natDischarge)
-  basinDischarge <- natDischarge
-  basinDischarge[, , ] <- 0
+  basinDischarge <- .transformObject(0)
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
   totalWat <- dimSums(basinDischarge, dim = 1) +
                 dimSums(out[, , "currHumanWCtotal"],
@@ -395,7 +299,7 @@ calcRiverHumanUseAccounting <- function(humanuse, lpjml, climatetype, selectyear
 
   # Description
   description <- paste0("Upstream-downstream river routing outputs taking 
-                         human uses (", humanuse, ") into account")
+                         human uses (", iteration, ") into account")
 
   return(list(x            = out,
               weight       = NULL,

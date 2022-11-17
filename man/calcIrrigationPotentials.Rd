@@ -4,13 +4,23 @@
 \alias{calcIrrigationPotentials}
 \title{calcIrrigationPotentials}
 \usage{
-calcIrrigationPotentials(output, selectyears, iniyear, lpjml, climatetype)
+calcIrrigationPotentials(
+  output,
+  transDist,
+  selectyears,
+  iniyear,
+  lpjml,
+  climatetype
+)
 }
 \arguments{
 \item{output}{output to be returned:
 "IrrigArea": irrigated area (in Mha/yr) or
 "wat_ag_ww": available irrigation water for withdrawals (in km^3/yr) or
 "wat_ag_wc": available consumptive irrigation water (in km^3/yr)}
+
+\item{transDist}{Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability}
 
 \item{selectyears}{years for which potentially irrigated area is calculated}
 

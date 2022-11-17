@@ -80,7 +80,7 @@
 #' \dontrun{
 #' calcOutput("RiverDischargeAllocation_NEW2", aggregate = FALSE)
 #' }
-#'
+
 calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
                                              selectyears, efrMethod,
                                              accessibilityrule, transDist,
@@ -88,16 +88,19 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
                                              allocationrule, thresholdtype,
                                              gainthreshold, irrigationsystem, iniyear, landScen,
                                              cropmix, comAg, multicropping) {
-
   # Retrieve arguments
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
-  if (comAg == TRUE) {
-    comagyear <- iniyear
-  } else if (comAg == FALSE) {
-    comagyear <- NULL
+  if (is.numeric(selectyears)) {
+    selectyears <- paste0("y", selectyears)
   }
+
+  # Natural discharge (for checks)
+  natDischarge <- calcOutput("RiverNaturalFlows",
+                          selectyears = selectyears,
+                          lpjml = lpjml, climatetype = climatetype,
+                          aggregate = FALSE)
 
   #######################################
   ###### Read in Required Inputs ########
@@ -105,99 +108,74 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   # Read in river structure
   rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
                 package = "mrwater"))
-
   # Read in neighbor cells and transform to list
   neighborCells <- readSource("NeighborCells", convert = FALSE)
   neighborCells <- attr(neighborCells, "data")
-
   # Calculate river structure including neighbor cells
   rs <- toolSelectNeighborCell(transDist = transDist, rs = rs,
                                neighborCells = neighborCells)
 
-  # Minimum reserved flow requirements: Inaccessible discharge +
-  #                                     Environmental Flow Requirements (adjusted for
-  #                                     part that is fulfilled by inaccessible water) +
-  #                                     Reserved for Non-Agricultural Uses +
-  #                                     [Reserved Committed Agricultural Uses, if activated] (in mio. m^3 / yr)
-  prevReservedWW <- calcOutput("RiverWatReserved_new",
-                                transDist = transDist,
-                                aggregate = FALSE,
-                                selectyears = selectyears, iniyear = iniyear,
-                                lpjml = lpjml, climatetype = climatetype,
-                                comAg = comAg, multicropping = multicropping,
-                                efrMethod = efrMethod, accessibilityrule = accessibilityrule)
-
-  # Discharge determined by previous river routings (in mio. m^3 / yr)
-  discharge <- calcOutput("RiverDischargeNatAndHuman_new",
-                          transDist = transDist,
-                          selectyears = selectyears, iniyear = iniyear,
-                          lpjml = lpjml, climatetype = climatetype,
-                          efrMethod = efrMethod, multicropping = multicropping,
-                          comAg = comAg, aggregate = FALSE)
-
-  # Required water for full irrigation per cell (in mio. m^3)
-  reqWatFullirrig <- calcOutput("FullIrrigationRequirement",
-                                selectyears = selectyears, iniyear = iniyear, comagyear = comagyear,
-                                lpjml = lpjml, climatetype = climatetype,
-                                irrigationsystem = irrigationsystem, landScen = landScen,
-                                cropmix = cropmix, yieldcalib = yieldcalib,
-                                multicropping = multicropping, aggregate = FALSE)
-  reqWatFullirrigWW <- pmax(collapseNames(reqWatFullirrig[, , "withdrawal"]), 0)
-  reqWatFullirrigWC <- pmax(collapseNames(reqWatFullirrig[, , "consumption"]), 0)
-
-  # Yield gain potential through irrigation of proxy crops
-  irrigGain <- calcOutput("IrrigYieldImprovementPotential",
-                          selectyears = selectyears,
-                          lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-                          unit = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
-                          multicropping = multicropping, aggregate = FALSE)
-
-  # Global cell rank based on yield gain potential by irrigation of proxy crops: maize, rapeseed, pulses
-  glocellrank <- setYears(calcOutput("IrrigCellranking",
-                                      cellrankyear = selectyears,
-                                      lpjml = lpjml, climatetype = climatetype, method = rankmethod,
-                                      cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
-                                      multicropping = multicropping, aggregate = FALSE),
-                          selectyears)
-
-  # Initialization of objects
-  tmp <- as.magpie(discharge)
-
-  .transformObject <- function(x) {
-    # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getCells(tmp),
-                          years = getYears(tmp),
-                          names = getNames(tmp),
-                          fill = 0,
-                          sets = c("x.y.iso", "year", "EFP.scen"))
-    # bring object x to dimension of object0
-    out <- object0 + x
-    return(out)
-  }
-
-  discharge      <- as.array(discharge)
-  prevReservedWW <- as.array(prevReservedWW)
-  currReqWW      <- as.array(.transformObject(reqWatFullirrigWW))
-  currReqWC      <- as.array(.transformObject(reqWatFullirrigWC))
-  irrigGain      <- as.array(.transformObject(irrigGain))
-  glocellrank    <- as.array(glocellrank)
-  # Initialize objects to be filled in Allocation Algorithm with 0
-  missingWW <- missingWC <- as.array(.transformObject(0))
-  fromNeighborWC <- fromNeighborWW <- as.array(.transformObject(0))
-  toNeighborWC   <- toNeighborWW   <- as.array(.transformObject(0))
-  currWWlocal    <- currWWtotal    <- as.array(.transformObject(0))
-  currWClocal    <- currWCtotal    <- as.array(.transformObject(0))
-
-  ################################################
-  ####### River basin discharge allocation #######
-  ################################################
-  if (is.numeric(selectyears)) {
-    selectyears <- paste0("y", selectyears)
-  }
-
-  # Cell ordering to be applied for surplus discharge allocation rules
   if (allocationrule == "optimization") {
+    # Global cell rank based on yield gain potential by irrigation
+    # of chosen crop mix
+    glocellrank <- setYears(calcOutput("IrrigCellranking",
+                                        cellrankyear = selectyears,
+                                        lpjml = lpjml, climatetype = climatetype, method = rankmethod,
+                                        cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
+                                        multicropping = multicropping, aggregate = FALSE),
+                            selectyears)
 
+    ### Inputs from Previous River Routing Iterations ###
+    inputData <- calcOutput("RiverRoutingInputs",
+                        iteration = "potential_irrigation",
+                        lpjml = lpjml, climatetype = climatetype,
+                        transDist = transDist, comAg = comAg,
+                        selectyears = selectyears, iniyear = iniyear,
+                        efrMethod = efrMethod, multicropping = multicropping,
+                        accessibilityrule = accessibilityrule,
+                        rankmethod = rankmethod, gainthreshold = gainthreshold,
+                        cropmix = cropmix, yieldcalib = yieldcalib,
+                        irrigationsystem = irrigationsystem, landScen = landScen,
+                        aggregate = FALSE)
+    tmp <- collapseNames(inputData[, , "discharge"])
+    # Object dimensions:
+    .transformObject <- function(x) {
+      # empty magpie object structure
+      object0 <- new.magpie(cells_and_regions = getItems(tmp, dim = 1),
+                            years = getItems(tmp, dim = 2),
+                            names = getItems(tmp, dim = 3),
+                            fill = 0,
+                            sets = c("x.y.iso", "year", "EFP.scen"))
+      # bring object x to dimension of object0
+      out <- object0 + x
+      return(out)
+    }
+    scenarios      <- getItems(tmp, dim = 3)
+    discharge      <- as.array(tmp)
+
+    prevReservedWW <- as.array(collapseNames(inputData[, , "prevReservedWW"]))
+    #prevReservedWC <- as.array(collapseNames(inputData[, , "prevReservedWC"]))
+    #previousTotal <- as.array(collapseNames(inputData[, , "previousTotal"]))
+    currReqWW <- as.array(collapseNames(inputData[, , "currRequestWWlocal"]))
+    currReqWC <- as.array(collapseNames(inputData[, , "currRequestWClocal"]))
+
+    glocellrank    <- as.array(glocellrank)
+    # Initialize objects to be filled in Allocation Algorithm with 0
+    fromNeighborWC <- fromNeighborWW <- as.array(.transformObject(0))
+    currWWlocal    <- currWClocal    <- as.array(.transformObject(0))
+
+    out <- new.magpie(cells_and_regions = getCells(tmp),
+                      years = getYears(tmp),
+                      names = c("discharge",
+                                "currWWlocal", "currWClocal",
+                                "currWCtotal", "currWCtotal"),
+                      sets = c("x.y.iso", "year", "data"))
+    out <- .transformObject(out)
+
+    ################################################
+    ####### River basin discharge Allocation #######
+    #######        (ranked cell order)       #######
+    ################################################
     # Share of full irrigation water requirements to be allocated for each round of the allocation algorithm
     allocationshare <- 1 / (length(glocellrank[, 1, 1]) / 67420)
     currReqWW <- currReqWW * allocationshare
@@ -207,73 +185,36 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
 
     # In case of optimization, glocellrank differs in each year:
     for (y in selectyears) {
+      for (scen in scenarios) {
+        # Loop in ranked cell order
+        for (o in (1:max(glocellrank[, y, ], na.rm = TRUE))) {
+          # Extract the cell number
+          c <- rs$cells[rs$coordinates == paste(strsplit(gsub(".*_", "",
+                                                              names(which(glocellrank[, y, ] == o))), "\\.")[[1]][1],
+                                                strsplit(gsub(".*_", "",
+                                                              names(which(glocellrank[, y, ] == o))), "\\.")[[1]][2],
+                                                sep = ".")]
+          # Function inputs
+          inLIST <- list(currReqWW = currReqWW[c, y, scen],
+                         currReqWC = currReqWC[c, y, scen])
+          inoutLIST <- list(discharge = discharge[, y, scen],
+                            prevReservedWW = prevReservedWW[, y, scen])
 
-      # Loop in ranked cell order
-      for (o in (1:max(glocellrank[, y, ], na.rm = TRUE))) {
+          tmp <- toolRiverDischargeAllocationSINGLE(c = c, rs = rs,
+                                                    transDist = transDist,
+                                                    iteration = "main",
+                                                    inoutLIST = inoutLIST,
+                                                    inLIST = inLIST)
 
-        # Extract the cell number
-        c <- rs$cells[rs$coordinates == paste(strsplit(gsub(".*_", "",
-                                                            names(which(glocellrank[, y, ] == o))), "\\.")[[1]][1],
-                                              strsplit(gsub(".*_", "",
-                                                            names(which(glocellrank[, y, ] == o))), "\\.")[[1]][2],
-                                              sep = ".")]
-
-        inLIST <- list(irrigGain = irrigGain[, y, , drop = FALSE],
-                       gainthreshold = gainthreshold,
-                       currReqWW = currReqWW[, y, , drop = FALSE],
-                       currReqWC = currReqWC[, y, , drop = FALSE],
-                       missingWW = missingWW[, y, , drop = FALSE],
-                       missingWC = missingWC[, y, , drop = FALSE])
-        inoutLIST <- list(discharge = discharge[, y, , drop = FALSE],
-                          prevReservedWW = prevReservedWW[, y, , drop = FALSE],
-                          fromNeighborWC = fromNeighborWC[, y, , drop = FALSE],
-                          fromNeighborWW = fromNeighborWW[, y, , drop = FALSE],
-                          toNeighborWW = toNeighborWW[, y, , drop = FALSE],
-                          toNeighborWC = toNeighborWC[, y, , drop = FALSE],
-                          currWWlocal = currWWlocal[, y, , drop = FALSE],
-                          currWClocal = currWClocal[, y, , drop = FALSE],
-                          currWWtotal = currWWtotal[, y, , drop = FALSE],
-                          currWCtotal = currWCtotal[, y, , drop = FALSE])
-
-        tmp <- toolRiverDischargeAllocation(c = c, rs = rs,
-                                            transDist = transDist,
-                                            iteration = "main",
-                                            inoutLIST = inoutLIST,
-                                            inLIST = inLIST)
-        discharge[, y, ] <- tmp$discharge
-        prevReservedWW[, y, ] <- tmp$prevReservedWW
-        fromNeighborWC[, y, ] <- tmp$fromNeighborWC
-        fromNeighborWW[, y, ] <- tmp$fromNeighborWW
-        toNeighborWW[, y, ]   <- tmp$toNeighborWW
-        toNeighborWC[, y, ]   <- tmp$toNeighborWC
-        currWWlocal[, y, ] <- tmp$currWWlocal
-        currWClocal[, y, ] <- tmp$currWClocal
-        currWWtotal[, y, ] <- tmp$currWWtotal
-        currWCtotal[, y, ] <- tmp$currWCtotal
-
+          discharge[, y, scen]       <- tmp$discharge
+          prevReservedWW[, y, scen]  <- tmp$prevReservedWW
+          fromNeighborWC[c, y, scen] <- tmp$fromNeighborWC
+          fromNeighborWW[c, y, scen] <- tmp$fromNeighborWW
+          currWWlocal[c, y, scen]    <- tmp$currWWlocal
+          currWClocal[c, y, scen]    <- tmp$currWClocal
+        }
       }
     }
-  } else if (allocationrule == "upstreamfirst") {
-
-    #@JENS: Should it be the same as in the River Discharge Allocation
-    #       or similar to Allocation Algorithm above?
-    #       And how to deal with neighbors? 
-
-    # Note: no year loop necessary
-
-    # Loop in upstream-downstream cell order
-    for (o in 1:max(rs$calcorder)) {
-      cells <- which(rs$calcorder == o)
-
-      for (c in cells) {
-
-        # (1) run toolRiverDischargeAllocation with setting iteration = "main"
-        # and transDist = 0 (because Neighbor Irrigation is handled differently)
-        # (2) run neighbor allocation following up-down principles (as in previous human uses)
-        # toolRiverUpDownBalance --> is this really necessary?
-      }
-    }
-  }
 
   # update water available for use in cell c including provision by surrounding cells
   # (in case of transDist == 0: fromNeighbor would be 0)
@@ -281,26 +222,35 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   currWCtotal <- currWClocal + fromNeighborWC
 
   # Return output in one object
-  out <- new.magpie(cells_and_regions = getCells(discharge),
-                    years = getYears(discharge),
-                    names = c("discharge",
-                              "fromNeighborWC", "fromNeighborWW",
-                              "currWWlocal", "currWClocal",
-                              "currWCtotal", "currWCtotal"),
-                    sets = c("x.y.iso", "year", "data"))
-  out <- .transformObject(out)
   out[, , "currWWlocal"] <- as.magpie(currWWlocal, spatial = 1, temporal = 2)
   out[, , "currWClocal"] <- as.magpie(currWClocal, spatial = 1, temporal = 2)
   out[, , "currWWtotal"] <- as.magpie(currWWtotal, spatial = 1, temporal = 2)
   out[, , "currWCtotal"] <- as.magpie(currWCtotal, spatial = 1, temporal = 2)
-  out[, , "fromNeighborWW"] <- as.magpie(fromNeighborWW, spatial = 1, temporal = 2)
-  out[, , "fromNeighborWC"] <- as.magpie(fromNeighborWC, spatial = 1, temporal = 2)
-  out[, , "discharge"] <- as.magpie(discharge, spatial = 1, temporal = 2)
-  description <- paste0("River routing outputs after Surplus Discharge Allocation")
+  out[, , "discharge"]   <- as.magpie(discharge, spatial = 1, temporal = 2)
+  ### Note: Need to adjust follow-up functions accordingly
+  ###       (before: select output == "discharge", "potIrrigWat",
+  ##         now: subset (discharge, currHuman_ww_local ....))
+  #    # Main output for MAgPIE: water available for agricultural withdrawal --> currWWtotal
 
-    ### Note: Need to adjust follow-up functions accordingly
-    ###       (before: select output == "discharge", "potIrrigWat",
-    ##         now: subset (discharge, currHuman_ww_local ....))
+  } else if (allocationrule == "upstreamfirst") {
+    # The upstream-downstream surplus discharge allocation
+    # follows the same rules ad the upstream-downstream
+    # previous human use accounting
+    tmp <- calcOutput("RiverHumanUseAccounting",
+                      humanuse = "potential_irrigation",
+                      lpjml = lpjml, climatetype = climatetype,
+                      efrMethod = efrMethod, multicropping = multicropping,
+                      selectyears = selectyears, iniyear = iniyear,
+                      transDist = transDist, comAg = comAg,
+                      aggregate = FALSE)
+
+    # Return outputs
+    out[, , "currWWlocal"] <- collapseNames(tmp[, , "currHumanWWlocal"])
+    out[, , "currWClocal"] <- collapseNames(tmp[, , "currHumanWClocal"])
+    out[, , "currWWtotal"] <- collapseNames(tmp[, , "currHumanWWtotal"])
+    out[, , "currWCtotal"] <- collapseNames(tmp[, , "currHumanWCtotal"])
+    out[, , "discharge"]   <- collapseNames(tmp[, , "discharge"])
+  }
 
   ##############
   ### Checks ###
@@ -312,34 +262,12 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   if (any(round(out) < 0)) {
     stop("calcRiverDischargeAllocation produced negative values")
   }
-
-  # Should be the same:
-  a <- dimSums(out[, , c("currHuman_wc_local", "resNeighbor_wc")], 
-               dim = c("x", "y", "iso", "data"))
-  b <- dimSums(out[, , c("currHuman_wc_total")], 
-               dim = c("x", "y", "iso", "data"))
-  if (any(summary(a - b) != 0)) {
-    if (any(summary(a - b) > 0)) {
-      stop(paste0("Something is wrong with neighbor water provision algorithm
-        in calcRiverDischargeAllocation:
-        some of neighbor provision is not reported to total!
-        The mismatch ranges between ", summary(a - b)))
-    }
-    if (any(summary(a - b) < 0)) {
-      stop(paste0("Something is wrong with neighbor water provision algorithm
-        in calcRiverDischargeAllocation:
-        more water is reported to total than is provided by neighbor cells!
-        The mismatch ranges between ", summary(a - b)))
-    }
-  }
   # No water should be lost
-  natDischarge <- discharge
-
-  basinDischarge <- natDischarge
-  basinDischarge[, , ] <- 0
+  basinDischarge <- .transformObject(0)
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
-  totalWat <- dimSums(basinDischarge, dim = 1) + b
-
+  totalWat <- dimSums(basinDischarge,
+                      dim = 1) + dimSums(out[, , c("currWCtotal")],
+                                        dim = c("x", "y", "iso", "data"))
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
   if (!all(abs(totalWat - mean(totalWat)) < 1e-06)) {
@@ -349,6 +277,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   }
   # Total water (summed basin discharge + consumed)
   # must be same as natural summed basin discharge
+  natDischarge <- .transformObject(collapseNames(natDischarge[, , "discharge_nat"]))
   if (any(round(dimSums(natDischarge[unique(rs$endcell), , ],
                         dim = 1) - totalWat[, , 1],
                 digits = 6) != 0)) {
@@ -359,6 +288,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = description,
+              description  = paste0("River routing outputs 
+                                     after Surplus Discharge Allocation"),
               isocountries = FALSE))
 }

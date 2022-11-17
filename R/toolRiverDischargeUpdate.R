@@ -14,7 +14,7 @@
 #' \dontrun{
 #' calcOutput("RiverHumanUseAccounting", aggregate = FALSE)
 #' }
-#'
+
 toolRiverDischargeUpdate <- function(rs, runoffWOEvap, watCons) {
 
   # helper variables in correct dimension

@@ -25,7 +25,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("RiverHumanUses", aggregate = FALSE)
+#' calcOutput("RiverHumanUseAccounting", aggregate = FALSE)
 #' }
 #'
 #' @export
@@ -105,9 +105,6 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           # neighbor cells that will be skipped
           nskipped <- numeric(l)
 
-          # For development purposes only: print statements
-          print(paste0(i, "th round of neighbor water provision (loop over i)"))
-
           # Loop over main cells (k) to request water from neighbors (n)
           requestingList <- vector("list", l)
           for (k in 1:l) {
@@ -145,16 +142,6 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           cellsCalc <- which(tmpRequestWWlocal > 0)
           cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
           cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
-          # For performance test
-          # cellsCalc <- 1:l
-          # cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
-          # Test this for where we have the double loop
-          
-          # For development purposes only: print statements
-          print(paste0("The number of calculated cells are: ", length(cellsCalc)))
-          print(paste0("Remaining missing water is: ", round(sum(tmpMissWC))))
-          print(paste0("Sum requested from neighbor is: ", round(sum(tmpRequestWClocal))))
-          print(paste0("Number of real neighbors: ", sum(tmpRequestWClocal > 0)))
 
           # Repeat Upstream-Downstream Reservation for
           # neighboring cells
@@ -213,7 +200,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           # Update water that is still missing in main river cell(s)
           tmpMissWW <- tmpMissWW * (1 - fracFromNeighbor)
           tmpMissWC <- tmpMissWC * (1 - fracFromNeighbor)
-
+          
           # repeat until no more missing water OR no more neighbor cells
           if (all(tmpMissWW <= 0) && all(tmpMissWC <= 0)) {
             break

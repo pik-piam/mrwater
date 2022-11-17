@@ -39,9 +39,8 @@ calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
                                             version = lpjml[["natveg"]], climatetype = climatetype,
                                             stage = stage, years = selectyears,
                                             aggregate = FALSE),
-                                     selectyears))
-
-  # Runoff (on land and water)
+                                selectyears))
+  # Runoff on land and water (in mio. m^3 per year) [smoothed & harmonized]
   runoff   <- as.array(collapseNames(calcOutput("YearlyRunoff", selectyears = selectyears,
                                                  lpjml = lpjml, climatetype = climatetype,
                                                  aggregate = FALSE)))
@@ -57,26 +56,26 @@ calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
   lakeEvapNEW        <- natDischarge
 
   ### River Routing 1: Natural flows ###
-  # Determine natural discharge
-  for (o in 1:max(rs$calcorder)) {
+  ### Determine natural discharge    ###
 
-    # Note: the calcorder ensures that upstreamcells are calculated first
-    cells <- which(rs$calcorder == o)
+  # Note: the calcorder ensures that upstreamcells are calculated first
+  cellsCalc <- seq_along(getItems(runoff, dim = 1))
+  cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
-    for (c in cells) {
-      ### Natural water balance
-      # lake evap that can be fulfilled
-      # (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
-      lakeEvapNEW[c, , ] <- pmin(lakeEvap[c, , , drop = FALSE],
-                                 natInflow[c, , , drop = FALSE] + runoff[c, , , drop = FALSE])
-      # natural discharge
-      natDischarge[c, , ] <- natInflow[c, , , drop = FALSE] +
-                              runoff[c, , , drop = FALSE] -
-                              lakeEvapNEW[c, , , drop = FALSE]
-      # inflow into nextcell
-      if (rs$nextcell[c] > 0) {
-        natInflow[rs$nextcell[c], , ] <- natInflow[rs$nextcell[c], , , drop = F] + natDischarge[c, , , drop = F]
-      }
+  for (c in cellsCalc) {
+    ### Natural water balance
+    # lake evap that can be fulfilled
+    # (if water available: lake evaporation considered; if not: lake evap is reduced respectively):
+    lakeEvapNEW[c, , ] <- pmin(lakeEvap[c, , , drop = FALSE],
+                                natInflow[c, , , drop = FALSE] + runoff[c, , , drop = FALSE])
+    # natural discharge
+    natDischarge[c, , ] <- natInflow[c, , , drop = FALSE] +
+                            runoff[c, , , drop = FALSE] -
+                            lakeEvapNEW[c, , , drop = FALSE]
+    # inflow into nextcell
+    if (rs$nextcell[c] > 0) {
+      natInflow[rs$nextcell[c], , ] <- natInflow[rs$nextcell[c], , , drop = FALSE] +
+                                          natDischarge[c, , , drop = FALSE]
     }
   }
 

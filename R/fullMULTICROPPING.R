@@ -48,6 +48,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                               thresholdtype = "USD_ha:GLO") {
 
   # Standard settings
+  transDist         <- 100
   iniyear           <- "y2010"
   selectyears       <- "y2010"
   plotyear          <- "y2010"
@@ -68,10 +69,11 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
   ################
 
   # Non-Agricultural water uses (in mio. m^3 / yr) [smoothed]
-  calcOutput("RiverHumanUses", humanuse = "non_agriculture",
+  calcOutput("RiverHumanUseAccounting", iteration = "non_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, multicropping = FALSE,
+             transDist = transDist, comAg = FALSE,
              aggregate = FALSE,
              file = "nonAguses.mz")
 
@@ -214,16 +216,18 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              file = "reqWatFullirrig_single.mz")
 
   # Share current irrigation water that can be fulfilled by available water resources
-  calcOutput("ShrCurrIrrigFulfilled", multicropping = FALSE,
+  calcOutput("ShrHumanUsesFulfilled", 
+             multicropping = FALSE, transDist = transDist,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, aggregate = FALSE,
-             file = "shrCurrIrrigFulfilledSingle.mz")
-  calcOutput("ShrCurrIrrigFulfilled", multicropping = "TRUE:actual:irrig_crop",
+             file = "shrHumanUsesFulfilledSingle.mz")
+  calcOutput("ShrHumanUsesFulfilled",
+             multicropping = "TRUE:actual:irrig_crop", transDist = transDist,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, aggregate = FALSE,
-             file = "shrCurrIrrigFulfilledMultiple.mz")
+             file = "shrHumanUsesFulfilledMultiple.mz")
 
   for (committed in c(TRUE, FALSE)) {
     for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {

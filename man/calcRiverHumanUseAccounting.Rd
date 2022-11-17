@@ -5,19 +5,20 @@
 \title{calcRiverHumanUseAccounting}
 \usage{
 calcRiverHumanUseAccounting(
-  humanuse,
+  iteration,
   lpjml,
   climatetype,
   selectyears,
   iniyear,
   efrMethod,
   multicropping,
-  transDist
+  transDist,
+  comAg
 )
 }
 \arguments{
-\item{humanuse}{Human use type to which river routing shall be applied
-(non_agriculture or committed_agriculture).}
+\item{iteration}{Water use to be allocated in this river routing iteration
+(non_agriculture, committed_agriculture, potential).}
 
 \item{lpjml}{LPJmL version used}
 
@@ -43,6 +44,11 @@ separated by ":"
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}
+
+\item{comAg}{if TRUE: the currently already irrigated areas
+         in initialization year are reserved for irrigation,
+if FALSE: no irrigation areas reserved (irrigation potential).
+Only relevant for iteration = potential}
 }
 \value{
 magpie object in cellular resolution

@@ -7,6 +7,7 @@
 calcRiverDischargeAllocation(
   lpjml,
   climatetype,
+  transDist,
   selectyears,
   output,
   efrMethod,
@@ -28,6 +29,9 @@ calcRiverDischargeAllocation(
 \item{lpjml}{LPJmL version used}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+
+\item{transDist}{Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability}
 
 \item{selectyears}{Years to be returned
 (Note: does not affect years of harmonization or smoothing)}

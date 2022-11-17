@@ -27,6 +27,8 @@
 #'                                   GAEZ data set),
 #'                          separated by ":"
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#' @param transDist         Water transport distance allowed to fulfill locally
+#'                          unfulfilled water demand by surrounding cell water availability
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
@@ -43,7 +45,7 @@
 
 calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
                                  efrMethod, accessibilityrule,
-                                 comAg, multicropping) {
+                                 comAg, multicropping, transDist) {
 
   # Discharge that is inaccessible to human uses (mio m^3)
   inaccessibleDischarge <- calcOutput("DischargeInaccessible", selectyears = selectyears,
@@ -68,20 +70,24 @@ calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
   # Water reserved from previous river routing (including full EFRs)
   if (comAg) {
 
-    reservedRiverrouting <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
+    reservedRiverrouting <- calcOutput("RiverHumanUseAccounting",
+                                       iteration = "committed_agriculture", transDist = transDist,
                                        lpjml = lpjml, climatetype = climatetype,
                                        efrMethod = efrMethod, multicropping = multicropping,
-                                       selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+                                       selectyears = selectyears, iniyear = iniyear,
+                                       comAg = comAg, aggregate = FALSE)
   } else {
 
-    reservedRiverrouting <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
+    reservedRiverrouting <- calcOutput("RiverHumanUseAccounting",
+                                       iteration = "non_agriculture", transDist = transDist,
                                        lpjml = lpjml, climatetype = climatetype,
                                        efrMethod = efrMethod, multicropping = multicropping,
-                                       selectyears = selectyears, iniyear = iniyear, aggregate = FALSE)
+                                       selectyears = selectyears, iniyear = iniyear,
+                                       comAg = comAg, aggregate = FALSE)
   }
 
   # Correct reserved from previous river routing by EFRs
-  reservedRiverrouting <- collapseNames(reservedRiverrouting[, , "required_wat_min"])
+  reservedRiverrouting <- collapseNames(reservedRiverrouting[, , "reservedWW"])
   reservedRiverrouting <- reservedRiverrouting - fullEFR
 
   out <-  reservedRiverrouting + reservedEFR + inaccessibleDischarge

@@ -15,6 +15,8 @@
 #'                                   GAEZ data set),
 #'                      separated by ":"
 #'                      (e.g. TRUE:endogenous; FALSE:NULL)
+#' @param transDist     Water transport distance allowed to fulfill locally
+#'                      unfulfilled water demand by surrounding cell water availability
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -32,7 +34,7 @@
 
 calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
                                               lpjml, climatetype,
-                                              multicropping) {
+                                              multicropping, transDist) {
 
   # Standard settings
   irrigwattype      <- "withdrawal"
@@ -82,7 +84,7 @@ calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                   rankmethod = rankmethod, thresholdtype = thresholdtype,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                  irrigationsystem = irrigationsystem,
+                                  irrigationsystem = irrigationsystem, transDist = transDist,
                                   landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
                                   comAg = comAg, multicropping = multicropping,
                                   aggregate = FALSE)[, , "irrigatable"])

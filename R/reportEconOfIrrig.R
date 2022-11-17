@@ -75,6 +75,8 @@
 #'                                       GAEZ data set),
 #'                          separated by ":"
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#' @param transDist        Water transport distance allowed to fulfill locally
+#'                         unfulfilled water demand by surrounding cell water availability
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -93,7 +95,7 @@
 reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, iniyear,
                               selectyears, climatetype, efrMethod, accessibilityrule, rankmethod, yieldcalib,
                               allocationrule, thresholdtype, irrigationsystem, landScen, cropmix,
-                              potentialWat = TRUE, comAg, multicropping) {
+                              potentialWat = TRUE, comAg, multicropping, transDist) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -107,7 +109,7 @@ reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, 
                                   accessibilityrule = accessibilityrule,
                                   efrMethod = efrMethod, rankmethod = rankmethod,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                  thresholdtype = thresholdtype,
+                                  thresholdtype = thresholdtype, transDist = transDist,
                                   irrigationsystem = irrigationsystem, landScen = landScen,
                                   cropmix = cropmix, potentialWat = potentialWat,
                                   comAg = comAg, multicropping = multicropping,
@@ -124,7 +126,7 @@ reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, 
                                   rankmethod = rankmethod, yieldcalib = yieldcalib,
                                   thresholdtype = thresholdtype, allocationrule = allocationrule,
                                   irrigationsystem = irrigationsystem, landScen = landScen,
-                                  cropmix = cropmix, comAg = comAg,
+                                  cropmix = cropmix, comAg = comAg, transDist = transDist,
                                   multicropping = multicropping, aggregate = FALSE)[, , output])
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)
@@ -156,7 +158,7 @@ reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, 
                                     accessibilityrule = accessibilityrule,
                                     efrMethod = efrMethod,
                                     irrigationsystem = irrigationsystem,
-                                    landScen = landScen,
+                                    landScen = landScen, transDist = transDist,
                                     potentialWat = potentialWat, comAg = comAg,
                                     multicropping = multicropping, aggregate = FALSE)[, , "irrigatable"])
 
@@ -169,7 +171,7 @@ reportEconOfIrrig <- function(region = "GLO", output, gtRange, scenario, lpjml, 
                                     gainthreshold = gainthreshold, rankmethod = rankmethod,
                                     allocationrule = allocationrule, thresholdtype = thresholdtype,
                                     accessibilityrule = accessibilityrule,
-                                    efrMethod = efrMethod,
+                                    efrMethod = efrMethod, transDist = transDist,
                                     irrigationsystem = irrigationsystem,
                                     landScen = landScen, comAg = comAg,
                                     multicropping = multicropping, aggregate = FALSE)[, , output])

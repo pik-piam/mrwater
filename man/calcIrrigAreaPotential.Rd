@@ -21,7 +21,8 @@ calcIrrigAreaPotential(
   cropmix,
   potentialWat,
   comAg,
-  multicropping
+  multicropping,
+  transDist
 )
 }
 \arguments{
@@ -98,6 +99,9 @@ Multiple Cropping Suitability mask selected
              GAEZ data set),
 separated by ":"
 (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)}
+
+\item{transDist}{Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability}
 }
 \value{
 magpie object in cellular resolution

@@ -21,6 +21,7 @@ calcEconOfIrrig(
   irrigationsystem,
   landScen,
   cropmix,
+  transDist,
   potentialWat = TRUE,
   comAg,
   multicropping
@@ -82,6 +83,9 @@ or do not specify second part of the argument}
 "hist_irrig" for historical cropmix on currently irrigated area,
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
+
+\item{transDist}{Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability}
 
 \item{potentialWat}{if TRUE: potential available water and areas used,
 if FALSE: currently reserved water on current irrigated cropland used}

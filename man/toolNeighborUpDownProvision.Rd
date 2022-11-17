@@ -35,7 +35,7 @@ This function calculates water provision by
 }
 \examples{
 \dontrun{
-calcOutput("RiverHumanUses", aggregate = FALSE)
+calcOutput("RiverHumanUseAccounting", aggregate = FALSE)
 }
 
 }

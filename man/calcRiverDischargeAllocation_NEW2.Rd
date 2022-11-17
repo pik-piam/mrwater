@@ -120,7 +120,6 @@ This function distributes surplus basin discharge after the
 \dontrun{
 calcOutput("RiverDischargeAllocation_NEW2", aggregate = FALSE)
 }
-
 }
 \author{
 Felicitas Beier, Jens Heinke

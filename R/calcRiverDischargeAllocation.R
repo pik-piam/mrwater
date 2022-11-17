@@ -68,6 +68,8 @@
 #'                                       GAEZ data set),
 #'                          separated by ":"
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#' @param transDist         Water transport distance allowed to fulfill locally
+#'                          unfulfilled water demand by surrounding cell water availability
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears
@@ -80,7 +82,7 @@
 #' calcOutput("RiverDischargeAllocation", aggregate = FALSE)
 #' }
 #'
-calcRiverDischargeAllocation <- function(lpjml, climatetype,
+calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
                                          selectyears, output, efrMethod, accessibilityrule,
                                          rankmethod, yieldcalib, allocationrule, thresholdtype,
                                          gainthreshold, irrigationsystem, iniyear, landScen,
@@ -111,13 +113,14 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   #                                     Reserved for Non-Agricultural Uses +
   #                                     [Reserved Committed Agricultural Uses, if activated] (in mio. m^3 / yr)
   minWatReserved <- calcOutput("RiverWatReserved", aggregate = FALSE,
+                                transDist = transDist, accessibilityrule = accessibilityrule,
                                 selectyears = selectyears, iniyear = iniyear,
                                 lpjml = lpjml, climatetype = climatetype,
                                 comAg = comAg, multicropping = multicropping,
-                                efrMethod = efrMethod, accessibilityrule = accessibilityrule)
+                                efrMethod = efrMethod)
 
   # Discharge determined by previous river routings (in mio. m^3 / yr)
-  discharge      <- calcOutput("RiverDischargeNatAndHuman",
+  discharge      <- calcOutput("RiverDischargeNatAndHuman",            ### ToDo: replace with RiverHumanUseAccounting
                                selectyears = selectyears, iniyear = iniyear,
                                lpjml = lpjml, climatetype = climatetype,
                                efrMethod = efrMethod, multicropping = multicropping,

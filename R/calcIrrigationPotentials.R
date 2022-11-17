@@ -11,6 +11,8 @@
 #'                         historical baseline "GSWP3-W5E5:historical"
 #' @param selectyears      years for which potentially irrigated area is calculated
 #' @param iniyear          initialization year
+#' @param transDist        Water transport distance allowed to fulfill locally
+#'                         unfulfilled water demand by surrounding cell water availability
 #'
 #' @return magpie object
 #' @author Felicitas Beier
@@ -25,7 +27,9 @@
 #'
 #' @export
 
-calcIrrigationPotentials <- function(output, selectyears, iniyear, lpjml, climatetype) {
+calcIrrigationPotentials <- function(output, transDist,
+                                     selectyears, iniyear,
+                                     lpjml, climatetype) {
 
   ### STILL IN USE OR CAN BE DELETED? ###
 
@@ -54,7 +58,7 @@ calcIrrigationPotentials <- function(output, selectyears, iniyear, lpjml, climat
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                   rankmethod = rankmethod, thresholdtype = thresholdtype,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                  irrigationsystem = irrigationsystem,
+                                  irrigationsystem = irrigationsystem, transDist = transDist,
                                   landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
                                   comAg = comAg, multicropping = multicropping,
                                   aggregate = FALSE)[, , "irrigatable"])
@@ -73,7 +77,8 @@ calcIrrigationPotentials <- function(output, selectyears, iniyear, lpjml, climat
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   irrigationsystem = irrigationsystem,
                                   landScen = landScen, cropmix = cropmix, comAg = comAg,
-                                  multicropping = multicropping, aggregate = FALSE)[, , output])
+                                  multicropping = multicropping, transDist = transDist,
+                                  aggregate = FALSE)[, , output])
     # transform from mio. m^3 to km^3:
     # (1 km^3 = 1e+09 m^3)
     # (1 mio. = 1e+06)

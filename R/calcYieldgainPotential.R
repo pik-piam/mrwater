@@ -53,6 +53,8 @@
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
 #' @param unlimited         TRUE: no water limitation to potentially irrigated area
 #'                          FALSE: irrigatable area limited by water availability
+#' @param transDist         Water transport distance allowed to fulfill locally
+#'                          unfulfilled water demand by surrounding cell water availability
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -71,7 +73,7 @@
 calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climatetype,
                                    efrMethod, yieldcalib, irrigationsystem,
                                    accessibilityrule, rankmethod,
-                                   gainthreshold, allocationrule,
+                                   gainthreshold, allocationrule, transDist = transDist,
                                    landScen, cropmix, multicropping, unlimited) {
 
   thresholdtype <- paste(strsplit(rankmethod, ":")[[1]][1], strsplit(rankmethod, ":")[[1]][2], sep = ":")
@@ -101,7 +103,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                      rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                      thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
                                      landScen = landScen, cropmix = cropmix, potential_wat = TRUE,
-                                     comAg = FALSE, multicropping = multicropping,
+                                     comAg = FALSE, multicropping = multicropping, transDist = transDist,
                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
     d    <- "Potentially Irrigated Area considering land and water constraints"
 

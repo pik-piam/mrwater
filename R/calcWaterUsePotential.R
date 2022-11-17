@@ -57,6 +57,8 @@
 #'                                   GAEZ data set),
 #'                          separated by ":"
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#' @param transDist         Water transport distance allowed to fulfill locally
+#'                          unfulfilled water demand by surrounding cell water availability
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames getCells mbind add_dimension new.magpie
@@ -72,7 +74,7 @@
 calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             thresholdtype, gainthreshold, irrigationsystem, iniyear,
-                            landScen, cropmix, comAg, multicropping) {
+                            landScen, cropmix, comAg, multicropping, transDist) {
 
   # Check
   if (!is.numeric(iniyear)) {
@@ -100,19 +102,22 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                          fill = 0)
 
   # Water use for non-agricultural purposes
-  watNonAg <- calcOutput("RiverHumanUses", humanuse = "non_agriculture",
-                         lpjml = lpjml, climatetype = climatetype,
+  watNonAg <- calcOutput("RiverHumanUseAccounting",
+                         iteration = "non_agriculture",
+                         lpjml = lpjml, climatetype = climatetype, 
+                         transDist = transDist, comAg = comAg,
                          efrMethod = efrMethod, multicropping = multicropping,
                          selectyears = selectyears, iniyear = iniyear,
                          aggregate = FALSE)
-  watNonAgWW <- collapseNames(watNonAg[, , "currHuman_ww"])
-  watNonAgWC <- collapseNames(watNonAg[, , "currHuman_wc"])
+  watNonAgWW <- collapseNames(watNonAg[, , "currHumanWWtotal"])
+  watNonAgWC <- collapseNames(watNonAg[, , "currHumanWCtotal"])
 
   if (comAg == TRUE) {
-
     # Water already committed to irrigation
-    currHuman <- calcOutput("RiverHumanUses", humanuse = "committed_agriculture",
+    currHuman <- calcOutput("RiverHumanUseAccounting",
+                             iteration = "committed_agriculture",
                              lpjml = lpjml, climatetype = climatetype,
+                             transDist = transDist, comAg = comAg,
                              efrMethod = efrMethod, multicropping = multicropping,
                              selectyears = selectyears, iniyear = iniyear,
                              aggregate = FALSE)
@@ -125,8 +130,8 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
 
   }
 
-  currHumanWW <- collapseNames(currHuman[, , "currHuman_ww"])
-  currHumanWC <- collapseNames(currHuman[, , "currHuman_wc"])
+  currHumanWW <- collapseNames(currHuman[, , "currHumanWWtotal"])
+  currHumanWC <- collapseNames(currHuman[, , "currHumanWCtotal"])
 
   # Function outputs
   watAgWW  <- watAvlAgWW + currHumanWW

@@ -25,7 +25,6 @@ This function calculates cellular discharge
 \dontrun{
 calcOutput("RiverHumanUseAccounting", aggregate = FALSE)
 }
-
 }
 \author{
 Felicitas Beier, Jens Heinke
