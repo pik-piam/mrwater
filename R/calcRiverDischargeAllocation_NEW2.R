@@ -115,7 +115,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   tmp <- toolSelectNeighborCell(transDist = transDist, rs = tmp,
                                neighborCells = neighborCells)
   # Add country information
-  map         <- toolGetMapping("mapCoords2Country.rds", where = "mrcommons")
+  map          <- toolGetMappingCoord2Country(extended = FALSE, pretty = FALSE)
   tmp$isoCoord <- paste(tmp$coordinates, map$iso, sep = ".")
   # Reduce list size
   rs <- list()
