@@ -14,9 +14,11 @@
 toolSelectNeighborCell <- function(transDist,  rs = rs,
                                    neighborCells = neighborCells) {
 
-  # empty list to assign neighbor cells in river strucutre list
+  # empty list to assign neighbor cells in river structure list
   rs$neighborcell <- vector("list", length(rs$cells))
   rs$neighbordist <- vector("list", length(rs$cells))
+
+  ##Try with apply: lapply(lapply(neighborCells, "[[", "dist"), FUN = sort)
 
   # append neighbor cells to river structure
   for (i in seq_along(rs$cells)) {

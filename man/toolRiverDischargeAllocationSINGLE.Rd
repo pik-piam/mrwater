@@ -7,6 +7,7 @@
 toolRiverDischargeAllocationSINGLE(
   rs,
   c,
+  downCells,
   iteration,
   transDist,
   inLIST,
@@ -18,6 +19,8 @@ toolRiverDischargeAllocationSINGLE(
 downstreamcells and neighboring cells and distances}
 
 \item{c}{Current cell for which water shall be allocated}
+
+\item{downCells}{Downstream cells of c}
 
 \item{iteration}{Currently active iteration of river discharge allocation.
 Arguments:

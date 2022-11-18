@@ -114,6 +114,9 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   # Calculate river structure including neighbor cells
   rs <- toolSelectNeighborCell(transDist = transDist, rs = rs,
                                neighborCells = neighborCells)
+  # Add country information
+  map    <- toolGetMapping("mapCoords2Country.rds", where = "mrcommons")
+  rs$iso <- map$iso
 
   if (allocationrule == "optimization") {
     # Global cell rank based on yield gain potential by irrigation
@@ -181,6 +184,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
     currReqWW <- currReqWW * allocationshare
     currReqWC <- currReqWC * allocationshare
 
+    # numeric cell number
     rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
 
     # In case of optimization, glocellrank differs in each year:
@@ -188,26 +192,43 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
       for (scen in scenarios) {
         # Loop in ranked cell order
         for (o in (1:max(glocellrank[, y, ], na.rm = TRUE))) {
+
           # Extract the cell number
           c <- rs$cells[rs$coordinates == paste(strsplit(gsub(".*_", "",
                                                               names(which(glocellrank[, y, ] == o))), "\\.")[[1]][1],
                                                 strsplit(gsub(".*_", "",
                                                               names(which(glocellrank[, y, ] == o))), "\\.")[[1]][2],
                                                 sep = ".")]
+          # Select relevant cells (for performance reasons)
+          if (transDist != 0) {
+            nCells <- rs$neighborcell[[c]]
+          } else {
+            nCells <- NULL
+          }
+          if (length(rs$downstreamcells[nCells]) > 0) {
+            nCells <- c(nCells, unlist(rs$downstreamcells[nCells]))
+          }
+          downCells <- NULL
+          if (length(rs$downstreamcells[[c]]) > 0) {
+            downCells <- c(downCells, unlist(rs$downstreamcells[[c]]))
+
+          }
+          selectCells <- unique(c(c, downCells, nCells))
           # Function inputs
           inLIST <- list(currReqWW = currReqWW[c, y, scen],
                          currReqWC = currReqWC[c, y, scen])
-          inoutLIST <- list(discharge = discharge[, y, scen],
-                            prevReservedWW = prevReservedWW[, y, scen])
+          inoutLIST <- list(discharge = discharge[selectCells, y, scen],
+                            prevReservedWW = prevReservedWW[selectCells, y, scen])
 
           tmp <- toolRiverDischargeAllocationSINGLE(c = c, rs = rs,
+                                                    downCells = downCells,
                                                     transDist = transDist,
                                                     iteration = "main",
                                                     inoutLIST = inoutLIST,
                                                     inLIST = inLIST)
 
-          discharge[, y, scen]       <- tmp$discharge
-          prevReservedWW[, y, scen]  <- tmp$prevReservedWW
+          discharge[selectCells, y, scen]      <- tmp$discharge
+          prevReservedWW[selectCells, y, scen] <- tmp$prevReservedWW
           fromNeighborWC[c, y, scen] <- tmp$fromNeighborWC
           fromNeighborWW[c, y, scen] <- tmp$fromNeighborWW
           currWWlocal[c, y, scen]    <- tmp$currWWlocal
@@ -288,7 +309,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = paste0("River routing outputs 
+              description  = paste0("River routing outputs
                                      after Surplus Discharge Allocation"),
               isocountries = FALSE))
 }
