@@ -39,11 +39,12 @@ toolRiverDischargeAllocationSINGLE <- function(rs, c,
   if (length(discharge) == 1) {
     cell <- 1
   } else {
-    cell <- paste(rs$coordinates[c], rs$iso[c], sep = ".")
+    cell <- rs$isoCoord[c]
   }
   if (length(downCells) > 0) {
-    downCells <- paste(rs$coordinates[downCells], rs$iso[downCells], sep = ".")
+    downCells <- rs$isoCoord[downCells]
   }
+  allCells <- c(cell, downCells)
 
   ##########################
   ###  Water Allocation  ###
@@ -76,7 +77,7 @@ toolRiverDischargeAllocationSINGLE <- function(rs, c,
   currWWlocal <- currReqWW * fracFulfilled
 
   # adjust discharge in current cell and downstream cells (subtract irrigation water consumption)
-  discharge[c(cell, downCells)] <- discharge[c(cell, downCells)] - currWClocal
+  discharge[allCells]  <- discharge[allCells] - currWClocal
 
   # update minimum water required in cell:
   prevReservedWW[cell] <- prevReservedWW[cell] + currWWlocal
@@ -100,21 +101,21 @@ toolRiverDischargeAllocationSINGLE <- function(rs, c,
     # Neighbor Irrigation (under "optimization" scenario)
     if ((transDist != 0) &&
         !is.null(neighborsOfC) &&
-        (missingWW > 0 || missingWC > 0)) {
+        (missingWW > 1e-4 || missingWC > 1e-4)) {
 
       # Water Allocation in neighboring cells of c
       # Loop over neighbor cells (by distance) until water requirements fulfilled
       for (n in neighborsOfC) {
 
-        names(n) <- paste(rs$coordinates[n], rs$iso[n], sep = ".")
+        names(n) <- rs$isoCoord[n]
         # If withdrawal constraint not fulfilled in neighbor cell:
         # jump directly to next neighbor
         if (discharge[names(n)] - prevReservedWW[names(n)] <= 0) {
           break
         }
         # Select relevant cells
-        selectCells       <- c(n, rs$downstreamcells[[n]])
-        names(selectCells) <- paste(rs$coordinates[selectCells], rs$iso[selectCells], sep = ".")
+        selectCells        <- c(n, rs$downstreamcells[[n]])
+        names(selectCells) <- rs$isoCoord[selectCells]
 
         # Function inputs
         inLISTneighbor    <- list(currReqWW = missingWW,
@@ -141,13 +142,13 @@ toolRiverDischargeAllocationSINGLE <- function(rs, c,
         missingWC <- missingWC - tmp$currWClocal
 
         # Checks
-        if (round(missingWW, digits = 4) < 0 || round(missingWC, digits = 4) < 0) {
+        if (round(missingWW, digits = 4) < 0) {
           stop(paste0("More water than necessary provided
                       in toolRiverDischargeAllocation by neighborcell ", n,
                       "to main cell ", c))
         }
         # Exit Neighbor Water Provision when enough water provided
-        if (missingWW <= 0 && missingWC <= 0) {
+        if (missingWW <= 1e-4 && missingWC <= 1e-4) {
           break
         }
       }

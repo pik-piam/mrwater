@@ -106,17 +106,23 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   ###### Read in Required Inputs ########
   #######################################
   # Read in river structure
-  rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
+  tmp <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
                 package = "mrwater"))
   # Read in neighbor cells and transform to list
   neighborCells <- readSource("NeighborCells", convert = FALSE)
   neighborCells <- attr(neighborCells, "data")
   # Calculate river structure including neighbor cells
-  rs <- toolSelectNeighborCell(transDist = transDist, rs = rs,
+  tmp <- toolSelectNeighborCell(transDist = transDist, rs = tmp,
                                neighborCells = neighborCells)
   # Add country information
-  map    <- toolGetMapping("mapCoords2Country.rds", where = "mrcommons")
-  rs$iso <- map$iso
+  map         <- toolGetMapping("mapCoords2Country.rds", where = "mrcommons")
+  tmp$isoCoord <- paste(tmp$coordinates, map$iso, sep = ".")
+  # Reduce list size
+  rs <- list()
+  rs$cells           <- tmp$cells
+  rs$isoCoord        <- tmp$isoCoord
+  rs$downstreamcells <- tmp$downstreamcells
+  rs$neighborcell    <- tmp$neighborcell
 
   if (allocationrule == "optimization") {
     # Global cell rank based on yield gain potential by irrigation
@@ -155,14 +161,11 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
     }
     scenarios      <- getItems(tmp, dim = 3)
     discharge      <- as.array(tmp)
-
     prevReservedWW <- as.array(collapseNames(inputData[, , "prevReservedWW"]))
-    #prevReservedWC <- as.array(collapseNames(inputData[, , "prevReservedWC"]))
-    #previousTotal <- as.array(collapseNames(inputData[, , "previousTotal"]))
-    currReqWW <- as.array(collapseNames(inputData[, , "currRequestWWlocal"]))
-    currReqWC <- as.array(collapseNames(inputData[, , "currRequestWClocal"]))
-
+    currReqWW      <- as.array(collapseNames(inputData[, , "currRequestWWlocal"]))
+    currReqWC      <- as.array(collapseNames(inputData[, , "currRequestWClocal"]))
     glocellrank    <- as.array(glocellrank)
+
     # Initialize objects to be filled in Allocation Algorithm with 0
     fromNeighborWC <- fromNeighborWW <- as.array(.transformObject(0))
     currWWlocal    <- currWClocal    <- as.array(.transformObject(0))
@@ -194,45 +197,46 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
         for (o in (1:max(glocellrank[, y, ], na.rm = TRUE))) {
 
           # Extract the cell number
-          c <- rs$cells[rs$coordinates == paste(strsplit(gsub(".*_", "",
-                                                              names(which(glocellrank[, y, ] == o))), "\\.")[[1]][1],
-                                                strsplit(gsub(".*_", "",
-                                                              names(which(glocellrank[, y, ] == o))), "\\.")[[1]][2],
-                                                sep = ".")]
-          # Select relevant cells (for performance reasons)
-          if (transDist != 0) {
-            nCells <- rs$neighborcell[[c]]
-          } else {
-            nCells <- NULL
-          }
-          if (length(rs$downstreamcells[nCells]) > 0) {
-            nCells <- c(nCells, unlist(rs$downstreamcells[nCells]))
-          }
-          downCells <- NULL
-          if (length(rs$downstreamcells[[c]]) > 0) {
-            downCells <- c(downCells, unlist(rs$downstreamcells[[c]]))
+          c <- rs$cells[rs$isoCoord == names(which(glocellrank[, y, ] == o))]
 
+          # Only run for cells where water required
+          if (currReqWW[c, y, scen] > 1e-4) {
+
+            # Select relevant cells (for performance reasons)
+            if (transDist > 0) {
+              nCells <- rs$neighborcell[[c]]
+            } else {
+              nCells <- NULL
+            }
+            if (length(rs$downstreamcells[nCells]) > 0) {
+              nCells <- c(nCells, unlist(rs$downstreamcells[nCells]))
+            }
+            downCells <- NULL
+            if (length(rs$downstreamcells[[c]]) > 0) {
+              downCells <- c(downCells, unlist(rs$downstreamcells[[c]]))
+
+            }
+            selectCells <- unique(c(c, downCells, nCells))
+            # Function inputs
+            inLIST    <- list(currReqWW = currReqWW[c, y, scen],
+                              currReqWC = currReqWC[c, y, scen])
+            inoutLIST <- list(discharge = discharge[selectCells, y, scen],
+                              prevReservedWW = prevReservedWW[selectCells, y, scen])
+
+            tmp <- toolRiverDischargeAllocationSINGLE(c = c, rs = rs,
+                                                      downCells = downCells,
+                                                      transDist = transDist,
+                                                      iteration = "main",
+                                                      inoutLIST = inoutLIST,
+                                                      inLIST = inLIST)
+
+            discharge[selectCells, y, scen]      <- tmp$discharge
+            prevReservedWW[selectCells, y, scen] <- tmp$prevReservedWW
+            fromNeighborWC[c, y, scen] <- tmp$fromNeighborWC
+            fromNeighborWW[c, y, scen] <- tmp$fromNeighborWW
+            currWWlocal[c, y, scen]    <- tmp$currWWlocal
+            currWClocal[c, y, scen]    <- tmp$currWClocal
           }
-          selectCells <- unique(c(c, downCells, nCells))
-          # Function inputs
-          inLIST <- list(currReqWW = currReqWW[c, y, scen],
-                         currReqWC = currReqWC[c, y, scen])
-          inoutLIST <- list(discharge = discharge[selectCells, y, scen],
-                            prevReservedWW = prevReservedWW[selectCells, y, scen])
-
-          tmp <- toolRiverDischargeAllocationSINGLE(c = c, rs = rs,
-                                                    downCells = downCells,
-                                                    transDist = transDist,
-                                                    iteration = "main",
-                                                    inoutLIST = inoutLIST,
-                                                    inLIST = inLIST)
-
-          discharge[selectCells, y, scen]      <- tmp$discharge
-          prevReservedWW[selectCells, y, scen] <- tmp$prevReservedWW
-          fromNeighborWC[c, y, scen] <- tmp$fromNeighborWC
-          fromNeighborWW[c, y, scen] <- tmp$fromNeighborWW
-          currWWlocal[c, y, scen]    <- tmp$currWWlocal
-          currWClocal[c, y, scen]    <- tmp$currWClocal
         }
       }
     }
