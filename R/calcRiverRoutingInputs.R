@@ -96,13 +96,16 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
   nonAgWC   <- collapseNames(watNonAg[, , "consumption"])
   scenarios <- c(paste("on", getItems(nonAgWW, dim = 3), sep = "."),
                  paste("off", getItems(nonAgWW, dim = 3), sep = "."))
+  cells     <- getItems(watNonAg, dim = 1)
   # Transform object dimensions
-  .transformObject <- function(x) {
+  .transformObject <- function(x,
+                               cells, years, scenarios) {
     # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getItems(watNonAg, dim = 1),
-                          years = getItems(watNonAg, dim = 2),
+    object0 <- new.magpie(cells_and_regions = cells,
+                          years = years,
                           names = scenarios,
-                          fill = 0, sets = c("x.y.iso", "year", "EFP.scen"))
+                          fill = 0,
+                          sets = c("x.y.iso", "year", "EFP.scen"))
     # bring object x to dimension of object0
     out     <- object0 + x
     return(out)
@@ -113,29 +116,31 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Previous Uses
     # Minimum flow requirements determined by natural flow river routing:
     # (full) Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
-    prevReservedWW <- .transformObject(0)
+    prevReservedWW <- .transformObject(x = 0,
+                                       cells = cells, years = selectyears, scenarios = scenarios)
     prevReservedWW[, , "on"] <- calcOutput("EnvmtlFlowRequirements",
                                           lpjml = lpjml, climatetype = climatetype,
                                           selectyears = selectyears, efrMethod = efrMethod,
                                           aggregate = FALSE)[, , "EFR"]
-    # No previous consumption
-    prevReservedWC <- .transformObject(0)
+    # No previous consumption & no previous human uses yet
+    prevReservedWC <- previousTotal <- .transformObject(x = 0,
+                                                        cells = cells, years = selectyears, scenarios = scenarios)
 
     ## Current Uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-    currRequestWWlocal <- .transformObject(nonAgWW)
+    currRequestWWlocal <- .transformObject(x = nonAgWW,
+                                          cells = cells, years = selectyears, scenarios = scenarios)
     # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
-    currRequestWClocal <- .transformObject(nonAgWC)
+    currRequestWClocal <- .transformObject(x = nonAgWC,
+                                          cells = cells, years = selectyears, scenarios = scenarios)
 
     ## Discharge from previous routing (natural discharge)
     discharge <- collapseNames(calcOutput("RiverNaturalFlows",
                                           selectyears = selectyears,
                                           lpjml = lpjml, climatetype = climatetype,
                                           aggregate = FALSE)[, , "discharge_nat"])
-    discharge <- .transformObject(discharge)
-
-    # There are no previous human uses yet to be considered (empty arrays)
-    previousTotal <- .transformObject(0)
+    discharge <- .transformObject(x = discharge,
+                                  cells = cells, years = selectyears, scenarios = scenarios)
 
   } else if (iteration == "committed_agriculture") {
     ## Previous Uses
@@ -161,11 +166,13 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                             selectyears = selectyears, iniyear = iniyear,
                             multicropping = multicropping, aggregate = FALSE)
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
-    currRequestWWlocal <- .transformObject(collapseNames(dimSums(watComAg[, , "withdrawal"],
-                                                                 dim = "crop")))
+    currRequestWWlocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "withdrawal"],
+                                                                 dim = "crop")),
+                                          cells = cells, years = selectyears, scenarios = scenarios)
     # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
-    currRequestWClocal <- .transformObject(collapseNames(dimSums(watComAg[, , "consumption"],
-                                                                 dim = "crop")))
+    currRequestWClocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "consumption"],
+                                                                 dim = "crop")),
+                                          cells = cells, years = selectyears, scenarios = scenarios)
 
     ## Discharge from previous routing
     discharge <- collapseNames(previousHumanUse[, , "discharge"])
@@ -185,7 +192,8 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                             multicropping = multicropping, aggregate = FALSE)
     irrigGain[irrigGain <= gainthreshold] <- 0
     irrigGain[irrigGain > gainthreshold]  <- 1
-    irrigGain <- .transformObject(irrigGain)
+    irrigGain <- .transformObject(x = irrigGain,
+                                  cells = cells, years = selectyears, scenarios = scenarios)
 
     ## Previous Uses
     prevRouting <- calcOutput("RiverHumanUseAccounting",
@@ -231,7 +239,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Discharge determined by previous river routings (in mio. m^3 / yr)
     discharge <- collapseNames(prevRouting[, , "discharge"])
 
-    # There are no previous human uses yet to be considered (empty arrays)
+    # Previous human uses to be considered
     previousTotal <- collapseNames(prevRouting[, , "currHumanWCtotal"])
 
   } else {
@@ -243,14 +251,15 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
   ### Outputs ###
   ###############
   ### Final magpie object structure to be filled
-  out <- .transformObject(new.magpie(cells_and_regions = getItems(watNonAg, dim = 1),
-                                     years = getItems(watNonAg, dim = 2),
-                                     names = c("discharge",
-                                               "prevReservedWW", "prevReservedWC",
-                                               "currRequestWWlocal", "currRequestWClocal",
-                                               "previousTotal"),
-                                     sets = c("x.y.iso", "year", "data"),
-                                     fill = NA))
+  out <- .transformObject(x = new.magpie(cells_and_regions = getItems(watNonAg, dim = 1),
+                                        years = getItems(watNonAg, dim = 2),
+                                        names = c("discharge",
+                                                    "prevReservedWW", "prevReservedWC",
+                                                    "currRequestWWlocal", "currRequestWClocal",
+                                                    "previousTotal"),
+                                        sets = c("x.y.iso", "year", "data"),
+                                        fill = NA),
+                          cells = cells, years = selectyears, scenarios = scenarios)
   out[, , "discharge"]          <- discharge
   out[, , "prevReservedWW"]     <- prevReservedWW
   out[, , "prevReservedWC"]     <- prevReservedWC

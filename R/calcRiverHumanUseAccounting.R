@@ -67,15 +67,16 @@ calcRiverHumanUseAccounting <- function(iteration,
                           selectyears = selectyears, iniyear = iniyear,
                           efrMethod = efrMethod, multicropping = multicropping,
                           aggregate = FALSE)
-  discharge <- collapseNames(inputData[, , "discharge"])
+  dischargeMAG <- collapseNames(inputData[, , "discharge"])
 
   # Internal Function: Transform object dimensions
-  .transformObject <- function(x) {
+  .transformObject <- function(x, mag) {
     # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getItems(discharge, dim = 1),
-                          years = getItems(discharge, dim = 2),
-                          names = getItems(discharge, dim = 3),
-                          fill = 0, sets = c("x.y.iso", "year", "EFP.scen"))
+    object0 <- new.magpie(cells_and_regions = getItems(mag, dim = 1),
+                          years = getItems(mag, dim = 2),
+                          names = getItems(mag, dim = 3),
+                          fill = 0,
+                          sets = c("x.y.iso", "year", "EFP.scen"))
     # bring object x to dimension of object0
     out <- object0 + x
     return(out)
@@ -88,7 +89,8 @@ calcRiverHumanUseAccounting <- function(iteration,
                           lpjml = lpjml, climatetype = climatetype,
                           aggregate = FALSE)
   # Natural discharge (for checks)
-  natDischarge <- .transformObject(collapseNames(natFlows[, , "discharge_nat"]))
+  natDischarge <- .transformObject(x = collapseNames(natFlows[, , "discharge_nat"]),
+                                  mag = dischargeMAG)
   # Lake evaporation as calculated by natural flow river routing
   lakeEvap <- collapseNames(natFlows[, , "lake_evap_nat"])
   # Runoff (on land and water)
@@ -100,13 +102,15 @@ calcRiverHumanUseAccounting <- function(iteration,
   runoffWOEvap <- yearlyRunoff - lakeEvap
 
   # Initialize river routing variables and dimensions
-  fracFulfilled <- missingWW <- missingWC <- as.array(.transformObject(0))
+  fracFulfilled <- missingWW <- missingWC <- as.array(.transformObject(x = 0,
+                                                                       mag = dischargeMAG))
   # Extract scenarios and years
-  years     <- getItems(discharge, dim = 2)
-  scenarios <- getItems(discharge, dim = 3)
+  years     <- getItems(dischargeMAG, dim = 2)
+  scenarios <- getItems(dischargeMAG, dim = 3)
   # Adjust object dimension and type
-  runoffWOEvap   <- as.array(.transformObject(runoffWOEvap))
-  discharge      <- as.array(discharge)
+  runoffWOEvap   <- as.array(.transformObject(x = runoffWOEvap,
+                                              mag = dischargeMAG))
+  discharge      <- as.array(dischargeMAG)
   prevReservedWW <- as.array(collapseNames(inputData[, , "prevReservedWW"]))
   prevReservedWC <- as.array(collapseNames(inputData[, , "prevReservedWC"]))
   previousTotal  <- collapseNames(inputData[, , "previousTotal"])
@@ -230,19 +234,20 @@ calcRiverHumanUseAccounting <- function(iteration,
   ### Outputs ###
   ###############
   ### Final magpie object structure to be filled
-  out <- .transformObject(new.magpie(cells_and_regions = getItems(natDischarge, dim = 1),
-                          years = getItems(natDischarge, dim = 2),
-                          names = c("discharge",
-                                    # water reserved in current cell (for either local or neighboring cell)
-                                    # to be considered in following river water use accountings
-                                    "reservedWW", # (note: was previously required_wat_min, needs to be adjusted)
-                                    "reservedWC",
-                                    # water available for specified use from local sources and surrounding cells:
-                                    "currHumanWWtotal", "currHumanWCtotal",
-                                    # water available for specified use from local sources
-                                    "currHumanWWlocal", "currHumanWClocal"),
-                          sets = c("x.y.iso", "year", "data"),
-                          fill = NA))
+  out <- .transformObject(x = new.magpie(cells_and_regions = getItems(natDischarge, dim = 1),
+                                         years = getItems(natDischarge, dim = 2),
+                                         names = c("discharge",
+                                                   # water reserved in current cell (for either local or neighboring cell)
+                                                   # to be considered in following river water use accountings
+                                                   "reservedWW", # (note: was previously required_wat_min, needs to be adjusted)
+                                                   "reservedWC",
+                                                   # water available for specified use from local sources and surrounding cells:
+                                                   "currHumanWWtotal", "currHumanWCtotal",
+                                                   # water available for specified use from local sources
+                                                   "currHumanWWlocal", "currHumanWClocal"),
+                                          sets = c("x.y.iso", "year", "data"),
+                                          fill = NA),
+                          mag = dischargeMAG)
   # river discharge flows
   out[, , "discharge"] <- as.magpie(discharge, spatial = 1, temporal = 2)
   # water reserved in current cell (for either local or neighboring cell)
@@ -275,7 +280,8 @@ calcRiverHumanUseAccounting <- function(iteration,
           in calcRiverHumanUseAccounting.")
   }
   # Check whether water has been lost
-  basinDischarge <- .transformObject(0)
+  basinDischarge <- .transformObject(x = 0,
+                                     mag = dischargeMAG)
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
   totalWat <- dimSums(basinDischarge, dim = 1) +
                 dimSums(out[, , "currHumanWCtotal"],

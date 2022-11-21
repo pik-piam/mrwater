@@ -119,7 +119,7 @@ toolRiverDischargeAllocationSINGLE <- function(rs, c,
 
         # Function inputs
         inLISTneighbor    <- list(currReqWW = missingWW,
-                                 currReqWC = missingWC)
+                                  currReqWC = missingWC)
         inoutLISTneighbor <- list(discharge = discharge[names(selectCells)],
                                   prevReservedWW = prevReservedWW[names(selectCells)])
 
