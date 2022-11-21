@@ -174,7 +174,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
                       years = getYears(tmp),
                       names = c("discharge",
                                 "currWWlocal", "currWClocal",
-                                "currWCtotal", "currWCtotal"),
+                                "currWWtotal", "currWCtotal"),
                       sets = c("x.y.iso", "year", "data"))
     out <- .transformObject(out)
 
