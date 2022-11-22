@@ -60,12 +60,14 @@
 #' @param lpjml             LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype       Switch between different climate scenarios or
 #'                          historical baseline "GSWP3-W5E5:historical"
+#' @param transDist         Water transport distance allowed to fulfill locally
+#'                          unfulfilled water demand by surrounding cell water availability
 #'
 #' @author Felicitas Beier
 #'
 #' @export
 
-fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
+fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transDist = 0,
                       allocationrule = "optimization", rankmethod = "USD_ha:GLO:TRUE",
                       thresholdtype = "USD_ha:GLO", gainthreshold = 500,
                       protectLand = "HalfEarth", yieldcalib = "TRUE:FALSE",
@@ -79,7 +81,6 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
   selectyears      <- 2010
   plotyear         <- 2010
   ssp              <- "ssp2"
-  transDist        <- 0
 
   irrigationsystem <- "initialization"
 
@@ -349,7 +350,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
              file = "LPJmL_monthlyDischarge.mz")
 
   # Share current irrigation water that can be fulfilled by available water resources
-  calcOutput("ShrHumanUsesFulfilled", 
+  calcOutput("ShrHumanUsesFulfilled",
              multicropping = multicropping, transDist = transDist,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,

@@ -9,7 +9,8 @@ fullMULTICROPPING(
   yieldcalib = "TRUE:TRUE:actual:irrig_crop",
   allocationrule = "optimization",
   rankmethod = "USD_ha:GLO:TRUE",
-  thresholdtype = "USD_ha:GLO"
+  thresholdtype = "USD_ha:GLO",
+  transDist = 100
 )
 }
 \arguments{
@@ -51,6 +52,9 @@ USD_m3 (USD per cubic meter) for volumetric return.
 Price aggregation:
 "GLO" for global average prices, or
 "ISO" for country-level prices}
+
+\item{transDist}{Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability}
 }
 \description{
 Function that produces output for irrigation potentials

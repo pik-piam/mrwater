@@ -36,6 +36,8 @@
 #'                       Price aggregation:
 #'                       "GLO" for global average prices, or
 #'                       "ISO" for country-level prices
+#' @param transDist      Water transport distance allowed to fulfill locally
+#'                       unfulfilled water demand by surrounding cell water availability
 #'
 #' @author Felicitas Beier
 #'
@@ -45,10 +47,10 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                               yieldcalib = "TRUE:TRUE:actual:irrig_crop",
                               allocationrule = "optimization",
                               rankmethod = "USD_ha:GLO:TRUE",
-                              thresholdtype = "USD_ha:GLO") {
+                              thresholdtype = "USD_ha:GLO",
+                              transDist = 100) {
 
   # Standard settings
-  transDist         <- 100
   iniyear           <- "y2010"
   selectyears       <- "y2010"
   plotyear          <- "y2010"
@@ -76,6 +78,22 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              transDist = transDist, comAg = FALSE,
              aggregate = FALSE,
              file = "nonAguses.mz")
+
+  # Committed Agricultural water uses
+  calcOutput("RiverHumanUseAccounting",
+             humanuse = "committed_agriculture",
+             lpjml = lpjml, climatetype = climatetype,
+             efrMethod = efrMethod, multicropping = FALSE,
+             selectyears = selectyears, iniyear = iniyear,
+             transDist = transDist, comAg = TRUE,
+             aggregate = FALSE, file = "comAgUses_single.mz")
+  calcOutput("RiverHumanUseAccounting",
+             humanuse = "committed_agriculture",
+             lpjml = lpjml, climatetype = climatetype,
+             efrMethod = efrMethod, multicropping = FALSE,
+             selectyears = selectyears, iniyear = iniyear,
+             transDist = transDist, comAg = TRUE,
+             aggregate = FALSE, file = "comAgUses_multi.mz")
 
   # Yields
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
@@ -186,18 +204,6 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                              as.list(strsplit(m, split = ":"))[[1]][3], ".mz"))
   }
 
-  # Discharge determined by previous river routings (in mio. m^3 / yr)
-  calcOutput("RiverDischargeNatAndHuman", selectyears = selectyears, iniyear = iniyear,
-              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
-              multicropping = "TRUE:actual:irrig_crop",
-              comAg = TRUE, aggregate = FALSE,
-              file = "comAgdischarge_multi.mz")
-
-  calcOutput("RiverDischargeNatAndHuman", selectyears = selectyears, iniyear = iniyear,
-              lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod, multicropping = FALSE,
-              comAg = TRUE, aggregate = FALSE,
-              file = "comAgdischarge_single.mz")
-
   # Required water for full irrigation per cell (in mio. m^3)
   calcOutput("FullIrrigationRequirement",
               selectyears = selectyears, iniyear = iniyear, comagyear = iniyear,
@@ -216,7 +222,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              file = "reqWatFullirrig_single.mz")
 
   # Share current irrigation water that can be fulfilled by available water resources
-  calcOutput("ShrHumanUsesFulfilled", 
+  calcOutput("ShrHumanUsesFulfilled",
              multicropping = FALSE, transDist = transDist,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,

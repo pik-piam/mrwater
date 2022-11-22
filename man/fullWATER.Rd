@@ -7,6 +7,7 @@
 fullWATER(
   efrMethod = "VMF:fair",
   accessibilityrule = "CV:2",
+  transDist = 0,
   allocationrule = "optimization",
   rankmethod = "USD_ha:GLO:TRUE",
   thresholdtype = "USD_ha:GLO",
@@ -31,6 +32,9 @@ of accessibility restriction:
 discharge that is exceeded x percent of the time on average throughout a year
 (Qx, e.g. Q75: 0.25, Q50: 0.5)
 or base value for exponential curve separated by : (CV:2)}
+
+\item{transDist}{Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst")}

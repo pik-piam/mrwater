@@ -82,18 +82,18 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   }
 
   # Water potentially available for irrigation (accounting for previously committed agricultural uses)
-  watAvlAg  <- collapseNames(calcOutput("RiverDischargeAllocation",
-                                        output = "potIrrigWat", selectyears = selectyears,
+  watAvlAg  <- collapseNames(calcOutput("RiverDischargeAllocation_NEW2",
                                         lpjml = lpjml, climatetype = climatetype,
-                                        efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                                        selectyears = selectyears, transDist = transDist,
+                                        accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
                                         allocationrule = allocationrule, thresholdtype = thresholdtype,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
                                         cropmix = cropmix, comAg = comAg,
                                         multicropping = multicropping, aggregate = FALSE))
-  watAvlAgWW <- collapseNames(watAvlAg[, , "withdrawal"])
-  watAvlAgWC <- collapseNames(watAvlAg[, , "consumption"])
+  watAvlAgWW <- collapseNames(watAvlAg[, , "currWWtotal"])
+  watAvlAgWC <- collapseNames(watAvlAg[, , "currWCtotal"])
 
 
   watNonAgWW <- watNonAgWC <- currHumanWW <- currHumanWC <- new.magpie(cells_and_regions = getCells(watAvlAgWW),
@@ -104,7 +104,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   # Water use for non-agricultural purposes
   watNonAg <- calcOutput("RiverHumanUseAccounting",
                          iteration = "non_agriculture",
-                         lpjml = lpjml, climatetype = climatetype, 
+                         lpjml = lpjml, climatetype = climatetype,
                          transDist = transDist, comAg = comAg,
                          efrMethod = efrMethod, multicropping = multicropping,
                          selectyears = selectyears, iniyear = iniyear,
