@@ -102,7 +102,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = paste0("potCropland:", protectLand), potentialWat = TRUE, comAg = FALSE,
+              landScen = paste0("potCropland:", protectLand),
+              potentialWat = TRUE, comAg = FALSE,  transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTSUS.mz"))
 
@@ -113,7 +114,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = paste0("currCropland:", protectLand), potentialWat = TRUE, comAg = FALSE,
+              landScen = paste0("currCropland:", protectLand),
+              potentialWat = TRUE, comAg = FALSE,  transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURSUS.mz"))
 
@@ -124,7 +126,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = paste0("currIrrig:", protectLand), potentialWat = TRUE, comAg = FALSE,
+              landScen = paste0("currIrrig:", protectLand),
+              potentialWat = TRUE, comAg = FALSE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTSUS.mz"))
 
@@ -135,7 +138,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = paste0("potCropland:", protectLand), potentialWat = TRUE, comAg = TRUE,
+              landScen = paste0("potCropland:", protectLand),
+              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTSUScomAg.mz"))
 
@@ -146,7 +150,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = paste0("currCropland:", protectLand), potentialWat = TRUE, comAg = TRUE,
+              landScen = paste0("currCropland:", protectLand),
+              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURSUScomAg.mz"))
 
@@ -157,7 +162,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = paste0("currIrrig:", protectLand), potentialWat = TRUE, comAg = TRUE,
+              landScen = paste0("currIrrig:", protectLand),
+              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTSUScomAg.mz"))
 
@@ -169,7 +175,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = "potCropland:NULL", potentialWat = TRUE, comAg = FALSE,
+              landScen = "potCropland:NULL",
+              potentialWat = TRUE, comAg = FALSE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTUNSUS.mz"))
 
@@ -180,7 +187,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = "currCropland:NULL", potentialWat = TRUE, comAg = FALSE,
+              landScen = "currCropland:NULL",
+              potentialWat = TRUE, comAg = FALSE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURUNSUS.mz"))
 
@@ -191,7 +199,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = "currIrrig:NULL", potentialWat = TRUE, comAg = FALSE,
+              landScen = "currIrrig:NULL",
+              potentialWat = TRUE, comAg = FALSE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTUNSUS.mz"))
 
@@ -202,7 +211,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = "potCropland:NULL", potentialWat = TRUE, comAg = TRUE,
+              landScen = "potCropland:NULL",
+              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTUNSUScomAg.mz"))
 
@@ -213,7 +223,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = "currCropland:NULL", potentialWat = TRUE, comAg = TRUE,
+              landScen = "currCropland:NULL",
+              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURUNSUScomAg.mz"))
 
@@ -224,7 +235,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
               rankmethod = rankmethod, yieldcalib = yieldcalib,
               allocationrule = allocationrule, thresholdtype = thresholdtype,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
-              landScen = "currIrrig:NULL", potentialWat = TRUE, comAg = TRUE,
+              landScen = "currIrrig:NULL",
+              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTUNSUScomAg.mz"))
 
