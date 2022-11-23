@@ -80,6 +80,7 @@ calcIrrigCropYieldGain <- function(lpjml, climatetype, unit,
   return(list(x            = yieldGain,
               weight       = NULL,
               unit         = unit,
-              description  = "Yield gain potential through irrigation for all different crop types",
+              description  = "Yield gain potential through irrigation
+                              for all different crop types",
               isocountries = FALSE))
 }
