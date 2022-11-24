@@ -71,7 +71,8 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
   ################
 
   # Non-Agricultural water uses (in mio. m^3 / yr) [smoothed]
-  calcOutput("RiverHumanUseAccounting", iteration = "non_agriculture",
+  calcOutput("RiverHumanUseAccounting",
+             iteration = "non_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, multicropping = FALSE,
@@ -81,14 +82,14 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
 
   # Committed Agricultural water uses
   calcOutput("RiverHumanUseAccounting",
-             humanuse = "committed_agriculture",
+             iteration = "committed_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              efrMethod = efrMethod, multicropping = FALSE,
              selectyears = selectyears, iniyear = iniyear,
              transDist = transDist, comAg = TRUE,
              aggregate = FALSE, file = "comAgUses_single.mz")
   calcOutput("RiverHumanUseAccounting",
-             humanuse = "committed_agriculture",
+             iteration = "committed_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              efrMethod = efrMethod, multicropping = FALSE,
              selectyears = selectyears, iniyear = iniyear,

@@ -389,7 +389,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              aggregate = FALSE,
              file = "comAguses.mz")
   # Non-Agricultural water uses (in mio. m^3 / yr) [smoothed]
-  calcOutput("RiverHumanUseAccounting", iteration = "non_agriculture",
+  calcOutput("RiverHumanUseAccounting",
+             iteration = "non_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, multicropping = multicropping,

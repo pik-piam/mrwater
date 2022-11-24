@@ -262,7 +262,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
     # follows the same rules ad the upstream-downstream
     # previous human use accounting
     tmp <- calcOutput("RiverHumanUseAccounting",
-                      humanuse = "potential_irrigation",
+                      iteration = "potential_irrigation",
                       lpjml = lpjml, climatetype = climatetype,
                       efrMethod = efrMethod, multicropping = multicropping,
                       selectyears = selectyears, iniyear = iniyear,
@@ -293,7 +293,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   totalWat <- dimSums(basinDischarge,
                       dim = 1) + dimSums(out[, , "currWCtotal"],
                                         dim = c("x", "y", "iso", "data")) +
-                                  dimSums(inputData[, , "prevReservedWC"], 
+                                  dimSums(inputData[, , "prevReservedWC"],
                                           dim = c("x", "y", "iso", "data"))
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios

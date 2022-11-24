@@ -24,13 +24,18 @@ fullTRANSPORT <- function(multicropping) {
                          crop = "ggcmi_phase3_nchecks_9ca735cb")
   climatetype       <- "GSWP3-W5E5:historical"
   cropmix           <- "hist_total"
-  yieldcalib        <- "TRUE:TRUE:actual:irrig_crop"
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
   allocationrule    <- "optimization"
   rankmethod        <- "USD_ha:GLO:TRUE"
   thresholdtype     <- "USD_ha:GLO"
   irrigationsystem  <- "initialization"
+
+  if (multicropping) {
+    yieldcalib        <- "TRUE:TRUE:actual:irrig_crop"
+  } else {
+    yieldcalib        <- "TRUE:FALSE"
+  }
 
   ##################################
   ###      Current Croparea      ###
