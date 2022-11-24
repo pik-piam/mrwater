@@ -44,15 +44,15 @@ or base value for exponential curve separated by : (CV:2)}
 unfulfilled water demand}
 
 \item{rankmethod}{Rank and optimization method consisting of
-Unit according to which rank is calculated, consisting of:
+1. Unit according to which rank is calculated, consisting of:
 Unit:
 tDM (tons per dry matter),
 USD_ha (USD per hectare) for area return, or
 USD_m3 (USD per cubic meter) for volumetric return; and
-Price aggregation:
+2. Price aggregation:
 "GLO" for global average prices, or
 "ISO" for country-level prices;
-and boolean indicating fullpotential (TRUE, i.e. cell receives full
+and 3. boolean indicating fullpotential (TRUE, i.e. cell receives full
                                       irrigation requirements in total area)
 or reduced potential (FALSE, reduced potential of cell
                       receives at later stage in allocation algorithm);

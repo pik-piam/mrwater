@@ -151,6 +151,10 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                     efrMethod = efrMethod, multicropping = multicropping,
                                     selectyears = selectyears, iniyear = iniyear,
                                     transDist = transDist, comAg = comAg,
+                                    accessibilityrule = NULL,
+                                    rankmethod = NULL, gainthreshold = NULL,
+                                    cropmix = NULL, yieldcalib = NULL,
+                                    irrigationsystem = NULL, landScen = NULL,
                                     aggregate = FALSE)
 
     # Minimum flow requirements determined by previous river routing:
@@ -202,6 +206,10 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                               efrMethod = efrMethod, multicropping = multicropping,
                               selectyears = selectyears, iniyear = iniyear,
                               transDist = transDist, comAg = comAg,
+                              accessibilityrule = NULL,
+                              rankmethod = NULL, gainthreshold = NULL,
+                              cropmix = NULL, yieldcalib = NULL,
+                              irrigationsystem = NULL, landScen = NULL,
                               aggregate = FALSE)
     # Reserved minimum flow: Inaccessible discharge +
     #                        Environmental Flow Requirements (adjusted for

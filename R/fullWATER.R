@@ -386,6 +386,10 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, multicropping = multicropping,
              transDist = transDist, comAg = FALSE,
+             accessibilityrule = NULL,
+             rankmethod = NULL, gainthreshold = NULL,
+             cropmix = NULL, yieldcalib = NULL,
+             irrigationsystem = NULL, landScen = NULL,
              aggregate = FALSE,
              file = "comAguses.mz")
   # Non-Agricultural water uses (in mio. m^3 / yr) [smoothed]
@@ -395,6 +399,10 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, multicropping = multicropping,
              transDist = transDist, comAg = FALSE,
+             accessibilityrule = NULL,
+             rankmethod = NULL, gainthreshold = NULL,
+             cropmix = NULL, yieldcalib = NULL,
+             irrigationsystem = NULL, landScen = NULL,
              aggregate = FALSE,
              file = "nonAguses.mz")
   # Irrigatable areas with committed agricultural uses

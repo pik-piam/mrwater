@@ -77,6 +77,10 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, multicropping = FALSE,
              transDist = transDist, comAg = FALSE,
+             accessibilityrule = NULL,
+             rankmethod = NULL, gainthreshold = NULL,
+             cropmix = NULL, yieldcalib = NULL,
+             irrigationsystem = NULL, landScen = NULL,
              aggregate = FALSE,
              file = "nonAguses.mz")
 
@@ -87,14 +91,24 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              efrMethod = efrMethod, multicropping = FALSE,
              selectyears = selectyears, iniyear = iniyear,
              transDist = transDist, comAg = TRUE,
-             aggregate = FALSE, file = "comAgUses_single.mz")
+             accessibilityrule = NULL,
+             rankmethod = NULL, gainthreshold = NULL,
+             cropmix = NULL, yieldcalib = NULL,
+             irrigationsystem = NULL, landScen = NULL,
+             aggregate = FALSE,
+             file = "comAgUses_single.mz")
   calcOutput("RiverHumanUseAccounting",
              iteration = "committed_agriculture",
              lpjml = lpjml, climatetype = climatetype,
              efrMethod = efrMethod, multicropping = FALSE,
              selectyears = selectyears, iniyear = iniyear,
              transDist = transDist, comAg = TRUE,
-             aggregate = FALSE, file = "comAgUses_multi.mz")
+             accessibilityrule = NULL,
+             rankmethod = NULL, gainthreshold = NULL,
+             cropmix = NULL, yieldcalib = NULL,
+             irrigationsystem = NULL, landScen = NULL,
+             aggregate = FALSE,
+             file = "comAgUses_multi.mz")
 
   # Yields
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,

@@ -43,7 +43,7 @@ separated by ":"
 cellular magpie object
 }
 \description{
-calculates of share of current non-agricultural and irrigation 
+calculates of share of current non-agricultural and irrigation
              that can be fulfilled
              given renewable water availability of the algorithm
 }

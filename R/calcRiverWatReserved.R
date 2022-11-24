@@ -75,6 +75,10 @@ calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
                                        lpjml = lpjml, climatetype = climatetype,
                                        efrMethod = efrMethod, multicropping = multicropping,
                                        selectyears = selectyears, iniyear = iniyear,
+                                       accessibilityrule = accessibilityrule,
+                                       rankmethod = NULL, gainthreshold = NULL,
+                                       cropmix = NULL, yieldcalib = NULL,
+                                       irrigationsystem = NULL, landScen = NULL,
                                        comAg = comAg, aggregate = FALSE)
   } else {
 
@@ -83,6 +87,10 @@ calcRiverWatReserved <- function(selectyears, iniyear, lpjml, climatetype,
                                        lpjml = lpjml, climatetype = climatetype,
                                        efrMethod = efrMethod, multicropping = multicropping,
                                        selectyears = selectyears, iniyear = iniyear,
+                                       accessibilityrule = accessibilityrule,
+                                       rankmethod = NULL, gainthreshold = NULL,
+                                       cropmix = NULL, yieldcalib = NULL,
+                                       irrigationsystem = NULL, landScen = NULL,
                                        comAg = comAg, aggregate = FALSE)
   }
 

@@ -13,15 +13,15 @@
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
 #' @param rankmethod        Rank and optimization method consisting of
-#'                          Unit according to which rank is calculated, consisting of:
+#'                          1. Unit according to which rank is calculated, consisting of:
 #'                          Unit:
 #'                          tDM (tons per dry matter),
 #'                          USD_ha (USD per hectare) for area return, or
 #'                          USD_m3 (USD per cubic meter) for volumetric return; and
-#'                          Price aggregation:
+#'                          2. Price aggregation:
 #'                          "GLO" for global average prices, or
 #'                          "ISO" for country-level prices;
-#'                          and boolean indicating fullpotential (TRUE, i.e. cell receives full
+#'                          and 3. boolean indicating fullpotential (TRUE, i.e. cell receives full
 #'                                                                irrigation requirements in total area)
 #'                          or reduced potential (FALSE, reduced potential of cell
 #'                                                receives at later stage in allocation algorithm);
@@ -80,7 +80,7 @@
 #' \dontrun{
 #' calcOutput("RiverDischargeAllocation_NEW2", aggregate = FALSE)
 #' }
-
+#'
 calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
                                              selectyears, efrMethod,
                                              accessibilityrule, transDist,
@@ -195,13 +195,11 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
       for (scen in scenarios) {
         # Loop in ranked cell order
         for (o in (1:max(glocellrank[, y, ], na.rm = TRUE))) {
-
           # Extract the cell number
           c <- rs$cells[rs$isoCoord == names(which(glocellrank[, y, ] == o))]
 
           # Only run for cells where water required
           if (currReqWW[c, y, scen] > 1e-4) {
-
             # Select relevant cells (for performance reasons)
             if (transDist > 0) {
               nCells <- rs$neighborcell[[c]]
@@ -267,6 +265,10 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
                       efrMethod = efrMethod, multicropping = multicropping,
                       selectyears = selectyears, iniyear = iniyear,
                       transDist = transDist, comAg = comAg,
+                      accessibilityrule = accessibilityrule,
+                      rankmethod = rankmethod, gainthreshold = gainthreshold,
+                      cropmix = cropmix, yieldcalib = yieldcalib,
+                      irrigationsystem = irrigationsystem, landScen = landScen,
                       aggregate = FALSE)
 
     # Return outputs

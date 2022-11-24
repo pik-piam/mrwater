@@ -88,19 +88,23 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
                                   thresholdtype = thresholdtype, gainthreshold = gainthreshold,
                                   irrigationsystem = irrigationsystem, iniyear = iniyear,
                                   landScen = landScen, cropmix = cropmix,
-                                  comAg = comAg, multicropping = multicropping, 
+                                  comAg = comAg, multicropping = multicropping,
                                   transDist = transDist, aggregate = FALSE)
     avlWatWC <- collapseNames(avlWat[, , "wat_ag_wc"])
     avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
 
   } else {
 
-    avlWat         <- calcOutput("RiverHumanUseAccounting", 
+    avlWat         <- calcOutput("RiverHumanUseAccounting",
                                  iteration = "committed_agriculture",
                                  selectyears = selectyears, iniyear = iniyear,
                                  lpjml = lpjml, climatetype = climatetype,
                                  efrMethod = efrMethod, multicropping = multicropping,
                                  transDist = transDist, comAg = comAg,
+                                 accessibilityrule = NULL,
+                                 rankmethod = NULL, gainthreshold = NULL,
+                                 cropmix = NULL, yieldcalib = NULL,
+                                 irrigationsystem = NULL, landScen = NULL,
                                  aggregate = FALSE)
 
     avlWatWC <- collapseNames(avlWat[, , "currHumanWCtotal"])

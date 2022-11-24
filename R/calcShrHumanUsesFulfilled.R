@@ -1,5 +1,5 @@
 #' @title       calcShrHumanUsesFulfilled
-#' @description calculates of share of current non-agricultural and irrigation 
+#' @description calculates of share of current non-agricultural and irrigation
 #'              that can be fulfilled
 #'              given renewable water availability of the algorithm
 #'
@@ -41,7 +41,7 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
   # - fossil groundwater is used for irrigation (e.g. Northern India), but not accounted for in the river routing
   # - deficit irrigation is in place (e.g. Southern Spain), but not accounted for in the river routing
   # - water reuse is not accounted for in the river routing
-  
+
   ##############################
   ### Results from Algorithm ###
   ##############################
@@ -52,7 +52,11 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
                             lpjml = lpjml, climatetype = climatetype,
                             efrMethod = efrMethod, transDist = transDist,
                             selectyears = selectyears, iniyear = iniyear,
-                            multicropping = multicropping, 
+                            multicropping = multicropping,
+                            accessibilityrule = NULL,
+                            rankmethod = NULL, gainthreshold = NULL,
+                            cropmix = NULL, yieldcalib = NULL,
+                            irrigationsystem = NULL, landScen = NULL,
                             comAg = FALSE, aggregate = FALSE)
   fulfilledNAUww <- collapseNames(fulfilledNAU[, , "currHumanWWtotal"])
   fulfilledNAUwc <- collapseNames(fulfilledNAU[, , "currHumanWCtotal"])
@@ -60,14 +64,18 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
   # Water Committed to Agriculture after Routing (in mio. m^3)
   fulfilledCAU   <- calcOutput("RiverHumanUseAccounting",
                                iteration = "committed_agriculture",
-                               lpjml = lpjml, climatetype = climatetype, 
+                               lpjml = lpjml, climatetype = climatetype,
                                efrMethod = efrMethod, transDist = transDist,
                                selectyears = selectyears, iniyear = iniyear,
                                multicropping = multicropping,
+                               accessibilityrule = NULL,
+                               rankmethod = NULL, gainthreshold = NULL,
+                               cropmix = NULL, yieldcalib = NULL,
+                               irrigationsystem = NULL, landScen = NULL,
                                comAg = FALSE, aggregate = FALSE)
   fulfilledCAUww <- collapseNames(fulfilledCAU[, , "currHumanWWtotal"])
   fulfilledCAUwc <- collapseNames(fulfilledCAU[, , "currHumanWCtotal"])
-  
+
   ##############################
   ### Exogenous Water Demand ###
   ##############################
@@ -114,7 +122,7 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
       return(out)
   }
   out <- .transformObject(out)
-  
+
   #################################
   ### Calculate Share Fulfilled ###
   #################################

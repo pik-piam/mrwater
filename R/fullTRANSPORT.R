@@ -50,7 +50,7 @@ fullTRANSPORT <- function(multicropping) {
   ##################################
   ###   Yields and Yield Gains   ###
   ##################################
-  calcOutput("IrrigCropYieldGain", unit = "USD_ha",
+  calcOutput("IrrigCropYieldGain", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
              yieldcalib = yieldcalib, cropmix = cropmix,

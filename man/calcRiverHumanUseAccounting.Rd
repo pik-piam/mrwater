@@ -13,7 +13,14 @@ calcRiverHumanUseAccounting(
   efrMethod,
   multicropping,
   transDist,
-  comAg
+  comAg,
+  accessibilityrule,
+  rankmethod,
+  gainthreshold,
+  cropmix,
+  yieldcalib,
+  irrigationsystem,
+  landScen
 )
 }
 \arguments{
@@ -49,6 +56,57 @@ unfulfilled water demand by surrounding cell water availability}
          in initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential).
 Only relevant for iteration = potential}
+
+\item{accessibilityrule}{(For case of iteration = "potential_irrigation" only:)
+Method used: Quantile method (Q) or Coefficient of Variation (CV)
+combined with scalar value defining the strictness of accessibility restriction:
+discharge that is exceeded x percent of the time on average throughout a year
+(Qx, e.g. Q75: 0.25, Q50: 0.5)
+or base value for exponential curve separated by : (CV:2)}
+
+\item{rankmethod}{(For case of iteration = "potential_irrigation" only:)
+Rank and optimization method consisting of
+1. Unit according to which rank is calculated, consisting of:
+Unit:
+tDM (tons per dry matter),
+USD_ha (USD per hectare) for area return, or
+USD_m3 (USD per cubic meter) for volumetric return; and
+2. Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices;
+and 3. boolean indicating fullpotential (TRUE, i.e. cell receives full
+                                      irrigation requirements in total area)
+or reduced potential (FALSE, reduced potential of cell
+                      receives at later stage in allocation algorithm);
+separated by ":"}
+
+\item{gainthreshold}{(For case of iteration = "potential_irrigation" only:)
+Threshold of yield improvement potential
+(same unit as thresholdtype)}
+
+\item{cropmix}{(For case of iteration = "potential_irrigation" only:)
+Selected cropmix (options:
+"hist_irrig" for historical cropmix on currently irrigated area,
+"hist_total" for historical cropmix on total cropland,
+or selection of proxycrops)}
+
+\item{yieldcalib}{(For case of iteration = "potential_irrigation" only:)
+If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
+     Also needs specification of refYields, separated by ":".
+     Options: FALSE (for single cropping analyses) or
+              "TRUE:actual:irrig_crop" (for multiple cropping analyses)
+If FALSE: uncalibrated LPJmL yields are used}
+
+\item{irrigationsystem}{(For case of iteration = "potential_irrigation" only:)
+Irrigation system to be used for river basin discharge
+allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
+
+\item{landScen}{(For case of iteration = "potential_irrigation" only:)
+Land availability scenario consisting of two parts separated by ":":
+1. available land scenario (currCropland, currIrrig, potCropland)
+2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
+For case of no land protection select "NA"
+or do not specify second part of the argument}
 }
 \value{
 magpie object in cellular resolution

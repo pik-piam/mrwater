@@ -108,6 +108,10 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                          transDist = transDist, comAg = comAg,
                          efrMethod = efrMethod, multicropping = multicropping,
                          selectyears = selectyears, iniyear = iniyear,
+                         accessibilityrule = NULL,
+                         rankmethod = NULL, gainthreshold = NULL,
+                         cropmix = NULL, yieldcalib = NULL,
+                         irrigationsystem = NULL, landScen = NULL,
                          aggregate = FALSE)
   watNonAgWW <- collapseNames(watNonAg[, , "currHumanWWtotal"])
   watNonAgWC <- collapseNames(watNonAg[, , "currHumanWCtotal"])
@@ -120,6 +124,10 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                              transDist = transDist, comAg = comAg,
                              efrMethod = efrMethod, multicropping = multicropping,
                              selectyears = selectyears, iniyear = iniyear,
+                             accessibilityrule = NULL,
+                             rankmethod = NULL, gainthreshold = NULL,
+                             cropmix = NULL, yieldcalib = NULL,
+                             irrigationsystem = NULL, landScen = NULL,
                              aggregate = FALSE)
 
   } else {
