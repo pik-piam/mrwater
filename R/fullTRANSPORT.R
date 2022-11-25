@@ -13,6 +13,8 @@
 #'
 #' @author Felicitas Beier
 #'
+#' @importFrom madrat calcOutput
+#' @importFrom stringr str_split
 #' @export
 
 fullTRANSPORT <- function(multicropping) {
@@ -31,7 +33,7 @@ fullTRANSPORT <- function(multicropping) {
   thresholdtype     <- "USD_ha:GLO"
   irrigationsystem  <- "initialization"
 
-  if (multicropping) {
+  if (as.logical(str_split(multicropping, ":")[[1]][1])) {
     yieldcalib        <- "TRUE:TRUE:actual:irrig_crop"
   } else {
     yieldcalib        <- "TRUE:FALSE"
