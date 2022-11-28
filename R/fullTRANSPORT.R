@@ -49,6 +49,12 @@ fullTRANSPORT <- function(multicropping) {
              aggregate = FALSE,
              file = "cropareaToolbox.mz")
 
+  # Cropmix that was basis for calculations
+  calcOutput("CropAreaShare",
+             iniyear = iniyear, cropmix = cropmix,
+             aggregate = FALSE,
+             file = "cropareaShare.mz")
+
   ##################################
   ###   Yields and Yield Gains   ###
   ##################################
