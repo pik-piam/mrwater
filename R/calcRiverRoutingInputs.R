@@ -150,7 +150,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                     lpjml = lpjml, climatetype = climatetype,
                                     efrMethod = efrMethod, multicropping = multicropping,
                                     selectyears = selectyears, iniyear = iniyear,
-                                    transDist = transDist, comAg = comAg,
+                                    transDist = transDist, comAg = NULL,
                                     accessibilityrule = NULL,
                                     rankmethod = NULL, gainthreshold = NULL,
                                     cropmix = NULL, yieldcalib = NULL,
@@ -200,12 +200,17 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                   cells = cells, years = selectyears, scenarios = scenarios)
 
     ## Previous Uses
+    if (comAg) {
+      humanuse <- "committed_agriculture"
+    } else {
+      humanuse <- "non_agriculture"
+    }
     prevRouting <- calcOutput("RiverHumanUseAccounting",
-                              iteration = "committed_agriculture",
+                              iteration = humanuse,
                               lpjml = lpjml, climatetype = climatetype,
                               efrMethod = efrMethod, multicropping = multicropping,
                               selectyears = selectyears, iniyear = iniyear,
-                              transDist = transDist, comAg = comAg,
+                              transDist = transDist, comAg = NULL,
                               accessibilityrule = NULL,
                               rankmethod = NULL, gainthreshold = NULL,
                               cropmix = NULL, yieldcalib = NULL,
