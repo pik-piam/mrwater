@@ -78,7 +78,7 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
                                 thresholdtype, gainthreshold, irrigationsystem, landScen,
                                 cropmix, potentialWat, comAg, multicropping, transDist) {
 
-  ## Read in water available for irrigation
+  ## Read in water available for irrigation (in mio. m^3)
   if (potentialWat) {
 
     avlWat         <- calcOutput("WaterUsePotential", selectyears = selectyears,

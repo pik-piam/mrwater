@@ -33,6 +33,9 @@ fullTRANSPORT <- function(multicropping) {
   thresholdtype     <- "USD_ha:GLO"
   irrigationsystem  <- "initialization"
 
+  # Technical potential chosen for Irrigation Potentials
+  gainthreshold     <- 0
+
   if (as.logical(str_split(multicropping, ":")[[1]][1])) {
     yieldcalib        <- "TRUE:TRUE:actual:irrig_crop"
   } else {
@@ -55,6 +58,17 @@ fullTRANSPORT <- function(multicropping) {
              aggregate = FALSE,
              file = "cropareaShare.mz")
 
+  # Share of water consumption that can be fulfilled by local water resources
+  # or resources in certain radius
+  for (transDist in c(0, 100, 200, 300, 500, 1000)) {
+    calcOutput("ShrHumanUsesFulfilled",
+               multicropping = multicropping, transDist = transDist,
+               lpjml = lpjml, climatetype = climatetype,
+               selectyears = selectyears, iniyear = iniyear,
+               efrMethod = efrMethod, aggregate = FALSE,
+               file = paste0("shrHumanUsesFulfilled_", as.character(transDist), "km.mz"))
+  }
+
   ##################################
   ###   Yields and Yield Gains   ###
   ##################################
@@ -73,7 +87,7 @@ fullTRANSPORT <- function(multicropping) {
   # max distance: 1000km (comparable to China South-to-North-Water-Diversion-Project 1155km)
   for (transDist in c(0, 100, 200, 300, 500, 1000)) {
     # Current State (Committed Agricultural Area)
-    calcOutput("IrrigAreaPotential", gainthreshold = 0,
+    calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
                landScen = paste0("currIrrig:", "NULL"),
                transDist = transDist,
                selectyears = selectyears, iniyear = iniyear,
@@ -83,11 +97,25 @@ fullTRANSPORT <- function(multicropping) {
                allocationrule = allocationrule, thresholdtype = thresholdtype,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
                potentialWat = FALSE, comAg = TRUE,
-               multicropping = multicropping, aggregate = FALSE,
+               multicropping = multicropping,
+               aggregate = FALSE,
                file = paste0("curpotIrrigArea_", transDist, "km.mz"))
 
+    calcOutput("WaterUsePotential", gainthreshold = gainthreshold,
+               landScen = paste0("currIrrig:", "NULL"),
+               transDist = transDist,
+               selectyears = selectyears, iniyear = iniyear,
+               lpjml = lpjml, climatetype = climatetype,
+               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+               rankmethod = rankmethod, yieldcalib = yieldcalib,
+               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               irrigationsystem = irrigationsystem, cropmix = cropmix,
+               multicropping = multicropping, comAg = TRUE,
+               aggregate = FALSE,
+               file = paste0("curpotIrrigWater_", transDist, "km.mz"))
+
     # Potentially Irrigated Area (with previously committed areas)
-    calcOutput("IrrigAreaPotential", gainthreshold = 0,
+    calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
                landScen = paste0("currCropland:", "NULL"),
                transDist = transDist,
                selectyears = selectyears, iniyear = iniyear,
@@ -97,11 +125,25 @@ fullTRANSPORT <- function(multicropping) {
                allocationrule = allocationrule, thresholdtype = thresholdtype,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
                potentialWat = FALSE, comAg = TRUE,
-               multicropping = multicropping, aggregate = FALSE,
+               multicropping = multicropping,
+               aggregate = FALSE,
                file = paste0("potIrrigArea_", transDist, "km.mz"))
 
+    calcOutput("WaterUsePotential", gainthreshold = gainthreshold,
+               landScen = paste0("currCropland:", "NULL"),
+               transDist = transDist,
+               selectyears = selectyears, iniyear = iniyear,
+               lpjml = lpjml, climatetype = climatetype,
+               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+               rankmethod = rankmethod, yieldcalib = yieldcalib,
+               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               irrigationsystem = irrigationsystem, cropmix = cropmix,
+               multicropping = multicropping, comAg = TRUE,
+               aggregate = FALSE,
+               file = paste0("potIrrigWater_", transDist, "km.mz"))
+
     # Potentially Irrigated Area (without committed areas)
-    calcOutput("IrrigAreaPotential", gainthreshold = 0,
+    calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
                landScen = paste0("currCropland:", "NULL"),
                transDist = transDist,
                selectyears = selectyears, iniyear = iniyear,
@@ -111,7 +153,21 @@ fullTRANSPORT <- function(multicropping) {
                allocationrule = allocationrule, thresholdtype = thresholdtype,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
                potentialWat = FALSE, comAg = FALSE,
-               multicropping = multicropping, aggregate = FALSE,
+               multicropping = multicropping,
+               aggregate = FALSE,
                file = paste0("fullpotIrrigArea_", transDist, "km.mz"))
+
+    calcOutput("WaterUsePotential", gainthreshold = gainthreshold,
+               landScen = paste0("currCropland:", "NULL"),
+               transDist = transDist,
+               selectyears = selectyears, iniyear = iniyear,
+               lpjml = lpjml, climatetype = climatetype,
+               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+               rankmethod = rankmethod, yieldcalib = yieldcalib,
+               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               irrigationsystem = irrigationsystem, cropmix = cropmix,
+               multicropping = multicropping, comAg = FALSE,
+               aggregate = FALSE,
+               file = paste0("fullpotIrrigWater_", transDist, "km.mz"))
   }
 }
