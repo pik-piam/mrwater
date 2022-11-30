@@ -69,15 +69,21 @@ fullTRANSPORT <- function(multicropping) {
                file = paste0("shrHumanUsesFulfilled_", as.character(transDist), "km.mz"))
   }
 
-  ##################################
-  ###   Yields and Yield Gains   ###
-  ##################################
+  #####################################################
+  ### Crop specific yields and water requirements   ###
+  #####################################################
   calcOutput("IrrigCropYieldGain", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
              yieldcalib = yieldcalib, cropmix = cropmix,
              multicropping = multicropping, aggregate = FALSE,
              file = "cropyieldgain.mz")
+
+  calcOutput("ActualIrrigWatRequirements",
+             selectyears = selectyears, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype,
+             multicropping = multicropping, aggregate = FALSE,
+             file = "cropwatrequirements.mz")
 
   ##################################
   ### Potentially Irrigated Area ###
