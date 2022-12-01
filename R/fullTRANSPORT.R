@@ -85,6 +85,19 @@ fullTRANSPORT <- function(multicropping) {
              multicropping = multicropping, aggregate = FALSE,
              file = "cropwatrequirements.mz")
 
+  # requested human uses
+  calcOutput("WaterUseCommittedAg",
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             multicropping = multicropping, aggregate = FALSE,
+             file = "comAgwatuse.mz")
+  calcOutput("WaterUseNonAg",
+              selectyears = selectyears, cells = "lpjcell",
+              datasource = "WATERGAP_ISIMIP", usetype = "total",
+              seasonality = "total", harmonType = "average",
+              lpjml = NULL, climatetype = NULL, aggregate = FALSE,
+              file = "nonAgwatuse.mz")
+
   ##################################
   ### Potentially Irrigated Area ###
   ##################################
@@ -92,6 +105,36 @@ fullTRANSPORT <- function(multicropping) {
   # min distance: 0 (no water diversion)
   # max distance: 1000km (comparable to China South-to-North-Water-Diversion-Project 1155km)
   for (transDist in c(0, 100, 200, 300, 500, 1000)) {
+
+    ### Current Human Uses ###
+    # Non-Agricultural
+    calcOutput("RiverHumanUseAccounting",
+               iteration = "non_agriculture",
+               lpjml = lpjml, climatetype = climatetype,
+               transDist = transDist, comAg = NULL,
+               efrMethod = efrMethod, multicropping = multicropping,
+               selectyears = selectyears, iniyear = iniyear,
+               accessibilityrule = NULL,
+               rankmethod = NULL, gainthreshold = NULL,
+               cropmix = NULL, yieldcalib = NULL,
+               irrigationsystem = NULL, landScen = NULL,
+               aggregate = FALSE,
+               file = paste0("nonAgUses_", transDist, "km.mz"))
+
+    # Agricultural
+    calcOutput("RiverHumanUseAccounting",
+                iteration = "committed_agriculture",
+                lpjml = lpjml, climatetype = climatetype,
+                transDist = transDist, comAg = NULL,
+                efrMethod = efrMethod, multicropping = multicropping,
+                selectyears = selectyears, iniyear = iniyear,
+                accessibilityrule = NULL,
+                rankmethod = NULL, gainthreshold = NULL,
+                cropmix = NULL, yieldcalib = NULL,
+                irrigationsystem = NULL, landScen = NULL,
+                aggregate = FALSE,
+                file = paste0("comAgUses_", transDist, "km.mz"))
+
     # Current State (Committed Agricultural Area)
     calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
                landScen = paste0("currIrrig:", "NULL"),
