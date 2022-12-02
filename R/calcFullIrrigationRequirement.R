@@ -56,67 +56,39 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
                                           irrigationsystem, landScen, cropmix,
                                           multicropping, yieldcalib) {
 
-  # read in irrigation water requirements for each irrigation system
-  # [in m^3 per hectare per year] (smoothed & harmonized)
-  irrigWat <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
+  # read in irrigation water requirements for given irrigation system
+  # per crop (in m^3 per hectare per year)
+  irrigWat <- calcOutput("ActualIrrigWatRequirements",
+                         selectyears = selectyears, iniyear = iniyear,
                          lpjml = lpjml, climatetype = climatetype,
-                         multicropping = multicropping,
+                         irrigationsystem = irrigationsystem, multicropping = multicropping,
                          aggregate = FALSE)
 
   # correct irrigation water requirements where irrigation would lead to negative yield gains
   # read in yield gain
-  yieldGain <- calcOutput("IrrigCropYieldGain", unit = "tDM",
-                          lpjml = lpjml, climatetype = climatetype,
-                          iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib, cropmix = cropmix,
-                          multicropping = multicropping, aggregate = FALSE)
-  tmp                 <- yieldGain
-  tmp[, , ]           <- NA
-  tmp[yieldGain < 0]  <- 0
-  tmp[yieldGain >= 0] <- 1
+  tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
+                    lpjml = lpjml, climatetype = climatetype,
+                    iniyear = iniyear, selectyears = selectyears,
+                    yieldcalib = yieldcalib, cropmix = cropmix,
+                    multicropping = multicropping, aggregate = FALSE)
+  tmp[tmp >= 0] <- 1
+  tmp[tmp < 0]  <- 0
 
   irrigWat <- irrigWat * tmp
 
-  # land area that can potentially be used for irrigated agriculture given assumptions set in the arguments [in Mha]
-  land <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
-                     comagyear = comagyear, landScen = landScen, aggregate = FALSE)
-
-  # share of corp area by crop type
-  cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
-                            aggregate = FALSE)
-
-  # land area per crop
-  land <- land * cropareaShr
+  # cropland area per crop
+  croparea <- calcOutput("CropAreaPotIrrig",
+                     selectyears = selectyears, comagyear = comagyear,
+                     iniyear = iniyear,
+                     cropmix = cropmix, landScen = landScen,
+                     aggregate = FALSE)
 
   # water requirements for full irrigation in cell per crop accounting for cropshare (in mio. m^3)
   # Note on unit transformation:
-  # land (mio ha -> ha): multiply with 1e6,
+  # croparea (mio ha -> ha): multiply with 1e6,
   # irrigation water requirements (m^3 per ha -> mio. m^3 per ha): divide by 1e6
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
-  irrigWat <- irrigWat[, , getItems(cropareaShr, dim = "crop")] * land
-
-  # calculate irrigation water requirements per crop [in mio. m^3 per year] given irrigation system share in use
-  if (irrigationsystem == "initialization") {
-
-    # read in irrigation system area initialization [share of AEI by system] and expand to all years
-    tmp               <- calcOutput("IrrigSystemShr", iniyear = iniyear, aggregate = FALSE)
-
-    irrigSystemShr    <- new.magpie(cells_and_regions = getItems(irrigWat, dim = 1),
-                                    years = getItems(irrigWat, dim = "year"),
-                                    names = getItems(tmp, dim = 3),
-                                    sets = c("x.y.iso", "year", "crop.system"))
-    irrigSystemShr[, , ] <- tmp
-
-    # irrigation water requirements per cell (in mio. m^3)
-    irrigWat <- dimSums(irrigSystemShr * irrigWat[, , getNames(irrigSystemShr)],
-                        dim = c("system", "crop"))
-
-  } else {
-
-    # whole area irrigated by one system as selected in argument "irrigationsystem"
-    irrigWat <- collapseNames(irrigWat[, , irrigationsystem])
-
-  }
+  irrigWat <- irrigWat[, , getItems(croparea, dim = 3)] * croparea
 
   # Checks
   if (any(is.na(irrigWat))) {

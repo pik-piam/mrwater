@@ -1,11 +1,13 @@
 #' @title       calcActualIrrigWatRequirements
 #' @description This function calculates actual irrigation water requirements
-#'              per cell given a certain irrigation system
+#'              per cell given the chosen irrigation system
 #'
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years to be returned
 #' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear       Initialization year (for weight by cropland)
+#' @param irrigationsystem Irrigation system used: system share as in initialization year,
+#'                         or drip, surface, sprinkler for full irrigation by selected system
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
 #'                      ("endogenous": suitability for multiple cropping determined
@@ -31,7 +33,7 @@
 
 calcActualIrrigWatRequirements <- function(selectyears, iniyear,
                                            lpjml, climatetype,
-                                           multicropping) {
+                                           irrigationsystem, multicropping) {
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
   irrigReq   <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
@@ -39,12 +41,24 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
                            multicropping = multicropping,
                            aggregate = FALSE)
 
-  # Irrigation system area share per crop
-  irrigSystemShr <- calcOutput("IrrigSystemShr", iniyear = iniyear, aggregate = FALSE)
+  # calculate irrigation water requirements per crop [in mio. m^3 per year] given irrigation system share in use
+  if (irrigationsystem == "initialization") {
 
-  # total irrigation water requirements per crop given irrigation system share (in m^3 per ha per yr)
-  irrigReq       <- dimSums(irrigSystemShr * irrigReq[, , getNames(irrigSystemShr)],
-                            dim = "system")
+    # Irrigation system area share per crop
+    irrigSystemShr <- calcOutput("IrrigSystemShr", iniyear = iniyear,
+                                 aggregate = FALSE)
+
+    # total irrigation water requirements per crop given
+    # irrigation system share (in m^3 per ha per yr)
+    irrigReq       <- dimSums(irrigSystemShr * irrigReq[, , getNames(irrigSystemShr)],
+                              dim = "system")
+
+  } else {
+
+    # whole area irrigated by one system as selected in argument "irrigationsystem"
+    irrigReq <- collapseNames(irrigReq[, , irrigationsystem])
+
+  }
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {

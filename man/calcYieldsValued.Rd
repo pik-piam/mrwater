@@ -7,7 +7,7 @@
 calcYieldsValued(
   lpjml,
   climatetype,
-  unit,
+  priceAgg,
   iniyear,
   selectyears,
   cropmix,
@@ -20,16 +20,10 @@ calcYieldsValued(
 
 \item{climatetype}{Climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{unit}{Unit of yield improvement potential to be returned and
-level of price aggregation used, separated by ":".
-Unit:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return.
-Price aggregation:
+\item{priceAgg}{Price aggregation:
 "GLO" for global average prices, or
 "ISO" for country-level prices, or
-"CONST" for same pric for all crops}
+"CONST" for same price for all crops}
 
 \item{iniyear}{initialization year for food price and cropmix area}
 
@@ -67,8 +61,7 @@ magpie object in cellular resolution
 }
 \description{
 This function calculates yields per crop
-             valued at FAO prices (optionally per area unit (ha)
-             or water volume unit (m3))
+             valued at FAO prices (in USD per hectare)
 }
 \examples{
 \dontrun{

@@ -35,18 +35,19 @@
 #'                          if FALSE: no irrigation areas reserved (irrigation potential).
 #'                          Only relevant for iteration = potential
 #' @param rankmethod        Rank and optimization method consisting of
-#'                          Unit according to which rank is calculated, consisting of:
-#'                          Unit:
-#'                          tDM (tons per dry matter),
-#'                          USD_ha (USD per hectare) for area return, or
-#'                          USD_m3 (USD per cubic meter) for volumetric return; and
+#'                          Unit according to which rank is calculated:
+#'                          USD_ha (USD per hectare) for relative area return, or
+#'                          USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                          USD for absolute return (total profit);
+#'                          USD_m3ha (USD per hectare per cubic meter)
+#'                          for relative return according to area and volume.
 #'                          Price aggregation:
 #'                          "GLO" for global average prices, or
-#'                          "ISO" for country-level prices;
-#'                          and boolean indicating fullpotential (TRUE, i.e. cell receives full
-#'                                                                irrigation requirements in total area)
+#'                          "ISO" for country-level prices
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell
+#'                          receives full irrigation requirements in total area)
 #'                          or reduced potential (FALSE, reduced potential of cell
-#'                                                receives at later stage in allocation algorithm);
+#'                          receives at later stage in allocation algorithm);
 #'                          separated by ":"
 #' @param gainthreshold     Threshold of yield improvement potential
 #'                          (same unit as thresholdtype in rankmethod argument)
@@ -185,14 +186,28 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     previousTotal <- collapseNames(previousHumanUse[, , "currHumanWCtotal"])
 
 } else if (iteration == "potential_irrigation") {
+
+    if (comAg == TRUE) {
+      # accounting in potentials
+      comagyear <- iniyear
+      # previous use
+      humanuse <- "committed_agriculture"
+    } else if (comAg == FALSE) {
+      # committed agriculture not accounted in potentials (full potential)
+      comagyear <- NULL
+      # previous use
+      humanuse <- "non_agriculture"
+    }
+
     ## Yield gain potential through irrigation of proxy crops
     unit <- paste(unlist(str_split(rankmethod, ":"))[1],
                   unlist(str_split(rankmethod, ":"))[2],
                   sep = ":")
     irrigGain <- calcOutput("IrrigYieldImprovementPotential",
-                            selectyears = selectyears, iniyear = iniyear,
+                            selectyears = selectyears, iniyear = iniyear, comagyear = comagyear,
                             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                             unit = unit, yieldcalib = yieldcalib,
+                            irrigationsystem = irrigationsystem, landScen = landScen,
                             multicropping = multicropping, aggregate = FALSE)
     irrigGain[irrigGain <= gainthreshold] <- 0
     irrigGain[irrigGain > gainthreshold]  <- 1
@@ -200,11 +215,6 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                   cells = cells, years = selectyears, scenarios = scenarios)
 
     ## Previous Uses
-    if (comAg) {
-      humanuse <- "committed_agriculture"
-    } else {
-      humanuse <- "non_agriculture"
-    }
     prevRouting <- calcOutput("RiverHumanUseAccounting",
                               iteration = humanuse,
                               lpjml = lpjml, climatetype = climatetype,
@@ -231,11 +241,6 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     prevReservedWC <- collapseNames(prevRouting[, , "reservedWC"])
 
     ## Current Uses
-    if (comAg == TRUE) {
-      comagyear <- iniyear
-    } else if (comAg == FALSE) {
-      comagyear <- NULL
-    }
     # Required water for full irrigation per cell (in mio. m^3)
     reqWatFullirrig <- calcOutput("FullIrrigationRequirement",
                                   selectyears = selectyears, iniyear = iniyear, comagyear = comagyear,

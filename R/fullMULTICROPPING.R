@@ -15,31 +15,25 @@
 #'                       across cells of river basin ("optimization", "upstreamfirst")
 #' @param rankmethod     Rank and optimization method consisting of
 #'                       Unit according to which rank is calculated:
-#'                       tDM (tons per dry matter),
-#'                       USD_ha (USD per hectare) for area return, or
-#'                       USD_m3 (USD per cubic meter) for volumetric return;
-#'                       Unit of yield improvement potential to be returned;
-#'                       Level of price aggregation used:
+#'                       USD_ha (USD per hectare) for relative area return, or
+#'                       USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                       USD for absolute return (total profit);
+#'                       USD_m3ha (USD per hectare per cubic meter)
+#'                       for relative return according to area and volume.
+#'                       Price aggregation:
 #'                       "GLO" for global average prices, or
-#'                       "ISO" for country-level prices;
+#'                       "ISO" for country-level prices
 #'                       and boolean indicating fullpotential (TRUE, i.e. cell
 #'                       receives full irrigation requirements in total area)
 #'                       or reduced potential (FALSE, reduced potential of cell
 #'                       receives at later stage in allocation algorithm);
 #'                       separated by ":"
-#' @param thresholdtype  Unit of yield improvement potential used as threshold,
-#'                       consisting of two components:
-#'                       Unit:
-#'                       tDM (tons per dry matter),
-#'                       USD_ha (USD per hectare) for area return, or
-#'                       USD_m3 (USD per cubic meter) for volumetric return.
-#'                       Price aggregation:
-#'                       "GLO" for global average prices, or
-#'                       "ISO" for country-level prices
 #' @param transDist      Water transport distance allowed to fulfill locally
 #'                       unfulfilled water demand by surrounding cell water availability
 #'
 #' @author Felicitas Beier
+#'
+#' @importFrom stringr str_split
 #'
 #' @export
 
@@ -47,7 +41,6 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                               yieldcalib = "TRUE:TRUE:actual:irrig_crop",
                               allocationrule = "optimization",
                               rankmethod = "USD_ha:GLO:TRUE",
-                              thresholdtype = "USD_ha:GLO",
                               transDist = 100) {
 
   # Standard settings
@@ -65,6 +58,10 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                         750, 900, 1000, 1500, 2000, 3000)
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
+
+  thresholdtype     <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
+                             str_split(rankmethod, pattern = ":")[[1]][2],
+                             sep = ":")
 
   ################
   # MAIN RESULTS #
@@ -142,6 +139,8 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
+             comagyear = NULL, irrigationsystem = irrigationsystem,
+             landScen = paste0("potCropland:", "NULL"),
              multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
              file = paste0("yieldgain_USDha_multipleACT", ".mz"))
 
@@ -150,6 +149,8 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
+             comagyear = NULL, irrigationsystem = irrigationsystem,
+             landScen = paste0("potCropland:", "NULL"),
              multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
              file = paste0("yieldgain_USDha_multiplePOT", ".mz"))
 
@@ -158,6 +159,8 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
+             comagyear = NULL, irrigationsystem = irrigationsystem,
+             landScen = paste0("potCropland:", "NULL"),
              multicropping = "TRUE:potential:exogenous", aggregate = FALSE,
              file = paste0("yieldgain_USDha_multipleExogenous", ".mz"))
 
@@ -166,6 +169,8 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
+             comagyear = NULL, irrigationsystem = irrigationsystem,
+             landScen = paste0("potCropland:", "NULL"),
              multicropping = FALSE, aggregate = FALSE,
              file = paste0("yieldgain_USDha_single", ".mz"))
 
@@ -284,6 +289,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              selectyears = plotyear, iniyear = iniyear,
              cropmix = cropmix, multicropping = FALSE,
              yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem,
              landScen = paste0("currIrrig:", "NULL"),
              aggregate = FALSE,
              file = paste0("yieldgainarea_actUNSUS", "_single.mz"))
@@ -293,6 +299,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              selectyears = plotyear, iniyear = iniyear,
              cropmix = cropmix, multicropping = FALSE,
              yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+             irrigationsystem = irrigationsystem,
              landScen = paste0("currCropland:", "NULL"),
              aggregate = FALSE,
              file = paste0("yieldgainarea_curUNSUS", "_single.mz"))
@@ -325,6 +332,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                selectyears = plotyear, iniyear = iniyear,
                cropmix = cropmix, multicropping = m,
                yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+               irrigationsystem = irrigationsystem,
                landScen = paste0("currIrrig:", "NULL"),
                aggregate = FALSE,
                file = paste0("yieldGainArea_IRRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))
@@ -334,6 +342,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                selectyears = plotyear, iniyear = iniyear,
                cropmix = cropmix, multicropping = m,
                yieldcalib = yieldcalib, thresholdtype = thresholdtype,
+               irrigationsystem = irrigationsystem,
                landScen = paste0("currCropland:", "NULL"),
                aggregate = FALSE,
                file = paste0("yieldGainArea_CURRUNSUS", as.list(strsplit(m, split = ":"))[[1]][2], ".mz"))

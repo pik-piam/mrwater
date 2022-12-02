@@ -31,6 +31,8 @@
 #'                      "hist_irrig" for historical cropmix on currently irrigated area,
 #'                      "hist_total" for historical cropmix on total cropland,
 #'                      or selection of proxycrops)
+#' @param irrigationsystem Irrigation system used: system share as in initialization year,
+#'                         or drip, surface, sprinkler for full irrigation by selected system
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
 #'                      ("endogenous": suitability for multiple cropping determined
@@ -56,7 +58,7 @@
 
 calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
                               climatetype, yieldcalib, thresholdtype,
-                              landScen, cropmix, multicropping) {
+                              irrigationsystem, landScen, cropmix, multicropping) {
 
   x <- vector(mode = "list", length = length(rangeGT))
   i <- 0
@@ -68,7 +70,7 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
     tmp <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = gainthreshold,
                     selectyears = selectyears, iniyear = iniyear,
                     lpjml = lpjml, climatetype = climatetype,
-                    cropmix = cropmix, yieldcalib = yieldcalib,
+                    cropmix = cropmix, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
                     thresholdtype = thresholdtype, multicropping = multicropping,
                     landScen = landScen, aggregate = FALSE)
 

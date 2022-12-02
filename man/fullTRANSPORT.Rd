@@ -4,7 +4,7 @@
 \alias{fullTRANSPORT}
 \title{fullTRANSPORT}
 \usage{
-fullTRANSPORT(multicropping)
+fullTRANSPORT(multicropping, rankmethod = "USD_ha:GLO:TRUE")
 }
 \arguments{
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
@@ -15,6 +15,22 @@ Multiple Cropping Suitability mask selected
          GAEZ data set),
 separated by ":"
 (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)}
+
+\item{rankmethod}{Rank and optimization method consisting of
+Unit according to which rank is calculated:
+USD_ha (USD per hectare) for relative area return, or
+USD_m3 (USD per cubic meter) for relative volumetric return;
+USD for absolute return (total profit);
+USD_m3ha (USD per hectare per cubic meter)
+for relative return according to area and volume.
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices
+and boolean indicating fullpotential (TRUE, i.e. cell
+receives full irrigation requirements in total area)
+or reduced potential (FALSE, reduced potential of cell
+receives at later stage in allocation algorithm);
+separated by ":"}
 }
 \description{
 Function that produces output for analysis of

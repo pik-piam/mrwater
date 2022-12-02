@@ -12,6 +12,7 @@ calcIrrigatableAreaUnlimited(
   climatetype,
   cropmix,
   yieldcalib,
+  irrigationsystem,
   thresholdtype,
   gainthreshold,
   multicropping
@@ -42,6 +43,9 @@ or selection of proxycrops)}
          Options: FALSE (for single cropping analyses) or
                   "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
+
+\item{irrigationsystem}{Irrigation system used: system share as in initialization year,
+or drip, surface, sprinkler for full irrigation by selected system}
 
 \item{thresholdtype}{Unit of yield improvement potential used as threshold,
 consisting of two components:

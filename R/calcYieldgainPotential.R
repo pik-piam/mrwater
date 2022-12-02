@@ -14,15 +14,21 @@
 #' @param accessibilityrule Strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx).
 #'                          (e.g. Q75: 0.25, Q50: 0.5)
-#' @param rankmethod        Rank and optimization method consisting of
-#'                          Unit according to which rank is calculated:
-#'                          tDM (tons per dry matter),
-#'                          USD_ha (USD per hectare) for area return, or
-#'                          USD_m3 (USD per cubic meter) for volumetric return;
-#'                          Price aggregation:
-#'                          "GLO" for global average prices, or
-#'                          "ISO" for country-level prices;
-#'                          and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
+#' @param rankmethod     Rank and optimization method consisting of
+#'                       Unit according to which rank is calculated:
+#'                       USD_ha (USD per hectare) for relative area return, or
+#'                       USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                       USD for absolute return (total profit);
+#'                       USD_m3ha (USD per hectare per cubic meter)
+#'                       for relative return according to area and volume.
+#'                       Price aggregation:
+#'                       "GLO" for global average prices, or
+#'                       "ISO" for country-level prices
+#'                       and boolean indicating fullpotential (TRUE, i.e. cell
+#'                       receives full irrigation requirements in total area)
+#'                       or reduced potential (FALSE, reduced potential of cell
+#'                       receives at later stage in allocation algorithm);
+#'                       separated by ":"
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
 #'                               Options: FALSE (for single cropping analyses) or
@@ -64,6 +70,7 @@
 #' calcOutput("YieldgainPotential", aggregate = FALSE)
 #' }
 #'
+#' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getCells getNames setYears dimSums new.magpie
 #' @importFrom mrcommons toolGetMappingCoord2Country
@@ -76,21 +83,26 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                    gainthreshold, allocationrule, transDist = transDist,
                                    landScen, cropmix, multicropping, unlimited) {
 
-  thresholdtype <- paste(strsplit(rankmethod, ":")[[1]][1], strsplit(rankmethod, ":")[[1]][2], sep = ":")
+  thresholdtype <- paste(strsplit(rankmethod, ":")[[1]][1],
+                         strsplit(rankmethod, ":")[[1]][2], sep = ":")
 
   # Cellular yield improvement potential for all crops (in USD/ha)
-  yieldGain <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
+  yieldGain <- calcOutput("IrrigYieldImprovementPotential",
+                          selectyears = selectyears, iniyear = iniyear,
                           lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
-                          unit = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
-                          multicropping = multicropping, aggregate = FALSE)
+                          unit = thresholdtype, yieldcalib = yieldcalib,
+                          comagyear = NULL, irrigationsystem = irrigationsystem,
+                          landScen = landScen, multicropping = multicropping,
+                          aggregate = FALSE)
 
   # Total area that can potentially be irrigated (in Mha)
   if (unlimited) {
 
     # Area that can potentially be irrigated without water limitation
-    area <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
-                        landScen = landScen, comagyear = NULL,
-                        aggregate = FALSE)
+    area <- calcOutput("AreaPotIrrig",
+                       selectyears = selectyears, iniyear = iniyear,
+                       landScen = landScen, comagyear = NULL,
+                       aggregate = FALSE)
     d    <- "Potentially Irrigated Area only considering land constraint"
 
   } else {

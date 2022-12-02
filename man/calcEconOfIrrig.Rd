@@ -17,7 +17,6 @@ calcEconOfIrrig(
   rankmethod,
   yieldcalib,
   allocationrule,
-  thresholdtype,
   irrigationsystem,
   landScen,
   cropmix,
@@ -53,10 +52,19 @@ or base value for exponential curve separated by : (CV:2)}
 
 \item{rankmethod}{Rank and optimization method consisting of
 Unit according to which rank is calculated:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return;
-and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
+USD_ha (USD per hectare) for relative area return, or
+USD_m3 (USD per cubic meter) for relative volumetric return;
+USD for absolute return (total profit);
+USD_m3ha (USD per hectare per cubic meter)
+for relative return according to area and volume.
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices
+and boolean indicating fullpotential (TRUE, i.e. cell
+receives full irrigation requirements in total area)
+or reduced potential (FALSE, reduced potential of cell
+receives at later stage in allocation algorithm);
+separated by ":"}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
      Also needs specification of refYields, separated by ":".
@@ -66,9 +74,6 @@ If FALSE: uncalibrated LPJmL yields are used}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst", "equality")}
-
-\item{thresholdtype}{TRUE: monetary yield gain (USD05/ha),
-FALSE: yield gain in tDM/ha}
 
 \item{irrigationsystem}{Irrigation system used
 ("surface", "sprinkler", "drip", "initialization")}

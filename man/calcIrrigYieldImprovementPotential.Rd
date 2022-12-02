@@ -9,8 +9,11 @@ calcIrrigYieldImprovementPotential(
   climatetype,
   unit,
   iniyear,
+  comagyear,
   selectyears,
   cropmix,
+  landScen,
+  irrigationsystem,
   yieldcalib,
   multicropping
 )
@@ -23,14 +26,21 @@ calcIrrigYieldImprovementPotential(
 \item{unit}{Unit of yield improvement potential to be returned and
 level of price aggregation used, separated by ":".
 Unit:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return.
+USD_ha (USD per hectare) for relative area return, or
+USD_m3 (USD per cubic meter) for relative volumetric return;
+USD for absolute return (total profit);
+USD_m3ha (USD per hectare per cubic meter)
+for relative return according to area and volume.
 Price aggregation:
 "GLO" for global average prices, or
 "ISO" for country-level prices}
 
 \item{iniyear}{initialization year for food price and cropmix area}
+
+\item{comagyear}{if !NULL: already irrigated area is subtracted;
+if NULL: total potential land area is used;
+year specified here is the year of the initialization
+used for cropland area initialization in calcIrrigatedArea}
 
 \item{selectyears}{Years to be returned by the function}
 
@@ -40,6 +50,15 @@ is calculated (options:
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)
 NULL returns all crops individually}
+
+\item{landScen}{Land availability scenario consisting of two parts separated by ":":
+1. available land scenario (currCropland, currIrrig, potCropland)
+2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
+For case of no land protection select "NA"
+or do not specify second part of the argument}
+
+\item{irrigationsystem}{Irrigation system used: system share as in initialization year,
+or drip, surface, sprinkler for full irrigation by selected system}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
          Also needs specification of refYields, separated by ":".

@@ -7,7 +7,7 @@
 calcIrrigCropYieldGain(
   lpjml,
   climatetype,
-  unit,
+  priceAgg,
   iniyear,
   selectyears,
   yieldcalib,
@@ -20,15 +20,10 @@ calcIrrigCropYieldGain(
 
 \item{climatetype}{Climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{unit}{Unit of yield improvement potential to be returned and
-level of price aggregation used, separated by ":".
-Unit:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return.
-Price aggregation:
+\item{priceAgg}{Price aggregation:
 "GLO" for global average prices, or
-"ISO" for country-level prices}
+"ISO" for country-level prices, or
+"CONST" for same price for all crops}
 
 \item{iniyear}{initialization year for food price and cropmix area}
 

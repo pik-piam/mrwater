@@ -23,14 +23,21 @@
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param rankmethod        Rank and optimization method consisting of
 #'                          Unit according to which rank is calculated:
-#'                          tDM (tons per dry matter),
-#'                          USD_ha (USD per hectare) for area return, or
-#'                          USD_m3 (USD per cubic meter) for volumetric return;
-#'                          and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
+#'                          USD_ha (USD per hectare) for relative area return, or
+#'                          USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                          USD for absolute return (total profit);
+#'                          USD_m3ha (USD per hectare per cubic meter)
+#'                          for relative return according to area and volume.
+#'                          Price aggregation:
+#'                          "GLO" for global average prices, or
+#'                          "ISO" for country-level prices
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell
+#'                          receives full irrigation requirements in total area)
+#'                          or reduced potential (FALSE, reduced potential of cell
+#'                          receives at later stage in allocation algorithm);
+#'                          separated by ":"
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
-#' @param thresholdtype     TRUE: monetary yield gain (USD05/ha),
-#'                          FALSE: yield gain in tDM/ha
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
 #' @param landScen          Land availability scenario consisting of two parts separated by ":":
@@ -68,14 +75,20 @@
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass dimSums collapseNames mbind add_dimension
+#' @importFrom stringr str_split
 #'
 #' @export
 
 calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                             lpjml, climatetype, efrMethod, accessibilityrule,
-                            rankmethod, yieldcalib, allocationrule, thresholdtype,
+                            rankmethod, yieldcalib, allocationrule,
                             irrigationsystem, landScen, cropmix, transDist,
                             potentialWat = TRUE, comAg, multicropping) {
+
+  # retrieve arguments
+  thresholdtype <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
+                         str_split(rankmethod, pattern = ":")[[1]][2],
+                         sep = ":")
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")

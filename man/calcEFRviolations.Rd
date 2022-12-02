@@ -38,14 +38,21 @@ calcEFRviolations(
 discharge that is exceeded x percent of the time on average throughout a year (Qx).
 (e.g. Q75: 0.25, Q50: 0.5)}
 
-\item{rankmethod}{Method of calculating the rank:
-"meancellrank": mean over cellrank of proxy crops,
-"meancroprank": rank over mean of proxy crops (normalized),
-"meanpricedcroprank": rank over mean of proxy crops (normalized using price),
-"watervalue": rank over value of irrigation water;
-and fullpotentail TRUE/FALSE separated by ":"
-(TRUE: Full irrigation potential (cell receives full irrigation requirements in total area).
-FALSE: reduced potential of cell receives at later stage in allocation algorithm)}
+\item{rankmethod}{Rank and optimization method consisting of
+Unit according to which rank is calculated:
+USD_ha (USD per hectare) for relative area return, or
+USD_m3 (USD per cubic meter) for relative volumetric return;
+USD for absolute return (total profit);
+USD_m3ha (USD per hectare per cubic meter)
+for relative return according to area and volume.
+Price aggregation:
+"GLO" for global average prices, or
+"ISO" for country-level prices
+and boolean indicating fullpotential (TRUE, i.e. cell
+receives full irrigation requirements in total area)
+or reduced potential (FALSE, reduced potential of cell
+receives at later stage in allocation algorithm);
+separated by ":"}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
      Also needs specification of refYields, separated by ":".

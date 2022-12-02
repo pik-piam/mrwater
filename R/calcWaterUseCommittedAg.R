@@ -33,6 +33,7 @@ calcWaterUseCommittedAg <- function(lpjml, climatetype, selectyears, iniyear,
   # Irrigation water requirements per cell per crop given irrigation
   # system initialization (in m^3 per hectare per year)
   irrigReq <- calcOutput("ActualIrrigWatRequirements",
+                         irrigationsystem = "initialization",
                          selectyears = selectyears, iniyear = iniyear,
                          lpjml = lpjml, climatetype = climatetype,
                          multicropping = multicropping, aggregate = FALSE)

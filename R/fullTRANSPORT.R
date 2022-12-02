@@ -10,6 +10,21 @@
 #'                                   GAEZ data set),
 #'                          separated by ":"
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#' @param rankmethod        Rank and optimization method consisting of
+#'                          Unit according to which rank is calculated:
+#'                          USD_ha (USD per hectare) for relative area return, or
+#'                          USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                          USD for absolute return (total profit);
+#'                          USD_m3ha (USD per hectare per cubic meter)
+#'                          for relative return according to area and volume.
+#'                          Price aggregation:
+#'                          "GLO" for global average prices, or
+#'                          "ISO" for country-level prices
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell
+#'                          receives full irrigation requirements in total area)
+#'                          or reduced potential (FALSE, reduced potential of cell
+#'                          receives at later stage in allocation algorithm);
+#'                          separated by ":"
 #'
 #' @author Felicitas Beier
 #'
@@ -17,7 +32,7 @@
 #' @importFrom stringr str_split
 #' @export
 
-fullTRANSPORT <- function(multicropping) {
+fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
 
   # Standard settings
   iniyear           <- "y2010"
@@ -29,12 +44,16 @@ fullTRANSPORT <- function(multicropping) {
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
   allocationrule    <- "optimization"
-  rankmethod        <- "USD_ha:GLO:TRUE"
-  thresholdtype     <- "USD_ha:GLO"
+  thresholdtype     <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
+                             str_split(rankmethod, pattern = ":")[[1]][2],
+                             sep = ":")
   irrigationsystem  <- "initialization"
 
   # Technical potential chosen for Irrigation Potentials
   gainthreshold     <- 0
+
+  # Selected transport distances
+  distances         <- c(0, 80, 100, 200, 300, 500, 1000)
 
   if (as.logical(str_split(multicropping, ":")[[1]][1])) {
     yieldcalib        <- "TRUE:TRUE:actual:irrig_crop"
@@ -60,7 +79,7 @@ fullTRANSPORT <- function(multicropping) {
 
   # Share of water consumption that can be fulfilled by local water resources
   # or resources in certain radius
-  for (transDist in c(0, 100, 200, 300, 500, 1000)) {
+  for (transDist in distances) {
     calcOutput("ShrHumanUsesFulfilled",
                multicropping = multicropping, transDist = transDist,
                lpjml = lpjml, climatetype = climatetype,
@@ -78,8 +97,17 @@ fullTRANSPORT <- function(multicropping) {
              yieldcalib = yieldcalib, cropmix = cropmix,
              multicropping = multicropping, aggregate = FALSE,
              file = "cropyieldgain.mz")
+  calcOutput("IrrigYieldImprovementPotential",
+            selectyears = selectyears, iniyear = iniyear,
+            lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
+            unit = "USD_ha:GLO", yieldcalib = yieldcalib,
+            comagyear = NULL, irrigationsystem = irrigationsystem,
+            landScen = paste0("potCropland:", "NULL"),
+            multicropping = multicropping, aggregate = FALSE,
+            file = "irriggain.mz")
 
   calcOutput("ActualIrrigWatRequirements",
+             irrigationsystem = irrigationsystem,
              selectyears = selectyears, iniyear = iniyear,
              lpjml = lpjml, climatetype = climatetype,
              multicropping = multicropping, aggregate = FALSE,
@@ -104,7 +132,7 @@ fullTRANSPORT <- function(multicropping) {
   # Potentially irrigated area for different water provision distances
   # min distance: 0 (no water diversion)
   # max distance: 1000km (comparable to China South-to-North-Water-Diversion-Project 1155km)
-  for (transDist in c(0, 100, 200, 300, 500, 1000)) {
+  for (transDist in distances) {
 
     ### Current Human Uses ###
     # Non-Agricultural

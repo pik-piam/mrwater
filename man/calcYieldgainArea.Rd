@@ -12,6 +12,7 @@ calcYieldgainArea(
   climatetype,
   yieldcalib,
   thresholdtype,
+  irrigationsystem,
   landScen,
   cropmix,
   multicropping
@@ -44,6 +45,9 @@ USD_m3 (USD per cubic meter) for volumetric return.
 Price aggregation:
 "GLO" for global average prices, or
 "ISO" for country-level prices}
+
+\item{irrigationsystem}{Irrigation system used: system share as in initialization year,
+or drip, surface, sprinkler for full irrigation by selected system}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)

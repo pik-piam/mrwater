@@ -10,7 +10,6 @@ fullWATER(
   transDist = 0,
   allocationrule = "optimization",
   rankmethod = "USD_ha:GLO:TRUE",
-  thresholdtype = "USD_ha:GLO",
   gainthreshold = 500,
   protectLand = "HalfEarth",
   yieldcalib = "TRUE:FALSE",
@@ -41,28 +40,19 @@ across cells of river basin ("optimization", "upstreamfirst")}
 
 \item{rankmethod}{Rank and optimization method consisting of
 Unit according to which rank is calculated:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return;
-Unit of yield improvement potential to be returned;
-Level of price aggregation used:
+USD_ha (USD per hectare) for relative area return, or
+USD_m3 (USD per cubic meter) for relative volumetric return;
+USD for absolute return (total profit);
+USD_m3ha (USD per hectare per cubic meter)
+for relative return according to area and volume.
+Price aggregation:
 "GLO" for global average prices, or
-"ISO" for country-level prices;
+"ISO" for country-level prices
 and boolean indicating fullpotential (TRUE, i.e. cell
 receives full irrigation requirements in total area)
 or reduced potential (FALSE, reduced potential of cell
 receives at later stage in allocation algorithm);
 separated by ":"}
-
-\item{thresholdtype}{Unit of yield improvement potential used as threshold,
-consisting of two components:
-Unit:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return.
-Price aggregation:
-"GLO" for global average prices, or
-"ISO" for country-level prices}
 
 \item{gainthreshold}{Threshold of yield improvement potential required for
 water allocation in upstreamfirst algorithm

@@ -27,7 +27,7 @@ calcCropAreaShare <- function(iniyear, cropmix) {
   croparea <- calcOutput("CropareaAdjusted", iniyear = iniyear,
                                        aggregate = FALSE)
 
-  # share of corp area by crop type
+  # share of crop area by crop type
   if (length(cropmix) == 1 && grepl("hist", cropmix)) {
 
     if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "irrig") {

@@ -10,16 +10,32 @@
 #' @param method        Rank and optimization method consisting of
 #'                      Unit according to which rank is calculated:
 #'                      tDM (tons per dry matter),
-#'                      USD_ha (USD per hectare) for area return, or
-#'                      USD_m3 (USD per cubic meter) for volumetric return;
+#'                      USD_ha (USD per hectare) for relative area return, or
+#'                      USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                      USD for absolute return (total profit);
+#'                      USD_m3ha (USD per hectare per cubic meter)
+#'                      for relative return according to area and volume.
 #'                      Price aggregation:
 #'                      "GLO" for global average prices, or
 #'                      "ISO" for country-level prices;
 #'                      and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
-#' @param cropmix       Selected cropmix (options:
+#' @param comagyear     if !NULL: already irrigated area is subtracted;
+#'                      if NULL: total potential land area is used;
+#'                      year specified here is the year of the initialization
+#'                      used for cropland area initialization in calcIrrigatedArea
+#' @param cropmix       Selected cropmix for which yield improvement potential
+#'                      is calculated (options:
 #'                      "hist_irrig" for historical cropmix on currently irrigated area,
 #'                      "hist_total" for historical cropmix on total cropland,
 #'                      or selection of proxycrops)
+#'                      NULL returns all crops individually
+#' @param irrigationsystem Irrigation system used: system share as in initialization year,
+#'                         or drip, surface, sprinkler for full irrigation by selected system
+#' @param landScen      Land availability scenario consisting of two parts separated by ":":
+#'                      1. available land scenario (currCropland, currIrrig, potCropland)
+#'                      2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
+#'                      For case of no land protection select "NA"
+#'                      or do not specify second part of the argument
 #' @param iniyear       Initialization year for price
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
@@ -43,18 +59,25 @@
 #' calcOutput("IrrigCellranking", aggregate = FALSE)
 #' }
 #'
-calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
-                                 method, cropmix, iniyear, yieldcalib, multicropping) {
+calcIrrigCellranking <- function(lpjml, climatetype,
+                                 cellrankyear, iniyear,
+                                 comagyear, irrigationsystem, landScen,
+                                 method, cropmix, yieldcalib,
+                                 multicropping) {
 
   fullpotential <- as.logical(strsplit(method, ":")[[1]][3])
-  unit          <- paste(strsplit(method, ":")[[1]][1], strsplit(method, ":")[[1]][2], sep = ":")
+  unit          <- paste(strsplit(method, ":")[[1]][1],
+                         strsplit(method, ":")[[1]][2],
+                         sep = ":")
 
-  # Read in average potential yield gain per cell (USD05 per ha)
+  # Read in average potential yield gain per cell
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
-                           selectyears = cellrankyear, iniyear = iniyear,
-                           lpjml = lpjml, climatetype = climatetype,
-                           cropmix = cropmix, yieldcalib = yieldcalib,
-                           multicropping = multicropping, aggregate = FALSE)
+                          lpjml = lpjml, climatetype = climatetype,
+                          selectyears = cellrankyear, iniyear = iniyear,
+                          comagyear = comagyear, irrigationsystem = irrigationsystem,
+                          landScen = landScen,
+                          cropmix = cropmix, yieldcalib = yieldcalib,
+                          multicropping = multicropping, aggregate = FALSE)
 
   if (!fullpotential) {
 
@@ -80,6 +103,7 @@ calcIrrigCellranking <- function(lpjml, climatetype, cellrankyear,
   return(list(x            = glocellrank,
               weight       = NULL,
               unit         = "1",
-              description  = "Rank of cell according to yield gain potential by irrigation",
+              description  = "Rank of cell according to
+                              yield gain potential by irrigation",
               isocountries = FALSE))
 }

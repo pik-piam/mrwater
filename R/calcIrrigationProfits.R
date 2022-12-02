@@ -1,4 +1,4 @@
-#' @title       calcIrrigAreaPotential
+#' @title       calcIrrigationProfits
 #' @description Calculates area that can potentially be irrigated given
 #'              available water and land
 #'
@@ -60,6 +60,12 @@
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand by surrounding cell water availability
+#' @param profitType        Unit according of irrigation profit:
+#'                          USD_ha (USD per hectare) for relative area return, or
+#'                          USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                          USD for absolute return (total profit);
+#'                          USD_m3ha (USD per hectare per cubic meter)
+#'                          for relative return according to area and volume.
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -73,87 +79,36 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames add_dimension add_columns mbind
 
-calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
+calcIrrigationProfits <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
                                 accessibilityrule, rankmethod, yieldcalib, allocationrule,
                                 gainthreshold, irrigationsystem, landScen,
-                                cropmix, potentialWat, comAg, multicropping, transDist) {
+                                cropmix, potentialWat, comAg, multicropping, transDist,
+                                profitType) {
 
-  # retrieve arguments
-  thresholdtype <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
-                         str_split(rankmethod, pattern = ":")[[1]][2],
-                         sep = ":")
+  # Area Irrigated given chosen scenario
+  irrigArea <- collapseNames(calcOutput("IrrigAreaPotential",
+                                        lpjml = lpjml, climatetype = climatetype,
+                                        selectyears = selectyears, iniyear = iniyear,
+                                        efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                                        rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                        allocationrule = allocationrule, gainthreshold = gainthreshold,
+                                        irrigationsystem = irrigationsystem, landScen = landScen,
+                                        cropmix = cropmix, potentialWat = potentialWat, comAg = comAg,
+                                        multicropping = multicropping, transDist = transDist,
+                                        aggregate = FALSE)[, , "irrigatable"])
 
-  ## Read in water available for irrigation (in mio. m^3)
-  if (potentialWat) {
-
-    avlWat         <- calcOutput("WaterUsePotential", selectyears = selectyears,
-                                  lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
-                                  accessibilityrule = accessibilityrule, rankmethod = rankmethod,
-                                  yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                  thresholdtype = thresholdtype, gainthreshold = gainthreshold,
-                                  irrigationsystem = irrigationsystem, iniyear = iniyear,
-                                  landScen = landScen, cropmix = cropmix,
-                                  comAg = comAg, multicropping = multicropping,
-                                  transDist = transDist, aggregate = FALSE)
-    avlWatWC <- collapseNames(avlWat[, , "wat_ag_wc"])
-    avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
-
-  } else {
-
-    avlWat         <- calcOutput("RiverHumanUseAccounting",
-                                 iteration = "committed_agriculture",
-                                 selectyears = selectyears, iniyear = iniyear,
-                                 lpjml = lpjml, climatetype = climatetype,
-                                 efrMethod = efrMethod, multicropping = multicropping,
-                                 transDist = transDist, comAg = comAg,
-                                 accessibilityrule = NULL,
-                                 rankmethod = NULL, gainthreshold = NULL,
-                                 cropmix = NULL, yieldcalib = NULL,
-                                 irrigationsystem = NULL, landScen = NULL,
-                                 aggregate = FALSE)
-
-    avlWatWC <- collapseNames(avlWat[, , "currHumanWCtotal"])
-    avlWatWW <- collapseNames(avlWat[, , "currHumanWWtotal"])
-
-  }
-
-  # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
-  watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
-                          lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
+  # Irrigation gain (in USD/ha)
+  irrigGain <- calcOutput("IrrigYieldImprovementPotential",
+                          selectyears = selectyears, iniyear = iniyear, comagyear = NULL,
+                          lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
+                          unit = "USD_ha", yieldcalib = yieldcalib,
                           irrigationsystem = irrigationsystem, landScen = landScen,
-                          cropmix = cropmix, yieldcalib = yieldcalib,
-                          multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
-  watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWatWW),
-                                     years = getYears(avlWatWW),
-                                     names = getNames(avlWatWW),
-                                     fill = NA)
+                          multicropping = multicropping, aggregate = FALSE)
 
-  watReqWW[, , ] <- collapseNames(watReq[, , "withdrawal"])
-  watReqWC[, , ] <- collapseNames(watReq[, , "consumption"])
 
-  # Read in area that can potentially be irrigated
-  # (including total potentially irrigatable area; defined by comagyear=NULL)
-  areaPotIrrig <- calcOutput("AreaPotIrrig",
-                             selectyears = selectyears, iniyear = iniyear,
-                             landScen = landScen, comagyear = NULL,
-                             aggregate = FALSE)
-
-  # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
-  irrigareaWW <- pmin(avlWatWW / watReqWW, 1) * areaPotIrrig
-  irrigareaWW[watReqWW == 0] <- 0      # cells with no water requirements also get no irrigated area assigned
-  irrigareaWW <- add_dimension(irrigareaWW, dim = 3.4, add = "type",
-                               nm = "irrigatable_ww")
-
-  irrigareaWC <- pmin(avlWatWC / watReqWC, 1) * areaPotIrrig
-  irrigareaWC[watReqWC == 0] <- 0
-  irrigareaWC <- add_dimension(irrigareaWC, dim = 3.4, add = "type",
-                               nm = "irrigatable_wc")
-
-  irrigatableArea <- pmin(collapseNames(irrigareaWW), collapseNames(irrigareaWC))
-  irrigatableArea <- add_dimension(irrigatableArea, dim = 3.4, add = "type",
-                                   nm = "irrigatable")
-
-  out <- mbind(irrigatableArea, irrigareaWW, irrigareaWC)
+  if (profitType == "USD") {
+    out <- irrigArea * irrigGain
+  }
 
   # check for NAs and negative values
   if (any(is.na(out))) {
@@ -165,8 +120,8 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
 
   return(list(x            = out,
               weight       = NULL,
-              unit         = "mio. ha",
-              description  = "Area that can be irrigated
-                              given land and water constraints",
+              unit         = "USD",
+              description  = "Profit through irrigation achieved at the
+                              respective (potentially) irrigated area",
               isocountries = FALSE))
 }

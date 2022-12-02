@@ -8,7 +8,6 @@
 #' @export
 
 fullDETERMINANTS <- function() {
-
   # Standard settings
   lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
                    crop = "ggcmi_phase3_nchecks_9ca735cb")
@@ -42,6 +41,8 @@ fullDETERMINANTS <- function() {
              lpjml = lpjml, climatetype = climatetype,
              unit = "USD_ha:GLO", cropmix = "hist_total",
              iniyear = iniyear, selectyears = lpjyears,
+             comagyear = NULL, irrigationsystem = "initialization",
+             landScen = paste0("currCropland:", "NULL"),
              yieldcalib = "TRUE:TRUE:actual:irrig_crop", multicropping = TRUE,
              aggregate = FALSE,
              file = "yieldgain_multicropping.mz")
@@ -49,6 +50,8 @@ fullDETERMINANTS <- function() {
              lpjml = lpjml, climatetype = climatetype,
              unit = "USD_ha:GLO", cropmix = "hist_total",
              iniyear = iniyear, selectyears = lpjyears,
+             comagyear = NULL, irrigationsystem = "initialization",
+             landScen = paste0("currCropland:", "NULL"),
              yieldcalib = "TRUE:FALSE", multicropping = FALSE,
              aggregate = FALSE,
              file = "yieldgain_singlecropping.mz")

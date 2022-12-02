@@ -18,7 +18,6 @@ reportEconOfIrrig(
   rankmethod,
   yieldcalib,
   allocationrule,
-  thresholdtype,
   irrigationsystem,
   landScen,
   cropmix,
@@ -60,13 +59,14 @@ or base value for exponential curve separated by : (CV:2)}
 
 \item{rankmethod}{Rank and optimization method consisting of
 Unit according to which rank is calculated:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return;
-Unit of yield improvement potential to be returned;
-Level of price aggregation used:
+USD_ha (USD per hectare) for relative area return, or
+USD_m3 (USD per cubic meter) for relative volumetric return;
+USD for absolute return (total profit);
+USD_m3ha (USD per hectare per cubic meter)
+for relative return according to area and volume.
+Price aggregation:
 "GLO" for global average prices, or
-"ISO" for country-level prices;
+"ISO" for country-level prices
 and boolean indicating fullpotential (TRUE, i.e. cell
 receives full irrigation requirements in total area)
 or reduced potential (FALSE, reduced potential of cell
@@ -81,16 +81,6 @@ If FALSE: uncalibrated LPJmL yields are used}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst")}
-
-\item{thresholdtype}{Unit of yield improvement potential used as threshold,
-consisting of two components:
-Unit:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return.
-Price aggregation:
-"GLO" for global average prices, or
-"ISO" for country-level prices}
 
 \item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}

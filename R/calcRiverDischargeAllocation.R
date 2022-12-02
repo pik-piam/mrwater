@@ -14,18 +14,19 @@
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
 #' @param rankmethod        Rank and optimization method consisting of
-#'                          Unit according to which rank is calculated, consisting of:
-#'                          Unit:
-#'                          tDM (tons per dry matter),
-#'                          USD_ha (USD per hectare) for area return, or
-#'                          USD_m3 (USD per cubic meter) for volumetric return; and
+#'                          Unit according to which rank is calculated:
+#'                          USD_ha (USD per hectare) for relative area return, or
+#'                          USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                          USD for absolute return (total profit);
+#'                          USD_m3ha (USD per hectare per cubic meter)
+#'                          for relative return according to area and volume.
 #'                          Price aggregation:
 #'                          "GLO" for global average prices, or
-#'                          "ISO" for country-level prices;
-#'                          and boolean indicating fullpotential (TRUE, i.e. cell receives full
-#'                                                                irrigation requirements in total area)
+#'                          "ISO" for country-level prices
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell
+#'                          receives full irrigation requirements in total area)
 #'                          or reduced potential (FALSE, reduced potential of cell
-#'                                                receives at later stage in allocation algorithm);
+#'                          receives at later stage in allocation algorithm);
 #'                          separated by ":"
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
@@ -34,15 +35,6 @@
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          ("optimization" or "upstreamfirst")
-#' @param thresholdtype     Unit of yield improvement potential used as threshold,
-#'                          consisting of unit and price aggregation level separated by ":".
-#'                          Unit:
-#'                          tDM (tons per dry matter),
-#'                          USD_ha (USD per hectare) for area return, or
-#'                          USD_m3 (USD per cubic meter) for volumetric return.
-#'                          Price aggregation:
-#'                          "GLO" for global average prices, or
-#'                          "ISO" for country-level prices
 #' @param gainthreshold     Threshold of yield improvement potential
 #'                          (same unit as thresholdtype)
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge
@@ -71,6 +63,7 @@
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand by surrounding cell water availability
 #'
+#' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears
 #'
@@ -84,10 +77,9 @@
 #'
 calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
                                          selectyears, output, efrMethod, accessibilityrule,
-                                         rankmethod, yieldcalib, allocationrule, thresholdtype,
+                                         rankmethod, yieldcalib, allocationrule,
                                          gainthreshold, irrigationsystem, iniyear, landScen,
                                          cropmix, comAg, multicropping) {
-
   # Check
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
@@ -99,6 +91,9 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
   } else if (comAg == FALSE) {
     comagyear <- NULL
   }
+  thresholdtype <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
+                         str_split(rankmethod, pattern = ":")[[1]][2],
+                         sep = ":")
 
   #######################################
   ###### Read in Required Inputs ########
@@ -140,6 +135,8 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
   irrigGain      <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                                 lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                                 unit = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
+                                comagyear = comagyear, irrigationsystem = irrigationsystem,
+                                landScen = landScen,
                                 multicropping = multicropping, aggregate = FALSE)
 
   # Initialization of fraction of full irrigation requirements that can be fulfilled
@@ -153,6 +150,8 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
   glocellrank     <- setYears(calcOutput("IrrigCellranking", cellrankyear = selectyears,
                                          lpjml = lpjml, climatetype = climatetype, method = rankmethod,
                                          cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
+                                         comagyear = comagyear, irrigationsystem = irrigationsystem,
+                                         landScen = landScen,
                                          multicropping = multicropping, aggregate = FALSE),
                               selectyears)
 
@@ -211,13 +210,11 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
   }
 
   if (output == "discharge") {
-
     # Main output for MAgPIE: water available for agricultural consumption
     out         <- as.magpie(inoutLIST$discharge, spatial = 1)
     description <- "Cellular discharge after surplus discharge allocation algorithm"
 
   } else if (output == "potIrrigWat") {
-
     # Main output for MAgPIE: water available for agricultural withdrawal
     frac        <- as.magpie(inoutLIST$fracFullirrig, spatial = 1)
     out         <- frac * reqWatFullirrig

@@ -9,6 +9,7 @@ calcActualIrrigWatRequirements(
   iniyear,
   lpjml,
   climatetype,
+  irrigationsystem,
   multicropping
 )
 }
@@ -20,6 +21,9 @@ calcActualIrrigWatRequirements(
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+
+\item{irrigationsystem}{Irrigation system used: system share as in initialization year,
+or drip, surface, sprinkler for full irrigation by selected system}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
 Multiple Cropping Suitability mask selected
@@ -35,7 +39,7 @@ magpie object in cellular resolution
 }
 \description{
 This function calculates actual irrigation water requirements
-             per cell given a certain irrigation system
+             per cell given the chosen irrigation system
 }
 \examples{
 \dontrun{

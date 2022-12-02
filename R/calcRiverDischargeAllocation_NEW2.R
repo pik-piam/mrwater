@@ -13,18 +13,19 @@
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
 #' @param rankmethod        Rank and optimization method consisting of
-#'                          1. Unit according to which rank is calculated, consisting of:
-#'                          Unit:
-#'                          tDM (tons per dry matter),
-#'                          USD_ha (USD per hectare) for area return, or
-#'                          USD_m3 (USD per cubic meter) for volumetric return; and
-#'                          2. Price aggregation:
+#'                          Unit according to which rank is calculated:
+#'                          USD_ha (USD per hectare) for relative area return, or
+#'                          USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                          USD for absolute return (total profit);
+#'                          USD_m3ha (USD per hectare per cubic meter)
+#'                          for relative return according to area and volume.
+#'                          Price aggregation:
 #'                          "GLO" for global average prices, or
-#'                          "ISO" for country-level prices;
-#'                          and 3. boolean indicating fullpotential (TRUE, i.e. cell receives full
-#'                                                                irrigation requirements in total area)
+#'                          "ISO" for country-level prices
+#'                          and boolean indicating fullpotential (TRUE, i.e. cell
+#'                          receives full irrigation requirements in total area)
 #'                          or reduced potential (FALSE, reduced potential of cell
-#'                                                receives at later stage in allocation algorithm);
+#'                          receives at later stage in allocation algorithm);
 #'                          separated by ":"
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
@@ -35,15 +36,6 @@
 #'                          ("optimization" or "upstreamfirst")
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand
-#' @param thresholdtype     Unit of yield improvement potential used as threshold,
-#'                          consisting of unit and price aggregation level separated by ":".
-#'                          Unit:
-#'                          tDM (tons per dry matter),
-#'                          USD_ha (USD per hectare) for area return, or
-#'                          USD_m3 (USD per cubic meter) for volumetric return.
-#'                          Price aggregation:
-#'                          "GLO" for global average prices, or
-#'                          "ISO" for country-level prices
 #' @param gainthreshold     Threshold of yield improvement potential
 #'                          (same unit as thresholdtype)
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge
@@ -70,6 +62,7 @@
 #'                          separated by ":"
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
 #'
+#' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames as.magpie getCells setCells mbind setYears
 #'
@@ -85,7 +78,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
                                              selectyears, efrMethod,
                                              accessibilityrule, transDist,
                                              rankmethod, yieldcalib,
-                                             allocationrule, thresholdtype,
+                                             allocationrule,
                                              gainthreshold, irrigationsystem, iniyear, landScen,
                                              cropmix, comAg, multicropping) {
   # Retrieve arguments
@@ -125,13 +118,23 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   rs$neighborcell    <- rs0$neighborcell
 
   if (allocationrule == "optimization") {
+
+    if (comAg == TRUE) {
+      # accounting in potentials
+      comagyear <- iniyear
+    } else if (comAg == FALSE) {
+      # committed agriculture not accounted in potentials (full potential)
+      comagyear <- NULL
+    }
     # Global cell rank based on yield gain potential by irrigation
     # of chosen crop mix
     glocellrank <- setYears(calcOutput("IrrigCellranking",
                                         cellrankyear = selectyears,
                                         lpjml = lpjml, climatetype = climatetype, method = rankmethod,
                                         cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
-                                        multicropping = multicropping, aggregate = FALSE),
+                                        comagyear = comagyear, irrigationsystem = irrigationsystem,
+                                        landScen = landScen, multicropping = multicropping,
+                                       aggregate = FALSE),
                             selectyears)
 
     ### Inputs from Previous River Routing Iterations ###

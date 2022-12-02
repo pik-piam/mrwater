@@ -8,7 +8,7 @@ calcCropYieldGain(
   lpjml,
   climatetype,
   yieldgaintype,
-  unit,
+  priceAgg,
   iniyear,
   selectyears,
   yieldcalib,
@@ -27,15 +27,10 @@ multiple cropping under irrigated conditions "multicropping_ir",
 irrigation under single cropping conditions "irrigation_singlecropping"
 irrigation and multiple cropping "irrigation_multicropping"}
 
-\item{unit}{Unit of yield improvement potential to be returned and
-level of price aggregation used, separated by ":".
-Unit:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return.
-Price aggregation:
+\item{priceAgg}{Price aggregation:
 "GLO" for global average prices, or
-"ISO" for country-level prices}
+"ISO" for country-level prices, or
+"CONST" for same price for all crops}
 
 \item{iniyear}{initialization year for food price and cropmix area}
 

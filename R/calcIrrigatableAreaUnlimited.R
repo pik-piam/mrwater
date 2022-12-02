@@ -31,6 +31,8 @@
 #'                      "ISO" for country-level prices
 #' @param gainthreshold Threshold of yield improvement potential
 #'                      (same unit as thresholdtype)
+#' @param irrigationsystem Irrigation system used: system share as in initialization year,
+#'                         or drip, surface, sprinkler for full irrigation by selected system
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
 #'                      ("endogenous": suitability for multiple cropping determined
@@ -51,7 +53,7 @@
 #' @importFrom madrat calcOutput
 
 calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
-                                         climatetype, cropmix, yieldcalib,
+                                         climatetype, cropmix, yieldcalib, irrigationsystem,
                                          thresholdtype, gainthreshold, multicropping) {
 
   # Area that can potentially be irrigated (including total potentially
@@ -61,10 +63,12 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
 
   # Yield gain potential through irrigation of proxy crops
   potGain <- calcOutput("IrrigYieldImprovementPotential", unit = thresholdtype,
-                         lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-                         selectyears = selectyears, iniyear = iniyear,
-                         yieldcalib = yieldcalib, multicropping = multicropping,
-                         aggregate = FALSE)
+                        selectyears = selectyears, iniyear = iniyear,
+                        lpjml = lpjml, climatetype = climatetype,
+                        comagyear = NULL, irrigationsystem = irrigationsystem,
+                        landScen = landScen, cropmix = cropmix,
+                        yieldcalib = yieldcalib, multicropping = multicropping,
+                        aggregate = FALSE)
 
   # remove areas below chosen gainthreshold
   potArea[potGain < gainthreshold] <- 0

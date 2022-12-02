@@ -14,7 +14,6 @@ calcIrrigAreaPotential(
   rankmethod,
   yieldcalib,
   allocationrule,
-  thresholdtype,
   gainthreshold,
   irrigationsystem,
   landScen,
@@ -41,18 +40,19 @@ discharge that is exceeded x percent of the time on average throughout a year (Q
 (e.g. Q75: 0.25, Q50: 0.5)}
 
 \item{rankmethod}{Rank and optimization method consisting of
-Unit according to which rank is calculated, consisting of:
-Unit:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return; and
+Unit according to which rank is calculated:
+USD_ha (USD per hectare) for relative area return, or
+USD_m3 (USD per cubic meter) for relative volumetric return;
+USD for absolute return (total profit);
+USD_m3ha (USD per hectare per cubic meter)
+for relative return according to area and volume.
 Price aggregation:
 "GLO" for global average prices, or
-"ISO" for country-level prices;
-and boolean indicating fullpotential (TRUE, i.e. cell receives full
-                                      irrigation requirements in total area)
+"ISO" for country-level prices
+and boolean indicating fullpotential (TRUE, i.e. cell
+receives full irrigation requirements in total area)
 or reduced potential (FALSE, reduced potential of cell
-                      receives at later stage in allocation algorithm);
+receives at later stage in allocation algorithm);
 separated by ":"}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
@@ -63,9 +63,6 @@ If FALSE: uncalibrated LPJmL yields are used}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst", "equality")}
-
-\item{thresholdtype}{Thresholdtype of yield improvement:
-TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
 
 \item{gainthreshold}{Threshold of yield improvement potential required
 (same unit as thresholdtype)}

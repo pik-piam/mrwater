@@ -8,9 +8,12 @@ calcIrrigCellranking(
   lpjml,
   climatetype,
   cellrankyear,
+  iniyear,
+  comagyear,
+  irrigationsystem,
+  landScen,
   method,
   cropmix,
-  iniyear,
   yieldcalib,
   multicropping
 )
@@ -23,22 +26,41 @@ historical baseline "GSWP3-W5E5:historical" for yields}
 
 \item{cellrankyear}{Year(s) for which cell rank is calculated}
 
+\item{iniyear}{Initialization year for price}
+
+\item{comagyear}{if !NULL: already irrigated area is subtracted;
+if NULL: total potential land area is used;
+year specified here is the year of the initialization
+used for cropland area initialization in calcIrrigatedArea}
+
+\item{irrigationsystem}{Irrigation system used: system share as in initialization year,
+or drip, surface, sprinkler for full irrigation by selected system}
+
+\item{landScen}{Land availability scenario consisting of two parts separated by ":":
+1. available land scenario (currCropland, currIrrig, potCropland)
+2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
+For case of no land protection select "NA"
+or do not specify second part of the argument}
+
 \item{method}{Rank and optimization method consisting of
 Unit according to which rank is calculated:
 tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return;
+USD_ha (USD per hectare) for relative area return, or
+USD_m3 (USD per cubic meter) for relative volumetric return;
+USD for absolute return (total profit);
+USD_m3ha (USD per hectare per cubic meter)
+for relative return according to area and volume.
 Price aggregation:
 "GLO" for global average prices, or
 "ISO" for country-level prices;
 and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
 
-\item{cropmix}{Selected cropmix (options:
+\item{cropmix}{Selected cropmix for which yield improvement potential
+is calculated (options:
 "hist_irrig" for historical cropmix on currently irrigated area,
 "hist_total" for historical cropmix on total cropland,
-or selection of proxycrops)}
-
-\item{iniyear}{Initialization year for price}
+or selection of proxycrops)
+NULL returns all crops individually}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
          Also needs specification of refYields, separated by ":".
