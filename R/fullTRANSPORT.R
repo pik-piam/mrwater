@@ -91,7 +91,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
   #####################################################
   ### Crop specific yields and water requirements   ###
   #####################################################
-  calcOutput("IrrigCropYieldGain", unit = "USD_ha:GLO",
+  calcOutput("IrrigCropYieldGain", priceAgg = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
              yieldcalib = yieldcalib, cropmix = cropmix,
