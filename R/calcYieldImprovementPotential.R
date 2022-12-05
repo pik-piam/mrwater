@@ -11,17 +11,10 @@
 #'                      irrigation under single cropping conditions "irrigation_singlecropping"
 #'                      irrigation and multiple cropping "irrigation_multicropping"
 #' @param selectyears   Years to be returned by the function
-#' @param unit          Unit of yield improvement potential to be returned and
-#'                      level of price aggregation used, separated by ":".
-#'                      Unit:
-#'                      USD_ha (USD per hectare) for relative area return, or
-#'                      USD_m3 (USD per cubic meter) for relative volumetric return;
-#'                      USD for absolute return (total profit);
-#'                      USD_m3ha (USD per hectare per cubic meter)
-#'                      for relative return according to area and volume.
-#'                      Price aggregation:
+#' @param priceAgg      Price aggregation:
 #'                      "GLO" for global average prices, or
-#'                      "ISO" for country-level prices
+#'                      "ISO" for country-level prices, or
+#'                      "CONST" for same price for all crops
 #' @param iniyear       initialization year for food price and cropmix area
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:
@@ -59,12 +52,12 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames getCells dimSums
 
-calcYieldImprovementPotential <- function(lpjml, climatetype, yieldgaintype, unit,
+calcYieldImprovementPotential <- function(lpjml, climatetype, yieldgaintype, priceAgg,
                                           iniyear, selectyears, cropmix,
                                           yieldcalib, multicropping) {
 
   # read in yield gain
-  yieldGain <- calcOutput("CropYieldGain", unit = unit, yieldgaintype = yieldgaintype,
+  yieldGain <- calcOutput("CropYieldGain", priceAgg = priceAgg, yieldgaintype = yieldgaintype,
                           lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib, cropmix = cropmix,
@@ -116,7 +109,7 @@ calcYieldImprovementPotential <- function(lpjml, climatetype, yieldgaintype, uni
 
   return(list(x            = yieldGain,
               weight       = NULL,
-              unit         = unit,
+              unit         = "USD per hectare",
               description  = description,
               isocountries = FALSE))
 }
