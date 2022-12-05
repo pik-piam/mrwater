@@ -83,12 +83,13 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
                      cropmix = cropmix, landScen = landScen,
                      aggregate = FALSE)
 
-  # water requirements for full irrigation in cell per crop accounting for cropshare (in mio. m^3)
+  # water requirements for full irrigation in cell accounting for cropshare (in mio. m^3)
   # Note on unit transformation:
   # croparea (mio ha -> ha): multiply with 1e6,
   # irrigation water requirements (m^3 per ha -> mio. m^3 per ha): divide by 1e6
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
-  irrigWat <- irrigWat[, , getItems(croparea, dim = 3)] * croparea
+  irrigWat <- dimSums(irrigWat[, , getItems(croparea, dim = 3)] * croparea,
+                      dim = "crop")
 
   # Checks
   if (any(is.na(irrigWat))) {

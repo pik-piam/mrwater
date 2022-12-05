@@ -70,12 +70,18 @@ calcYieldImprovementPotential <- function(lpjml, climatetype, yieldgaintype, uni
                           yieldcalib = yieldcalib, cropmix = cropmix,
                           multicropping = multicropping, aggregate = FALSE)
 
-  # set negative yield gains to 0
-  yieldGain[yieldGain < 0] <- 0
-  # (Note: irrigation may lead to shift in growing period -> can have negative values
-  # (in cropping calendar version);
-  # also: under N-stress, irrigation may lead to lower yields,
-  # (the latter is only relevant for limited-N-LPJmL version, default: unlimited N))
+  if (any(yieldGain < 0)) {
+    warning("There are negative yield gains for certain crops. These are set to 0.
+            Under single cropping, this is possible when the growing period is shifted
+            together with irrigation.")
+
+    # set negative yield gains to 0
+    yieldGain[yieldGain < 0] <- 0
+    # (Note: irrigation may lead to shift in growing period -> can have negative values
+    # (in cropping calendar version);
+    # also: under N-stress, irrigation may lead to lower yields,
+    # (the latter is only relevant for limited-N-LPJmL version, default: unlimited N))
+  }
 
   # Selected crops
   if (!is.null(cropmix)) {

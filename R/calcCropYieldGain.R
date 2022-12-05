@@ -133,12 +133,6 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
     stop("Function IrrigCropYieldGain produced NAs")
   }
 
-  if (any(yieldGain < 0)) {
-    warning("There are negative yield gains for certain crops. These are set to 0.
-            Under single cropping, this is possible when the growing period is shifted
-            together with irrigation.")
-  }
-
   return(list(x            = yieldGain,
               weight       = NULL,
               unit         = "USD per hectare",
