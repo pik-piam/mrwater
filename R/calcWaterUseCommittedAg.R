@@ -5,7 +5,8 @@
 #'
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears   Years to be returned
-#' @param climatetype   Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
+#' @param climatetype   Switch between different climate scenarios or
+#'                      historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear       Year of initialization for cropland area
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
