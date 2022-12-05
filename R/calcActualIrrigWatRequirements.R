@@ -28,7 +28,7 @@
 #' calcOutput("ActualIrrigWatRequirements", aggregate = FALSE)
 #' }
 #'
-#' @importFrom magclass dimSums collapseNames getNames
+#' @importFrom magclass dimSums collapseNames getNames getCells
 #' @importFrom madrat calcOutput
 
 calcActualIrrigWatRequirements <- function(selectyears, iniyear,
@@ -40,6 +40,7 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
                            lpjml = lpjml,  climatetype = climatetype,
                            multicropping = multicropping,
                            aggregate = FALSE)
+  cellorder  <- getCells(irrigReq)
 
   # calculate irrigation water requirements per crop [in mio. m^3 per year] given irrigation system share in use
   if (irrigationsystem == "initialization") {
@@ -50,7 +51,7 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
 
     # total irrigation water requirements per crop given
     # irrigation system share (in m^3 per ha per yr)
-    irrigReq       <- dimSums(irrigSystemShr * irrigReq[, , getNames(irrigSystemShr)],
+    irrigReq       <- dimSums(irrigReq[, , getNames(irrigSystemShr)] * irrigSystemShr,
                               dim = "system")
 
   } else {
@@ -59,6 +60,9 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
     irrigReq <- collapseNames(irrigReq[, , irrigationsystem])
 
   }
+
+  # Cell ordering
+  irrigReq <- irrigReq[cellorder, , ]
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {
