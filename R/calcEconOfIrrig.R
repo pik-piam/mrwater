@@ -85,11 +85,6 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                             irrigationsystem, landScen, cropmix, transDist,
                             potentialWat = TRUE, comAg, multicropping) {
 
-  # retrieve arguments
-  thresholdtype <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
-                         str_split(rankmethod, pattern = ":")[[1]][2],
-                         sep = ":")
-
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
   }
@@ -100,8 +95,9 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                                   selectyears = selectyears, iniyear = iniyear,
                                   climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
-                                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                  thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                  rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                  allocationrule = allocationrule,
+                                  irrigationsystem = irrigationsystem,
                                   landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
                                   comAg = comAg, multicropping = multicropping,
                                   transDist = transDist,
@@ -115,8 +111,9 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
     x <- collapseNames(calcOutput("WaterUsePotential", gainthreshold = 0,
                                   selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
-                                  rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                  thresholdtype = thresholdtype, irrigationsystem = irrigationsystem, iniyear = iniyear,
+                                  rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                  allocationrule = allocationrule,
+                                  irrigationsystem = irrigationsystem, iniyear = iniyear,
                                   landScen = landScen, cropmix = cropmix, comAg = comAg,
                                   multicropping = multicropping, transDist = transDist,
                                   aggregate = FALSE)[, , output][, , scenario])
@@ -144,7 +141,7 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                                       lpjml = lpjml, climatetype = climatetype,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                      thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                      irrigationsystem = irrigationsystem,
                                       landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
                                       comAg = comAg, multicropping = multicropping, transDist = transDist,
                                       aggregate = FALSE)[, , "irrigatable"][, , scenario])
@@ -155,7 +152,7 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                                       selectyears = selectyears, iniyear = iniyear,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
-                                      thresholdtype = thresholdtype, irrigationsystem = irrigationsystem,
+                                      irrigationsystem = irrigationsystem,
                                       landScen = landScen, cropmix = cropmix, comAg = comAg,
                                       multicropping = multicropping, transDist = transDist,
                                       aggregate = FALSE)[, , output][, , scenario])

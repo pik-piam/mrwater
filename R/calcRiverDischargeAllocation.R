@@ -36,7 +36,7 @@
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          ("optimization" or "upstreamfirst")
 #' @param gainthreshold     Threshold of yield improvement potential
-#'                          (same unit as thresholdtype)
+#'                          (same unit as in rankmethod)
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge
 #'                          allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear           Initialization year of irrigation system

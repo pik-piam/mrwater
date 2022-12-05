@@ -48,7 +48,6 @@ calcIrrigationPotentials <- function(output, transDist,
 
   gainthreshold     <- 0
   rankmethod        <- "USD_ha:TRUE"
-  thresholdtype     <- "USD_ha"
 
   if (output == "IrrigArea") {
 
@@ -56,7 +55,7 @@ calcIrrigationPotentials <- function(output, transDist,
                                   selectyears = selectyears, iniyear = iniyear,
                                   climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
-                                  rankmethod = rankmethod, thresholdtype = thresholdtype,
+                                  rankmethod = rankmethod,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   irrigationsystem = irrigationsystem, transDist = transDist,
                                   landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
@@ -73,7 +72,7 @@ calcIrrigationPotentials <- function(output, transDist,
                                   selectyears = selectyears, iniyear = iniyear,
                                   climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
-                                  rankmethod = rankmethod, thresholdtype = thresholdtype,
+                                  rankmethod = rankmethod,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   irrigationsystem = irrigationsystem,
                                   landScen = landScen, cropmix = cropmix, comAg = comAg,

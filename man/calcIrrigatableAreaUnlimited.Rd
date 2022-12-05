@@ -13,7 +13,7 @@ calcIrrigatableAreaUnlimited(
   cropmix,
   yieldcalib,
   irrigationsystem,
-  thresholdtype,
+  unit,
   gainthreshold,
   multicropping
 )
@@ -47,18 +47,20 @@ If FALSE: uncalibrated LPJmL yields are used}
 \item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}
 
-\item{thresholdtype}{Unit of yield improvement potential used as threshold,
-consisting of two components:
+\item{unit}{Unit of yield improvement potential to be returned and
+level of price aggregation used, separated by ":".
 Unit:
-tDM (tons per dry matter),
-USD_ha (USD per hectare) for area return, or
-USD_m3 (USD per cubic meter) for volumetric return.
+USD_ha (USD per hectare) for relative area return, or
+USD_m3 (USD per cubic meter) for relative volumetric return;
+USD for absolute return (total profit);
+USD_m3ha (USD per hectare per cubic meter)
+for relative return according to area and volume.
 Price aggregation:
 "GLO" for global average prices, or
 "ISO" for country-level prices}
 
 \item{gainthreshold}{Threshold of yield improvement potential
-(same unit as thresholdtype)}
+(same unit as in rankmethod)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
 Multiple Cropping Suitability mask selected

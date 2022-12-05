@@ -70,7 +70,7 @@ receives at later stage in allocation algorithm);
 separated by ":"}
 
 \item{gainthreshold}{Threshold of yield improvement potential required
-(same unit as thresholdtype)}
+(same unit as in rankmethod)}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst", "equality")}

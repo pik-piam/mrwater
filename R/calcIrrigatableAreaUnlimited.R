@@ -20,17 +20,19 @@
 #'                               Options: FALSE (for single cropping analyses) or
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
-#' @param thresholdtype Unit of yield improvement potential used as threshold,
-#'                      consisting of two components:
+#' @param unit          Unit of yield improvement potential to be returned and
+#'                      level of price aggregation used, separated by ":".
 #'                      Unit:
-#'                      tDM (tons per dry matter),
-#'                      USD_ha (USD per hectare) for area return, or
-#'                      USD_m3 (USD per cubic meter) for volumetric return.
+#'                      USD_ha (USD per hectare) for relative area return, or
+#'                      USD_m3 (USD per cubic meter) for relative volumetric return;
+#'                      USD for absolute return (total profit);
+#'                      USD_m3ha (USD per hectare per cubic meter)
+#'                      for relative return according to area and volume.
 #'                      Price aggregation:
 #'                      "GLO" for global average prices, or
 #'                      "ISO" for country-level prices
 #' @param gainthreshold Threshold of yield improvement potential
-#'                      (same unit as thresholdtype)
+#'                      (same unit as in rankmethod)
 #' @param irrigationsystem Irrigation system used: system share as in initialization year,
 #'                         or drip, surface, sprinkler for full irrigation by selected system
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
@@ -54,7 +56,7 @@
 
 calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
                                          climatetype, cropmix, yieldcalib, irrigationsystem,
-                                         thresholdtype, gainthreshold, multicropping) {
+                                         unit, gainthreshold, multicropping) {
 
   # Area that can potentially be irrigated (including total potentially
   # irrigatable area; defined by comagyear=NULL)
@@ -62,7 +64,7 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
                          landScen = landScen, comagyear = NULL, aggregate = FALSE)
 
   # Yield gain potential through irrigation of proxy crops
-  potGain <- calcOutput("IrrigYieldImprovementPotential", unit = thresholdtype,
+  potGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
                         selectyears = selectyears, iniyear = iniyear,
                         lpjml = lpjml, climatetype = climatetype,
                         comagyear = NULL, irrigationsystem = irrigationsystem,

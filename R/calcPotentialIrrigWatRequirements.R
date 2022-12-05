@@ -51,7 +51,6 @@ calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
 
   gainthreshold     <- 0
   rankmethod        <- "USD_ha:TRUE"
-  thresholdtype     <- "USD_ha"
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
   irrigReq   <- collapseNames(calcOutput("IrrigWatRequirements", selectyears = selectyears,
@@ -82,7 +81,7 @@ calcPotentialIrrigWatRequirements <- function(selectyears, iniyear,
                                   selectyears = selectyears, iniyear = iniyear,
                                   climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
-                                  rankmethod = rankmethod, thresholdtype = thresholdtype,
+                                  rankmethod = rankmethod,
                                   yieldcalib = yieldcalib, allocationrule = allocationrule,
                                   irrigationsystem = irrigationsystem, transDist = transDist,
                                   landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,

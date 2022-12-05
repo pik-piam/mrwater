@@ -49,7 +49,7 @@
 #'                          separated by ":"
 #' @param gainthreshold     (For case of iteration = "potential_irrigation" only:)
 #'                          Threshold of yield improvement potential
-#'                          (same unit as thresholdtype)
+#'                          (same unit as in rankmethod)
 #' @param cropmix           (For case of iteration = "potential_irrigation" only:)
 #'                          Selected cropmix (options:
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,

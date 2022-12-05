@@ -1,6 +1,6 @@
 {
   "title": "mrwater: madrat based MAgPIE water Input Data Library",
-  "version": "1.4.20",
+  "version": "1.4.21",
   "description": "<p>Provides functions for MAgPIE cellular input data generation \n             and stand-alone water calculations.<\/p>",
   "creators": [
     {

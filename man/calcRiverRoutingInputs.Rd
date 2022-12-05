@@ -82,7 +82,7 @@ receives at later stage in allocation algorithm);
 separated by ":"}
 
 \item{gainthreshold}{Threshold of yield improvement potential
-(same unit as thresholdtype in rankmethod argument)}
+(same unit as in rankmethod argument)}
 
 \item{cropmix}{Selected cropmix (options:
 "hist_irrig" for historical cropmix on currently irrigated area,

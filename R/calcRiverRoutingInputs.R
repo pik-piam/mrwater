@@ -50,7 +50,7 @@
 #'                          receives at later stage in allocation algorithm);
 #'                          separated by ":"
 #' @param gainthreshold     Threshold of yield improvement potential
-#'                          (same unit as thresholdtype in rankmethod argument)
+#'                          (same unit as in rankmethod argument)
 #' @param cropmix           Selected cropmix (options:
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,

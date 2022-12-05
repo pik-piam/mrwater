@@ -44,9 +44,6 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
   allocationrule    <- "optimization"
-  thresholdtype     <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
-                             str_split(rankmethod, pattern = ":")[[1]][2],
-                             sep = ":")
   irrigationsystem  <- "initialization"
 
   # Technical potential chosen for Irrigation Potentials
@@ -171,7 +168,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                lpjml = lpjml, climatetype = climatetype,
                efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               allocationrule = allocationrule,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
                potentialWat = TRUE, comAg = TRUE,
                multicropping = multicropping,
@@ -185,7 +182,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                lpjml = lpjml, climatetype = climatetype,
                efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               allocationrule = allocationrule,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
                multicropping = multicropping, comAg = TRUE,
                aggregate = FALSE,
@@ -199,7 +196,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                lpjml = lpjml, climatetype = climatetype,
                efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               allocationrule = allocationrule,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
                potentialWat = TRUE, comAg = TRUE,
                multicropping = multicropping,
@@ -213,7 +210,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                lpjml = lpjml, climatetype = climatetype,
                efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               allocationrule = allocationrule,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
                multicropping = multicropping, comAg = TRUE,
                aggregate = FALSE,
@@ -227,7 +224,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                lpjml = lpjml, climatetype = climatetype,
                efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               allocationrule = allocationrule,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
                potentialWat = TRUE, comAg = FALSE,
                multicropping = multicropping,
@@ -241,7 +238,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                lpjml = lpjml, climatetype = climatetype,
                efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                rankmethod = rankmethod, yieldcalib = yieldcalib,
-               allocationrule = allocationrule, thresholdtype = thresholdtype,
+               allocationrule = allocationrule,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
                multicropping = multicropping, comAg = FALSE,
                aggregate = FALSE,

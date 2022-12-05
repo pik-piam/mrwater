@@ -11,7 +11,7 @@ calcYieldgainArea(
   iniyear,
   climatetype,
   yieldcalib,
-  thresholdtype,
+  unit,
   irrigationsystem,
   landScen,
   cropmix,
@@ -36,7 +36,7 @@ irrigated areas}
                   "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
 
-\item{thresholdtype}{Unit of yield improvement potential used as threshold,
+\item{unit}{Unit of yield improvement potential used as threshold,
 consisting of unit and price aggregation level separated by ":".
 Unit:
 tDM (tons per dry matter),

@@ -13,7 +13,6 @@ calcEFRviolations(
   rankmethod,
   yieldcalib,
   allocationrule,
-  thresholdtype,
   gainthreshold,
   irrigationsystem,
   iniyear,
@@ -63,11 +62,8 @@ If FALSE: uncalibrated LPJmL yields are used}
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst", "equality")}
 
-\item{thresholdtype}{Thresholdtype of yield improvement:
-TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha}
-
 \item{gainthreshold}{Threshold of yield improvement potential required
-(same unit as thresholdtype)}
+(same unit as in rankmethod)}
 
 \item{irrigationsystem}{Irrigation system used
 ("surface", "sprinkler", "drip", "initialization")}

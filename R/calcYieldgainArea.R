@@ -13,7 +13,7 @@
 #'                               Options: FALSE (for single cropping analyses) or
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
-#' @param thresholdtype Unit of yield improvement potential used as threshold,
+#' @param unit          Unit of yield improvement potential used as threshold,
 #'                      consisting of unit and price aggregation level separated by ":".
 #'                      Unit:
 #'                      tDM (tons per dry matter),
@@ -57,7 +57,7 @@
 #' @export
 
 calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
-                              climatetype, yieldcalib, thresholdtype,
+                              climatetype, yieldcalib, unit,
                               irrigationsystem, landScen, cropmix, multicropping) {
 
   x <- vector(mode = "list", length = length(rangeGT))
@@ -71,7 +71,7 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
                     selectyears = selectyears, iniyear = iniyear,
                     lpjml = lpjml, climatetype = climatetype,
                     cropmix = cropmix, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
-                    thresholdtype = thresholdtype, multicropping = multicropping,
+                    unit = unit, multicropping = multicropping,
                     landScen = landScen, aggregate = FALSE)
 
     tmp <- add_dimension(tmp, dim = 3.1, add = "GT", nm = as.character(gainthreshold))

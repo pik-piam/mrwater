@@ -32,7 +32,7 @@
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
 #' @param gainthreshold     Threshold of yield improvement potential required
-#'                          (same unit as thresholdtype)
+#'                          (same unit as in rankmethod)
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear           Initialization year of irrigation system
@@ -76,10 +76,6 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                             gainthreshold, irrigationsystem, iniyear,
                             landScen, cropmix, comAg, multicropping, transDist) {
 
-  # retrieve arguments
-  thresholdtype <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
-                         str_split(rankmethod, pattern = ":")[[1]][2],
-                         sep = ":")
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
@@ -90,7 +86,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                                         selectyears = selectyears, transDist = transDist,
                                         accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
-                                        allocationrule = allocationrule, thresholdtype = thresholdtype,
+                                        allocationrule = allocationrule,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
                                         cropmix = cropmix, comAg = comAg,

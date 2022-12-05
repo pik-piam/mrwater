@@ -56,7 +56,7 @@ separated by ":"}
 
 \item{gainthreshold}{Threshold of yield improvement potential required for
 water allocation in upstreamfirst algorithm
-(in same unit as thresholdtype)}
+(in same unit as in rankmethod)}
 
 \item{protectLand}{Land protection scenario (e.g. HalfEarth, BH_IFL, NULL)}
 

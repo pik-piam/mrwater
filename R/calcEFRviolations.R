@@ -31,10 +31,8 @@
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
-#' @param thresholdtype     Thresholdtype of yield improvement:
-#'                          TRUE: monetary yield gain (USD05/ha), FALSE: yield gain in tDM/ha
 #' @param gainthreshold     Threshold of yield improvement potential required
-#'                          (same unit as thresholdtype)
+#'                          (same unit as in rankmethod)
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear           Initialization year of irrigation system
@@ -78,15 +76,9 @@
 #'
 calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
-                            thresholdtype, gainthreshold, irrigationsystem, iniyear,
+                            gainthreshold, irrigationsystem, iniyear,
                             landScen, cropmix, comAg, multicropping,
                             scenario, cellular = TRUE) {
-
-  # retrieve arguments
-  thresholdtype <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
-                         str_split(rankmethod, pattern = ":")[[1]][2],
-                         sep = ":")
-
   # Check
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
@@ -102,7 +94,7 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod,
                                         lpjml = lpjml, climatetype = climatetype,
                                         efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
-                                        allocationrule = allocationrule, thresholdtype = thresholdtype,
+                                        allocationrule = allocationrule,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
                                         cropmix = cropmix, comAg = comAg,
