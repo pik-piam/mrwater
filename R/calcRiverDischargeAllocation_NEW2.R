@@ -246,10 +246,10 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
 
             discharge[selectCells, y, scen]      <- tmp$discharge
             prevReservedWW[selectCells, y, scen] <- tmp$prevReservedWW
-            fromNeighborWC[c, y, scen] <- tmp$fromNeighborWC
-            fromNeighborWW[c, y, scen] <- tmp$fromNeighborWW
-            currWWlocal[c, y, scen]    <- tmp$currWWlocal
-            currWClocal[c, y, scen]    <- tmp$currWClocal
+            fromNeighborWC[c, y, scen] <- fromNeighborWC[c, y, scen] + tmp$fromNeighborWC
+            fromNeighborWW[c, y, scen] <- fromNeighborWW[c, y, scen] + tmp$fromNeighborWW
+            currWWlocal[c, y, scen]    <- currWWlocal[c, y, scen] + tmp$currWWlocal
+            currWClocal[c, y, scen]    <- currWClocal[c, y, scen] + tmp$currWClocal
           }
         }
       }

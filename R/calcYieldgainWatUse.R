@@ -10,6 +10,8 @@
 #'                      "hist_irrig" for historical cropmix on currently irrigated area,
 #'                      "hist_total" for historical cropmix on total cropland,
 #'                      or selection of proxycrops)
+#' @param irrigationsystem Irrigation system used: system share as in initialization year,
+#'                         or drip, surface, sprinkler for full irrigation by selected system
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
 #'                               Options: FALSE (for single cropping analyses) or
@@ -54,7 +56,7 @@
 #' }
 #'
 calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landScen,
-                                cropmix, yieldcalib, multicropping, unit,
+                                cropmix, yieldcalib, multicropping, unit, irrigationsystem,
                                 rangeGT) {
 
   # Irrigation system area share per crop
@@ -71,6 +73,7 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   potArea    <- calcOutput("YieldgainArea", rangeGT = rangeGT,
                            lpjml = lpjml, climatetype = climatetype,
                            selectyears = selectyears, iniyear = iniyear,
+                           irrigationsystem = irrigationsystem,
                            cropmix = cropmix, multicropping = multicropping,
                            yieldcalib = yieldcalib, unit = unit,
                            landScen = landScen, aggregate = FALSE)

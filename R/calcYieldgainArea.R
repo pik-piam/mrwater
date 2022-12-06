@@ -70,7 +70,8 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
     tmp <- calcOutput("IrrigatableAreaUnlimited", gainthreshold = gainthreshold,
                     selectyears = selectyears, iniyear = iniyear,
                     lpjml = lpjml, climatetype = climatetype,
-                    cropmix = cropmix, yieldcalib = yieldcalib, irrigationsystem = irrigationsystem,
+                    cropmix = cropmix, yieldcalib = yieldcalib,
+                    irrigationsystem = irrigationsystem,
                     unit = unit, multicropping = multicropping,
                     landScen = landScen, aggregate = FALSE)
 
@@ -85,6 +86,7 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
   return(list(x            = out,
               weight       = NULL,
               unit         = "Mha",
-              description  = "Potentially irrigated area only considering land constraint",
+              description  = "Potentially irrigated area
+                              only considering land constraint",
               isocountries = FALSE))
 }

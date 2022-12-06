@@ -14,6 +14,7 @@ calcYieldgainWatUse(
   yieldcalib,
   multicropping,
   unit,
+  irrigationsystem,
   rangeGT
 )
 }
@@ -63,6 +64,9 @@ for relative return according to area and volume.
 Price aggregation:
 "GLO" for global average prices, or
 "ISO" for country-level prices}
+
+\item{irrigationsystem}{Irrigation system used: system share as in initialization year,
+or drip, surface, sprinkler for full irrigation by selected system}
 
 \item{rangeGT}{Range of gainthreshold for calculation of potentially
 irrigated areas}

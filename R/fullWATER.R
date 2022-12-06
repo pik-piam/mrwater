@@ -307,6 +307,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("currIrrig:", protectLand),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             irrigationsystem = irrigationsystem,
              unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_actSUS.mz")
@@ -315,6 +316,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("currIrrig:", "NULL"),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             irrigationsystem = irrigationsystem,
              unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_actUNSUS.mz")
@@ -323,6 +325,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("currCropland:", protectLand),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             irrigationsystem = irrigationsystem,
              unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_curSUS.mz")
@@ -331,6 +334,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("currCropland:", "NULL"),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             irrigationsystem = irrigationsystem,
              unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_curUNSUS.mz")
@@ -339,6 +343,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("potCropland:", protectLand),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             irrigationsystem = irrigationsystem,
              unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_potSUS.mz")
@@ -347,6 +352,7 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              selectyears = selectyears, iniyear = iniyear,
              landScen = paste0("potCropland:", "NULL"),
              cropmix = cropmix, yieldcalib = yieldcalib,
+             irrigationsystem = irrigationsystem,
              unit = thresholdtype,
              multicropping = multicropping, rangeGT = gtrange, aggregate = FALSE,
              file = "yieldgainwater_potUNSUS.mz")
