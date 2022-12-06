@@ -72,7 +72,7 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
                            lpjml = lpjml, climatetype = climatetype,
                            selectyears = selectyears, iniyear = iniyear,
                            cropmix = cropmix, multicropping = multicropping,
-                           yieldcalib = yieldcalib, thresholdtype = unit,
+                           yieldcalib = yieldcalib, unit = unit,
                            landScen = landScen, aggregate = FALSE)
 
   # Crop share per cell according to chosen cropmix

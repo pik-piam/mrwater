@@ -91,9 +91,47 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
 
   # Natural discharge (for checks)
   natDischarge <- calcOutput("RiverNaturalFlows",
-                          selectyears = selectyears,
+                             selectyears = selectyears,
+                             lpjml = lpjml, climatetype = climatetype,
+                             aggregate = FALSE)
+  # Previous discharge
+  inputData <- calcOutput("RiverRoutingInputs",
+                          iteration = "potential_irrigation",
                           lpjml = lpjml, climatetype = climatetype,
+                          transDist = transDist, comAg = comAg,
+                          selectyears = selectyears, iniyear = iniyear,
+                          efrMethod = efrMethod, multicropping = multicropping,
+                          accessibilityrule = accessibilityrule,
+                          rankmethod = rankmethod, gainthreshold = gainthreshold,
+                          cropmix = cropmix, yieldcalib = yieldcalib,
+                          irrigationsystem = irrigationsystem, landScen = landScen,
                           aggregate = FALSE)
+  dischargeMAG <- collapseNames(inputData[, , "discharge"])
+
+  # Object dimensions:
+  gridcells <- getItems(dischargeMAG, dim = 1)
+  dimnames  <- getItems(dischargeMAG, dim = 3)
+  .transformObject <- function(x, gridcells, years, names) {
+    # empty magpie object structure
+    object0 <- new.magpie(cells_and_regions = gridcells,
+                          years = years,
+                          names = names,
+                          fill = 0,
+                          sets = c("x.y.iso", "year", "EFP.scen"))
+    # bring object x to dimension of object0
+    out <- object0 + x
+    return(out)
+  }
+
+  # Object to be returned
+  out <- new.magpie(cells_and_regions = getCells(dischargeMAG),
+                    years = getYears(dischargeMAG),
+                    names = c("discharge",
+                              "currWWlocal", "currWClocal",
+                              "currWWtotal", "currWCtotal"),
+                    sets = c("x.y.iso", "year", "data"))
+  out <- .transformObject(x = out, gridcells = gridcells,
+                          years = selectyears, names = dimnames)
 
   #######################################
   ###### Read in Required Inputs ########
@@ -138,30 +176,6 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
                             selectyears)
 
     ### Inputs from Previous River Routing Iterations ###
-    inputData <- calcOutput("RiverRoutingInputs",
-                        iteration = "potential_irrigation",
-                        lpjml = lpjml, climatetype = climatetype,
-                        transDist = transDist, comAg = comAg,
-                        selectyears = selectyears, iniyear = iniyear,
-                        efrMethod = efrMethod, multicropping = multicropping,
-                        accessibilityrule = accessibilityrule,
-                        rankmethod = rankmethod, gainthreshold = gainthreshold,
-                        cropmix = cropmix, yieldcalib = yieldcalib,
-                        irrigationsystem = irrigationsystem, landScen = landScen,
-                        aggregate = FALSE)
-    dischargeMAG <- collapseNames(inputData[, , "discharge"])
-    # Object dimensions:
-    .transformObject <- function(x, mag) {
-      # empty magpie object structure
-      object0 <- new.magpie(cells_and_regions = getItems(mag, dim = 1),
-                            years = getItems(mag, dim = 2),
-                            names = getItems(mag, dim = 3),
-                            fill = 0,
-                            sets = c("x.y.iso", "year", "EFP.scen"))
-      # bring object x to dimension of object0
-      out <- object0 + x
-      return(out)
-    }
     scenarios      <- getItems(dischargeMAG, dim = 3)
     discharge      <- as.array(dischargeMAG)
     prevReservedWW <- as.array(collapseNames(inputData[, , "prevReservedWW"]))
@@ -170,16 +184,10 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
     glocellrank    <- as.array(glocellrank)
 
     # Initialize objects to be filled in Allocation Algorithm with 0
-    fromNeighborWC <- fromNeighborWW <- as.array(.transformObject(x = 0, mag = dischargeMAG))
-    currWWlocal <- currWClocal <- as.array(.transformObject(x = 0, mag = dischargeMAG))
-
-    out <- new.magpie(cells_and_regions = getCells(dischargeMAG),
-                      years = getYears(dischargeMAG),
-                      names = c("discharge",
-                                "currWWlocal", "currWClocal",
-                                "currWWtotal", "currWCtotal"),
-                      sets = c("x.y.iso", "year", "data"))
-    out <- .transformObject(x = out, mag = dischargeMAG)
+    fromNeighborWC <- fromNeighborWW <- as.array(.transformObject(x = 0, gridcells = gridcells,
+                                                                  years = selectyears, names = dimnames))
+    currWWlocal <- currWClocal <- as.array(.transformObject(x = 0, gridcells = gridcells,
+                                                            years = selectyears, names = dimnames))
 
     ################################################
     ####### River basin discharge Allocation #######
@@ -199,7 +207,12 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
         # Loop in ranked cell order
         for (o in (1:max(glocellrank[, y, ], na.rm = TRUE))) {
           # Extract the cell number
-          c <- rs$cells[rs$isoCoord == names(which(glocellrank[, y, ] == o))]
+          glocellrankName <- names(which(glocellrank[, y, ] == o))
+          c <- rs$cells[rs$isoCoord == ifelse(grepl("B_", glocellrankName),
+                                               gsub("B_", "", glocellrankName),
+                                              ifelse(grepl("A_", glocellrankName),
+                                                      gsub("A_", "", glocellrankName),
+                                                     glocellrankName))]
 
           # Only run for cells where water required
           if (currReqWW[c, y, scen] > 1e-4) {
@@ -293,7 +306,8 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
     stop("calcRiverDischargeAllocation produced negative values")
   }
   # No water should be lost
-  basinDischarge <- .transformObject(x = 0, mag = dischargeMAG)
+  basinDischarge <- .transformObject(x = 0,  gridcells = gridcells,
+                                     years = selectyears, names = dimnames)
   basinDischarge[unique(rs0$endcell), , ] <- out[unique(rs0$endcell), , "discharge"]
   totalWat <- dimSums(basinDischarge,
                       dim = 1) + dimSums(out[, , "currWCtotal"],
@@ -310,7 +324,8 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   # Total water (summed basin discharge + consumed)
   # must be same as natural summed basin discharge
   natDischarge <- .transformObject(x = collapseNames(natDischarge[, , "discharge_nat"]),
-                                   mag = dischargeMAG)
+                                   gridcells = gridcells,
+                                   years = selectyears, names = dimnames)
   if (any(round(dimSums(natDischarge[unique(rs0$endcell), , ],
                         dim = 1) - totalWat[, , 1],
                 digits = 6) != 0)) {

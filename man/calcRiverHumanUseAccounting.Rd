@@ -25,7 +25,7 @@ calcRiverHumanUseAccounting(
 }
 \arguments{
 \item{iteration}{Water use to be allocated in this river routing iteration
-(non_agriculture, committed_agriculture, potential).}
+(non_agriculture, committed_agriculture, potential_irrigation).}
 
 \item{lpjml}{LPJmL version used}
 

@@ -6,7 +6,7 @@
 #' @param selectyears   Years to be returned
 #'                      (Note: does not affect years of harmonization or smoothing)
 #' @param iteration     Water use to be allocated in this river routing iteration
-#'                      (non_agriculture, committed_agriculture, potential).
+#'                      (non_agriculture, committed_agriculture, potential_irrigation).
 #' @param climatetype   Switch between different climate scenarios
 #'                      or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear       Initialization year of irrigation system
@@ -120,12 +120,14 @@ calcRiverHumanUseAccounting <- function(iteration,
                           aggregate = FALSE)
   dischargeMAG <- collapseNames(inputData[, , "discharge"])
 
-  # Internal Function: Transform object dimensions
-  .transformObject <- function(x, mag) {
+  # Object dimensions:
+  gridcells <- getItems(dischargeMAG, dim = 1)
+  dimnames  <- getItems(dischargeMAG, dim = 3)
+  .transformObject <- function(x, gridcells, years, names) {
     # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = getItems(mag, dim = 1),
-                          years = getItems(mag, dim = 2),
-                          names = getItems(mag, dim = 3),
+    object0 <- new.magpie(cells_and_regions = gridcells,
+                          years = years,
+                          names = names,
                           fill = 0,
                           sets = c("x.y.iso", "year", "EFP.scen"))
     # bring object x to dimension of object0
@@ -141,7 +143,8 @@ calcRiverHumanUseAccounting <- function(iteration,
                           aggregate = FALSE)
   # Natural discharge (for checks)
   natDischarge <- .transformObject(x = collapseNames(natFlows[, , "discharge_nat"]),
-                                  mag = dischargeMAG)
+                                   gridcells = gridcells,
+                                   years = selectyears, names = dimnames)
   # Lake evaporation as calculated by natural flow river routing
   lakeEvap <- collapseNames(natFlows[, , "lake_evap_nat"])
   # Runoff (on land and water)
@@ -154,17 +157,18 @@ calcRiverHumanUseAccounting <- function(iteration,
 
   # Initialize river routing variables and dimensions
   fracFulfilled <- missingWW <- missingWC <- as.array(.transformObject(x = 0,
-                                                                       mag = dischargeMAG))
+                                                                       gridcells = gridcells,
+                                                                       years = selectyears, names = dimnames))
   # Extract scenarios and years
   years     <- getItems(dischargeMAG, dim = 2)
   scenarios <- getItems(dischargeMAG, dim = 3)
   # Adjust object dimension and type
   runoffWOEvap   <- as.array(.transformObject(x = runoffWOEvap,
-                                              mag = dischargeMAG))
+                                              gridcells = gridcells,
+                                              years = selectyears, names = dimnames))
   discharge      <- as.array(dischargeMAG)
   prevReservedWW <- as.array(collapseNames(inputData[, , "prevReservedWW"]))
   prevReservedWC <- as.array(collapseNames(inputData[, , "prevReservedWC"]))
-  previousTotal  <- collapseNames(inputData[, , "previousTotal"])
   currRequestWWlocal <- currRequestWWtotal <- as.array(collapseNames(inputData[, , "currRequestWWlocal"]))
   currRequestWClocal <- currRequestWCtotal <- as.array(collapseNames(inputData[, , "currRequestWClocal"]))
 
@@ -297,7 +301,8 @@ calcRiverHumanUseAccounting <- function(iteration,
                                                    "currHumanWWlocal", "currHumanWClocal"),
                                           sets = c("x.y.iso", "year", "data"),
                                           fill = NA),
-                          mag = dischargeMAG)
+                          gridcells = gridcells,
+                          years = selectyears, names = dimnames)
   # river discharge flows
   out[, , "discharge"] <- as.magpie(discharge, spatial = 1, temporal = 2)
   # water reserved in current cell (for either local or neighboring cell)
@@ -331,12 +336,13 @@ calcRiverHumanUseAccounting <- function(iteration,
   }
   # Check whether water has been lost
   basinDischarge <- .transformObject(x = 0,
-                                     mag = dischargeMAG)
+                                     gridcells = gridcells,
+                                     years = selectyears, names = dimnames)
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
   totalWat <- dimSums(basinDischarge, dim = 1) +
                 dimSums(out[, , "currHumanWCtotal"],
                         dim = c("x", "y", "iso", "data")) +
-                  dimSums(previousTotal, dim = 1)
+                  dimSums(inputData[, , "prevReservedWC"], dim = 1)
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
   if (!all(abs(totalWat - mean(totalWat)) < 1e-06)) {

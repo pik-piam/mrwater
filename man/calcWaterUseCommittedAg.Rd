@@ -15,7 +15,8 @@ calcWaterUseCommittedAg(
 \arguments{
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Switch between different climate scenarios or
+historical baseline "GSWP3-W5E5:historical"}
 
 \item{selectyears}{Years to be returned}
 

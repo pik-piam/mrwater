@@ -124,8 +124,8 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                           selectyears = selectyears, efrMethod = efrMethod,
                                           aggregate = FALSE)[, , "EFR"]
     # No previous consumption & no previous human uses yet
-    prevReservedWC <- previousTotal <- .transformObject(x = 0,
-                                                        cells = cells, years = selectyears, scenarios = scenarios)
+    prevReservedWC <- .transformObject(x = 0, cells = cells,
+                                       years = selectyears, scenarios = scenarios)
 
     ## Current Uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
@@ -181,9 +181,6 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
     ## Discharge from previous routing
     discharge <- collapseNames(previousHumanUse[, , "discharge"])
-
-    # There are no previous human uses yet to be considered (empty arrays)
-    previousTotal <- collapseNames(previousHumanUse[, , "currHumanWCtotal"])
 
 } else if (iteration == "potential_irrigation") {
 
@@ -257,9 +254,6 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Discharge determined by previous river routings (in mio. m^3 / yr)
     discharge <- collapseNames(prevRouting[, , "discharge"])
 
-    # Previous human uses to be considered
-    previousTotal <- collapseNames(prevRouting[, , "currHumanWCtotal"])
-
   } else {
     stop("Please specify iteration for which river routing inputs shall be calculated:
          non_agriculture, committed_agriculture or potential")
@@ -273,8 +267,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                         years = getItems(watNonAg, dim = 2),
                                         names = c("discharge",
                                                   "prevReservedWW", "prevReservedWC",
-                                                  "currRequestWWlocal", "currRequestWClocal",
-                                                  "previousTotal"),
+                                                  "currRequestWWlocal", "currRequestWClocal"),
                                         sets = c("x.y.iso", "year", "data"),
                                         fill = NA),
                           cells = cells, years = selectyears, scenarios = scenarios)
@@ -283,7 +276,6 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
   out[, , "prevReservedWC"]     <- prevReservedWC
   out[, , "currRequestWWlocal"] <- currRequestWWlocal
   out[, , "currRequestWClocal"] <- currRequestWClocal
-  out[, , "previousTotal"]      <- previousTotal
 
   ##############
   ### Checks ###
