@@ -4,7 +4,18 @@
 \alias{calcCropAreaPotIrrig}
 \title{calcCropAreaPotIrrig}
 \usage{
-calcCropAreaPotIrrig(selectyears, comagyear, iniyear, cropmix, landScen)
+calcCropAreaPotIrrig(
+  selectyears,
+  comagyear,
+  iniyear,
+  cropmix,
+  landScen,
+  lpjml,
+  climatetype,
+  efrMethod,
+  multicropping,
+  transDist
+)
 }
 \arguments{
 \item{selectyears}{Years to be returned}
@@ -27,6 +38,31 @@ or selection of proxycrops as vector)}
 2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
 For case of no land protection select "NA"
 or do not specify second part of the argument}
+
+\item{lpjml}{if comagyear != NULL: LPJmL version used to calculate committed
+agricultural use}
+
+\item{climatetype}{if comagyear != NULL: climate scenario used to calculate committed
+agricultural use
+or historical baseline "GSWP3-W5E5:historical"}
+
+\item{efrMethod}{if comagyear != NULL: EFR method used to calculate committed
+agricultural use (e.g., Smakhtin:good, VMF:fair)}
+
+\item{multicropping}{if comagyear != NULL: multicropping argument used to calculate committed
+agricultural use.
+Two components (separated by ":"):
+Multicropping activated (TRUE) or not (FALSE) and
+Multiple Cropping Suitability mask selected
+("endogenous": suitability for multiple cropping determined
+              by rules based on grass and crop productivity
+"exogenous": suitability for multiple cropping given by
+             GAEZ data set)
+(e.g. TRUE:endogenous; TRUE:exogenous; FALSE)}
+
+\item{transDist}{if comagyear != NULL: Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability
+of committed agricultural uses}
 }
 \value{
 magpie object in cellular resolution

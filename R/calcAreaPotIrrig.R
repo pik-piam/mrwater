@@ -2,17 +2,38 @@
 #' @description This function calculates land that is potentially available
 #'              for irrigated agriculture
 #'
-#' @param selectyears Years to be returned
-#' @param comagyear   If NULL: total potential croparea is used;
-#'                    if !NULL: already irrigated area is subtracted;
-#'                    year specified here is the year of the initialization
-#'                    used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)
-#' @param iniyear     Initialization year for current cropland area
-#' @param landScen    Land availability scenario consisting of two parts separated by ":":
-#'                    1. available land scenario (currCropland, currIrrig, potCropland)
-#'                    2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
-#'                    For case of no land protection select "NA"
-#'                    or do not specify second part of the argument
+#' @param landScen      Land availability scenario consisting of two parts separated by ":":
+#'                      1. available land scenario (currCropland, currIrrig, potCropland)
+#'                      2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
+#'                      For case of no land protection select "NA"
+#'                      or do not specify second part of the argument
+#' @param iniyear       Initialization year for current cropland area
+#' @param selectyears   Years to be returned
+#' @param comagyear     If NULL: total potential croparea is used;
+#'                      if !NULL: already irrigated area is subtracted;
+#'                      year specified here is the year of the initialization
+#'                      used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)
+#' @param lpjml         if comagyear != NULL: LPJmL version used to calculate committed
+#'                      agricultural use
+#' @param climatetype   if comagyear != NULL: climate scenario used to calculate committed
+#'                      agricultural use
+#'                      or historical baseline "GSWP3-W5E5:historical"
+#' @param efrMethod     if comagyear != NULL: EFR method used to calculate committed
+#'                      agricultural use (e.g., Smakhtin:good, VMF:fair)
+#' @param multicropping if comagyear != NULL: multicropping argument used to calculate committed
+#'                      agricultural use.
+#'                      Two components (separated by ":"):
+#'                      Multicropping activated (TRUE) or not (FALSE) and
+#'                      Multiple Cropping Suitability mask selected
+#'                      ("endogenous": suitability for multiple cropping determined
+#'                                    by rules based on grass and crop productivity
+#'                      "exogenous": suitability for multiple cropping given by
+#'                                   GAEZ data set)
+#'                      (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#' @param transDist      if comagyear != NULL: Water transport distance allowed to fulfill locally
+#'                       unfulfilled water demand by surrounding cell water availability
+#'                       of committed agricultural uses
+#'
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -26,7 +47,8 @@
 #' @importFrom magclass collapseNames getCells getYears getNames dimSums
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
+calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
+                             lpjml, climatetype, efrMethod, multicropping, transDist) {
 
   # retrieve function arguments
   protectSCEN <- as.list(strsplit(landScen, split = ":"))[[1]][2]
@@ -114,7 +136,6 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
                                                         convert = "onlycorrect")[, "y1995", ],
                                              dim = 3)),
                        NULL)
-  landarea <- dimSums(landarea, dim = 3)
 
   # area that is not protected
   areaNOprotect <- landarea - protectArea
@@ -141,11 +162,13 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
     # subtract physical area already reserved for irrigation by committed agricultural uses
     # (to avoid double accounting)
-    comIrrigArea  <- collapseNames(calcOutput("IrrigAreaCommitted",
+    comIrrigArea <- collapseNames(calcOutput("IrrigAreaActuallyCommitted",
                                               selectyears = selectyears, iniyear = comagyear,
+                                              lpjml = lpjml, climatetype = climatetype,
+                                              efrMethod = efrMethod,
+                                              multicropping = multicropping, transDist = transDist,
                                               aggregate = FALSE))
-    comIrrigArea  <- collapseNames(dimSums(comIrrigArea,
-                                           dim = 3))
+    comIrrigArea <- collapseNames(dimSums(comIrrigArea, dim = 3))
     out          <- out - comIrrigArea
   }
 

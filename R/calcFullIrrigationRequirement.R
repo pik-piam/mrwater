@@ -9,6 +9,11 @@
 #'                         if NULL: total potential land area is used;
 #'                         year specified here is the year of the initialization
 #'                         used for cropland area initialization in calcIrrigatedArea
+#' @param efrMethod        if comagyear != NULL: EFR method used to calculate committed
+#'                         agricultural use (e.g., Smakhtin:good, VMF:fair)
+#' @param transDist        if comagyear != NULL: Water transport distance allowed to fulfill locally
+#'                         unfulfilled water demand by surrounding cell water availability
+#'                         of committed agricultural uses
 #' @param iniyear          Croparea initialization year
 #' @param irrigationsystem Irrigation system used: system share as in initialization year,
 #'                         or drip, surface, sprinkler for full irrigation by selected system
@@ -52,7 +57,9 @@
 #' @importFrom magclass collapseNames getItems new.magpie dimSums
 #' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
 
-calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comagyear, iniyear,
+calcFullIrrigationRequirement <- function(lpjml, climatetype,
+                                          selectyears, iniyear, comagyear,
+                                          efrMethod, transDist,
                                           irrigationsystem, landScen, cropmix,
                                           multicropping, yieldcalib) {
 
@@ -78,10 +85,13 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype, selectyears, comag
 
   # cropland area per crop
   croparea <- calcOutput("CropAreaPotIrrig",
-                     selectyears = selectyears, comagyear = comagyear,
-                     iniyear = iniyear,
-                     cropmix = cropmix, landScen = landScen,
-                     aggregate = FALSE)
+                         selectyears = selectyears, comagyear = comagyear,
+                         iniyear = iniyear,
+                         cropmix = cropmix, landScen = landScen,
+                         lpjml = lpjml, climatetype = climatetype,
+                         efrMethod = efrMethod,
+                         multicropping = multicropping, transDist = transDist,
+                         aggregate = FALSE)
 
   # water requirements for full irrigation in cell accounting for cropshare (in mio. m^3)
   # Note on unit transformation:

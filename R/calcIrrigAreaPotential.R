@@ -114,10 +114,14 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
-                          lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
-                          irrigationsystem = irrigationsystem, landScen = landScen,
-                          cropmix = cropmix, yieldcalib = yieldcalib,
-                          multicropping = multicropping, comagyear = NULL, aggregate = FALSE)
+                         lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
+                         irrigationsystem = irrigationsystem, landScen = landScen,
+                         cropmix = cropmix, yieldcalib = yieldcalib,
+                         multicropping = multicropping,
+                         comagyear = NULL, efrMethod = NULL,
+                         lpjml = NULL, climatetype = NULL,
+                         multicropping = NULL, transDist = NULL,
+                         aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWatWW),
                                      years = getYears(avlWatWW),
                                      names = getNames(avlWatWW),
@@ -131,6 +135,9 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
   areaPotIrrig <- calcOutput("AreaPotIrrig",
                              selectyears = selectyears, iniyear = iniyear,
                              landScen = landScen, comagyear = NULL,
+                             lpjml = NULL, climatetype = NULL,
+                             efrMethod = NULL,
+                             multicropping = NULL, transDist = NULL,
                              aggregate = FALSE)
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated

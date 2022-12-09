@@ -11,6 +11,8 @@ calcIrrigYieldImprovementPotential(
   iniyear,
   comagyear,
   selectyears,
+  efrMethod,
+  transDist,
   cropmix,
   landScen,
   irrigationsystem,
@@ -43,6 +45,13 @@ year specified here is the year of the initialization
 used for cropland area initialization in calcIrrigatedArea}
 
 \item{selectyears}{Years to be returned by the function}
+
+\item{efrMethod}{if comagyear != NULL: EFR method used to calculate committed
+agricultural use (e.g., Smakhtin:good, VMF:fair)}
+
+\item{transDist}{if comagyear != NULL: Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability
+of committed agricultural uses}
 
 \item{cropmix}{Selected cropmix for which yield improvement potential
 is calculated (options:

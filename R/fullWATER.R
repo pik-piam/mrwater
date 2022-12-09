@@ -363,7 +363,11 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
 
   # Area that is potentially available for irrigated agriculture
   calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
-             landScen = paste0("potCropland:", protectLand), aggregate = FALSE,
+             landScen = paste0("potCropland:", protectLand),
+             lpjml = NULL, climatetype = NULL,
+             efrMethod = NULL,
+             multicropping = NULL, transDist = NULL,
+             aggregate = FALSE,
              file = "avlIrrigarea_pot.mz")
 
   # Accessibility graph
@@ -434,7 +438,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
-             comagyear = NULL, irrigationsystem = irrigationsystem,
+             comagyear = NULL, efrMethod = NULL, transDist = NULL,
+             irrigationsystem = irrigationsystem,
              landScen = paste0("potCropland:", "NULL"),
              multicropping = multicropping, aggregate = FALSE,
              file = paste0("yieldgain_USDha_GLO", ".mz"))
@@ -443,7 +448,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
-             comagyear = NULL, irrigationsystem = irrigationsystem,
+             comagyear = NULL, efrMethod = NULL, transDist = NULL,
+             irrigationsystem = irrigationsystem,
              landScen = paste0("potCropland:", "NULL"),
              multicropping = multicropping, aggregate = FALSE,
              file = paste0("yieldgain_USDha_ISO", ".mz"))
@@ -452,7 +458,8 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
-             comagyear = NULL, irrigationsystem = irrigationsystem,
+             comagyear = NULL, efrMethod = NULL, transDist = NULL,
+             irrigationsystem = irrigationsystem,
              landScen = paste0("potCropland:", "NULL"),
              multicropping = multicropping, aggregate = FALSE,
              file = paste0("yieldgain_USDha_constant", ".mz"))

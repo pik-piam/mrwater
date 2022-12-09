@@ -123,7 +123,8 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
 
   # Required water for full irrigation per cell (in mio. m^3)
   reqWatFullirrig   <- calcOutput("FullIrrigationRequirement",
-                                  selectyears = selectyears, iniyear = iniyear, comagyear = comagyear,
+                                  selectyears = selectyears, iniyear = iniyear,
+                                  comagyear = comagyear, efrMethod = efrMethod, transDist = transDist,
                                   lpjml = lpjml, climatetype = climatetype,
                                   irrigationsystem = irrigationsystem, landScen = landScen,
                                   cropmix = cropmix, yieldcalib = yieldcalib,
@@ -135,8 +136,8 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
   irrigGain      <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                                 lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                                 unit = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,
-                                comagyear = comagyear, irrigationsystem = irrigationsystem,
-                                landScen = landScen,
+                                comagyear = comagyear, efrMethod = efrMethod, transDist = transDist,
+                                irrigationsystem = irrigationsystem, landScen = landScen,
                                 multicropping = multicropping, aggregate = FALSE)
 
   # Initialization of fraction of full irrigation requirements that can be fulfilled

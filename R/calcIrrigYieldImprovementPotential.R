@@ -21,6 +21,11 @@
 #'                      if NULL: total potential land area is used;
 #'                      year specified here is the year of the initialization
 #'                      used for cropland area initialization in calcIrrigatedArea
+#' @param efrMethod     if comagyear != NULL: EFR method used to calculate committed
+#'                      agricultural use (e.g., Smakhtin:good, VMF:fair)
+#' @param transDist     if comagyear != NULL: Water transport distance allowed to fulfill locally
+#'                      unfulfilled water demand by surrounding cell water availability
+#'                      of committed agricultural uses
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:
 #'                      "hist_irrig" for historical cropmix on currently irrigated area,
@@ -66,6 +71,7 @@
 
 calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                                                iniyear, comagyear, selectyears,
+                                               efrMethod, transDist,
                                                cropmix, landScen, irrigationsystem,
                                                yieldcalib, multicropping) {
 
@@ -105,7 +111,6 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                                 iniyear = iniyear, cropmix = cropmix,
                                 aggregate = FALSE)
 
-
       # average irrigation crop yield gain weighted with their croparea share
       yieldGain <- dimSums(yieldGain * cropareaShr, dim = "crop")
 
@@ -115,11 +120,14 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
       u <- "USD05"
 
       # croparea per crop given chosen land scenario
-      # (including already committed agricultural areas)
+      # (excluding already committed agricultural areas if comagyear != NULL)
       croparea <- calcOutput("CropAreaPotIrrig",
                              selectyears = selectyears,
                              comagyear = comagyear, iniyear = iniyear,
                              cropmix = cropmix, landScen = landScen,
+                             lpjml = lpjml, climatetype = climatetype,
+                             efrMethod = efrMethod,
+                             multicropping = multicropping, transDist = transDist,
                              aggregate = FALSE)
 
       # absolute irrigation yield gain on available area
@@ -167,6 +175,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
       irrigWat <- collapseNames(calcOutput("FullIrrigationRequirement",
                                            lpjml = lpjml, climatetype = climatetype,
                                            selectyears = selectyears, comagyear = comagyear, iniyear = iniyear,
+                                           efrMethod = efrMethod, transDist = transDist,
                                            irrigationsystem = irrigationsystem, landScen = landScen,
                                            cropmix = cropmix, yieldcalib = yieldcalib,
                                            multicropping = multicropping, aggregate = FALSE)[, , "withdrawal"])

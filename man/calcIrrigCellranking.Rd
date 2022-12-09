@@ -13,6 +13,8 @@ calcIrrigCellranking(
   irrigationsystem,
   landScen,
   method,
+  efrMethod,
+  transDist,
   cropmix,
   yieldcalib,
   multicropping
@@ -54,6 +56,13 @@ Price aggregation:
 "GLO" for global average prices, or
 "ISO" for country-level prices;
 and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)}
+
+\item{efrMethod}{if method USD or US_m3: EFR method used to calculate committed
+agricultural use relevant for chosen land scenario (e.g., Smakhtin:good, VMF:fair)}
+
+\item{transDist}{if method USD or US_m3: Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability
+of committed agricultural uses relevant for chosen land scenario}
 
 \item{cropmix}{Selected cropmix for which yield improvement potential
 is calculated (options:

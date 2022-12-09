@@ -1,7 +1,9 @@
-#' @title       calcIrrigationProfits
-#' @description Calculates area that can potentially be irrigated given
-#'              available water and land
+#' @title       calcIrrigationReturn
+#' @description calculates return achieved on potentially irrigated area
 #'
+#' @param country           Character string of country or vector of countries
+#'                          for which irrigation profit shall be returned.
+#'                          Options: GLO, or any iso3 country code
 #' @param lpjml             LPJmL version used
 #' @param selectyears       Years for which irrigatable area is calculated
 #' @param iniyear           Initialization year for initial croparea
@@ -72,19 +74,22 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("IrrigAreaPotential", aggregate = FALSE)
+#' calcOutput("IrrigationReturn", aggregate = FALSE)
 #' }
 #'
 #' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames add_dimension add_columns mbind
+#' @importFrom magclass collapseNames
 
-calcIrrigationProfits <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
+calcIrrigationReturn <- function(country, lpjml, selectyears, iniyear, climatetype, efrMethod,
                                 accessibilityrule, rankmethod, yieldcalib, allocationrule,
                                 gainthreshold, irrigationsystem, landScen,
                                 cropmix, potentialWat, comAg, multicropping, transDist,
                                 profitType) {
 
+  ######################
+  ### Read in Inputs ###
+  ######################
   # Area Irrigated given chosen scenario
   irrigArea <- collapseNames(calcOutput("IrrigAreaPotential",
                                         lpjml = lpjml, climatetype = climatetype,
@@ -97,18 +102,72 @@ calcIrrigationProfits <- function(lpjml, selectyears, iniyear, climatetype, efrM
                                         multicropping = multicropping, transDist = transDist,
                                         aggregate = FALSE)[, , "irrigatable"])
 
-  # Irrigation gain (in USD/ha)
-  irrigGain <- calcOutput("IrrigYieldImprovementPotential",
-                          selectyears = selectyears, iniyear = iniyear, comagyear = NULL,
-                          lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-                          unit = paste("USD_ha",  str_split(rankmethod, pattern = ":")[[1]][2], sep = ":"),
-                          yieldcalib = yieldcalib,
-                          irrigationsystem = irrigationsystem, landScen = landScen,
+  # Yield gain per crop (in USD/ha)
+  yieldGain <- calcOutput("IrrigCropYieldGain",
+                          priceAgg = str_split(rankmethod, pattern = ":")[[1]][2],
+                          lpjml = lpjml, climatetype = climatetype,
+                          iniyear = iniyear, selectyears = selectyears,
+                          yieldcalib = yieldcalib, cropmix = cropmix,
                           multicropping = multicropping, aggregate = FALSE)
+  # set negative yield gains to 0
+  yieldGain[yieldGain < 0] <- 0
 
+
+  # Irrigation water requirements per crop (in m^3 per ha per yr)
+  irrigWat <- calcOutput("ActualIrrigWatRequirements",
+                         selectyears = selectyears, iniyear = iniyear,
+                         lpjml = lpjml, climatetype = climatetype,
+                         irrigationsystem = irrigationsystem, multicropping = multicropping,
+                         aggregate = FALSE)
+
+  # Share of crop area by crop type
+  cropareaShr <- calcOutput("CropAreaShare",
+                            iniyear = iniyear, cropmix = cropmix,
+                            aggregate = FALSE)
+
+  # Level of aggregation to be returned
+  if (country == "GLO") {
+    country <- getCells(irrigArea)
+  }
+
+  ####################
+  ### Calculations ###
+  ####################
+  # Irrigated croparea per crop (in Mha)
+  irrigCroparea <- irrigArea * cropareaShr
+
+  # Total profit (in mio. USD)
+  totalProfit <- dimSums(irrigCroparea[country, , getItems(yieldGain,
+                                                           dim = 3)] * yieldGain[country, , ],
+                         dim = c("x", "y", "iso", "crop"))
+  # Total irrigated area (in Mha)
+  totalIrrigArea <- dimSums(irrigCroparea,
+                            dim = c("x", "y", "iso", "crop"))
+  # Total water use (in mio. m^3)
+  totalWater <- dimSums(irrigCroparea[country, , getItems(yieldGain, dim = 3)] *
+                          irrigWat[country, , getItems(yieldGain, dim = 3)],
+                        dim = c("x", "y", "iso", "crop"))
 
   if (profitType == "USD") {
-    out <- irrigArea * irrigGain
+
+    # total profits achieved by irrigated area (mio. USD)
+    out <- totalProfit
+    u   <- "mio. USD"
+
+  } else if (profitType == "USD_ha") {
+
+    # average profit achieved on irrigated area (mio. USD / mio. ha --> USD/ha)
+    out <- totalProfit / totalIrrigArea
+    u   <- "USD per hectare"
+
+  } else if (profitType == "USD_m3") {
+
+    # average profit achieved per volume of irrigation water (mio. USD / mio. m^3 --> USD/m3)
+    out <- totalProfit / totalWater
+    u   <- "USD per m^3"
+
+  } else {
+    stop("Please select unit of Irrigation Return to be reported via the profitType argument")
   }
 
   # check for NAs and negative values
@@ -121,7 +180,7 @@ calcIrrigationProfits <- function(lpjml, selectyears, iniyear, climatetype, efrM
 
   return(list(x            = out,
               weight       = NULL,
-              unit         = "USD",
+              unit         = u,
               description  = "Profit through irrigation achieved at the
                               respective (potentially) irrigated area",
               isocountries = FALSE))

@@ -83,15 +83,17 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                    gainthreshold, allocationrule, transDist = transDist,
                                    landScen, cropmix, multicropping, unlimited) {
 
-  thresholdtype <- paste(strsplit(rankmethod, ":")[[1]][1],
-                         strsplit(rankmethod, ":")[[1]][2], sep = ":")
+  thresholdtype <- paste("USD_ha",
+                         strsplit(rankmethod, ":")[[1]][2],
+                         sep = ":")
 
   # Cellular yield improvement potential for all crops (in USD/ha)
   yieldGain <- calcOutput("IrrigYieldImprovementPotential",
                           selectyears = selectyears, iniyear = iniyear,
                           lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
-                          unit = thresholdtype, yieldcalib = yieldcalib,
-                          comagyear = NULL, irrigationsystem = irrigationsystem,
+                          unit = "USD_ha", yieldcalib = yieldcalib,
+                          comagyear = NULL, efrMethod = NULL, transDist = NULL,
+                          irrigationsystem = irrigationsystem,
                           landScen = landScen, multicropping = multicropping,
                           aggregate = FALSE)
 
@@ -102,6 +104,9 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
     area <- calcOutput("AreaPotIrrig",
                        selectyears = selectyears, iniyear = iniyear,
                        landScen = landScen, comagyear = NULL,
+                       lpjml = NULL, climatetype = NULL,
+                       efrMethod = NULL,
+                       multicropping = NULL, transDist = NULL,
                        aggregate = FALSE)
     d    <- "Potentially Irrigated Area only considering land constraint"
 

@@ -61,13 +61,18 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
   # Area that can potentially be irrigated (including total potentially
   # irrigatable area; defined by comagyear=NULL)
   potArea <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
-                         landScen = landScen, comagyear = NULL, aggregate = FALSE)
+                        landScen = landScen, comagyear = NULL,
+                        lpjml = NULL, climatetype = NULL,
+                        efrMethod = NULL,
+                        multicropping = NULL, transDist = NULL,
+                        aggregate = FALSE)
 
   # Yield gain potential through irrigation of proxy crops
   potGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
                         selectyears = selectyears, iniyear = iniyear,
                         lpjml = lpjml, climatetype = climatetype,
-                        comagyear = NULL, irrigationsystem = irrigationsystem,
+                        comagyear = NULL, efrMethod = NULL, transDist = NULL,
+                        irrigationsystem = irrigationsystem,
                         landScen = landScen, cropmix = cropmix,
                         yieldcalib = yieldcalib, multicropping = multicropping,
                         aggregate = FALSE)

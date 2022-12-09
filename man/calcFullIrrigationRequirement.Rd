@@ -8,8 +8,10 @@ calcFullIrrigationRequirement(
   lpjml,
   climatetype,
   selectyears,
-  comagyear,
   iniyear,
+  comagyear,
+  efrMethod,
+  transDist,
   irrigationsystem,
   landScen,
   cropmix,
@@ -24,12 +26,19 @@ calcFullIrrigationRequirement(
 
 \item{selectyears}{Years to be returned}
 
+\item{iniyear}{Croparea initialization year}
+
 \item{comagyear}{if !NULL: already irrigated area is subtracted;
 if NULL: total potential land area is used;
 year specified here is the year of the initialization
 used for cropland area initialization in calcIrrigatedArea}
 
-\item{iniyear}{Croparea initialization year}
+\item{efrMethod}{if comagyear != NULL: EFR method used to calculate committed
+agricultural use (e.g., Smakhtin:good, VMF:fair)}
+
+\item{transDist}{if comagyear != NULL: Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability
+of committed agricultural uses}
 
 \item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}

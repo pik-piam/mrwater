@@ -19,6 +19,11 @@
 #'                      "GLO" for global average prices, or
 #'                      "ISO" for country-level prices;
 #'                      and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
+#' @param efrMethod     if method USD or US_m3: EFR method used to calculate committed
+#'                      agricultural use relevant for chosen land scenario (e.g., Smakhtin:good, VMF:fair)
+#' @param transDist     if method USD or US_m3: Water transport distance allowed to fulfill locally
+#'                      unfulfilled water demand by surrounding cell water availability
+#'                      of committed agricultural uses relevant for chosen land scenario
 #' @param comagyear     if !NULL: already irrigated area is subtracted;
 #'                      if NULL: total potential land area is used;
 #'                      year specified here is the year of the initialization
@@ -62,7 +67,8 @@
 calcIrrigCellranking <- function(lpjml, climatetype,
                                  cellrankyear, iniyear,
                                  comagyear, irrigationsystem, landScen,
-                                 method, cropmix, yieldcalib,
+                                 method, efrMethod, transDist,
+                                 cropmix, yieldcalib,
                                  multicropping) {
 
   fullpotential <- as.logical(strsplit(method, ":")[[1]][3])
@@ -74,8 +80,8 @@ calcIrrigCellranking <- function(lpjml, climatetype,
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
                           lpjml = lpjml, climatetype = climatetype,
                           selectyears = cellrankyear, iniyear = iniyear,
-                          comagyear = comagyear, irrigationsystem = irrigationsystem,
-                          landScen = landScen,
+                          comagyear = comagyear, efrMethod = efrMethod, transDist = transDist,
+                          irrigationsystem = irrigationsystem, landScen = landScen,
                           cropmix = cropmix, yieldcalib = yieldcalib,
                           multicropping = multicropping, aggregate = FALSE)
 
