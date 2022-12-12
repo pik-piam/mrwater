@@ -70,13 +70,13 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
     # Grass ET in the entire year (main + off season) (in m^3/ha)
     grassETannual <- setYears(calcOutput("GrassET", season = "wholeYear",
-                                         lpjml = lpjml[["crop"]], climatetype = climatetype,
+                                         lpjml = lpjml, climatetype = climatetype,
                                          selectyears = selectyears, aggregate = FALSE),
                               selectyears)
 
     # Grass ET in the growing period of LPJmL (main season) (in m^3/ha)
     grassETgrper  <- setYears(calcOutput("GrassET", season = "mainSeason",
-                                         lpjml = lpjml[["crop"]], climatetype = climatetype,
+                                         lpjml = lpjml, climatetype = climatetype,
                                          selectyears = selectyears, aggregate = FALSE),
                               selectyears)
 
