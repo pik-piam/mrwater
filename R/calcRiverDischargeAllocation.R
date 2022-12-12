@@ -152,7 +152,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
                                          lpjml = lpjml, climatetype = climatetype, method = rankmethod,
                                          cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
                                          comagyear = comagyear, irrigationsystem = irrigationsystem,
-                                         landScen = landScen,
+                                         landScen = landScen, efrMethod = efrMethod, transDist = transDist,
                                          multicropping = multicropping, aggregate = FALSE),
                               selectyears)
 

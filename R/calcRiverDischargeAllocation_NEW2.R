@@ -167,11 +167,12 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
     # Global cell rank based on yield gain potential by irrigation
     # of chosen crop mix
     glocellrank <- setYears(calcOutput("IrrigCellranking",
-                                        cellrankyear = selectyears,
-                                        lpjml = lpjml, climatetype = climatetype, method = rankmethod,
-                                        cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
-                                        comagyear = comagyear, irrigationsystem = irrigationsystem,
-                                        landScen = landScen, multicropping = multicropping,
+                                       cellrankyear = selectyears,
+                                       lpjml = lpjml, climatetype = climatetype, method = rankmethod,
+                                       cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
+                                       comagyear = comagyear, irrigationsystem = irrigationsystem,
+                                       landScen = landScen, efrMethod = efrMethod, transDist = transDist,
+                                       multicropping = multicropping,
                                        aggregate = FALSE),
                             selectyears)
 

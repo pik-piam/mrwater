@@ -119,8 +119,7 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
                          cropmix = cropmix, yieldcalib = yieldcalib,
                          multicropping = multicropping,
                          comagyear = NULL, efrMethod = NULL,
-                         lpjml = NULL, climatetype = NULL,
-                         multicropping = NULL, transDist = NULL,
+                         transDist = NULL,
                          aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWatWW),
                                      years = getYears(avlWatWW),
