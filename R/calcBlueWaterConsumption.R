@@ -59,11 +59,11 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # Water requirements for multiple cropping case are only calculated for areas
     # where multiple cropping is possible under the selected scenario
     suitMC <- collapseNames(calcOutput("MulticroppingYieldIncrease",
-                                 areaMask = areaMask,
-                                 lpjml = "ggcmi_phase3_nchecks_9ca735cb",  ### ToDo: Switch to flexible lpjml argument (once LPJmL runs are ready)
-                                 climatetype = "GSWP3-W5E5:historical", ### ToDo: Switch to flexible climatetype argument (once LPJmL runs are ready)
-                                 selectyears = selectyears, #### ToDo: replace with all years (once LPJmL runs are ready)
-                                 aggregate = FALSE)[, , "irrigated"])
+                                       areaMask = areaMask,
+                                       lpjml = lpjml,
+                                       climatetype = climatetype,
+                                       selectyears = selectyears,
+                                       aggregate = FALSE)[, , "irrigated"])
     # where positive yield increase: multicropping is possible
     suitMC[suitMC > 0]  <- 1
     suitMC[suitMC != 1] <- 0

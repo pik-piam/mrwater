@@ -10,8 +10,8 @@
 fullDETERMINANTS <- function() {
   # Standard settings
   lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                   crop = "ggcmi_phase3_nchecks_9ca735cb")
-  climatetype <- "GSWP3-W5E5:historical"
+                   crop = "ggcmi_phase3_nchecks_bft_e511ac58")
+  climatetype <- "MRI-ESM2-0:historical"
 
   # Available years
   lpjyears    <- paste0("y", seq(1930, 2016, 1))

@@ -50,12 +50,12 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
   ssp               <- "ssp2"
 
   lpjml             <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                         crop = "ggcmi_phase3_nchecks_9ca735cb")
-  climatetype       <- "GSWP3-W5E5:historical"
+                         crop = "ggcmi_phase3_nchecks_bft_e511ac58")
+  climatetype       <- "MRI-ESM2-0:historical"
 
   irrigationsystem  <- "initialization"
-  gtrange          <- c(0, 10, 50, 100, 250, 300, 500, 600,
-                        750, 900, 1000, 1500, 2000, 3000)
+  gtrange           <- c(0, 10, 50, 100, 250, 300, 500, 600,
+                         750, 900, 1000, 1500, 2000, 3000)
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
 
