@@ -60,7 +60,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # where multiple cropping is possible under the selected scenario
     suitMC <- collapseNames(calcOutput("MulticroppingYieldIncrease",
                                        areaMask = areaMask,
-                                       lpjml = lpjml,
+                                       lpjml = lpjml[["crop"]],
                                        climatetype = climatetype,
                                        selectyears = selectyears,
                                        aggregate = FALSE)[, , "irrigated"])
