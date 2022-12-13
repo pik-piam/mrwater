@@ -10,6 +10,7 @@
 #'
 #' @importFrom magclass collapseNames new.magpie getYears setYears as.array as.magpie add_dimension mbind
 #' @importFrom madrat calcOutput
+#' @importFrom mrcommons toolLPJmLVersion
 #' @importFrom stats quantile
 #' @importFrom stringr str_split
 #'
@@ -28,12 +29,14 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
   # Long-term reference time frame for EFR calculation:
   refYears <- c(1985:2015)
 
+  cfg <- toolLPJmLVersion(version = version, climatetype = climatetype)
+
   # retrieve ecosystem preservation status:
   preservationstatus <- strsplit(efrMethod, ":")[[1]][2]
 
-  # Monthly Discharge from LPJmL (raw: including variation)
+  # Monthly Discharge from LPJmL based on historical baseline (raw: including variation)
   monthlyDischarge   <- setYears(calcOutput("LPJmL_new", version = lpjml[["natveg"]],
-                                             subtype = "mdischarge", climatetype = climatetype,
+                                             subtype = "mdischarge", climatetype = cfg$baseline_hist,
                                              stage = "raw", years = refYears, aggregate = FALSE),
                                   refYears)
 
