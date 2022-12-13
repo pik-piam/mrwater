@@ -458,7 +458,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              file = "ToolboxHARV.mz")
 
   calcOutput("MulticroppingCells", selectyears = selectyears,
-             lpjml = lpjml, climatetype = climatetype, scenario = "actual:irrig_crop",
+             lpjml = lpjml[["crop"]], climatetype = climatetype, scenario = "actual:irrig_crop",
              aggregate = FALSE, file = "ToolboxMulticropping.mz")
 
 }
