@@ -183,7 +183,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
       # relative yield gain in terms of area and volume
       yieldGain <- dimSums(ifelse(irrigWat > 0,
                                   yieldGain / irrigWat,
-                                  0), dim = "crop")
+                                  0), dim = 3)
     } else {
       stop("Please define unit of yield improvement potential via unit argument:
            unit (USD_ha, USD_m3, USD, USD_m3ha) and price aggregation (GLO, ISO, CONST),
