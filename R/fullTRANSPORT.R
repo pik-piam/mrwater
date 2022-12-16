@@ -40,7 +40,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
   lpjml             <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
                          crop = "ggcmi_phase3_nchecks_bft_e511ac58")
   climatetype       <- "GSWP3-W5E5:historical"
-  cropmix           <- "hist_total"
+  cropmix           <- "hist_irrig"
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
   allocationrule    <- "optimization"
