@@ -63,26 +63,6 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                                           irrigationsystem, landScen, cropmix,
                                           multicropping, yieldcalib) {
 
-  # read in irrigation water requirements for given irrigation system
-  # per crop (in m^3 per hectare per year)
-  irrigWat <- calcOutput("ActualIrrigWatRequirements",
-                         selectyears = selectyears, iniyear = iniyear,
-                         lpjml = lpjml, climatetype = climatetype,
-                         irrigationsystem = irrigationsystem, multicropping = multicropping,
-                         aggregate = FALSE)
-
-  # correct irrigation water requirements where irrigation would lead to negative yield gains
-  # read in yield gain
-  tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
-                    lpjml = lpjml, climatetype = climatetype,
-                    iniyear = iniyear, selectyears = selectyears,
-                    yieldcalib = yieldcalib, cropmix = cropmix,
-                    multicropping = multicropping, aggregate = FALSE)
-  tmp[tmp >= 0] <- 1
-  tmp[tmp < 0]  <- 0
-
-  irrigWat <- irrigWat * tmp
-
   # cropland area per crop
   croparea <- calcOutput("CropAreaPotIrrig",
                          selectyears = selectyears, comagyear = comagyear,
@@ -92,14 +72,35 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                          efrMethod = efrMethod,
                          multicropping = multicropping, transDist = transDist,
                          aggregate = FALSE)
+  croplist <- getItems(croparea, dim = 3)
+
+  # read in irrigation water requirements for given irrigation system
+  # per crop (in m^3 per hectare per year)
+  irrigWat <- calcOutput("ActualIrrigWatRequirements",
+                         selectyears = selectyears, iniyear = iniyear,
+                         lpjml = lpjml, climatetype = climatetype,
+                         irrigationsystem = irrigationsystem, multicropping = multicropping,
+                         aggregate = FALSE)[, , croplist]
+
+  # correct irrigation water requirements where irrigation would lead to negative yield gains
+  # read in yield gain
+  tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
+                    lpjml = lpjml, climatetype = climatetype,
+                    iniyear = iniyear, selectyears = selectyears,
+                    yieldcalib = yieldcalib, cropmix = cropmix,
+                    multicropping = multicropping, aggregate = FALSE)[, , croplist]
+  tmp[tmp > 0] <- 1
+  tmp[tmp < 0] <- 0
+
+  irrigWat <- irrigWat * tmp
+
 
   # water requirements for full irrigation in cell accounting for cropshare (in mio. m^3)
   # Note on unit transformation:
   # croparea (mio ha -> ha): multiply with 1e6,
   # irrigation water requirements (m^3 per ha -> mio. m^3 per ha): divide by 1e6
   # --> cancels out -> water requirements for full irrigation (mio. m^3)
-  irrigWat <- dimSums(irrigWat[, , getItems(croparea, dim = 3)] * croparea,
-                      dim = "crop")
+  irrigWat <- dimSums(irrigWat * croparea, dim = "crop")
 
   # Checks
   if (any(is.na(irrigWat))) {

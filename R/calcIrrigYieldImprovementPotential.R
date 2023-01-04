@@ -11,7 +11,6 @@
 #'                      USD_ha (USD per hectare) for relative area return, or
 #'                      USD_m3 (USD per cubic meter) for relative volumetric return;
 #'                      USD for absolute return (total profit);
-#'                      USD_m3ha (USD per hectare per cubic meter)
 #'                      for relative return according to area and volume.
 #'                      Price aggregation:
 #'                      "GLO" for global average prices, or
@@ -79,7 +78,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   priceAgg <- str_split(unit, pattern = ":")[[1]][2]
   unit     <- str_split(unit, pattern = ":")[[1]][1]
 
-  # read in yield gain
+  # read in yield gain (in USD/ha)
   yieldGain <- calcOutput("IrrigCropYieldGain", priceAgg = priceAgg,
                           lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
@@ -92,6 +91,11 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   # (in cropping calendar version);
   # also: under N-stress, irrigation may lead to lower yields,
   # (the latter is only relevant for limited-N-LPJmL version, default: unlimited N))
+
+  # share of crop area by crop type
+  cropareaShr <- calcOutput("CropAreaShare",
+                            iniyear = iniyear, cropmix = cropmix,
+                            aggregate = FALSE)
 
   # Selected crops
   if (!is.null(cropmix)) {
@@ -106,24 +110,19 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
       # Relative yield gain (in terms of area)
       u <- "USD05 per ha"
 
-      # share of crop area by crop type
-      cropareaShr <- calcOutput("CropAreaShare",
-                                iniyear = iniyear, cropmix = cropmix,
-                                aggregate = FALSE)
-
       # average irrigation crop yield gain weighted with their croparea share
-      yieldGain <- dimSums(yieldGain * cropareaShr, dim = "crop")
+      yieldGain <- dimSums(cropareaShr * yieldGain, dim = "crop")
 
     } else if (unit == "USD") {
 
       # Absolute yield gain (total profit on land)
-      u <- "USD05"
+      u <- "mio. USD05"
 
-      # croparea per crop given chosen land scenario
+      # croparea per crop given chosen land scenario (in Mha)
       # (excluding already committed agricultural areas if comagyear != NULL)
       croparea <- calcOutput("CropAreaPotIrrig",
-                             selectyears = selectyears,
-                             comagyear = comagyear, iniyear = iniyear,
+                             selectyears = selectyears, comagyear = comagyear,
+                             iniyear = iniyear,
                              cropmix = cropmix, landScen = landScen,
                              lpjml = lpjml, climatetype = climatetype,
                              efrMethod = efrMethod,
@@ -133,10 +132,10 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
       # absolute irrigation yield gain on available area
       yieldGain <- dimSums(yieldGain * croparea, dim = "crop")
 
-    } else if (unit == "USD_m3ha") {
+    } else if (unit == "USD_m3") {
 
-      # Relative yield gain (in terms of area and volume)
-      u <- "USD05 per m^3 per ha"
+      # Relative yield gain (in terms of volume)
+      u <- "USD05 per m^3"
 
       # irrigation water requirements for given irrigation system
       # per crop (in m^3 per hectare per year)
@@ -149,41 +148,13 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                                            aggregate = FALSE)[, , "withdrawal"])
       # Correction of small irrigWatReq: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
       irrigWat[irrigWat < 10] <- 0
-      # correct irrigation water requirements where irrigation would lead to negative yield gains
-      # read in yield gain
-      tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
-                        lpjml = lpjml, climatetype = climatetype,
-                        iniyear = iniyear, selectyears = selectyears,
-                        yieldcalib = yieldcalib, cropmix = cropmix,
-                        multicropping = multicropping, aggregate = FALSE)
-      tmp[tmp >= 0] <- 1
-      tmp[tmp < 0]  <- 0
-      irrigWat <- irrigWat * tmp
 
-      # relative yield gain in terms of area and volume
-      yieldGain <- dimSums(ifelse(irrigWat > 0,
-                                   yieldGain / irrigWat,
-                                  0), dim = "crop")
+      # relative yield gain in terms of volume
+      yieldGain <- ifelse(dimSums(cropareaShr * irrigWat, dim = "crop") > 0,
+                          dimSums(cropareaShr * yieldGain, dim = "crop") /
+                            dimSums(cropareaShr * irrigWat, dim = "crop"),
+                          0)
 
-    } else if (unit == "USD_m3") {
-
-      # Relative yield gain (in terms of volume)
-      u <- "USD05 per m^3"
-
-      # Full irrigation requirements per cell for selected cropmix
-      # and irrigation system for chosen land scenario (in mio m^3)
-      irrigWat <- collapseNames(calcOutput("FullIrrigationRequirement",
-                                           lpjml = lpjml, climatetype = climatetype,
-                                           selectyears = selectyears, comagyear = comagyear, iniyear = iniyear,
-                                           efrMethod = efrMethod, transDist = transDist,
-                                           irrigationsystem = irrigationsystem, landScen = landScen,
-                                           cropmix = cropmix, yieldcalib = yieldcalib,
-                                           multicropping = multicropping, aggregate = FALSE)[, , "withdrawal"])
-
-      # relative yield gain in terms of area and volume
-      yieldGain <- dimSums(ifelse(irrigWat > 0,
-                                  yieldGain / irrigWat,
-                                  0), dim = 3)
     } else {
       stop("Please define unit of yield improvement potential via unit argument:
            unit (USD_ha, USD_m3, USD, USD_m3ha) and price aggregation (GLO, ISO, CONST),
