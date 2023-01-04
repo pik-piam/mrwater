@@ -48,7 +48,7 @@
 #'                          receives at later stage in allocation algorithm);
 #'                          separated by ":"
 #' @param gainthreshold     Threshold of yield improvement potential
-#'                          (same unit as in rankmethod argument)
+#'                          (in USD per hectare)
 #' @param cropmix           Selected cropmix (options:
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
@@ -194,15 +194,16 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
       humanuse <- "non_agriculture"
     }
 
-    ## Yield gain potential through irrigation of proxy crops
-    unit <- paste(unlist(str_split(rankmethod, ":"))[1],
-                  unlist(str_split(rankmethod, ":"))[2],
-                  sep = ":")
+    ## Yield gain potential through irrigation (in USD per ha)
+    thresholdtype <- paste("USD_ha",
+                           unlist(strsplit(rankmethod, split = ":"))[2],
+                           sep = ":")
+
     irrigGain <- calcOutput("IrrigYieldImprovementPotential",
                             selectyears = selectyears, iniyear = iniyear,
                             comagyear = comagyear, transDist = transDist, efrMethod = efrMethod,
                             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-                            unit = unit, yieldcalib = yieldcalib,
+                            unit = thresholdtype, yieldcalib = yieldcalib,
                             irrigationsystem = irrigationsystem, landScen = landScen,
                             multicropping = multicropping, aggregate = FALSE)
     irrigGain[irrigGain <= gainthreshold] <- 0

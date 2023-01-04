@@ -35,7 +35,7 @@
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
 #' @param gainthreshold     Threshold of yield improvement potential required
-#'                          (same unit as in rankmethod)
+#'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
 #' @param landScen          Land availability scenario consisting of two parts separated by ":":
@@ -82,14 +82,14 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                    landScen, cropmix, multicropping, unlimited) {
 
   thresholdtype <- paste("USD_ha",
-                         strsplit(rankmethod, ":")[[1]][2],
+                         unlist(strsplit(rankmethod, split = ":"))[2],
                          sep = ":")
 
   # Cellular yield improvement potential for all crops (in USD/ha)
   yieldGain <- calcOutput("IrrigYieldImprovementPotential",
                           selectyears = selectyears, iniyear = iniyear,
                           lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
-                          unit = "USD_ha", yieldcalib = yieldcalib,
+                          unit = thresholdtype, yieldcalib = yieldcalib,
                           comagyear = NULL, efrMethod = NULL, transDist = NULL,
                           irrigationsystem = irrigationsystem,
                           landScen = landScen, multicropping = multicropping,

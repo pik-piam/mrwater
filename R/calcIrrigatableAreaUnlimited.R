@@ -30,7 +30,7 @@
 #'                      "GLO" for global average prices, or
 #'                      "ISO" for country-level prices
 #' @param gainthreshold Threshold of yield improvement potential
-#'                      (same unit as in rankmethod)
+#'                      (in USD per hectare)
 #' @param irrigationsystem Irrigation system used: system share as in initialization year,
 #'                         or drip, surface, sprinkler for full irrigation by selected system
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
@@ -65,8 +65,9 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
                         multicropping = NULL, transDist = NULL,
                         aggregate = FALSE)
 
-  # Yield gain potential through irrigation of proxy crops
-  potGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
+  # Yield gain potential through irrigation of proxy crops (in USD per ha)
+  potGain <- calcOutput("IrrigYieldImprovementPotential",
+                        unit = paste("USD_ha", unlist(strsplit(unit, split = ":"))[2], sep = ":"),
                         selectyears = selectyears, iniyear = iniyear,
                         lpjml = lpjml, climatetype = climatetype,
                         comagyear = NULL, efrMethod = NULL, transDist = NULL,

@@ -80,7 +80,7 @@ receives at later stage in allocation algorithm);
 separated by ":"}
 
 \item{gainthreshold}{Threshold of yield improvement potential
-(same unit as in rankmethod argument)}
+(in USD per hectare)}
 
 \item{cropmix}{Selected cropmix (options:
 "hist_irrig" for historical cropmix on currently irrigated area,

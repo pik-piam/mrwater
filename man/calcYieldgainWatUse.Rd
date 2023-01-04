@@ -67,7 +67,7 @@ Price aggregation:
 or drip, surface, sprinkler for full irrigation by selected system}
 
 \item{rangeGT}{Range of gainthreshold for calculation of potentially
-irrigated areas}
+irrigated areas (in USD per hectare)}
 }
 \value{
 magpie object in cellular resolution

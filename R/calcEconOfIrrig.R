@@ -5,7 +5,7 @@
 #' @param scenario          non-agricultural water use scenario
 #' @param output            output to be displayed: irrigated area "IrrigArea" or
 #'                          available water volume "wat_ag_ww" "wat_ag_wc"
-#' @param gtrange          range of x-axis (gainthreshold) to be depicted on the curve
+#' @param gtrange           range of x-axis (gainthreshold) to be depicted on the curve
 #' @param lpjml             LPJmL version required for respective inputs: natveg or crop
 #' @param selectyears       years for which irrigatable area is calculated
 #' @param iniyear           initialization year

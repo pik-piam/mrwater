@@ -30,7 +30,7 @@
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
 #' @param gainthreshold     Threshold of yield improvement potential required
-#'                          (same unit as in rankmethod)
+#'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear           Initialization year of irrigation system

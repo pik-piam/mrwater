@@ -63,7 +63,7 @@ If FALSE: uncalibrated LPJmL yields are used}
 across cells of river basin ("optimization", "upstreamfirst", "equality")}
 
 \item{gainthreshold}{Threshold of yield improvement potential required
-(same unit as in rankmethod)}
+(in USD per hectare)}
 
 \item{irrigationsystem}{Irrigation system used
 ("surface", "sprinkler", "drip", "initialization")}

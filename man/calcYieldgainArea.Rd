@@ -20,7 +20,7 @@ calcYieldgainArea(
 }
 \arguments{
 \item{rangeGT}{Range of gainthreshold for calculation of potentially
-irrigated areas}
+irrigated areas (in USD per hectare)}
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 

@@ -66,7 +66,7 @@ If FALSE: uncalibrated LPJmL yields are used}
 ("optimization" or "upstreamfirst")}
 
 \item{gainthreshold}{Threshold of yield improvement potential
-(same unit as in rankmethod)}
+(in USD per hectare)}
 
 \item{irrigationsystem}{Irrigation system to be used for river basin discharge
 allocation algorithm ("surface", "sprinkler", "drip", "initialization")}

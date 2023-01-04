@@ -58,7 +58,7 @@ Price aggregation:
 "ISO" for country-level prices}
 
 \item{gainthreshold}{Threshold of yield improvement potential
-(same unit as in rankmethod)}
+(in USD per hectare)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
 Multiple Cropping Suitability mask selected

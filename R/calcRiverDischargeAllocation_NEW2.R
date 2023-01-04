@@ -35,7 +35,7 @@
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand
 #' @param gainthreshold     Threshold of yield improvement potential
-#'                          (same unit as in rankmethod)
+#'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge
 #'                          allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear           Initialization year of irrigation system

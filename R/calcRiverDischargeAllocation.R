@@ -34,7 +34,7 @@
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
 #'                          ("optimization" or "upstreamfirst")
 #' @param gainthreshold     Threshold of yield improvement potential
-#'                          (same unit as in rankmethod)
+#'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system to be used for river basin discharge
 #'                          allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param iniyear           Initialization year of irrigation system
@@ -89,8 +89,8 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
   } else if (comAg == FALSE) {
     comagyear <- NULL
   }
-  thresholdtype <- paste(str_split(rankmethod, pattern = ":")[[1]][1],
-                         str_split(rankmethod, pattern = ":")[[1]][2],
+  thresholdtype <- paste("USD_ha",
+                         unlist(strsplit(rankmethod, split = ":"))[2],
                          sep = ":")
 
   #######################################
@@ -130,7 +130,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype, transDist,
   reqWatFullirrigWW <- pmax(collapseNames(reqWatFullirrig[, , "withdrawal"]), 0)
   reqWatFullirrigWC <- pmax(collapseNames(reqWatFullirrig[, , "consumption"]), 0)
 
-  # Yield gain potential through irrigation of proxy crops
+  # Yield gain potential through irrigation (in USD/ha)
   irrigGain      <- calcOutput("IrrigYieldImprovementPotential", selectyears = selectyears,
                                 lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                                 unit = thresholdtype, iniyear = iniyear, yieldcalib = yieldcalib,

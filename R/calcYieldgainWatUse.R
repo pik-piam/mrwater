@@ -40,7 +40,7 @@
 #'                      For case of no land protection select "NA"
 #'                      or do not specify second part of the argument
 #' @param rangeGT       Range of gainthreshold for calculation of potentially
-#'                      irrigated areas
+#'                      irrigated areas (in USD per hectare)
 #'
 #' @importFrom magclass collapseNames dimSums getNames mbind
 #' @importFrom madrat calcOutput

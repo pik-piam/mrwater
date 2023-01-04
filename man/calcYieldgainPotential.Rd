@@ -68,7 +68,7 @@ receives at later stage in allocation algorithm);
 separated by ":"}
 
 \item{gainthreshold}{Threshold of yield improvement potential required
-(same unit as in rankmethod)}
+(in USD per hectare)}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst", "equality")}
