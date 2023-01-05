@@ -69,7 +69,7 @@ fullDETERMINANTS <- function() {
   ###################################
 
   ### Grid-level data ###
-  # calcOutput("GridPopNew", aggregate = FALSE)
+  # calcOutput("GridPop", cells = "lpjcell", aggregate = FALSE)
   # re-write read function (for 67420 cells!)
 
   ### Country-level data ###

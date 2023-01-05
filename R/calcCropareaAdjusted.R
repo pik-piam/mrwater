@@ -19,7 +19,9 @@
 #' @importFrom magclass getCells getNames add_dimension new.magpie
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox") {
+calcCropareaAdjusted <- function(iniyear, dataset = "LUH") {
+
+  ##ToDo: Switch from LUH to Toolbox for future applications
 
   # read in physical croparea per crop and management type (in Mha)
   if (dataset == "LUH") {

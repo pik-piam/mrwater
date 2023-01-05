@@ -142,6 +142,9 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
   p <- setYears(dimSums(p[, averageYears, ], dim = "Year") / length(averageYears),
                 NULL)
 
+  # Yields valued at USD per hectare
+  yields <- yields * p
+
   # Check for NAs
   if (any(is.na(yields))) {
     stop("Function calcYieldsValued produced NAs")
