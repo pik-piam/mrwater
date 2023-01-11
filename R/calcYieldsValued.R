@@ -50,6 +50,9 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
                              iniyear, selectyears, cropmix,
                              yieldcalib, multicropping) {
 
+  # prices are reported in current US$MER
+  priceUnit <- "current US$MER"
+
   # read in cellular lpjml yields [in tDM/ha]
   yields    <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
@@ -59,7 +62,7 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
   croplist  <- getNames(collapseNames(yields[, , "irrigated"]))
 
   # historical FAO producer prices
-  pGLO <- collapseDim(calcOutput(type = "PriceAgriculture",
+  pGLO <- collapseDim(calcOutput("PriceAgriculture", unit = priceUnit,
                                  datasource = "FAO", aggregate = "GLO"))
 
   if (priceAgg == "GLO") {
@@ -69,10 +72,12 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
   } else if (priceAgg == "ISO") {
 
     # country-level agricultural prices
-    p <- collapseNames(calcOutput("PriceAgriculture", datasource = "FAO", aggregate = FALSE))
+    p <- collapseNames(calcOutput("PriceAgriculture", unit = priceUnit,
+                                  datasource = "FAO", aggregate = FALSE))
 
     # fill with region averages where possible
-    pricesRegional <- collapseDim(calcOutput(type = "PriceAgriculture", datasource = "FAO",
+    pricesRegional <- collapseDim(calcOutput("PriceAgriculture", unit = priceUnit,
+                                             datasource = "FAO",
                                              aggregate = TRUE, regionmapping = "regionmappingH12.csv"))
     pricesRegional <- toolAggregate(pricesRegional, rel = toolGetMapping("regionmappingH12.csv"),
                                     from = "RegionCode", to = "CountryCode")

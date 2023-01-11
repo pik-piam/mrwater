@@ -157,7 +157,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
 
     } else {
       stop("Please define unit of yield improvement potential via unit argument:
-           unit (USD_ha, USD_m3, USD, USD_m3ha) and price aggregation (GLO, ISO, CONST),
+           unit (USD_ha, USD_m3, USD) and price aggregation (GLO, ISO, CONST),
            separated by :")
     }
   } else {
