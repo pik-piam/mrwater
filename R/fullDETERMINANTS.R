@@ -8,6 +8,7 @@
 #' @export
 
 fullDETERMINANTS <- function() {
+
   # Standard settings
   lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
                    crop = "ggcmi_phase3_nchecks_bft_e511ac58")
@@ -46,7 +47,7 @@ fullDETERMINANTS <- function() {
              landScen = paste0("currCropland:", "NULL"),
              yieldcalib = "TRUE:TRUE:actual:irrig_crop", multicropping = TRUE,
              aggregate = FALSE,
-             file = "yieldgain_multicropping.mz")
+             file = "yieldgain_multicropping_USDha.mz")
   calcOutput("IrrigYieldImprovementPotential",
              lpjml = lpjml, climatetype = climatetype,
              unit = "USD_ha:GLO", cropmix = "hist_total",
@@ -56,7 +57,29 @@ fullDETERMINANTS <- function() {
              landScen = paste0("currCropland:", "NULL"),
              yieldcalib = "TRUE:FALSE", multicropping = FALSE,
              aggregate = FALSE,
-             file = "yieldgain_singlecropping.mz")
+             file = "yieldgain_singlecropping_USDha.mz")
+
+  calcOutput("IrrigYieldImprovementPotential",
+             lpjml = lpjml, climatetype = climatetype,
+             unit = "USD_m3:GLO", cropmix = "hist_total",
+             iniyear = iniyear, selectyears = lpjyears,
+             comagyear = NULL, efrMethod = NULL, transDist = NULL,
+             irrigationsystem = "initialization",
+             landScen = paste0("currCropland:", "NULL"),
+             yieldcalib = "TRUE:TRUE:actual:irrig_crop", multicropping = TRUE,
+             aggregate = FALSE,
+             file = "yieldgain_multicropping_USDm3.mz")
+  calcOutput("IrrigYieldImprovementPotential",
+             lpjml = lpjml, climatetype = climatetype,
+             unit = "USD_m3:GLO", cropmix = "hist_total",
+             iniyear = iniyear, selectyears = lpjyears,
+             comagyear = NULL, efrMethod = NULL, transDist = NULL,
+             irrigationsystem = "initialization",
+             landScen = paste0("currCropland:", "NULL"),
+             yieldcalib = "TRUE:FALSE", multicropping = FALSE,
+             aggregate = FALSE,
+             file = "yieldgain_singlecropping_USDm3.mz")
+
   # Cropland per crop (for crop diversity)
   calcOutput("CropareaAdjusted",
              iniyear = iniyear, dataset = "Toolbox",
@@ -69,8 +92,8 @@ fullDETERMINANTS <- function() {
   ###################################
 
   ### Grid-level data ###
-  # calcOutput("GridPop", cells = "lpjcell", aggregate = FALSE)
-  # re-write read function (for 67420 cells!)
+  calcOutput("GridPop", cells = "lpjcell", aggregate = FALSE,
+             file = "griddedPop.mz")
 
   ### Country-level data ###
   # Governance (indicator raning from 0 to 1)

@@ -1,6 +1,6 @@
-#' @title fullWATER
-#' @description Function that produces the objects for water outputs
-#'              on cellular resolution.
+#' @title fullIRRIGATIONPOTENTIAL
+#' @description Function that produces the objects for Technical and Economic
+#'              Irrigation Potentials within land and water boundaries
 #'
 #' @param efrMethod         EFR method used including selected strictness of EFRs
 #'                          (Smakhtin:good, VMF:fair)
@@ -462,4 +462,13 @@ fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transD
              multicropping = multicropping, aggregate = FALSE,
              file = paste0("yieldgain_USDha_constant", ".mz"))
 
+  # Rainfed and irrigated crop yield valued at crop-specific prices [in USD/ha]
+  calcOutput("YieldsValued",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears,
+             yieldcalib = yieldcalib,
+             priceAgg = unlist(strsplit(rankmethod, split = ":"))[2],
+             multicropping = multicropping, cropmix = cropmix,
+             aggregate = FALSE,
+             file = "yieldsValued.mz")
 }
