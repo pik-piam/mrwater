@@ -59,14 +59,15 @@
 #'
 #' @export
 
-fullWATER <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2", transDist = 0,
-                      allocationrule = "optimization", rankmethod = "USD_ha:GLO:TRUE",
-                      gainthreshold = 500,
-                      protectLand = "HalfEarth", yieldcalib = "TRUE:FALSE",
-                      multicropping = FALSE, cropmix = "hist_total",
-                      climatetype = "MRI-ESM2-0:ssp370",
-                      lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                                crop = "ggcmi_phase3_nchecks_9ca735cb")) {
+fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = "CV:2",
+                                    transDist = 0,
+                                    allocationrule = "optimization", rankmethod = "USD_ha:GLO:TRUE",
+                                    gainthreshold = 500,
+                                    protectLand = "HalfEarth", yieldcalib = "TRUE:FALSE",
+                                    multicropping = FALSE, cropmix = "hist_total",
+                                    climatetype = "MRI-ESM2-0:ssp370",
+                                    lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
+                                              crop = "ggcmi_phase3_nchecks_9ca735cb")) {
 
   # Standard settings
   iniyear          <- 2010
