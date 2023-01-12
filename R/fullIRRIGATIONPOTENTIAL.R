@@ -387,6 +387,10 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
   calcOutput("CropareaAdjusted", iniyear = iniyear,
              aggregate = FALSE,
              file = "cropareaLUH.mz")
+  # Cropmix of LUH
+  calcOutput("CropAreaShare", iniyear = iniyear,
+             cropmix = cropmix, aggregate = FALSE,
+             file = "cropareaShr.mz")
 
   # Water use (withdrawal and consumption) on current irrigated area
   calcOutput("WaterUseCommittedAg", multicropping = multicropping,
