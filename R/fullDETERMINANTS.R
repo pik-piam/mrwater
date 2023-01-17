@@ -92,8 +92,9 @@ fullDETERMINANTS <- function() {
   ###################################
 
   ### Grid-level data ###
-  calcOutput("GridPop", cells = "lpjcell", aggregate = FALSE,
-             file = "griddedPop.mz")
+  #calcOutput("GridPop", cells = "lpjcell", aggregate = FALSE,
+  #           file = "griddedPop.mz")
+  ### -> move into mrwater (otherwise bi-directional dependency)
 
   ### Country-level data ###
   # Governance (indicator raning from 0 to 1)

@@ -43,13 +43,14 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
 
   # Standard settings
   iniyear           <- "y2010"
-  selectyears       <- "y2010"
-  plotyear          <- "y2010"
+  selectyears       <- c("y2010", "y2050")
+  plotyear          <- selectyears
   ssp               <- "ssp2"
 
+  # Newest LPJmL runs
   lpjml             <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
                          crop = "ggcmi_phase3_nchecks_bft_e511ac58")
-  climatetype       <- "GSWP3-W5E5:historical"
+  climatetype       <- "MRI-ESM2-0:ssp370"
 
   irrigationsystem  <- "initialization"
   gtrange           <- c(0, 10, 50, 100, 250, 300, 500, 600,
