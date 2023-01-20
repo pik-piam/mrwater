@@ -43,16 +43,11 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
   # extract yield calibration arguments
   if (yieldcalib != FALSE) {
 
-    refYields <- strsplit(yieldcalib, split = ":")[[1]][-1]
-    tmp <- refYields[1]
-    if (length(refYields) > 1) {
-      for (i in 2:length(refYields)) {
-        tmp <- paste(tmp, refYields[i], sep = ":")
-      }
-    } else if (refYields == "FALSE") {
+    refYields <- yieldcalib
+
+    if (refYields == "FALSE") {
       refYields <- as.logical(refYields)
     }
-    refYields <- tmp
 
     yieldcalib <- as.logical(strsplit(yieldcalib, split = ":")[[1]][1])
   }
