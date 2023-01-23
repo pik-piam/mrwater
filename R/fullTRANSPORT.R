@@ -35,14 +35,16 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
   # Standard settings
   iniyear           <- "y2010"
   selectyears       <- "y2010"
-  lpjml             <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                         crop = "ggcmi_phase3_nchecks_bft_e511ac58")
-  climatetype       <- "GSWP3-W5E5:historical"
   cropmix           <- "hist_irrig"
   efrMethod         <- "VMF:fair"
   accessibilityrule <- "CV:2"
   allocationrule    <- "optimization"
   irrigationsystem  <- "initialization"
+
+  # Newest LPJmL runs
+  lpjml             <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
+                         crop = "ggcmi_phase3_nchecks_bft_e511ac58")
+  climatetype       <- "MRI-ESM2-0:ssp370"
 
   # Technical potential chosen for Irrigation Potentials
   gainthreshold     <- 0

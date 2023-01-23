@@ -43,7 +43,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
 
   # Standard settings
   iniyear           <- "y2010"
-  selectyears       <- c("y2010", "y2050")
+  selectyears       <- "y2010" # c("y2010", "y2050) --> with potential multicropping!
   plotyear          <- selectyears
   ssp               <- "ssp2"
 
