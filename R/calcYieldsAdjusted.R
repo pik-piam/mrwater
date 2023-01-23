@@ -57,20 +57,20 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
     # read in cellular LPJmL yields calibrated to FAO country values of iniyear [in tDM/ha]
     yields <- calcOutput("YieldsCalibrated", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
                          climatetype = climatetype, refYear = iniyear,
+                         selectyears = selectyears,
                          areaSource = "FAO", refYields = refYields,
                          multicropping = multicropping, marginal_land = "no_marginal:irrigated",
-                         cells = "lpjcell", aggregate = FALSE)[, selectyears, ]
+                         cells = "lpjcell", aggregate = FALSE)
 
     description <- "LPJmL yields calibrated to FAO yield levels for all different (MAgPIE) crop types"
 
   } else {
 
     # read in cellular LPJmL yields [in tDM/ha]
-    yields <- setYears(calcOutput("Yields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
-                                  cells = "lpjcell", climatetype = climatetype,
-                                  multicropping = multicropping, marginal_land = "no_marginal:irrigated",
-                                  years = selectyears, aggregate = FALSE),
-                       selectyears)
+    yields <- calcOutput("Yields", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
+                          cells = "lpjcell", climatetype = climatetype,
+                          multicropping = multicropping, marginal_land = "no_marginal:irrigated",
+                          selectyears = selectyears, aggregate = FALSE)
 
     description <- "LPJmL yields for all different (MAgPIE) crop types"
 
