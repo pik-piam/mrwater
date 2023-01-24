@@ -52,11 +52,11 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
     # reference yield to be calibrated to
     tmp <- refYields[1]
 
-    if (refYields == "FALSE") {
+    if (tmp == "FALSE") {
       # single-cropping case (standard calibration)
       refYields <- as.logical(refYields)
 
-    } else {
+    } else if (tmp == "TRUE") {
       # multiple cropping case
       if (length(refYields) > 1) {
 

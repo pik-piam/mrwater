@@ -2,7 +2,6 @@
 
 export(calcEconOfIrrig)
 export(calcGrowingPeriod)
-export(calcIrrigationPotentials)
 export(calcRiverRoutingInputs)
 export(calcShrCurrIrrigFulfilled)
 export(calcShrHumanUsesFulfilled)
