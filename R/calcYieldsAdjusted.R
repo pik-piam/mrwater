@@ -40,17 +40,34 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
                                iniyear, selectyears,
                                yieldcalib, multicropping) {
 
-  # extract yield calibration arguments
-  if (yieldcalib != FALSE) {
+  ### Extraction of yield calibration arguments ###
+  refYields <- strsplit(yieldcalib, split = ":")[[1]][-1]
+  tmp       <- refYields[1]
 
-    refYields <- yieldcalib
+  # reference yield to be calibrated to
+  if (refYields == "FALSE") {
+    # single-cropping case (standard calibration)
+    refYields <- as.logical(refYields)
 
-    if (refYields == "FALSE") {
-      refYields <- as.logical(refYields)
+  } else {
+    # multiple cropping case
+    if (length(refYields) > 1) {
+
+      for (i in 2:length(refYields)) {
+        tmp <- paste(tmp, refYields[i], sep = ":")
+      }
+      refYields <- tmp
+
+    } else {
+      stop("Please specify which reference yield to calibrate the yields to
+          in the case of multiple cropping")
     }
-
-    yieldcalib <- as.logical(strsplit(yieldcalib, split = ":")[[1]][1])
   }
+
+  # boolean for calibration or not
+  yieldcalib <- as.logical(strsplit(yieldcalib, split = ":")[[1]][1])
+  ### Extraction of yield calibration arguments ###
+
 
   if (yieldcalib) {
 
