@@ -41,9 +41,11 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
                                yieldcalib, multicropping) {
 
   # Extraction of yield calibration arguments
-  refYields  <- strsplit(yieldcalib, split = ":")[[1]][-1]
-  # boolean for calibration or not
-  yieldcalib <- as.logical(strsplit(yieldcalib, split = ":")[[1]][1])
+  if (!is.logical(yieldcalib)) {
+    refYields  <- strsplit(yieldcalib, split = ":")[[1]][-1]
+    # boolean for calibration or not
+    yieldcalib <- as.logical(strsplit(yieldcalib, split = ":")[[1]][1])
+  }
 
   if (yieldcalib) {
 
