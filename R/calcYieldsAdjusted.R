@@ -40,36 +40,34 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
                                iniyear, selectyears,
                                yieldcalib, multicropping) {
 
-  ### Extraction of yield calibration arguments ###
-  refYields <- strsplit(yieldcalib, split = ":")[[1]][-1]
-  tmp       <- refYields[1]
-
-  # reference yield to be calibrated to
-  if (refYields == "FALSE") {
-    # single-cropping case (standard calibration)
-    refYields <- as.logical(refYields)
-
-  } else {
-    # multiple cropping case
-    if (length(refYields) > 1) {
-
-      for (i in 2:length(refYields)) {
-        tmp <- paste(tmp, refYields[i], sep = ":")
-      }
-      refYields <- tmp
-
-    } else {
-      stop("Please specify which reference yield to calibrate the yields to
-          in the case of multiple cropping")
-    }
-  }
-
+  # Extraction of yield calibration arguments
+  refYields  <- strsplit(yieldcalib, split = ":")[[1]][-1]
   # boolean for calibration or not
   yieldcalib <- as.logical(strsplit(yieldcalib, split = ":")[[1]][1])
-  ### Extraction of yield calibration arguments ###
-
 
   if (yieldcalib) {
+
+    # reference yield to be calibrated to
+    tmp <- refYields[1]
+
+    if (refYields == "FALSE") {
+      # single-cropping case (standard calibration)
+      refYields <- as.logical(refYields)
+
+    } else {
+      # multiple cropping case
+      if (length(refYields) > 1) {
+
+        for (i in 2:length(refYields)) {
+          tmp <- paste(tmp, refYields[i], sep = ":")
+        }
+        refYields <- tmp
+
+      } else {
+        stop("Please specify which reference yield to calibrate the yields to
+          in the case of multiple cropping")
+      }
+    }
 
     # read in cellular LPJmL yields calibrated to FAO country values of iniyear [in tDM/ha]
     yields <- calcOutput("YieldsCalibrated", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
