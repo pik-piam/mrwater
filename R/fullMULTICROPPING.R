@@ -432,13 +432,13 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
 
   # Multiple cropping suitability per crop calculated based on crop and grass productivity
   calcOutput("MulticroppingSuitability",
-              lpjml = lpjml[["crop"]], climatetype = climatetype,
+              lpjml = lpjml, climatetype = climatetype,
               selectyears = selectyears, suitability = "endogenous",
               aggregate = FALSE, file = "suitMC_LPJmL.mz")
 
   # Multiple cropping suitability according to GAEZ (Boolean)
   calcOutput("MulticroppingSuitability",
-             lpjml = lpjml[["crop"]], climatetype = climatetype,
+             lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, suitability = "exogenous",
              aggregate = FALSE, file = "suitMC_GAEZ2.mz")
 
@@ -457,7 +457,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              file = "ToolboxHARV.mz")
 
   calcOutput("MulticroppingCells", selectyears = selectyears,
-             lpjml = lpjml[["crop"]], climatetype = climatetype, scenario = "actual:irrig_crop",
+             lpjml = lpjml, climatetype = climatetype, scenario = "actual:irrig_crop",
              aggregate = FALSE, file = "ToolboxMulticropping.mz")
 
 }
