@@ -10,7 +10,6 @@ calcYieldsValued(
   priceAgg,
   iniyear,
   selectyears,
-  cropmix,
   yieldcalib,
   multicropping
 )
@@ -28,13 +27,6 @@ calcYieldsValued(
 \item{iniyear}{initialization year for food price and cropmix area}
 
 \item{selectyears}{Years to be returned by the function}
-
-\item{cropmix}{Selected cropmix for which yield improvement potential
-is calculated (options:
-"hist_irrig" for historical cropmix on currently irrigated area,
-"hist_total" for historical cropmix on total cropland,
-or selection of proxycrops)
-NULL returns all crops individually}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
          Also needs specification of refYields, separated by ":".

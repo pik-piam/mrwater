@@ -15,12 +15,6 @@
 #'                               Options: FALSE (for single cropping analyses) or
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
-#' @param cropmix       Selected cropmix for which yield improvement potential
-#'                      is calculated (options:
-#'                      "hist_irrig" for historical cropmix on currently irrigated area,
-#'                      "hist_total" for historical cropmix on total cropland,
-#'                      or selection of proxycrops)
-#'                      NULL returns all crops individually
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
 #'                      (mask can be:
@@ -49,7 +43,7 @@
 
 calcIrrigCropYieldGain <- function(lpjml, climatetype, priceAgg,
                                    iniyear, selectyears,
-                                   yieldcalib, cropmix, multicropping) {
+                                   yieldcalib, multicropping) {
 
   # read in cellular lpjml yields
   yields   <- calcOutput("YieldsValued",
@@ -57,7 +51,7 @@ calcIrrigCropYieldGain <- function(lpjml, climatetype, priceAgg,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib,
                           priceAgg = priceAgg,
-                          multicropping = multicropping, cropmix = cropmix,
+                          multicropping = multicropping,
                           aggregate = FALSE)
 
   # calculate yield gain per crop

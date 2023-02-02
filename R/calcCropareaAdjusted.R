@@ -19,7 +19,7 @@
 #' @importFrom magclass getCells getNames add_dimension new.magpie
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcCropareaAdjusted <- function(iniyear, dataset = "LUH") {
+calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox") {
 
   ##ToDo: Switch from LUH to Toolbox for future applications
 

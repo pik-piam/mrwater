@@ -473,7 +473,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
              iniyear = iniyear, selectyears = selectyears,
              yieldcalib = yieldcalib,
              priceAgg = unlist(strsplit(rankmethod, split = ":"))[2],
-             multicropping = multicropping, cropmix = cropmix,
+             multicropping = multicropping,
              aggregate = FALSE,
              file = "yieldsValued.mz")
 }

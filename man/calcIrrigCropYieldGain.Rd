@@ -11,7 +11,6 @@ calcIrrigCropYieldGain(
   iniyear,
   selectyears,
   yieldcalib,
-  cropmix,
   multicropping
 )
 }
@@ -34,13 +33,6 @@ calcIrrigCropYieldGain(
          Options: FALSE (for single cropping analyses) or
                   "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
-
-\item{cropmix}{Selected cropmix for which yield improvement potential
-is calculated (options:
-"hist_irrig" for historical cropmix on currently irrigated area,
-"hist_total" for historical cropmix on total cropland,
-or selection of proxycrops)
-NULL returns all crops individually}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
 Multiple Cropping Suitability mask selected

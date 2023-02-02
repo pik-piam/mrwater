@@ -4,7 +4,7 @@
 \alias{calcCropareaAdjusted}
 \title{calcCropareaAdjusted}
 \usage{
-calcCropareaAdjusted(iniyear, dataset = "LUH")
+calcCropareaAdjusted(iniyear, dataset = "Toolbox")
 }
 \arguments{
 \item{iniyear}{initialization year}

@@ -133,6 +133,37 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              multicropping = "TRUE:actual:irrig_crop",
              file = paste0("calibYields", "_multipleACT.mz"))
 
+  # Rainfed and irrigated crop yield valued at crop-specific prices [in USD/ha]
+  # under single cropping:
+  calcOutput("YieldsValued",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears,
+             yieldcalib = yieldcalib,
+             priceAgg = unlist(strsplit(rankmethod, split = ":"))[2],
+             multicropping = FALSE,
+             aggregate = FALSE,
+             file = "yieldsValued_single.mz")
+  # under multiple cropping (potential):
+  calcOutput("YieldsValued",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears,
+             yieldcalib = yieldcalib,
+             priceAgg = unlist(strsplit(rankmethod, split = ":"))[2],
+             multicropping = "TRUE:potential:endogenous",
+             aggregate = FALSE,
+             file = "yieldsValued_multiplePOT.mz")
+  # under multiple cropping (potential):
+  calcOutput("YieldsValued",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears,
+             yieldcalib = yieldcalib,
+             priceAgg = unlist(strsplit(rankmethod, split = ":"))[2],
+             multicropping = "TRUE:actual:irrig_crop",
+             aggregate = FALSE,
+             file = "yieldsValued_multiplePOT.mz")
+
+
+
   # Yield gain through irrigation under multiple cropping
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
@@ -208,7 +239,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                              as.list(strsplit(m, split = ":"))[[1]][2],
                              as.list(strsplit(m, split = ":"))[[1]][3], ".mz"))
     calcOutput("YieldImprovementPotential", priceAgg = "GLO",
-               yieldgaintype = "irrigation_multicropping",
+               yieldgaintype = "irrigation_and_multicropping",
                lpjml = lpjml, climatetype = climatetype,
                iniyear = iniyear, selectyears = selectyears,
                cropmix = cropmix, yieldcalib = yieldcalib,

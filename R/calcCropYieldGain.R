@@ -21,12 +21,6 @@
 #'                               Options: FALSE (for single cropping analyses) or
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
-#' @param cropmix       Selected cropmix for which yield improvement potential
-#'                      is calculated (options:
-#'                      "hist_irrig" for historical cropmix on currently irrigated area,
-#'                      "hist_total" for historical cropmix on total cropland,
-#'                      or selection of proxycrops)
-#'                      NULL returns all crops individually
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
 #'                      (mask can be:
@@ -55,13 +49,13 @@
 calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
                               iniyear, selectyears,
                               yieldcalib,
-                              cropmix, multicropping) {
+                              multicropping) {
 
   # reference yield (rainfed-single cropping)
   ref <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
                           yieldcalib = yieldcalib, priceAgg = priceAgg,
-                          multicropping = FALSE, cropmix = cropmix,
+                          multicropping = FALSE,
                           aggregate = FALSE)
 
   if (yieldgaintype == "irrigation_singlecropping") {
@@ -70,7 +64,7 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                                        iniyear = iniyear, selectyears = selectyears,
                                        yieldcalib = yieldcalib, priceAgg = priceAgg,
-                                       multicropping = FALSE, cropmix = cropmix,
+                                       multicropping = FALSE,
                                        aggregate = FALSE)[, , "irrigated"])
 
     # yield gain through irrigation under single cropping conditions
@@ -82,7 +76,7 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                                        iniyear = iniyear, selectyears = selectyears,
                                        yieldcalib = yieldcalib, priceAgg = priceAgg,
-                                       multicropping = multicropping, cropmix = cropmix,
+                                       multicropping = multicropping,
                                        aggregate = FALSE)[, , "irrigated"])
     # yield gain through multiple cropping under irrigated conditions
     yieldGain <- yields - collapseNames(ref[, , "irrigated"])
@@ -93,7 +87,7 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                                        iniyear = iniyear, selectyears = selectyears,
                                        yieldcalib = yieldcalib, priceAgg = priceAgg,
-                                       multicropping = multicropping, cropmix = cropmix,
+                                       multicropping = multicropping,
                                        aggregate = FALSE)[, , "rainfed"])
     # yield gain through multiple cropping under rainfed conditions
     yieldGain <- yields - collapseNames(ref[, , "rainfed"])
@@ -104,7 +98,7 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                                        iniyear = iniyear, selectyears = selectyears,
                                        yieldcalib = yieldcalib, priceAgg = priceAgg,
-                                       multicropping = multicropping, cropmix = cropmix,
+                                       multicropping = multicropping,
                                        aggregate = FALSE)[, , "irrigated"])
 
     # yield gain through multiple cropping under irrigated conditions
@@ -116,7 +110,7 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
                             iniyear = iniyear, selectyears = selectyears,
                             yieldcalib = yieldcalib, priceAgg = priceAgg,
-                            multicropping = multicropping, cropmix = cropmix,
+                            multicropping = multicropping,
                             aggregate = FALSE)[, , "irrigated"])
 
     # yield gain through irrigation & multiple cropping

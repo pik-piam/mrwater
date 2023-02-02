@@ -10,12 +10,6 @@
 #'                      "ISO" for country-level prices, or
 #'                      "CONST" for same price for all crops
 #' @param iniyear       initialization year for food price and cropmix area
-#' @param cropmix       Selected cropmix for which yield improvement potential
-#'                      is calculated (options:
-#'                      "hist_irrig" for historical cropmix on currently irrigated area,
-#'                      "hist_total" for historical cropmix on total cropland,
-#'                      or selection of proxycrops)
-#'                      NULL returns all crops individually
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
 #'                               Options: FALSE (for single cropping analyses) or
@@ -47,7 +41,7 @@
 #' @importFrom magclass collapseNames getNames getCells dimSums time_interpolate
 
 calcYieldsValued <- function(lpjml, climatetype, priceAgg,
-                             iniyear, selectyears, cropmix,
+                             iniyear, selectyears,
                              yieldcalib, multicropping) {
 
   # prices are reported in current US$MER

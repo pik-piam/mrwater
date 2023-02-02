@@ -87,7 +87,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
   tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
                     lpjml = lpjml, climatetype = climatetype,
                     iniyear = iniyear, selectyears = selectyears,
-                    yieldcalib = yieldcalib, cropmix = cropmix,
+                    yieldcalib = yieldcalib,
                     multicropping = multicropping, aggregate = FALSE)[, , croplist]
   tmp[tmp > 0] <- 1
   tmp[tmp < 0] <- 0

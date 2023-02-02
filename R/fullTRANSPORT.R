@@ -91,7 +91,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
   calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
-             yieldcalib = yieldcalib, cropmix = cropmix,
+             yieldcalib = yieldcalib,
              multicropping = multicropping, aggregate = FALSE,
              file = "cropyieldgain.mz")
   calcOutput("IrrigYieldImprovementPotential",

@@ -82,7 +82,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   yieldGain <- calcOutput("IrrigCropYieldGain", priceAgg = priceAgg,
                           lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib, cropmix = cropmix,
+                          yieldcalib = yieldcalib,
                           multicropping = multicropping, aggregate = FALSE)
 
   # set negative yield gains to 0

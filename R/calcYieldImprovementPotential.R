@@ -60,7 +60,7 @@ calcYieldImprovementPotential <- function(lpjml, climatetype, yieldgaintype, pri
   yieldGain <- calcOutput("CropYieldGain", priceAgg = priceAgg, yieldgaintype = yieldgaintype,
                           lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib, cropmix = cropmix,
+                          yieldcalib = yieldcalib,
                           multicropping = multicropping, aggregate = FALSE)
 
   if (any(yieldGain < 0)) {

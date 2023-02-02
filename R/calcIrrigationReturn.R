@@ -103,7 +103,7 @@ calcIrrigationReturn <- function(country, lpjml, selectyears, iniyear, climatety
                           priceAgg = str_split(rankmethod, pattern = ":")[[1]][2],
                           lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib, cropmix = cropmix,
+                          yieldcalib = yieldcalib,
                           multicropping = multicropping, aggregate = FALSE)
   # set negative yield gains to 0
   yieldGain[yieldGain < 0] <- 0
