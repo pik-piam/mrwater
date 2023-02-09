@@ -40,7 +40,6 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
   ### Reasons for not-fulfilled actually observed irrigation:
   # - fossil groundwater is used for irrigation (e.g. Northern India), but not accounted for in the river routing
   # - deficit irrigation is in place (e.g. Southern Spain), but not accounted for in the river routing
-  # - water reuse is not accounted for in the river routing
 
   ##############################
   ### Results from Algorithm ###
@@ -110,18 +109,22 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
                     years = getYears(fulfilledCAUww),
                     names = c("nonAg", "committedAg", "totalHuman"))
   # Transform object dimensions
-  .transformObject <- function(x) {
-      # empty magpie object structure
-      object0 <- new.magpie(cells_and_regions = getItems(actNAUww, dim = 1),
-                            years = getItems(actNAUww, dim = 2),
-                            names = getItems(actNAUww, dim = 3),
-                            fill = 0,
-                            sets = c("x.y.iso", "year", "EFP.scen"))
-      # bring object x to dimension of object0
-      out <- object0 + x
-      return(out)
+  .transformObject <- function(x, gridcells, years, names) {
+    # empty magpie object structure
+    object0 <- new.magpie(cells_and_regions = gridcells,
+                          years = years,
+                          names = names,
+                          fill = 0,
+                          sets = c("x.y.iso", "year", "EFP.scen"))
+    # bring object x to dimension of object0
+    out <- object0 + x
+    return(out)
   }
-  out <- .transformObject(out)
+
+  out <- .transformObject(out,
+                          gridcells = getItems(actNAUww, dim = 1),
+                          years = getItems(actNAUww, dim = 2),
+                          names = getItems(actNAUww, dim = 3))
 
   #################################
   ### Calculate Share Fulfilled ###

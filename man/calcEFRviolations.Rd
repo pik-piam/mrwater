@@ -9,6 +9,7 @@ calcEFRviolations(
   selectyears,
   climatetype,
   efrMethod,
+  transDist,
   accessibilityrule,
   rankmethod,
   yieldcalib,
@@ -32,6 +33,9 @@ calcEFRviolations(
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
+
+\item{transDist}{Water transport distance allowed to fulfill locally
+unfulfilled water demand}
 
 \item{accessibilityrule}{Strictness of accessibility restriction:
 discharge that is exceeded x percent of the time on average throughout a year (Qx).

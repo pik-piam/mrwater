@@ -54,6 +54,8 @@
 #'                                      GAEZ data set),
 #'                          separated by ":"
 #'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#' @param transDist         Water transport distance allowed to fulfill locally
+#'                          unfulfilled water demand
 #' @param scenario          Combination of EFP ("on", "off") and
 #'                          non-ag. water use scenario ("ssp2", "ISIMIP", ...)
 #'                          separated by "."
@@ -72,7 +74,7 @@
 #' calcOutput("EFRviolations", aggregate = FALSE)
 #' }
 #'
-calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod,
+calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod, transDist,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             gainthreshold, irrigationsystem, iniyear,
                             landScen, cropmix, comAg, multicropping,
@@ -87,16 +89,16 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod,
   rs$iso <- readRDS(system.file("extdata/mapCoords2Country.rds", package = "mrcommons"))$iso
 
 
-  discharge <- collapseNames(calcOutput("RiverDischargeAllocation",
-                                        output = "discharge", selectyears = selectyears,
+  discharge <- collapseNames(calcOutput("RiverDischargeAllocation_NEW2",
                                         lpjml = lpjml, climatetype = climatetype,
+                                        selectyears = selectyears, transDist = transDist,
                                         efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
                                         allocationrule = allocationrule,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
                                         cropmix = cropmix, comAg = comAg,
-                                        multicropping = multicropping, aggregate = FALSE)[, , scenario])
+                                        multicropping = multicropping, aggregate = FALSE)[, , "discharge"][, , scenario])
 
   envFlow   <- collapseNames(calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
                                         lpjml = lpjml, climatetype = climatetype,

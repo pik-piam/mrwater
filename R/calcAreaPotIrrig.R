@@ -132,7 +132,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   ### Calculate non-protected area ###
   ####################################
   # total land area (Note: constant over the years.)
-  landarea <- setYears(collapseNames(dimSums(readSource("LUH2v2", subtype = "states",
+  landarea <- setYears(collapseNames(dimSums(readSource("LUH2v2", subtype = "states_1995to1996",
                                                         convert = "onlycorrect")[, "y1995", ],
                                              dim = 3)),
                        NULL)

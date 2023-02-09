@@ -21,20 +21,22 @@
 
 calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox") {
 
-  ##ToDo: Switch from LUH to Toolbox for future applications
-
   # read in physical croparea per crop and management type (in Mha)
   if (dataset == "LUH") {
+
     phys <- calcOutput("Croparea", years = iniyear, physical = TRUE,
                        sectoral = "kcr", irrigation = TRUE,
                        cells = "lpjcell", cellular = TRUE,
                        aggregate = FALSE)
     map             <- toolGetMappingCoord2Country()
     getCells(phys)  <- paste(map$coords, map$iso, sep = ".")
+
   } else if (dataset == "Toolbox") {
+
     phys <- calcOutput("CropareaToolbox", physical = TRUE, sectoral = "kcr",
                          cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
                          selectyears = iniyear, aggregate = FALSE)
+
   } else {
     stop("Please select Croparea data set to be used.")
   }

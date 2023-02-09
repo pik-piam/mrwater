@@ -265,10 +265,6 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
   out[, , "currWWtotal"] <- as.magpie(currWWtotal, spatial = 1, temporal = 2)
   out[, , "currWCtotal"] <- as.magpie(currWCtotal, spatial = 1, temporal = 2)
   out[, , "discharge"]   <- as.magpie(discharge, spatial = 1, temporal = 2)
-  ### Note: Need to adjust follow-up functions accordingly
-  ###       (before: select output == "discharge", "potIrrigWat",
-  ##         now: subset (discharge, currHuman_ww_local ....))
-  #    # Main output for MAgPIE: water available for agricultural withdrawal --> currWWtotal
 
   } else if (allocationrule == "upstreamfirst") {
     # The upstream-downstream surplus discharge allocation

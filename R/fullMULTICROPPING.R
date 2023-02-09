@@ -160,7 +160,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              priceAgg = unlist(strsplit(rankmethod, split = ":"))[2],
              multicropping = "TRUE:actual:irrig_crop",
              aggregate = FALSE,
-             file = "yieldsValued_multiplePOT.mz")
+             file = "yieldsValued_multipleACT.mz")
 
 
 
@@ -456,6 +456,10 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
       }
     }
   }
+
+  # share of crop area by crop type
+  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
+             aggregate = FALSE, file = "cropareaShr.mz")
 
   ##############
   # VALIDATION #
