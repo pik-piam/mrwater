@@ -43,19 +43,22 @@
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
 #'                          or selection of proxycrops)
-#' @param potentialWat      If TRUE: potential available water and areas used,
-#'                          if FALSE: currently reserved water on current irrigated cropland used
 #' @param comAg             If TRUE: currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
 #'                          Multiple Cropping Suitability mask selected
-#'                          ("endogenous": suitability for multiple cropping determined
-#'                                         by rules based on grass and crop productivity
-#'                          "exogenous": suitability for multiple cropping given by
-#'                                       GAEZ data set),
-#'                          separated by ":"
-#'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#'                          (mask can be:
+#'                          "none": no mask applied (only for development purposes)
+#'                          "actual:total": currently multicropped areas calculated from total harvested areas
+#'                                          and total physical areas per cell from readLanduseToolbox
+#'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+#'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
+#'                          "potential:endogenous": potentially multicropped areas given
+#'                                                  temperature and productivity limits
+#'                          "potential:exogenous": potentially multicropped areas given
+#'                                                 GAEZ suitability classification)
+#'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand by surrounding cell water availability
 #'
@@ -74,41 +77,58 @@
 calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
                                 accessibilityrule, rankmethod, yieldcalib, allocationrule,
                                 gainthreshold, irrigationsystem, landScen,
-                                cropmix, potentialWat, comAg, multicropping, transDist) {
+                                cropmix, comAg, multicropping, transDist) {
 
   ## Read in water available for irrigation (in mio. m^3)
-  if (potentialWat) {
+  avlWat <- calcOutput("WaterUsePotential", selectyears = selectyears,
+                        lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
+                        accessibilityrule = accessibilityrule, rankmethod = rankmethod,
+                        yieldcalib = yieldcalib, allocationrule = allocationrule,
+                        gainthreshold = gainthreshold,
+                        irrigationsystem = irrigationsystem, iniyear = iniyear,
+                        landScen = landScen, cropmix = cropmix,
+                        comAg = comAg, multicropping = multicropping,
+                        transDist = transDist, aggregate = FALSE)
+  avlWatWC <- collapseNames(avlWat[, , "wat_ag_wc"])
+  avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
 
-    avlWat <- calcOutput("WaterUsePotential", selectyears = selectyears,
-                          lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
-                          accessibilityrule = accessibilityrule, rankmethod = rankmethod,
-                          yieldcalib = yieldcalib, allocationrule = allocationrule,
-                          gainthreshold = gainthreshold,
-                          irrigationsystem = irrigationsystem, iniyear = iniyear,
-                          landScen = landScen, cropmix = cropmix,
-                          comAg = comAg, multicropping = multicropping,
-                          transDist = transDist, aggregate = FALSE)
-    avlWatWC <- collapseNames(avlWat[, , "wat_ag_wc"])
-    avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
+  if (comAg) {
+
+    # Actually committed irrigated area (crop-specific)
+    comAgArea <- calcOutput("IrrigAreaActuallyCommitted",
+                            lpjml = lpjml, climatetype = climatetype,
+                            selectyears = selectyears, iniyear = iniyear,
+                            efrMethod = efrMethod, multicropping = multicropping,
+                            transDist = transDist, aggregate = FALSE)
+
+    # Water actually committed to agriculture (in mio. m^3)
+    comWater <- calcOutput("RiverHumanUseAccounting",
+                           iteration = "committed_agriculture",
+                           lpjml = lpjml, climatetype = climatetype,
+                           transDist = transDist, comAg = NULL,
+                           efrMethod = efrMethod, multicropping = multicropping,
+                           selectyears = selectyears, iniyear = iniyear,
+                           accessibilityrule = NULL,
+                           rankmethod = NULL, gainthreshold = NULL,
+                           cropmix = NULL, yieldcalib = NULL,
+                           irrigationsystem = NULL, landScen = NULL,
+                           aggregate = FALSE)
+    comWatWW <- collapseNames(comWater[, , "currHumanWWtotal"])
+    comWatWC <- collapseNames(comWater[, , "currHumanWCtotal"])
+
 
   } else {
 
-    avlWat <- calcOutput("RiverHumanUseAccounting",
-                         iteration = "committed_agriculture",
-                         selectyears = selectyears, iniyear = iniyear,
-                         lpjml = lpjml, climatetype = climatetype,
-                         efrMethod = efrMethod, multicropping = multicropping,
-                         transDist = transDist, comAg = comAg,
-                         accessibilityrule = NULL,
-                         rankmethod = NULL, gainthreshold = NULL,
-                         cropmix = NULL, yieldcalib = NULL,
-                         irrigationsystem = NULL, landScen = NULL,
-                         aggregate = FALSE)
-
-    avlWatWC <- collapseNames(avlWat[, , "currHumanWCtotal"])
-    avlWatWW <- collapseNames(avlWat[, , "currHumanWWtotal"])
-
+    # No water or areas committed to current agricultural uses
+    comAgArea <- 0
+    comWatWW <- comWatWC <- avlWatWC
+    comWatWW[, , ] <- 0
+    comWatWC[, , ] <- 0
   }
+
+  # Water available for potential irrigation (in mio. m^3)
+  avlWatWW <- avlWatWW - comWatWW
+  avlWatWC <- avlWatWC - comWatWC
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
@@ -152,7 +172,14 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
   irrigatableArea <- add_dimension(irrigatableArea, dim = 3.4, add = "type",
                                    nm = "irrigatable")
 
-  out <- mbind(irrigatableArea, irrigareaWW, irrigareaWC)
+  # share of crop area by crop type given chosen cropmix
+  cropareaShr <- calcOutput("CropAreaShare",
+                            iniyear = iniyear, cropmix = cropmix,
+                            aggregate = FALSE)
+
+  # crop-specific potentially irrigated area
+  out <- irrigatableArea * cropareaShr
+  out <- irrigatableArea[, , getNames(cropareaShr)] + comAgArea[, , getNames(cropareaShr)]
 
   # check for NAs and negative values
   if (any(is.na(out))) {
@@ -164,7 +191,7 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
 
   return(list(x            = out,
               weight       = NULL,
-              unit         = "mio. ha",
+              unit         = "Mha",
               description  = "Area that can be irrigated
                               given land and water constraints",
               isocountries = FALSE))

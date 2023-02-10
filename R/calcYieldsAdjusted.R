@@ -18,7 +18,7 @@
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
 #'                                      and total physical areas per cell from readLanduseToolbox
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
-#'                      "actual:cropIrrig" (crop- and irrigation-specific) "total"
+#'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                      "potential:endogenous": potentially multicropped areas given
 #'                                              temperature and productivity limits
 #'                      "potential:exogenous": potentially multicropped areas given

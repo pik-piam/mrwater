@@ -171,8 +171,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                rankmethod = rankmethod, yieldcalib = yieldcalib,
                allocationrule = allocationrule,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
-               potentialWat = TRUE, comAg = TRUE,
-               multicropping = multicropping,
+               comAg = TRUE, multicropping = multicropping,
                aggregate = FALSE,
                file = paste0("curpotIrrigArea_", transDist, "km.mz"))
 
@@ -199,8 +198,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                rankmethod = rankmethod, yieldcalib = yieldcalib,
                allocationrule = allocationrule,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
-               potentialWat = TRUE, comAg = TRUE,
-               multicropping = multicropping,
+               comAg = TRUE, multicropping = multicropping,
                aggregate = FALSE,
                file = paste0("potIrrigArea_", transDist, "km.mz"))
 
@@ -227,8 +225,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                rankmethod = rankmethod, yieldcalib = yieldcalib,
                allocationrule = allocationrule,
                irrigationsystem = irrigationsystem, cropmix = cropmix,
-               potentialWat = TRUE, comAg = FALSE,
-               multicropping = multicropping,
+               comAg = FALSE, multicropping = multicropping,
                aggregate = FALSE,
                file = paste0("fullpotIrrigArea_", transDist, "km.mz"))
 

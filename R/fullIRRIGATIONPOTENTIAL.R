@@ -37,12 +37,17 @@
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
 #'                          Multiple Cropping Suitability mask selected
-#'                          ("endogenous": suitability for multiple cropping determined
-#'                                    by rules based on grass and crop productivity
-#'                          "exogenous": suitability for multiple cropping given by
-#'                                   GAEZ data set),
-#'                          separated by ":"
-#'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#'                          (mask can be:
+#'                          "none": no mask applied (only for development purposes)
+#'                          "actual:total": currently multicropped areas calculated from total harvested areas
+#'                                          and total physical areas per cell from readLanduseToolbox
+#'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+#'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
+#'                          "potential:endogenous": potentially multicropped areas given
+#'                                                  temperature and productivity limits
+#'                          "potential:exogenous": potentially multicropped areas given
+#'                                                 GAEZ suitability classification)
+#'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param cropmix           Selected cropmix (options:
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
@@ -101,7 +106,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = paste0("potCropland:", protectLand),
-              potentialWat = TRUE, comAg = FALSE,  transDist = transDist,
+              comAg = FALSE,  transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTSUS.mz"))
 
@@ -113,7 +118,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = paste0("currCropland:", protectLand),
-              potentialWat = TRUE, comAg = FALSE,  transDist = transDist,
+              comAg = FALSE,  transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURSUS.mz"))
 
@@ -125,7 +130,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = paste0("currIrrig:", protectLand),
-              potentialWat = TRUE, comAg = FALSE, transDist = transDist,
+              comAg = FALSE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTSUS.mz"))
 
@@ -137,7 +142,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = paste0("potCropland:", protectLand),
-              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
+              comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTSUScomAg.mz"))
 
@@ -149,7 +154,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = paste0("currCropland:", protectLand),
-              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
+              comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURSUScomAg.mz"))
 
@@ -161,7 +166,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = paste0("currIrrig:", protectLand),
-              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
+              comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTSUScomAg.mz"))
 
@@ -174,7 +179,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = "potCropland:NULL",
-              potentialWat = TRUE, comAg = FALSE, transDist = transDist,
+              comAg = FALSE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTUNSUS.mz"))
 
@@ -186,7 +191,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = "currCropland:NULL",
-              potentialWat = TRUE, comAg = FALSE, transDist = transDist,
+              comAg = FALSE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURUNSUS.mz"))
 
@@ -198,7 +203,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = "currIrrig:NULL",
-              potentialWat = TRUE, comAg = FALSE, transDist = transDist,
+              comAg = FALSE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTUNSUS.mz"))
 
@@ -210,7 +215,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = "potCropland:NULL",
-              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
+              comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconPOTUNSUScomAg.mz"))
 
@@ -222,7 +227,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = "currCropland:NULL",
-              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
+              comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconCURUNSUScomAg.mz"))
 
@@ -234,7 +239,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
               allocationrule = allocationrule,
               irrigationsystem = irrigationsystem, cropmix = cropmix,
               landScen = "currIrrig:NULL",
-              potentialWat = TRUE, comAg = TRUE, transDist = transDist,
+              comAg = TRUE, transDist = transDist,
               multicropping = multicropping, aggregate = FALSE,
               file = paste0(o, "EconACTUNSUScomAg.mz"))
 
@@ -424,14 +429,10 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
              aggregate = FALSE,
              file = "nonAguses.mz")
   # Irrigatable areas with committed agricultural uses
-  calcOutput("IrrigAreaPotential", selectyears = selectyears, iniyear = iniyear,
-             lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
-             accessibilityrule = accessibilityrule, rankmethod = rankmethod,
-             yieldcalib = yieldcalib, allocationrule = allocationrule,
-             gainthreshold = gainthreshold,
-             irrigationsystem = irrigationsystem, cropmix = cropmix,
-             landScen = paste0("currIrrig:", "NULL"),
-             potentialWat = FALSE, comAg = TRUE, transDist = transDist,
+  calcOutput("IrrigAreaActuallyCommitted",
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             efrMethod = efrMethod, transDist = transDist,
              multicropping = multicropping, aggregate = FALSE,
              file = "irrigAreaCurrent.mz")
 

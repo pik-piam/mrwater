@@ -57,16 +57,11 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   if (output != "crops:main") {
 
     # Water requirements for multiple cropping case are only calculated for areas
-    # where multiple cropping is possible under the selected scenario
-    suitMC <- collapseNames(calcOutput("MulticroppingYieldIncrease",
-                                       areaMask = areaMask,
-                                       lpjml = lpjml,
-                                       climatetype = climatetype,
-                                       selectyears = selectyears,
+    # where multiple cropping is possible under the selected scenario in case of irrigation
+    suitMC <- collapseNames(calcOutput("MulticroppingCells",
+                                       scenario = areaMask, selectyears = selectyears,
+                                       lpjml = lpjml, climatetype = climatetype,
                                        aggregate = FALSE)[, , "irrigated"])
-    # where positive yield increase: multicropping is possible
-    suitMC[suitMC > 0]  <- 1
-    suitMC[suitMC != 1] <- 0
 
     # Grass ET in the entire year (main + off season) (in m^3/ha)
     grassETannual <- setYears(calcOutput("GrassET", season = "wholeYear",

@@ -18,7 +18,6 @@ calcIrrigAreaPotential(
   irrigationsystem,
   landScen,
   cropmix,
-  potentialWat,
   comAg,
   multicropping,
   transDist
@@ -79,21 +78,23 @@ or do not specify second part of the argument}
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
 
-\item{potentialWat}{If TRUE: potential available water and areas used,
-if FALSE: currently reserved water on current irrigated cropland used}
-
 \item{comAg}{If TRUE: currently already irrigated areas in
          initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
 Multiple Cropping Suitability mask selected
-("endogenous": suitability for multiple cropping determined
-               by rules based on grass and crop productivity
-"exogenous": suitability for multiple cropping given by
-             GAEZ data set),
-separated by ":"
-(e.g. TRUE:endogenous; TRUE:exogenous; FALSE)}
+(mask can be:
+"none": no mask applied (only for development purposes)
+"actual:total": currently multicropped areas calculated from total harvested areas
+                and total physical areas per cell from readLanduseToolbox
+"actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+"actual:irrig_crop" (crop- and irrigation-specific) "total"
+"potential:endogenous": potentially multicropped areas given
+                        temperature and productivity limits
+"potential:exogenous": potentially multicropped areas given
+                       GAEZ suitability classification)
+(e.g. TRUE:actual:total; TRUE:none; FALSE)}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}

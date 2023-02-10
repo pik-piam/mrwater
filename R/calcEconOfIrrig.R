@@ -47,19 +47,22 @@
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
 #'                          or selection of proxycrops)
-#' @param potentialWat      if TRUE: potential available water and areas used,
-#'                          if FALSE: currently reserved water on current irrigated cropland used
 #' @param comAg             if TRUE: the currently already irrigated areas
 #'                                   in initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
 #'                          Multiple Cropping Suitability mask selected
-#'                          ("endogenous": suitability for multiple cropping determined
-#'                                         by rules based on grass and crop productivity
-#'                          "exogenous": suitability for multiple cropping given by
-#'                                       GAEZ data set),
-#'                          separated by ":"
-#'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#'                          (mask can be:
+#'                          "none": no mask applied (only for development purposes)
+#'                          "actual:total": currently multicropped areas calculated from total harvested areas
+#'                                          and total physical areas per cell from readLanduseToolbox
+#'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+#'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
+#'                          "potential:endogenous": potentially multicropped areas given
+#'                                                  temperature and productivity limits
+#'                          "potential:exogenous": potentially multicropped areas given
+#'                                                 GAEZ suitability classification)
+#'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand by surrounding cell water availability
 #'
@@ -81,7 +84,7 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                             lpjml, climatetype, efrMethod, accessibilityrule,
                             rankmethod, yieldcalib, allocationrule,
                             irrigationsystem, landScen, cropmix, transDist,
-                            potentialWat = TRUE, comAg, multicropping) {
+                            comAg, multicropping) {
 
   if (length(selectyears) > 1) {
     stop("Please select one year only for Potential Irrigatable Area Supply Curve")
@@ -89,17 +92,17 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
 
   if (output == "IrrigArea") {
 
-    x <- collapseNames(calcOutput("IrrigAreaPotential", gainthreshold = 0,
+    x <- collapseNames(dimSums(calcOutput("IrrigAreaPotential", gainthreshold = 0,
                                   selectyears = selectyears, iniyear = iniyear,
                                   climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                   rankmethod = rankmethod, yieldcalib = yieldcalib,
                                   allocationrule = allocationrule,
                                   irrigationsystem = irrigationsystem,
-                                  landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
+                                  landScen = landScen, cropmix = cropmix,
                                   comAg = comAg, multicropping = multicropping,
                                   transDist = transDist,
-                                  aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                  aggregate = FALSE)[, , scenario], dim = "crop"))
 
     d <- "Irrigatable Area for different gainthresholds"
     u <- "Mha"
@@ -134,15 +137,15 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
 
     if (output == "IrrigArea") {
 
-      tmp <- collapseNames(calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
+      tmp <- collapseNames(dimSums(calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
                                       selectyears = selectyears, iniyear = iniyear,
                                       lpjml = lpjml, climatetype = climatetype,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                       rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                       irrigationsystem = irrigationsystem,
-                                      landScen = landScen, cropmix = cropmix, potentialWat = potentialWat,
+                                      landScen = landScen, cropmix = cropmix,
                                       comAg = comAg, multicropping = multicropping, transDist = transDist,
-                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
+                                      aggregate = FALSE)[, , scenario], dim = "crop"))
     } else {
 
       tmp <- collapseNames(calcOutput("WaterUsePotential", gainthreshold = gainthreshold,

@@ -10,15 +10,20 @@
 #' @param iniyear       Year of initialization for cropland area
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
-#'                      ("endogenous": suitability for multiple cropping determined
-#'                                    by rules based on grass and crop productivity
-#'                      "exogenous": suitability for multiple cropping given by
-#'                                   GAEZ data set),
-#'                      separated by ":"
-#'                      (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#'                      (mask can be:
+#'                      "none": no mask applied (only for development purposes)
+#'                      "actual:total": currently multicropped areas calculated from total harvested areas
+#'                                      and total physical areas per cell from readLanduseToolbox
+#'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+#'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
+#'                      "potential:endogenous": potentially multicropped areas given
+#'                                              temperature and productivity limits
+#'                      "potential:exogenous": potentially multicropped areas given
+#'                                             GAEZ suitability classification)
+#'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #'
-#' @importFrom magclass collapseNames dimSums getNames mbind getRegions
-#' @importFrom madrat calcOutput toolAggregate
+#' @importFrom stringr str_split
+#' @importFrom madrat calcOutput
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -28,8 +33,15 @@
 #' calcOutput("WaterUseCommittedAg", aggregate = FALSE)
 #' }
 #'
-calcWaterUseCommittedAg <- function(lpjml, climatetype, selectyears, iniyear,
+calcWaterUseCommittedAg <- function(lpjml, climatetype,
+                                    selectyears, iniyear,
                                     multicropping) {
+
+  # multiple cropping as of current multiple cropping pattern
+  multicropping <- as.logical(str_split(multicropping, ":")[[1]][1])
+  if (multicropping) {
+    multicropping <- "TRUE:actual:irrig_crop"
+  }
 
   # Irrigation water requirements per cell per crop given irrigation
   # system initialization (in m^3 per hectare per year)

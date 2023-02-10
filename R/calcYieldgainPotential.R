@@ -49,12 +49,17 @@
 #'                          or selection of proxycrops)
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
 #'                          Multiple Cropping Suitability mask selected
-#'                          ("endogenous": suitability for multiple cropping determined
-#'                                    by rules based on grass and crop productivity
-#'                          "exogenous": suitability for multiple cropping given by
-#'                                   GAEZ data set),
-#'                          separated by ":"
-#'                          (e.g. TRUE:endogenous; TRUE:exogenous; FALSE)
+#'                          (mask can be:
+#'                          "none": no mask applied (only for development purposes)
+#'                          "actual:total": currently multicropped areas calculated from total harvested areas
+#'                                          and total physical areas per cell from readLanduseToolbox
+#'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+#'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
+#'                          "potential:endogenous": potentially multicropped areas given
+#'                                                  temperature and productivity limits
+#'                          "potential:exogenous": potentially multicropped areas given
+#'                                                 GAEZ suitability classification)
+#'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param unlimited         TRUE: no water limitation to potentially irrigated area
 #'                          FALSE: irrigatable area limited by water availability
 #' @param transDist         Water transport distance allowed to fulfill locally
@@ -117,7 +122,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                      accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                      rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                      irrigationsystem = irrigationsystem,
-                                     landScen = landScen, cropmix = cropmix, potential_wat = TRUE,
+                                     landScen = landScen, cropmix = cropmix,
                                      comAg = FALSE, multicropping = multicropping, transDist = transDist,
                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
     d    <- "Potentially Irrigated Area considering land and water constraints"

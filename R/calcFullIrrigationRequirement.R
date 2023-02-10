@@ -26,19 +26,19 @@
 #'                         "hist_irrig" for historical cropmix on currently irrigated area,
 #'                         "hist_total" for historical cropmix on total cropland,
 #'                         or selection of proxycrops)
-#' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
-#'                      Multiple Cropping Suitability mask selected
-#'                      (mask can be:
-#'                      "none": no mask applied (only for development purposes)
-#'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
-#'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
-#'                      "actual:cropIrrig" (crop- and irrigation-specific) "total"
-#'                      "potential:endogenous": potentially multicropped areas given
-#'                                              temperature and productivity limits
-#'                      "potential:exogenous": potentially multicropped areas given
-#'                                             GAEZ suitability classification)
-#'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
+#' @param multicropping    Multicropping activated (TRUE) or not (FALSE) and
+#'                         Multiple Cropping Suitability mask selected
+#'                         (mask can be:
+#'                         "none": no mask applied (only for development purposes)
+#'                         "actual:total": currently multicropped areas calculated from total harvested areas
+#'                                         and total physical areas per cell from readLanduseToolbox
+#'                         "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
+#'                         "actual:irrig_crop" (crop- and irrigation-specific) "total"
+#'                         "potential:endogenous": potentially multicropped areas given
+#'                                                 temperature and productivity limits
+#'                         "potential:exogenous": potentially multicropped areas given
+#'                                                GAEZ suitability classification)
+#'                         (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
 #'                               Options: FALSE (for single cropping analyses) or
