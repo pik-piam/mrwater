@@ -5,7 +5,6 @@
 \title{fullMULTICROPPING}
 \usage{
 fullMULTICROPPING(
-  cropmix = c("maiz", "rapeseed", "puls_pro"),
   yieldcalib = "TRUE:TRUE:actual:irrig_crop",
   allocationrule = "optimization",
   rankmethod = "USD_ha:GLO:TRUE",
@@ -13,11 +12,6 @@ fullMULTICROPPING(
 )
 }
 \arguments{
-\item{cropmix}{Selected cropmix (options:
-"hist_irrig" for historical cropmix on currently irrigated area,
-"hist_total" for historical cropmix on total cropland,
-or selection of proxycrops)}
-
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
         Also needs specification of refYields, separated by ":".
         Options: FALSE (for single cropping analyses) or

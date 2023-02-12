@@ -2,10 +2,6 @@
 #' @description Function that produces output for irrigation potentials
 #'              under multiple cropping on cellular resolution.
 #'
-#' @param cropmix        Selected cropmix (options:
-#'                       "hist_irrig" for historical cropmix on currently irrigated area,
-#'                       "hist_total" for historical cropmix on total cropland,
-#'                       or selection of proxycrops)
 #' @param yieldcalib     If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
 #'                               Options: FALSE (for single cropping analyses) or
@@ -35,8 +31,7 @@
 #'
 #' @export
 
-fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
-                              yieldcalib = "TRUE:TRUE:actual:irrig_crop",
+fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
                               allocationrule = "optimization",
                               rankmethod = "USD_ha:GLO:TRUE",
                               transDist = 100) {
@@ -64,7 +59,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
 
   ### Settings ###
   # share of crop area by crop type (chosen cropmix)
-  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
+  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_irrig",
              aggregate = FALSE, file = "cropareaShr.mz")
 
   ### Current Uses ###
@@ -175,6 +170,15 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              multicropping = "TRUE:potential:endogenous",
              aggregate = FALSE,
              file = "yieldsValued_multiplePOT.mz")
+  # under multiple cropping (actual):
+  calcOutput("YieldsValued",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears,
+             yieldcalib = yieldcalib,
+             priceAgg = unlist(strsplit(rankmethod, split = ":"))[2],
+             multicropping = "TRUE:actual:crop_irrig",
+             aggregate = FALSE,
+             file = "yieldsValued_multipleACT.mz")
 
   # Required water for full irrigation per cell (in mio. m^3)
   # (including already committed agricultural areas,
@@ -184,7 +188,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
               comagyear = NULL, efrMethod = NULL, transDist = NULL,
               lpjml = lpjml, climatetype = climatetype,
               irrigationsystem = irrigationsystem, landScen = "currCropland:NULL",
-              cropmix = cropmix, yieldcalib = yieldcalib,
+              cropmix = "hist_total", yieldcalib = yieldcalib,
               multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
               file = "reqWatFullirrig_multi.mz")
 
@@ -193,7 +197,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
              comagyear = NULL, efrMethod = NULL, transDist = NULL,
              lpjml = lpjml, climatetype = climatetype,
              irrigationsystem = irrigationsystem, landScen = "currCropland:NULL",
-             cropmix = cropmix, yieldcalib = yieldcalib,
+             cropmix = "hist_total", yieldcalib = yieldcalib,
              multicropping = FALSE, aggregate = FALSE,
              file = "reqWatFullirrig_single.mz")
 
@@ -226,7 +230,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
+                 irrigationsystem = irrigationsystem, cropmix = "hist_irrig",
                  landScen = "currIrrig:NULL", comAg = committed,
                  transDist = transDist,
                  multicropping = FALSE, aggregate = FALSE,
@@ -240,7 +244,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
+                 irrigationsystem = irrigationsystem, cropmix = "hist_irrig",
                  landScen = "currIrrig:NULL", comAg = committed,
                  transDist = transDist,
                  multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
@@ -256,7 +260,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
+                 irrigationsystem = irrigationsystem, cropmix = "hist_total",
                  landScen = "currCropland:NULL", comAg = committed,
                  transDist = transDist,
                  multicropping = FALSE, aggregate = FALSE,
@@ -270,7 +274,7 @@ fullMULTICROPPING <- function(cropmix = c("maiz", "rapeseed", "puls_pro"),
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
+                 irrigationsystem = irrigationsystem, cropmix = "hist_total",
                  landScen = "currCropland:NULL", comAg = committed,
                  transDist = transDist,
                  multicropping = "TRUE:potential:endogenous", aggregate = FALSE,

@@ -192,7 +192,7 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
   return(list(x            = out,
               weight       = NULL,
               unit         = "Mha",
-              description  = "Area that can be irrigated
+              description  = "Crop-specific area that can be irrigated
                               given land and water constraints",
               isocountries = FALSE))
 }

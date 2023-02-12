@@ -22,10 +22,13 @@
 
 calcCropAreaShare <- function(iniyear, cropmix) {
 
-  # read in relevant physical croparea: total (irrigated + rainfed) or
-  # irrigated depending on chosen cropmix
+  # read physical croparea
   croparea <- calcOutput("CropareaAdjusted", iniyear = iniyear,
                           aggregate = FALSE)
+
+  # total croparea (irrigated + rainfed)
+  totCroparea <- dimSums(croparea, dim = "irrigation")
+  totalcropShr <- totCroparea / dimSums(totCroparea, dim = "crop")
 
   # share of crop area by crop type
   if (length(cropmix) == 1 && grepl("hist", cropmix)) {
@@ -33,20 +36,21 @@ calcCropAreaShare <- function(iniyear, cropmix) {
     if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "irrig") {
 
       # irrigated croparea
-      croparea <- collapseNames(croparea[, , "irrigated"])
+      irrigArea    <- collapseNames(croparea[, , "irrigated"])
+      irrigcropShr <- irrigArea / dimSums(irrigArea, dim = 3)
+
+      cropareaShr <- irrigcropShr
+      cropareaShr[is.na(cropareaShr)] <- totalcropShr[is.na(cropareaShr)]
 
     } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "total") {
 
-      # total croparea (irrigated + rainfed)
-      croparea <- dimSums(croparea, dim = "irrigation")
+      # historical share of crop types in cropland per cell
+      cropareaShr <- totalcropShr
 
     } else {
       stop("Please select hist_irrig or hist_total when
            selecting historical cropmix")
     }
-
-    # historical share of crop types in cropland per cell
-    cropareaShr <- croparea / dimSums(croparea, dim = "crop")
 
     # correct NAs: where no current cropland available,
     # representative crops (maize, rapeseed, pulses) assumed as proxy

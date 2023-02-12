@@ -12,7 +12,6 @@
 #' @importFrom madrat calcOutput
 #' @importFrom mrcommons toolLPJmLVersion
 #' @importFrom stats quantile
-#' @importFrom stringr str_split
 #'
 #' @return magpie object in cellular resolution representing share of discharge
 #'         that is reserved for environmental flows
@@ -71,25 +70,29 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
     }
 
     # HFR: high flow requirements dependent on Q90
-    hfr_q90_less10 <- 0.2    # for Q90 < 10percent of total water
-    hfr_q90_10_20  <- 0.15   # for 10percent < Q90 < 20percent of total water
-    hfr_q90_20_30  <- 0.07   # for 20percent < Q90 < 30percent of total water
-    hfr_q90_more30 <- 0.00   # for Q90 > 30percent of total water
+    hfrQ90less10 <- 0.2    # for Q90 < 10percent of total water
+    hfrQ90p10p20 <- 0.15   # for 10percent < Q90 < 20percent of total water
+    hfrQ90p20p30 <- 0.07   # for 20percent < Q90 < 30percent of total water
+    hfrQ90more30 <- 0.00   # for Q90 > 30percent of total water
 
     ### Calculate LFRs
     ## Note: LFRs correspond to the Q90/Q75/Q50-value (depending on EFR conservation status)
     ## This is calculated via the 10%/25%/50%-quantile of monthly discharge.
     # Get the monthly valueLFR quantile for all cells (across selected long-term reference time period)
-    quantileLFR <- apply(monthlyDischarge, MARGIN = c(1), quantile, probs = valueLFR)
+    quantileLFR <- apply(monthlyDischarge, MARGIN = c(1),
+                         quantile, probs = valueLFR)
     # Yearly LFRs
     lfr       <- quantileLFR * 12
     # LFR-Share: LFR as fraction of mean annual discharge
-    lfr       <- as.magpie(ifelse(meanAnnualDischarge > 0, lfr / meanAnnualDischarge, 0),
+    lfr       <- as.magpie(ifelse(meanAnnualDischarge > 0,
+                                    lfr / meanAnnualDischarge,
+                                  0),
                            spatial = 1)
 
     ### Calculate HFR-Share
     # Yearly Q90
-    q90       <- as.magpie(apply(monthlyDischarge, MARGIN = c(1), quantile, probs = 0.1) * 12,
+    q90       <- as.magpie(apply(monthlyDischarge, MARGIN = c(1),
+                                 quantile, probs = 0.1) * 12,
                            spatial = 1)
 
     meanAnnualDischarge <- as.magpie(meanAnnualDischarge, spatial = 1)
@@ -101,11 +104,11 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
     ## regime receive a lower HFR." (Bonsch et al. 2015)
     hfr       <- lfr
     hfr[, , ] <- NA
-    hfr[q90 < 0.1 * meanAnnualDischarge]  <- hfr_q90_less10
-    hfr[q90 >= 0.1 * meanAnnualDischarge] <- hfr_q90_10_20
-    hfr[q90 >= 0.2 * meanAnnualDischarge] <- hfr_q90_20_30
-    hfr[q90 >= 0.3 * meanAnnualDischarge] <- hfr_q90_more30
-    hfr[meanAnnualDischarge <= 0]         <- hfr_q90_less10
+    hfr[q90 < 0.1 * meanAnnualDischarge]  <- hfrQ90less10
+    hfr[q90 >= 0.1 * meanAnnualDischarge] <- hfrQ90p10p20
+    hfr[q90 >= 0.2 * meanAnnualDischarge] <- hfrQ90p20p30
+    hfr[q90 >= 0.3 * meanAnnualDischarge] <- hfrQ90more30
+    hfr[meanAnnualDischarge <= 0]         <- hfrQ90less10
 
     # Naming of dimensions
     lfr <- add_dimension(lfr, dim = 3.1, add = "EFR", nm = "LFR")
@@ -173,7 +176,7 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
   }
 
   # Check range of object
-  if (any(range(out) > 1) | any(range(out) < 0)) {
+  if (any(range(out) > 1) || any(range(out) < 0)) {
     stop("EFR, LFR or HFR share is not between 0 and 1")
   }
 

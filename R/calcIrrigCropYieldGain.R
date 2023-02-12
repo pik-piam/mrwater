@@ -54,9 +54,38 @@ calcIrrigCropYieldGain <- function(lpjml, climatetype, priceAgg,
                           multicropping = multicropping,
                           aggregate = FALSE)
 
+  # Extract multicropping argument
+  areaMask      <- paste(str_split(multicropping, ":")[[1]][2],
+                         str_split(multicropping, ":")[[1]][3], sep = ":")
+
+  # reference rainfed yield
+  if (areaMask == "actual:crop_irrig") {
+
+    # Special case where there might be rainfed potential when there is no irrigated potential
+    # Therefore, use potential:endogenous mask for rainfed yields
+    refYields   <- calcOutput("YieldsValued",
+                           lpjml = lpjml, climatetype = climatetype,
+                           iniyear = iniyear, selectyears = selectyears,
+                           yieldcalib = yieldcalib,
+                           priceAgg = priceAgg,
+                           multicropping = "TRUE:potential:endogenous",
+                           aggregate = FALSE)
+  } else {
+
+    # For other cases, same reference can be used because there is always irrigated potential,
+    # when there is rainfed potential
+    refYields   <- calcOutput("YieldsValued",
+                           lpjml = lpjml, climatetype = climatetype,
+                           iniyear = iniyear, selectyears = selectyears,
+                           yieldcalib = yieldcalib,
+                           priceAgg = priceAgg,
+                           multicropping = multicropping,
+                           aggregate = FALSE)
+  }
+
   # calculate yield gain per crop
   yieldGain <- (collapseNames(yields[, , "irrigated"]) -
-                  collapseNames(yields[, , "rainfed"]))
+                  collapseNames(refYields[, , "rainfed"]))
 
   # Check for NAs
   if (any(is.na(yieldGain))) {
