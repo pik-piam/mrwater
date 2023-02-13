@@ -28,7 +28,8 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
   # Long-term reference time frame for EFR calculation:
   refYears <- c(1985:2015)
 
-  cfg <- toolLPJmLVersion(version = version, climatetype = climatetype)
+  cfg <- toolLPJmLVersion(version = lpjml[["natveg"]],
+                          climatetype = climatetype)
 
   # retrieve ecosystem preservation status:
   preservationstatus <- strsplit(efrMethod, ":")[[1]][2]

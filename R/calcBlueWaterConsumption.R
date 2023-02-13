@@ -40,14 +40,23 @@
 calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
                                      fallowFactor = 0.75, areaMask,
                                      output) {
-
   ####################
   ### Read in data ###
   ####################
+
+  # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
+  if (grepl("historical", climatetype)) {
+    # Baseline is only smoothed (not harmonized)
+    stage <- "smoothed"
+  } else {
+    # Climate scenarios are harmonized to baseline
+    stage <- "harmonized2020"
+  }
+
   # Crop blue water consumption in growing period (main season)
   bwc1st <- collapseNames(setYears(calcOutput("LPJmL_new", subtype = "cwater_b",
                                               version = lpjml[["crop"]], climatetype = climatetype,
-                                              stage = "smoothed", years = selectyears,
+                                              stage = stage, years = selectyears,
                                               aggregate = FALSE),
                                    selectyears)[, , "irrigated"])
   getSets(bwc1st)["d3.1"] <- "crop"
@@ -55,7 +64,6 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   bwc1st <- bwc1st[, , "others", invert = TRUE]
 
   if (output != "crops:main") {
-
     # Water requirements for multiple cropping case are only calculated for areas
     # where multiple cropping is possible under the selected scenario in case of irrigation
     suitMC <- collapseNames(calcOutput("MulticroppingCells",
@@ -133,7 +141,6 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   unit        <- " m^3/ha per year"
 
   if (output == "crops:main") {
-
     # main season BWC for crops (single cropping case)
     out         <- bwc1st
     description <- paste0(description, " crops in LPJmL growing period")
@@ -144,7 +151,6 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     description <- paste0(description, " grass in LPJmL growing period of crops")
 
   } else if (output == "crops:year") {
-
     # whole year BWC for crops (multiple cropping case)
     out         <- bwcTotal
     description <- paste0(description, " crops throughout the entire year")

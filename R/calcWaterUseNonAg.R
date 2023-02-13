@@ -40,12 +40,11 @@
 calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "magpiecell",
                               datasource = "WATCH_ISIMIP_WATERGAP", usetype = "all",
                               seasonality = "grper", harmonType = "average",
-                              lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb"),
+                              lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
+                                        crop = "ggcmi_phase3_nchecks_9ca735cb"),
                               climatetype = "GSWP3-W5E5:historical") {
-
-  sizelimit <- getOption("magclass_sizeLimit")
-  options(magclass_sizeLimit = 1e+12)
-  on.exit(options(magclass_sizeLimit = sizelimit))
+  # Set up size limit
+  local_options(magclass_sizeLimit = 1e+12)
 
   # Extract arguments
   waterusetype    <- strsplit(usetype, split = ":")[[1]][1]
@@ -55,24 +54,27 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
   map         <- toolGetMappingCoord2Country()
   selectcells <- map$coords
 
-  ### Old Non-Agricultural Waterdemand data (current default, will be deleted soon): ###
+  ### Old Non-Agricultural Waterdemand data (old default): ###
   if (datasource == "WATCH_ISIMIP_WATERGAP") {
-
     # Read in nonagricultural water demand:
     watdemNonAg <- readSource("WATERGAP", convert = "onlycorrect", subtype = datasource)
     # iso cell names
     watdemNonAg <- toolCell2isoCell(watdemNonAg)
     getSets(watdemNonAg) <- c("iso", "cell", "year", "scenario", "use")
     # Add year 2100
-    watdemNonAg <- toolFillYears(watdemNonAg, seq(getYears(watdemNonAg, as.integer = TRUE)[1], 2100, by = 5))
+    watdemNonAg <- toolFillYears(watdemNonAg,
+                                 seq(getYears(watdemNonAg, as.integer = TRUE)[1], 2100, by = 5))
 
   } else if (datasource == "ISIMIP") {
-
     # ISIMIP non-agricultural water use data (multi-model mean from H08, WaterGAP and PCR-GLOBWB)
     # Since this data is only available until 2050, the values should are kept constant from 2050 onwards.
     # Industry in ISIMIP includes both electricity & domestic
-    watdemISIMIPhist   <- readSource("ISIMIPinputs", subtype = "ISIMIP3b:water:histsoc.waterabstraction", convert = "onlycorrect")
-    watdemISIMIPfuture <- readSource("ISIMIPinputs", subtype = "ISIMIP3b:water:2015soc.waterabstraction", convert = "onlycorrect")
+    watdemISIMIPhist   <- readSource("ISIMIPinputs",
+                                     subtype = "ISIMIP3b:water:histsoc.waterabstraction",
+                                     convert = "onlycorrect")
+    watdemISIMIPfuture <- readSource("ISIMIPinputs",
+                                     subtype = "ISIMIP3b:water:2015soc.waterabstraction",
+                                     convert = "onlycorrect")
 
     # Subset data to 67420 cells
     watdemISIMIPhist   <- watdemISIMIPhist[selectcells, , ]
@@ -86,9 +88,9 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
     yearsHist <- getYears(watdemISIMIPhist)
 
     # Time smoothing
-    if (harmonType == "average" | harmonType == "spline") {
+    if (harmonType == "average" || harmonType == "spline") {
       watdemISIMIP   <- toolSmooth(watdemISIMIP, method = harmonType)
-    } else if (is.null(harmonType) | harmonType == "raw") {
+    } else if (is.null(harmonType) || harmonType == "raw") {
       watdemISIMIP   <- watdemISIMIP
     } else {
       stop("Please select time smoothing method (spline or average)
@@ -99,15 +101,14 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
     watdemNonAg <- watdemISIMIP[, setdiff(getYears(watdemISIMIP), paste0("y", c(1901:1964))), ]
 
   } else if (datasource == "WATERGAP2020") {
-
     # Read in WATERGAP non-agricultural water abstractions:
     watdemWATERGAP <- readSource("WATERGAP", subtype = "WATERGAP2020", convert = "onlycorrect")
     # Default cell order
     watdemNonAg    <- watdemWATERGAP[selectcells, , ]
 
-    if (harmonType == "average" | harmonType == "spline") {
+    if (harmonType == "average" || harmonType == "spline") {
       watdemNonAg   <- toolSmooth(watdemNonAg, method = harmonType)
-    } else if (is.null(harmonType) | harmonType == "raw") {
+    } else if (is.null(harmonType) || harmonType == "raw") {
       watdemNonAg   <- watdemNonAg
     } else {
       stop("Please select time smoothing method (spline or average)
@@ -116,7 +117,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
 
   } else if (datasource == "WATERGAP_ISIMIP") {
 
-    if (harmonType == "average" | harmonType == "spline") {
+    if (harmonType == "average" || harmonType == "spline") {
       # Read in ISIMIP non-agricultural water abstractions:
       watdemISIMIP   <- calcOutput("WaterUseNonAg", datasource = "ISIMIP", cells = "lpjcell",
                                    selectyears = "all", seasonality = "total", usetype = "all:all",
@@ -138,8 +139,10 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
     baseyear        <- "y2010"
     yearsHarmonized <- paste0("y", seq(2010, 2020))
     yearsWATERGAP   <- getYears(watdemWATERGAP)
+    yISIMIP         <- as.numeric(gsub("y", "", getYears(watdemISIMIP)))
+    yBase           <- as.numeric(gsub("y", "", baseyear))
     yearsHist       <- setdiff(getYears(watdemISIMIP),
-                               getYears(watdemISIMIP)[as.numeric(gsub("y", "", getYears(watdemISIMIP))) > as.numeric(gsub("y", "", baseyear))])
+                               getYears(watdemISIMIP)[yISIMIP > yBase])
 
     # Note: ISIMIP industry data = manufacturing + electricity
     # Store WATERGAP share of manufacturing and electricity of industry
@@ -164,7 +167,6 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
     listMAgPIE <- vector(mode = "list", length = length(scenarios))
     i          <- 0
     for (scenario in scenarios) {
-
       # WATERGAP data
       tmpWATERGAP[, , "industry"] <- watdemIndustry[, , scenario]
       tmpWATERGAP[, , "domestic"] <- collapseNames(watdemWATERGAP[, , "domestic"][, , scenario])
@@ -178,8 +180,10 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
       # Store harmonized data in final object
       tmp <- vector(mode = "list", length = 3)
       tmp[[1]] <- harmonizedWATERGAP[, yearsWATERGAP, "domestic"]
-      tmp[[2]] <- shrManufacturing[, yearsWATERGAP, scenario] * collapseNames(harmonizedWATERGAP[, yearsWATERGAP, "industry"])
-      tmp[[3]] <- shrElectricity[, yearsWATERGAP, scenario] * collapseNames(harmonizedWATERGAP[, yearsWATERGAP, "industry"])
+      tmp[[2]] <- shrManufacturing[, yearsWATERGAP, scenario] *
+                    collapseNames(harmonizedWATERGAP[, yearsWATERGAP, "industry"])
+      tmp[[3]] <- shrElectricity[, yearsWATERGAP, scenario] *
+                    collapseNames(harmonizedWATERGAP[, yearsWATERGAP, "industry"])
 
       # Store MAgPIE objects in list
       i <- i + 1
@@ -192,15 +196,20 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
     rm(listMAgPIE, tmp, tmpWATERGAP, harmonizedWATERGAP, watdemIndustry)
 
     # Harmonize future to last year of common scenario time frame
-    yearsFUTURE <- yearsWATERGAP[as.numeric(gsub("y", "", yearsWATERGAP)) >= as.numeric(gsub("y", "", yearsHarmonized[length(yearsHarmonized)]))]
+    yWATERGAP   <- as.numeric(gsub("y", "", yearsWATERGAP))
+    yHarmonized <- as.numeric(gsub("y", "", yearsHarmonized[length(yearsHarmonized)]))
+    yearsFUTURE <- yearsWATERGAP[yWATERGAP >= yHarmonized]
 
     tmp <- vector(mode = "list", length = 3)
-    i <- 0
+    i   <- 0
     for (scenario in scenarios) {
 
       i <- i + 1
-      tmp[[i]] <- toolHarmonize2Baseline(x = collapseNames(watdemWATERGAP[, yearsFUTURE, scenario]), base = collapseNames(watdemWATERGAP[, yearsFUTURE, "ssp2"]),
-                                         ref_year = yearsHarmonized[length(yearsHarmonized)], method = "additive", hard_cut = FALSE)
+      tmp[[i]] <- toolHarmonize2Baseline(x = collapseNames(watdemWATERGAP[, yearsFUTURE, scenario]),
+                                         base = collapseNames(watdemWATERGAP[, yearsFUTURE, "ssp2"]),
+                                         ref_year = yearsHarmonized[length(yearsHarmonized)],
+                                         method = "additive",
+                                         hard_cut = FALSE)
       getNames(tmp[[i]]) <- paste(scenario, getNames(tmp[[i]]), sep = ".")
       getSets(tmp[[i]])  <- c("x", "y", "iso", "year", "scenario", "use", "type")
 
@@ -230,32 +239,44 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
       }
     }
 
-    # historical data provided by ISIMIP (splitting of manufacturing and electricity share based on WATERGAP SSP2 baseyear share)
+    # historical data provided by ISIMIP (splitting of manufacturing and
+    # electricity share based on WATERGAP SSP2 baseyear share)
     tmp                <- vector(mode = "list", length = 3)
     tmp[[1]]           <- watdemISIMIP[, yearsHist, "domestic"]
-    tmp[[2]]           <- collapseNames(watdemISIMIP[, yearsHist, "industry"]) * collapseNames(setYears(shrManufacturing[, baseyear, "ssp2"], NULL))
+    tmp[[2]]           <- collapseNames(watdemISIMIP[, yearsHist, "industry"]) *
+                            collapseNames(setYears(shrManufacturing[, baseyear, "ssp2"], NULL))
     getNames(tmp[[2]]) <- paste("manufacturing", getNames(tmp[[2]]), sep = ".")
-    tmp[[3]]           <- collapseNames(watdemISIMIP[, yearsHist, "industry"]) * collapseNames(setYears(shrElectricity[, baseyear, "ssp2"], NULL))
+    tmp[[3]]           <- collapseNames(watdemISIMIP[, yearsHist, "industry"]) *
+                            collapseNames(setYears(shrElectricity[, baseyear, "ssp2"], NULL))
     getNames(tmp[[3]]) <- paste("electricity", getNames(tmp[[3]]), sep = ".")
 
     watdemNonAg <- mbind(tmp)
 
-    # scenario ISIMIP data (split up by water use with WATERGAP scenario manufacturing and electricity shares)
+    # scenario ISIMIP data (split up by water use with WATERGAP scenario manufacturing and
+    # electricity shares)
     tmp                <- vector(mode = "list", length = 3)
     tmp[[1]]           <- watdemISIMIP[, yearsWATERGAP, "domestic"]
-    tmp[[2]]           <- collapseNames(watdemISIMIP[, yearsWATERGAP, "industry"]) * collapseNames(shrManufacturing[, yearsWATERGAP, "ssp2"])
+    tmp[[2]]           <- collapseNames(watdemISIMIP[, yearsWATERGAP, "industry"]) *
+                           collapseNames(shrManufacturing[, yearsWATERGAP, "ssp2"])
     getNames(tmp[[2]]) <- paste("manufacturing", getNames(tmp[[2]]), sep = ".")
-    tmp[[3]]           <- collapseNames(watdemISIMIP[, yearsWATERGAP, "industry"]) * collapseNames(shrElectricity[, yearsWATERGAP, "ssp2"])
+    tmp[[3]]           <- collapseNames(watdemISIMIP[, yearsWATERGAP, "industry"]) *
+                           collapseNames(shrElectricity[, yearsWATERGAP, "ssp2"])
     getNames(tmp[[3]]) <- paste("electricity", getNames(tmp[[3]]), sep = ".")
 
     tmp         <- mbind(tmp)
-    watdemNonAg <- mbind(watdemNonAg, tmp[, setdiff(getYears(tmp), getYears(watdemNonAg)), ])
+    yearsNoOverlap <- setdiff(getYears(tmp), getYears(watdemNonAg))
+    if (!identical(yearsNoOverlap, character(0))) {
+      watdemNonAg <- mbind(watdemNonAg, tmp[, setdiff(getYears(tmp), getYears(watdemNonAg)), ])
+    }
     watdemNonAg <- add_dimension(watdemNonAg, dim = 3.1, add = "scenario", nm = "ISIMIP")
     rm(watdemISIMIP)
 
     if (length(yearsHist) != 0) {
       # historical data provided by ISIMIP (same for all scenarios)
-      watdemWATERGAP <- add_columns(watdemWATERGAP, dim = 2, addnm = setdiff(yearsHist, yearsWATERGAP), fill = NA)
+      watdemWATERGAP <- add_columns(watdemWATERGAP,
+                                    dim = 2,
+                                    addnm = setdiff(yearsHist, yearsWATERGAP),
+                                    fill = NA)
       watdemWATERGAP <- watdemWATERGAP[, sort(as.numeric(gsub("y", "", getYears(watdemWATERGAP)))), ]
 
       watdemWATERGAP[, yearsHist, ] <- collapseNames(watdemNonAg[, yearsHist, ])
@@ -273,7 +294,6 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
   ###########################################
 
   if (datasource != "WATCH_ISIMIP_WATERGAP") {
-
     # Correct mismatches of withdrawal and consumption (withdrawals > consumption)
     watdemNonAg[, , "withdrawal"]  <- pmax(watdemNonAg[, , "withdrawal"], watdemNonAg[, , "consumption"])
     watdemNonAg[, , "consumption"] <- pmax(watdemNonAg[, , "consumption"], 0.01 * watdemNonAg[, , "withdrawal"])
@@ -284,7 +304,6 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
       watdemNonAg <- toolCoord2Isocell(watdemNonAg)
 
     } else if (cells == "lpjcell") {
-
       # Correct cell naming
       getCells(watdemNonAg)                    <- paste(map$coords, map$iso, sep = ".")
       getSets(watdemNonAg, fulldim = FALSE)[1] <- "x.y.iso"
@@ -318,7 +337,6 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
     description <- "Non-agricultural water demand (manufacturing, electricity, domestic) in growing period"
 
   } else if (seasonality == "total") {
-
     ### Total non-agricultural water demands per year
     out         <- watdemNonAg
     description <- "Total non-agricultural water demand (manufacturing, electricity, domestic)"
@@ -333,7 +351,8 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
   }
 
   # Report withdrawal or consumption only
-  if (!is.na(abstractiontype) && (grepl(abstractiontype, "consumption") | grepl(abstractiontype, "withdrawal"))) {
+  if (!is.na(abstractiontype) &&
+      (grepl(abstractiontype, "consumption") || grepl(abstractiontype, "withdrawal"))) {
     out <- collapseNames(out[, , abstractiontype])
   }
 
