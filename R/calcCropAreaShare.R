@@ -27,7 +27,7 @@ calcCropAreaShare <- function(iniyear, cropmix) {
                           aggregate = FALSE)
 
   # total croparea (irrigated + rainfed)
-  totCroparea <- dimSums(croparea, dim = "irrigation")
+  totCroparea  <- dimSums(croparea, dim = "irrigation")
   totalcropShr <- totCroparea / dimSums(totCroparea, dim = "crop")
 
   # share of crop area by crop type
@@ -54,8 +54,8 @@ calcCropAreaShare <- function(iniyear, cropmix) {
 
     # correct NAs: where no current cropland available,
     # representative crops (maize, rapeseed, pulses) assumed as proxy
-    proxyCrops  <- c("maiz", "rapeseed", "puls_pro")
-    otherCrops  <- setdiff(getNames(croparea), proxyCrops)
+    proxyCrops <- c("maiz", "rapeseed", "puls_pro")
+    otherCrops <- setdiff(getNames(cropareaShr), proxyCrops)
     cropareaShr[, , proxyCrops][dimSums(croparea, dim = 3) == 0] <- 1 / length(proxyCrops)
     cropareaShr[, , otherCrops][dimSums(croparea, dim = 3) == 0] <- 0
 

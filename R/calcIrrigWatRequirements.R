@@ -64,7 +64,8 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
   } else {
 
     # Read in main-season blue water consumption for irrigated crops (in m^3 per ha per yr):
-    # (Note: areaMask argument not relevant here, but needs to be set) ToDo: as soon as code review complete, set default
+    # (Note: areaMask argument not relevant here, but needs to be set)
+    # ToDo: as soon as code review complete, set default in calcBlueWaterConsumption
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
                       areaMask = "potential:endogenous",
                       lpjml = lpjml, climatetype = climatetype,
@@ -79,11 +80,11 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
   ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
   #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
   ### Alternatively: use regional efficiencies from Sauer et al. (2010), Table 5,
-  fieldEff                  <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
-                                                      years = years,
-                                                      names = cropnames,
-                                                      sets = c("x.y.iso", "year", "crop")),
-                                           dim = 3.1, add = "system", nm = systemnames)
+  fieldEff <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
+                                       years = years,
+                                       names = cropnames,
+                                       sets = c("x.y.iso", "year", "crop")),
+                            dim = 3.1, add = "system", nm = systemnames)
   fieldEff[, , "drip"]      <- 0.88 # Sauer: 0.8-0.93
   fieldEff[, , "sprinkler"] <- 0.78 # Sauer: 0.6-0.86
   fieldEff[, , "surface"]   <- 0.52 # Sauer: 0.25-0.5
@@ -91,11 +92,11 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
 
   ### Conveyance efficiency proxy [placeholder]
   #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-  convEff                  <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
-                                                     years = years,
-                                                     names = cropnames,
-                                                     sets = c("x.y.iso", "year", "crop")),
-                                          dim = 3.1, add = "system", nm = systemnames)
+  convEff <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
+                                      years = years,
+                                      names = cropnames,
+                                      sets = c("x.y.iso", "year", "crop")),
+                          dim = 3.1, add = "system", nm = systemnames)
   convEff[, , "drip"]      <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
   convEff[, , "sprinkler"] <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
   convEff[, , "surface"]   <- 0.7
