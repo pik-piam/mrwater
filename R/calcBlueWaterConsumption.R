@@ -40,9 +40,6 @@
 calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
                                      fallowFactor = 0.75, areaMask,
                                      output) {
-  ####################
-  ### Read in data ###
-  ####################
 
   # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
   if (grepl("historical", climatetype)) {
@@ -53,6 +50,9 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     stage <- "harmonized2020"
   }
 
+  ####################
+  ### Read in data ###
+  ####################
   # Crop blue water consumption in growing period (main season)
   bwc1st <- collapseNames(setYears(calcOutput("LPJmL_new", subtype = "cwater_b",
                                               version = lpjml[["crop"]], climatetype = climatetype,
@@ -64,13 +64,31 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   bwc1st <- bwc1st[, , "others", invert = TRUE]
 
   if (output != "crops:main") {
+
+    # Grass ET in the entire year (main + off season) (in m^3/ha)
+    grassETannual <- setYears(calcOutput("GrassET", season = "wholeYear",
+                                         lpjml = lpjml, climatetype = climatetype,
+                                         selectyears = selectyears,
+                                         aggregate = FALSE),
+                              selectyears)
+
+    # Grass ET in the growing period of LPJmL by crop (main season) (in m^3/ha)
+    grassETgrper  <- setYears(calcOutput("GrassET", season = "mainSeason",
+                                         lpjml = lpjml, climatetype = climatetype,
+                                         selectyears = selectyears,
+                                         aggregate = FALSE),
+                              selectyears)
+
+    # Extract croplist and order
+    crops <- getItems(grassETannual, dim = "crop")
+
     # Water requirements for multiple cropping case are only calculated for areas
     # where multiple cropping is possible in case of irrigation
     suitMC <- collapseNames(calcOutput("MulticroppingCells",
                                        scenario = "potential:endogenous",
                                        selectyears = selectyears,
                                        lpjml = lpjml, climatetype = climatetype,
-                                       aggregate = FALSE)[, , "irrigated"])
+                                       aggregate = FALSE)[, , "irrigated"][, , crops])
 
     # Special case: current multicropping according to Toolbox
     if (grepl(pattern = "actual", x = areaMask)) {
@@ -79,37 +97,14 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
                                      scenario = strsplit(areaMask, split = ":")[[1]][2],
                                      selectyears = selectyears,
                                      lpjml = lpjml, climatetype = climatetype,
-                                     aggregate = FALSE)[, , "irrigated"])
+                                     aggregate = FALSE)[, , "irrigated"][, , crops])
       # Share of area that is multicropped
-      shrMC <- ci - 1
+      shrMC <- (ci - 1)
     } else {
       # For potential case, the whole area is fully multicropped
       shrMC       <- suitMC
       shrMC[, , ] <- 1
     }
-
-    # Grass ET in the entire year (main + off season) (in m^3/ha)
-    grassETannual <- setYears(calcOutput("GrassET", season = "wholeYear",
-                                         lpjml = lpjml, climatetype = climatetype,
-                                         selectyears = selectyears, aggregate = FALSE),
-                              selectyears)
-
-    # Grass ET in the growing period of LPJmL (main season) (in m^3/ha)
-    grassETgrper  <- setYears(calcOutput("GrassET", season = "mainSeason",
-                                         lpjml = lpjml, climatetype = climatetype,
-                                         selectyears = selectyears, aggregate = FALSE),
-                              selectyears)
-
-    # Add missing crops (betr, begr, mgrass) [Note: perennials]
-    missingCrops <- new.magpie(cells_and_regions = getItems(suitMC, dim = 1),
-                               years = getItems(suitMC, dim = 2),
-                               names = c("betr.irrigated", "betr.rainfed",
-                                         "begr.irrigated", "begr.rainfed",
-                                         "mgrass.irrigated", "mgrass.rainfed"),
-                               fill = 0)
-    getSets(missingCrops) <- getSets(grassETannual)
-    grassETannual         <- mbind(grassETannual, missingCrops)
-    grassETgrper          <- mbind(grassETgrper, missingCrops)
 
     ####################
     ### Calculations ###
@@ -117,12 +112,14 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # Delta ET (irrigated ET - rainfed ET) as proxy for blue water consumption (BWC)
     # of grass throughout the whole year
     annualBWCgrass <- collapseNames(grassETannual[, , "irrigated"]) -
-      collapseNames(grassETannual[, , "rainfed"])
+                        collapseNames(grassETannual[, , "rainfed"])
+      # JENS: This is negative for a few cells. (Also for where multiple cropping is suitable). Does that make sense? Just set to 0?
 
     # Delta ET (irrigated ET - rainfed ET) as proxy for BWC
     # of grass in growing period
     grperBWCgrass <- collapseNames(grassETgrper[, , "irrigated"]) -
-      collapseNames(grassETgrper[, , "rainfed"])
+                        collapseNames(grassETgrper[, , "rainfed"])
+      # JENS: This is negative for a few cells. Does that make sense? Just set to 0?
 
     # Off season grass BWC
     grassBWC2nd <- (annualBWCgrass - grperBWCgrass)
@@ -142,14 +139,34 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
     # Relationship between derived grass BWC in growing period of crop and crop BWC
     # (Linear model with intercept at 0)
-    coeff <- lm(y ~ x + 0, data = data.frame(y = as.vector(bwc1st),
-                                             x = as.vector(grperBWCgrass)))$coefficients[1]
+    coeff <- new.magpie(cells_and_regions = getItems(grassBWC2nd, dim = 1),
+                        years = getItems(grassBWC2nd, dim = 2),
+                        names = crops,
+                        fill = NA)
+    for (y in selectyears) {
+      for (i in crops) {
+        tmp <- lm(y ~ x + 0, data = data.frame(y = as.vector(bwc1st[, y, i]),
+                                              x = as.vector(grperBWCgrass[, y, i])
+                          ))$coefficients[1]
+        coeff[, y, i] <- tmp
+      }
+    }
+    # JENS: Is the linear model correct? Fitting bwc1st with grass BWC of growing period? (For each crop, right?)
+    # and also for every year separately
 
     # crop blue water consumption in off season
-    bwc2nd   <- coeff * grassBWC2nd
-    bwcTotal <- bwc1st + bwc2nd * shrMC
+    bwc2nd   <- grassBWC2nd * coeff
+    bwcTotal <- bwc1st[, , crops] + bwc2nd * shrMC
+
+    # Missing crops (betr, begr, mgrass) are perennials
+    # and therefore main season BWC is total year BWC
+    missingCrops <- bwc1st[, , setdiff(getItems(bwc1st, dim = 3), crops)]
+    bwcTotal <- mbind(bwcTotal, missingCrops)
 
   }
+
+  # Extract croplist and order
+  crops <- getItems(bwc1st, dim = "crop")
 
   ##############
   ### Return ###
@@ -159,7 +176,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
   if (output == "crops:main") {
     # main season BWC for crops (single cropping case)
-    out         <- bwc1st
+    out         <- bwc1st[, , crops]
     description <- paste0(description, " crops in LPJmL growing period")
 
   } else if (output == "grass:main") {
@@ -169,15 +186,13 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
   } else if (output == "crops:year") {
     # whole year BWC for crops (multiple cropping case)
-    out         <- bwcTotal
+    out         <- bwcTotal[, , crops]
     description <- paste0(description, " crops throughout the entire year")
-
 
   } else if (output == "grass:year") {
 
     out         <- annualBWCgrass
     description <- paste0(description, " grass throughout the entire year")
-
 
   } else {
     stop("Please select valid output type for calcBlueWaterConsumption:

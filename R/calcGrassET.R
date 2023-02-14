@@ -24,10 +24,6 @@
 
 calcGrassET <- function(selectyears, lpjml, climatetype, season) {
 
-  ####################
-  ### Read in data ###
-  ####################
-
   # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
   if (grepl("historical", climatetype)) {
     # Baseline is only smoothed (not harmonized)
@@ -37,13 +33,16 @@ calcGrassET <- function(selectyears, lpjml, climatetype, season) {
     stage <- "harmonized2020"
   }
 
-  # monthly irrigated grass et
+  ####################
+  ### Read in data ###
+  ####################
+  # monthly irrigated grass ET
   monthlyIrrigated <- calcOutput("LPJmL_new", subtype = "met_grass_ir",
                                  years = selectyears,
                                  stage = stage,
                                  version = lpjml[["crop"]], climatetype = climatetype,
                                  aggregate = FALSE)
-  # monthly irrigated grass et
+  # monthly irrigated grass ET
   monthlyRainfed <- calcOutput("LPJmL_new", subtype = "met_grass_rf",
                                years = selectyears,
                                stage = stage,
@@ -51,36 +50,34 @@ calcGrassET <- function(selectyears, lpjml, climatetype, season) {
                                aggregate = FALSE)
 
 
-  # irrigated grass et in irrigated growing period of crop
+  # irrigated grass ET in irrigated growing period of crop
   grperIrrigated <- calcOutput("LPJmL_new", subtype = "cft_et_grass_ir",
                                years = selectyears,
                                stage = stage,
                                version = lpjml[["crop"]], climatetype = climatetype,
                                aggregate = FALSE)
-  # rainfed grass et in rainfed growing period of crop
+  # rainfed grass ET in rainfed growing period of crop
   grperRainfed <- calcOutput("LPJmL_new", subtype = "cft_et_grass_rf",
                              years = selectyears,
                              stage = stage,
                              version = lpjml[["crop"]], climatetype = climatetype,
                              aggregate = FALSE)
 
-
   ########################
   ### Data preparation ###
   ########################
-
   # Empty objects to be filled
   grassETannual <- grassETgrper <- new.magpie(cells_and_regions = getItems(grperIrrigated, dim = 1),
-                                                years = getItems(grperIrrigated, dim = 2),
-                                                names = getItems(grperIrrigated, dim = 3),
-                                                fill = NA)
+                                              years = getItems(grperIrrigated, dim = 2),
+                                              names = getItems(grperIrrigated, dim = 3),
+                                              fill = NA)
   # Name dimensions
   getSets(grassETannual) <- c("x", "y", "iso", "year", "crop", "irrigation")
   getSets(grassETgrper)  <- c("x", "y", "iso", "year", "crop", "irrigation")
 
-  # Extract rainfed grass et in rainfed growing period of crop
+  # Extract rainfed grass ET in rainfed growing period of crop
   grassETgrper[, , "rainfed"]   <- grperRainfed[, , "rainfed"]
-  # Extract irrigated grass et in irrigated growing period of crop
+  # Extract irrigated grass ET in irrigated growing period of crop
   grassETgrper[, , "irrigated"] <- grperIrrigated[, , "irrigated"]
 
   ### @JENS: I don't need irrigated grass et in rainfed growing period of crop, right?
@@ -90,11 +87,11 @@ calcGrassET <- function(selectyears, lpjml, climatetype, season) {
   ### Calculations ###
   ####################
 
-  # Calculate annual rainfed grass et
+  # Calculate annual rainfed grass ET
   grassETannual[, , "rainfed"]   <- add_dimension(dimSums(monthlyRainfed,
                                                            dim = 3),
                                                    add = "irrigation", nm = "rainfed")
-  # Calculate annual irrigated grass et
+  # Calculate annual irrigated grass ET
   grassETannual[, , "irrigated"] <- add_dimension(dimSums(monthlyIrrigated,
                                                            dim = 3),
                                                    add = "irrigation", nm = "irrigated")
@@ -102,7 +99,6 @@ calcGrassET <- function(selectyears, lpjml, climatetype, season) {
   ##############
   ### Return ###
   ##############
-
   unit        <- "tDM per ha"
   description <- "irrigated and rainfed evapotranspiration of grass"
 
@@ -121,11 +117,9 @@ calcGrassET <- function(selectyears, lpjml, climatetype, season) {
          mainSeason or wholeYear")
   }
 
-
   ##############
   ### Checks ###
   ##############
-
   if (any(is.na(out))) {
     stop("calcGrassET produced NA values")
   }
