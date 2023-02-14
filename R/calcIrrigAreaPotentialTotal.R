@@ -1,9 +1,10 @@
-#' @title       calcEFRviolations
-#' @description This function calculates grid cell specific violation of
-#'              environmental flow requirements
+#' @title       calcIrrigAreaPotentialTotal
+#' @description Calculates area that can potentially be irrigated given
+#'              available water and land
 #'
 #' @param lpjml             LPJmL version used
 #' @param selectyears       Years for which irrigatable area is calculated
+#' @param iniyear           Initialization year for initial croparea
 #' @param climatetype       Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Strictness of accessibility restriction:
@@ -33,7 +34,6 @@
 #'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
-#' @param iniyear           Initialization year of irrigation system
 #' @param landScen          Land availability scenario consisting of two parts separated by ":":
 #'                          1. available land scenario (currCropland, currIrrig, potCropland)
 #'                          2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
@@ -60,72 +60,50 @@
 #'                                                 GAEZ suitability classification)
 #'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param transDist         Water transport distance allowed to fulfill locally
-#'                          unfulfilled water demand
-#' @param scenario          Combination of EFP ("on", "off") and
-#'                          non-ag. water use scenario ("ssp2", "ISIMIP", ...)
-#'                          separated by "."
-#' @param cellular          If TRUE: cellular data returned.
-#'                          If FALSE: aggregated to basins
-#'
-#' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames getCells getItems
-#' @importFrom stringr str_split
+#'                          unfulfilled water demand by surrounding cell water availability
 #'
 #' @return magpie object in cellular resolution
-#' @author Felicitas Beier, Benjamin Leon Bodirsky
+#' @author Felicitas Beier
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("EFRviolations", aggregate = FALSE)
+#' calcOutput("IrrigAreaPotentialTotal", aggregate = FALSE)
 #' }
 #'
-calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod, transDist,
-                            accessibilityrule, rankmethod, yieldcalib, allocationrule,
-                            gainthreshold, irrigationsystem, iniyear,
-                            landScen, cropmix, comAg, multicropping,
-                            scenario, cellular = TRUE) {
-  # Check
-  if (!is.numeric(iniyear)) {
-    iniyear <- as.numeric(gsub("y", "", iniyear))
-  }
+#' @importFrom madrat calcOutput
+#' @importFrom magclass dimSums collapseNames
 
-  # River structure attributes
-  rs     <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
-  rs$iso <- readRDS(system.file("extdata/mapCoords2Country.rds", package = "mrcommons"))$iso
+calcIrrigAreaPotentialTotal <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
+                                accessibilityrule, rankmethod, yieldcalib, allocationrule,
+                                gainthreshold, irrigationsystem, landScen,
+                                cropmix, comAg, multicropping, transDist) {
 
-
-  discharge <- collapseNames(calcOutput("RiverDischargeAllocation",
+  # Area Irrigated per crop given chosen scenario
+  irrigArea <- collapseNames(calcOutput("IrrigAreaPotential",
                                         lpjml = lpjml, climatetype = climatetype,
-                                        selectyears = selectyears, transDist = transDist,
+                                        selectyears = selectyears, iniyear = iniyear,
                                         efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                                         rankmethod = rankmethod, yieldcalib = yieldcalib,
-                                        allocationrule = allocationrule,
-                                        gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
-                                        iniyear = iniyear, landScen = landScen,
+                                        allocationrule = allocationrule, gainthreshold = gainthreshold,
+                                        irrigationsystem = irrigationsystem, landScen = landScen,
                                         cropmix = cropmix, comAg = comAg,
-                                        multicropping = multicropping,
-                                        aggregate = FALSE)[, , "discharge"][, , scenario])
+                                        multicropping = multicropping, transDist = transDist,
+                                        aggregate = FALSE)[, , "irrigatable"])
 
-  envFlow   <- collapseNames(calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
-                                        lpjml = lpjml, climatetype = climatetype,
-                                        efrMethod = efrMethod, aggregate = FALSE)[, , "EFR"])
+  out <- dimSums(irrigArea, dim = "crop")
 
-  violation <- discharge - envFlow
-  violation[violation > 0] <- 0
-
-  # Check correct cell order:
-  if (any(getCells(violation) != paste(rs$coordinates, rs$iso, sep = "."))) {
-    stop("Wrong cell order!")
+  # check for NAs and negative values
+  if (any(is.na(out))) {
+    stop("calcIrrigAreaPotentialTotal produced NA irrigatable area")
   }
-  getItems(violation, dim = "basin", maindim = 1) <- as.character(rs$endcell)
-
-  if (!cellular) {
-  violation <- dimSums(violation, dim = c(1.1, 1.2, 1.3))
+  if (any(out < 0)) {
+    stop("calcIrrigAreaPotentialTotal produced negative irrigatable area")
   }
 
-  return(list(x            = violation,
+  return(list(x            = out,
               weight       = NULL,
-              unit         = "km^3 per year",
-              description  = "violation of environmental flow requirements per grid cell",
+              unit         = "Mha",
+              description  = "Area that can be irrigated
+                              given land and water constraints",
               isocountries = FALSE))
 }

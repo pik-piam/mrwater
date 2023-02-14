@@ -33,19 +33,7 @@
 #'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system used: system share as in initialization year,
 #'                          or drip, surface, sprinkler for full irrigation by selected system
-#' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
-#'                          Multiple Cropping Suitability mask selected
-#'                          (mask can be:
-#'                          "none": no mask applied (only for development purposes)
-#'                          "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                          and total physical areas per cell from readLanduseToolbox
-#'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
-#'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
-#'                          "potential:endogenous": potentially multicropped areas given
-#'                                                  temperature and productivity limits
-#'                          "potential:exogenous": potentially multicropped areas given
-#'                                                 GAEZ suitability classification)
-#'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
+#' @param multicropping     Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -60,6 +48,11 @@
 calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
                                          climatetype, cropmix, yieldcalib, irrigationsystem,
                                          unit, gainthreshold, multicropping) {
+
+  if (!is.logical(multicropping)) {
+    stop("calcIrrigatableAreaUnlimited requires logical
+         in multicropping argument.")
+  }
 
   # Area that can potentially be irrigated (including total potentially
   # irrigatable area; defined by comagyear=NULL)
@@ -78,7 +71,8 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
                         comagyear = NULL, efrMethod = NULL, transDist = NULL,
                         irrigationsystem = irrigationsystem,
                         landScen = landScen, cropmix = cropmix,
-                        yieldcalib = yieldcalib, multicropping = multicropping,
+                        yieldcalib = yieldcalib,
+                        multicropping = multicropping,
                         aggregate = FALSE)
 
   # remove areas below chosen gainthreshold

@@ -25,24 +25,10 @@
 #'                      or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod     if comagyear != NULL: EFR method used to calculate committed
 #'                      agricultural use (e.g., Smakhtin:good, VMF:fair)
-#' @param multicropping if comagyear != NULL: multicropping argument used to calculate committed
-#'                      agricultural use.
-#'                      Two components (separated by ":"):
-#'                      Multiple Cropping Suitability mask selected
-#'                      (mask can be:
-#'                      "none": no mask applied (only for development purposes)
-#'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
-#'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
-#'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
-#'                      "potential:endogenous": potentially multicropped areas given
-#'                                              temperature and productivity limits
-#'                      "potential:exogenous": potentially multicropped areas given
-#'                                             GAEZ suitability classification)
-#'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
-#' @param transDist      if comagyear != NULL: Water transport distance allowed to fulfill locally
-#'                       unfulfilled water demand by surrounding cell water availability
-#'                       of committed agricultural uses
+#' @param multicropping TRUE or FALSE (for committed agricultural area accounting)
+#' @param transDist     if comagyear != NULL: Water transport distance allowed to fulfill locally
+#'                      unfulfilled water demand by surrounding cell water availability
+#'                      of committed agricultural uses
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -58,7 +44,13 @@
 
 calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
                                  cropmix, landScen,
-                                 lpjml, climatetype, efrMethod, multicropping, transDist) {
+                                 lpjml, climatetype, efrMethod,
+                                 multicropping, transDist) {
+
+  if (!is.logical(multicropping)) {
+    stop("calcCropAreaPotIrrig requires logical
+         in multicropping argument.")
+  }
 
   # land area that can potentially be used for irrigated agriculture
   # given assumptions set in the arguments [in Mha]

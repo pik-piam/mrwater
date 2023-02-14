@@ -70,7 +70,8 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                          cropmix = cropmix, landScen = landScen,
                          lpjml = lpjml, climatetype = climatetype,
                          efrMethod = efrMethod,
-                         multicropping = multicropping, transDist = transDist,
+                         multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
+                         transDist = transDist,
                          aggregate = FALSE)
   croplist <- getItems(croparea, dim = 3)
 
@@ -88,7 +89,8 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                     lpjml = lpjml, climatetype = climatetype,
                     iniyear = iniyear, selectyears = selectyears,
                     yieldcalib = yieldcalib,
-                    multicropping = multicropping, aggregate = FALSE)[, , croplist]
+                    multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
+                    aggregate = FALSE)[, , croplist]
   tmp[tmp > 0] <- 1
   tmp[tmp < 0] <- 0
 

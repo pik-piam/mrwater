@@ -77,7 +77,8 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
                            lpjml = lpjml, climatetype = climatetype,
                            selectyears = selectyears, iniyear = iniyear,
                            irrigationsystem = irrigationsystem,
-                           cropmix = cropmix, multicropping = multicropping,
+                           cropmix = cropmix,
+                           multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
                            yieldcalib = yieldcalib, unit = unit,
                            landScen = landScen, aggregate = FALSE)
 

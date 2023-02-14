@@ -161,7 +161,8 @@ calcRiverHumanUseAccounting <- function(iteration,
   # Initialize river routing variables and dimensions
   fracFulfilled <- missingWW <- missingWC <- as.array(.transformObject(x = 0,
                                                                        gridcells = gridcells,
-                                                                       years = selectyears, names = dimnames))
+                                                                       years = selectyears,
+                                                                       names = dimnames))
   # Extract scenarios and years
   years     <- getItems(dischargeMAG, dim = 2)
   scenarios <- getItems(dischargeMAG, dim = 3)
@@ -294,13 +295,13 @@ calcRiverHumanUseAccounting <- function(iteration,
   out <- .transformObject(x = new.magpie(cells_and_regions = getItems(natDischarge, dim = 1),
                                          years = getItems(natDischarge, dim = 2),
                                          names = c("discharge",
-                                                   # water reserved in current cell (for either local or neighboring cell)
-                                                   # to be considered in following river water use accountings
-                                                   "reservedWW", # (note: was previously required_wat_min, needs to be adjusted)
+                          # water reserved in current cell (for either local or neighboring cell)
+                          # to be considered in following river water use accountings
+                                                   "reservedWW",
                                                    "reservedWC",
-                                                   # water available for specified use from local sources and surrounding cells:
+                          # water available for specified use from local sources and surrounding cells:
                                                    "currHumanWWtotal", "currHumanWCtotal",
-                                                   # water available for specified use from local sources
+                          # water available for specified use from local sources
                                                    "currHumanWWlocal", "currHumanWClocal"),
                                           sets = c("x.y.iso", "year", "data"),
                                           fill = NA),
@@ -318,9 +319,6 @@ calcRiverHumanUseAccounting <- function(iteration,
   # local water use that is fulfilled by local water resources or by surrounding water available
   out[, , "currHumanWCtotal"] <- as.magpie(currRequestWCtotal, spatial = 1, temporal = 2)
   out[, , "currHumanWWtotal"] <- as.magpie(currRequestWWtotal, spatial = 1, temporal = 2)
-
-  # ToDo: change names
-  # before: names = c("required_wat_min", "discharge", "currHuman_ww", "currHuman_wc"),
 
   ##############
   ### Checks ###

@@ -79,7 +79,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   }
 
   # Water potentially available for irrigation (accounting for previously committed agricultural uses)
-  watAvlAg  <- collapseNames(calcOutput("RiverDischargeAllocation_NEW2",
+  watAvlAg  <- collapseNames(calcOutput("RiverDischargeAllocation",
                                         lpjml = lpjml, climatetype = climatetype,
                                         selectyears = selectyears, transDist = transDist,
                                         accessibilityrule = accessibilityrule, efrMethod = efrMethod,

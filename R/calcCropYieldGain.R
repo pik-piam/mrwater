@@ -53,10 +53,10 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
 
   # reference yield (rainfed-single cropping)
   ref <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
-                          iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib, priceAgg = priceAgg,
-                          multicropping = FALSE,
-                          aggregate = FALSE)
+                     iniyear = iniyear, selectyears = selectyears,
+                     yieldcalib = yieldcalib, priceAgg = priceAgg,
+                     multicropping = FALSE,
+                     aggregate = FALSE)
 
   if (yieldgaintype == "irrigation_singlecropping") {
 

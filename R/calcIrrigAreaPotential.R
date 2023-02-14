@@ -1,5 +1,5 @@
 #' @title       calcIrrigAreaPotential
-#' @description Calculates area that can potentially be irrigated given
+#' @description Calculates area that can potentially be irrigated per crop given
 #'              available water and land
 #'
 #' @param lpjml             LPJmL version used
@@ -94,11 +94,17 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
 
   if (comAg) {
 
+    # multiple cropping as of current multiple cropping pattern
+    m <- as.logical(stringr::str_split(multicropping, ":")[[1]][1])
+    if (m) {
+      m <- "TRUE:actual:irrig_crop"
+    }
+
     # Actually committed irrigated area (crop-specific)
     comAgArea <- calcOutput("IrrigAreaActuallyCommitted",
                             lpjml = lpjml, climatetype = climatetype,
                             selectyears = selectyears, iniyear = iniyear,
-                            efrMethod = efrMethod, multicropping = multicropping,
+                            efrMethod = efrMethod, multicropping = m,
                             transDist = transDist, aggregate = FALSE)
 
     # Water actually committed to agriculture (in mio. m^3)
@@ -106,7 +112,7 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
                            iteration = "committed_agriculture",
                            lpjml = lpjml, climatetype = climatetype,
                            transDist = transDist, comAg = NULL,
-                           efrMethod = efrMethod, multicropping = multicropping,
+                           efrMethod = efrMethod, multicropping = m,
                            selectyears = selectyears, iniyear = iniyear,
                            accessibilityrule = NULL,
                            rankmethod = NULL, gainthreshold = NULL,

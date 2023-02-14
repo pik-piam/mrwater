@@ -1,4 +1,4 @@
-#' @title       calcRiverDischargeAllocation_NEW2
+#' @title       calcRiverDischargeAllocation
 #' @description This function distributes surplus basin discharge after the
 #'              previous river routings following certain management assumptions
 #'
@@ -74,16 +74,16 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("RiverDischargeAllocation_NEW2", aggregate = FALSE)
+#' calcOutput("RiverDischargeAllocation", aggregate = FALSE)
 #' }
 #'
-calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
-                                             selectyears, efrMethod,
-                                             accessibilityrule, transDist,
-                                             rankmethod, yieldcalib,
-                                             allocationrule,
-                                             gainthreshold, irrigationsystem, iniyear, landScen,
-                                             cropmix, comAg, multicropping) {
+calcRiverDischargeAllocation <- function(lpjml, climatetype,
+                                         selectyears, efrMethod,
+                                         accessibilityrule, transDist,
+                                         rankmethod, yieldcalib,
+                                         allocationrule,
+                                         gainthreshold, irrigationsystem, iniyear, landScen,
+                                         cropmix, comAg, multicropping) {
   # Retrieve arguments
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
@@ -175,7 +175,7 @@ calcRiverDischargeAllocation_NEW2 <- function(lpjml, climatetype,
                                        cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
                                        comagyear = comagyear, irrigationsystem = irrigationsystem,
                                        landScen = landScen, efrMethod = efrMethod, transDist = transDist,
-                                       multicropping = multicropping,
+                                       multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
                                        aggregate = FALSE),
                             selectyears)
 

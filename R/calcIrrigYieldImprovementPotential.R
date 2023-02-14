@@ -43,19 +43,7 @@
 #'                               Options: FALSE (for single cropping analyses) or
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
-#' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
-#'                      Multiple Cropping Suitability mask selected
-#'                      (mask can be:
-#'                      "none": no mask applied (only for development purposes)
-#'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
-#'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
-#'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
-#'                      "potential:endogenous": potentially multicropped areas given
-#'                                              temperature and productivity limits
-#'                      "potential:exogenous": potentially multicropped areas given
-#'                                             GAEZ suitability classification)
-#'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
+#' @param multicropping Multicropping activated (TRUE) or not (FALSE)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -67,12 +55,18 @@
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames getCells dimSums
+#' @importFrom stringr str_split
 
 calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                                                iniyear, comagyear, selectyears,
                                                efrMethod, transDist,
                                                cropmix, landScen, irrigationsystem,
                                                yieldcalib, multicropping) {
+
+  if (!is.logical(multicropping)) {
+    stop("calcIrrigYieldImprovementPotential requires logical
+         in multicropping argument.")
+  }
 
   # retrieve arguments
   priceAgg <- str_split(unit, pattern = ":")[[1]][2]
@@ -137,14 +131,19 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
       # Relative yield gain (in terms of volume)
       u <- "USD05 per m^3"
 
+      # Select multiple cropping argument
+      if (multicropping) {
+        # For case of yield gain: potential multiple croppping is the reference
+        m <- "TRUE:potential:endogenous"
+      }
+
       # irrigation water requirements for given irrigation system
       # per crop (in m^3 per hectare per year)
-      # Note: users would pay for consumption rather than withdrawals [D'Odorico et al. (2020)]
       irrigWat <- collapseNames(calcOutput("ActualIrrigWatRequirements",
                                            selectyears = selectyears, iniyear = iniyear,
                                            lpjml = lpjml, climatetype = climatetype,
                                            irrigationsystem = irrigationsystem,
-                                           multicropping = multicropping,
+                                           multicropping = m,
                                            aggregate = FALSE)[, , "withdrawal"])
       # Correction of small irrigWatReq: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
       irrigWat[irrigWat < 10] <- 0

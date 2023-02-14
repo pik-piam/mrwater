@@ -65,11 +65,28 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
   if (output != "crops:main") {
     # Water requirements for multiple cropping case are only calculated for areas
-    # where multiple cropping is possible under the selected scenario in case of irrigation
+    # where multiple cropping is possible in case of irrigation
     suitMC <- collapseNames(calcOutput("MulticroppingCells",
-                                       scenario = areaMask, selectyears = selectyears,
+                                       scenario = "potential:endogenous",
+                                       selectyears = selectyears,
                                        lpjml = lpjml, climatetype = climatetype,
                                        aggregate = FALSE)[, , "irrigated"])
+
+    # Special case: current multicropping according to Toolbox
+    if (grepl(pattern = "actual", x = areaMask)) {
+      # Cropping intensity
+      ci <- collapseNames(calcOutput("MulticroppingIntensity",
+                                     scenario = strsplit(areaMask, split = ":")[[1]][2],
+                                     selectyears = selectyears,
+                                     lpjml = lpjml, climatetype = climatetype,
+                                     aggregate = FALSE)[, , "irrigated"])
+      # Share of area that is multicropped
+      shrMC <- ci - 1
+    } else {
+      # For potential case, the whole area is fully multicropped
+      shrMC       <- suitMC
+      shrMC[, , ] <- 1
+    }
 
     # Grass ET in the entire year (main + off season) (in m^3/ha)
     grassETannual <- setYears(calcOutput("GrassET", season = "wholeYear",
@@ -130,7 +147,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
     # crop blue water consumption in off season
     bwc2nd   <- coeff * grassBWC2nd
-    bwcTotal <- bwc1st + bwc2nd
+    bwcTotal <- bwc1st + bwc2nd * shrMC
 
   }
 

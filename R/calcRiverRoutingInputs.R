@@ -210,7 +210,8 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                             unit = thresholdtype, yieldcalib = yieldcalib,
                             irrigationsystem = irrigationsystem, landScen = landScen,
-                            multicropping = multicropping, aggregate = FALSE)
+                            multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
+                            aggregate = FALSE)
     irrigGain[irrigGain <= gainthreshold] <- 0
     irrigGain[irrigGain > gainthreshold]  <- 1
     irrigGain <- .transformObject(x = irrigGain,

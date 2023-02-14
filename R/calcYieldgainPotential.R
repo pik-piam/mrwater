@@ -97,7 +97,8 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                           unit = thresholdtype, yieldcalib = yieldcalib,
                           comagyear = NULL, efrMethod = NULL, transDist = NULL,
                           irrigationsystem = irrigationsystem,
-                          landScen = landScen, multicropping = multicropping,
+                          landScen = landScen,
+                          multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
                           aggregate = FALSE)
 
   # Total area that can potentially be irrigated (in Mha)
