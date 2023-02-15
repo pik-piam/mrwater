@@ -176,7 +176,7 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
              iniyear = iniyear, selectyears = selectyears,
              yieldcalib = yieldcalib,
              priceAgg = unlist(strsplit(rankmethod, split = ":"))[2],
-             multicropping = "TRUE:actual:crop_irrig",
+             multicropping = "TRUE:actual:irrig_crop",
              aggregate = FALSE,
              file = "yieldsValued_multipleACT.mz")
 
