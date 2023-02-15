@@ -113,32 +113,25 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # of grass throughout the whole year
     annualBWCgrass <- collapseNames(grassETannual[, , "irrigated"]) -
                         collapseNames(grassETannual[, , "rainfed"])
-      # JENS: This is negative for a few cells. (Also for where multiple cropping is suitable). Does that make sense? Just set to 0?
+    annualBWCgrass[annualBWCgrass < 0] <- 0
 
     # Delta ET (irrigated ET - rainfed ET) as proxy for BWC
     # of grass in growing period
     grperBWCgrass <- collapseNames(grassETgrper[, , "irrigated"]) -
                         collapseNames(grassETgrper[, , "rainfed"])
-      # JENS: This is negative for a few cells. Does that make sense? Just set to 0?
+    grperBWCgrass[grperBWCgrass < 0] <- 0
 
     # Off season grass BWC
     grassBWC2nd <- (annualBWCgrass - grperBWCgrass)
-    if (any(grassBWC2nd < 0)) {
-      warning("Annual grass BWC < grass BWC in growing period. This may happen
-            when using raw rather than smoothed LPJmL inputs due to growing
-            periods that can span over two years. It should, however, even out
-            when time smoothing is applied.
-            Negatives are set to 0.")
-      # ToDo: adjust argument when LPJmL runs are ready such that stop() when smoothing activated and just warning with raw data
-      # ToDo: Check whether same where annual GPP < grper GPP
-      grassBWC2nd[grassBWC2nd < 0] <- 0
-    }
-
+    grassBWC2nd[grassBWC2nd < 0] <- 0
+    
     # Calculate grass BWC in off season where multiple cropping is suitable
     grassBWC2nd <- grassBWC2nd * fallowFactor * suitMC
 
     # Relationship between derived grass BWC in growing period of crop and crop BWC
     # (Linear model with intercept at 0)
+    # This is necessary because we used the difference between irrigated and rainfed ET
+    # for grass, but BWC for crops
     coeff <- new.magpie(cells_and_regions = getItems(grassBWC2nd, dim = 1),
                         years = getItems(grassBWC2nd, dim = 2),
                         names = crops,
@@ -146,13 +139,11 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     for (y in selectyears) {
       for (i in crops) {
         tmp <- lm(y ~ x + 0, data = data.frame(y = as.vector(bwc1st[, y, i]),
-                                              x = as.vector(grperBWCgrass[, y, i])
+                                               x = as.vector(grperBWCgrass[, y, i])
                           ))$coefficients[1]
         coeff[, y, i] <- tmp
       }
     }
-    # JENS: Is the linear model correct? Fitting bwc1st with grass BWC of growing period? (For each crop, right?)
-    # and also for every year separately
 
     # crop blue water consumption in off season
     bwc2nd   <- grassBWC2nd * coeff
@@ -161,7 +152,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # Missing crops (betr, begr, mgrass) are perennials
     # and therefore main season BWC is total year BWC
     missingCrops <- bwc1st[, , setdiff(getItems(bwc1st, dim = 3), crops)]
-    bwcTotal <- mbind(bwcTotal, missingCrops)
+    bwcTotal     <- mbind(bwcTotal, missingCrops)
 
   }
 
