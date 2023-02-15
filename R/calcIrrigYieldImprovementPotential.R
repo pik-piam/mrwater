@@ -135,6 +135,8 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
       if (multicropping) {
         # For case of yield gain: potential multiple croppping is the reference
         m <- "TRUE:potential:endogenous"
+      } else {
+        m <- FALSE
       }
 
       # irrigation water requirements for given irrigation system
