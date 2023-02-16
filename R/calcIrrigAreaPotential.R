@@ -108,6 +108,8 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
                             selectyears = selectyears, iniyear = iniyear,
                             efrMethod = efrMethod, multicropping = m,
                             transDist = transDist, aggregate = FALSE)
+    getSets(comAgArea) <- c("x", "y", "iso", "year", "crop", "irrig_type", "EFP", "scen")
+    comAgArea <- dimOrder(comAgArea, perm = c(3, 4, 2, 1), dim = 3)
 
     # Water actually committed to agriculture (in mio. m^3)
     comWater <- calcOutput("RiverHumanUseAccounting",
@@ -186,8 +188,8 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
                             aggregate = FALSE)
 
   # crop-specific potentially irrigated area
-  out <- irrigatableArea * cropareaShr
-  out <- irrigatableArea[, , getNames(cropareaShr)] + comAgArea[, , getNames(cropareaShr)]
+  out <- collapseNames(irrigatableArea * cropareaShr)
+  out <- out + collapseNames(comAgArea)
 
   # check for NAs and negative values
   if (any(is.na(out))) {
