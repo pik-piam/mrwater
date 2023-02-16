@@ -98,6 +98,8 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
     m <- as.logical(stringr::str_split(multicropping, ":")[[1]][1])
     if (m) {
       m <- "TRUE:actual:irrig_crop"
+    } else {
+      m <- FALSE
     }
 
     # Actually committed irrigated area (crop-specific)
