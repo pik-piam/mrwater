@@ -109,7 +109,7 @@ calcRevenue <- function(management, landScen,
                        multicropping = m,
                        aggregate = FALSE)
   # read in area for which revenue shall be calculated (in Mha)
-  irrigArea <- collapseNames(calcOutput("IrrigAreaPotential",
+  irrigArea <- collapseNames(calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
                                         lpjml = lpjml, climatetype = climatetype,
                                         selectyears = selectyears, iniyear = iniyear,
                                         efrMethod = efrMethod, accessibilityrule = accessibilityrule,

@@ -5,10 +5,11 @@
 \title{calcIrrigAreaPotential}
 \usage{
 calcIrrigAreaPotential(
+  cropAggregation,
   lpjml,
+  climatetype,
   selectyears,
   iniyear,
-  climatetype,
   efrMethod,
   accessibilityrule,
   rankmethod,
@@ -24,13 +25,17 @@ calcIrrigAreaPotential(
 )
 }
 \arguments{
+\item{cropAggregation}{TRUE (aggregated Potentially Irrigated Areas (PIAs)),
+FALSE (crop-specific PIAs)}
+
 \item{lpjml}{LPJmL version used}
+
+\item{climatetype}{Switch between different climate scenarios or
+historical baseline "GSWP3-W5E5:historical"}
 
 \item{selectyears}{Years for which irrigatable area is calculated}
 
 \item{iniyear}{Initialization year for initial croparea}
-
-\item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
 \item{efrMethod}{EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)}
 

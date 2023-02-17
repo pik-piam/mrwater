@@ -2,10 +2,13 @@
 #' @description Calculates area that can potentially be irrigated per crop given
 #'              available water and land
 #'
+#' @param cropAggregation   TRUE (aggregated Potentially Irrigated Areas (PIAs)),
+#'                          FALSE (crop-specific PIAs)
 #' @param lpjml             LPJmL version used
+#' @param climatetype       Switch between different climate scenarios or
+#'                          historical baseline "GSWP3-W5E5:historical"
 #' @param selectyears       Years for which irrigatable area is calculated
 #' @param iniyear           Initialization year for initial croparea
-#' @param climatetype       Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod         EFR method used including selected strictness of EFRs (e.g. Smakhtin:good, VMF:fair)
 #' @param accessibilityrule Strictness of accessibility restriction:
 #'                          discharge that is exceeded x percent of the time on average throughout a year (Qx).
@@ -74,10 +77,13 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames add_dimension add_columns mbind
 
-calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efrMethod,
-                                accessibilityrule, rankmethod, yieldcalib, allocationrule,
-                                gainthreshold, irrigationsystem, landScen,
-                                cropmix, comAg, multicropping, transDist) {
+calcIrrigAreaPotential <- function(cropAggregation,
+                                   lpjml, climatetype,
+                                   selectyears, iniyear,
+                                   efrMethod, accessibilityrule,
+                                   rankmethod, yieldcalib, allocationrule,
+                                   gainthreshold, irrigationsystem, landScen,
+                                   cropmix, comAg, multicropping, transDist) {
 
   ## Read in water available for irrigation (in mio. m^3)
   avlWat <- calcOutput("WaterUsePotential", selectyears = selectyears,
@@ -199,10 +205,18 @@ calcIrrigAreaPotential <- function(lpjml, selectyears, iniyear, climatetype, efr
     stop("produced negative irrigatable area")
   }
 
+  if (cropAggregation) {
+    out <- dimSums(out, dim = "crop")
+    description <- "Potentially irrigated area (total)
+                    given land and water constraints"
+  } else {
+    description <- "Crop-specific area that can be irrigated
+                    given land and water constraints"
+  }
+
   return(list(x            = out,
               weight       = NULL,
               unit         = "Mha",
-              description  = "Crop-specific area that can be irrigated
-                              given land and water constraints",
+              description  = description,
               isocountries = FALSE))
 }

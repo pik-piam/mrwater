@@ -92,7 +92,8 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
 
   if (output == "IrrigArea") {
 
-    x <- collapseNames(dimSums(calcOutput("IrrigAreaPotential", gainthreshold = 0,
+    x <- collapseNames(calcOutput("IrrigAreaPotential", gainthreshold = 0,
+                                  cropAggregation = TRUE,
                                   selectyears = selectyears, iniyear = iniyear,
                                   climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
@@ -102,7 +103,7 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                                   landScen = landScen, cropmix = cropmix,
                                   comAg = comAg, multicropping = multicropping,
                                   transDist = transDist,
-                                  aggregate = FALSE)[, , scenario], dim = "crop"))
+                                  aggregate = FALSE)[, , scenario])
 
     d <- "Irrigatable Area for different gainthresholds"
     u <- "Mha"
@@ -137,7 +138,8 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
 
     if (output == "IrrigArea") {
 
-      tmp <- collapseNames(dimSums(calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
+      tmp <- collapseNames(calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
+                                      cropAggregation = TRUE,
                                       selectyears = selectyears, iniyear = iniyear,
                                       lpjml = lpjml, climatetype = climatetype,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,
@@ -145,7 +147,7 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                                       irrigationsystem = irrigationsystem,
                                       landScen = landScen, cropmix = cropmix,
                                       comAg = comAg, multicropping = multicropping, transDist = transDist,
-                                      aggregate = FALSE)[, , scenario], dim = "crop"))
+                                      aggregate = FALSE)[, , scenario])
     } else {
 
       tmp <- collapseNames(calcOutput("WaterUsePotential", gainthreshold = gainthreshold,

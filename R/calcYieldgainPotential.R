@@ -112,6 +112,13 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                        efrMethod = NULL,
                        multicropping = NULL, transDist = NULL,
                        aggregate = FALSE)
+
+    # share of crop area by crop type
+    cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
+                              aggregate = FALSE)
+    # Potential area by croptype (in Mha)
+    area <- cropareaShr * area
+
     d    <- "Potentially Irrigated Area only considering land constraint"
 
   } else {
@@ -129,13 +136,6 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
     d    <- "Potentially Irrigated Area considering land and water constraints"
 
   }
-
-  # share of crop area by crop type
-  cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
-                            aggregate = FALSE)
-
-  # Potential area by croptype (in Mha)
-  area <- cropareaShr * area
 
   # Potential yield gain per cell (in mio. USD)
   x <- dimSums(yieldGain * area, dim = "crop")

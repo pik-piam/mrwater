@@ -75,7 +75,7 @@ calcYieldsAdjusted <- function(lpjml, climatetype,
     yields <- calcOutput("YieldsCalibrated", source = c(lpjml = lpjml[["crop"]], isimip = NULL),
                          climatetype = climatetype, refYear = iniyear,
                          selectyears = selectyears,
-                         areaSource = "FAO", refYields = refYields,
+                         areaSource = "Toolbox", refYields = refYields,
                          multicropping = multicropping, marginal_land = "no_marginal:irrigated",
                          cells = "lpjcell", aggregate = FALSE)
 
