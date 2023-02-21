@@ -64,7 +64,7 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
 
   ### Yield Gain ###
   # Single cropping yield gain
-  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
               lpjml = lpjml, climatetype = climatetype,
               selectyears = selectyears, iniyear = iniyear,
               comagyear = NULL, efrMethod = efrMethod, transDist = transDist,
@@ -74,7 +74,7 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
              file = "yieldgain_single")
 
   # Single cropping yield gain
-  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha",
+  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              comagyear = NULL, efrMethod = efrMethod, transDist = transDist,
