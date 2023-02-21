@@ -92,7 +92,8 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
              yieldcalib = yieldcalib,
-             multicropping = multicropping, aggregate = FALSE,
+             multicropping = as.logical(str_split(multicropping, ":")[[1]][1]),
+             aggregate = FALSE,
              file = "cropyieldgain.mz")
   calcOutput("IrrigYieldImprovementPotential",
             selectyears = selectyears, iniyear = iniyear,

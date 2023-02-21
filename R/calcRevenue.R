@@ -47,24 +47,9 @@
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
 #'                          or selection of proxycrops)
-#' @param potentialWat      If TRUE: potential available water and areas used,
-#'                          if FALSE: currently reserved water on current irrigated cropland used
 #' @param comAg             If TRUE: currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
-#' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
-#'                          Multiple Cropping Suitability mask selected
-#'                          (mask can be:
-#'                          "none": no mask applied (only for development purposes)
-#'                          "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                          and total physical areas per cell from readLanduseToolbox
-#'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
-#'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
-#'                          "potential:endogenous": potentially multicropped areas given
-#'                                                  temperature and productivity limits
-#'                          "potential:exogenous": potentially multicropped areas given
-#'                                                 GAEZ suitability classification)
-#'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand by surrounding cell water availability
 #'
@@ -83,8 +68,8 @@ calcRevenue <- function(management, landScen,
                         lpjml, climatetype, selectyears, iniyear,
                         efrMethod, accessibilityrule,
                         rankmethod, yieldcalib, allocationrule, gainthreshold,
-                        irrigationsystem, cropmix, potentialWat, comAg,
-                        multicropping, transDist) {
+                        irrigationsystem, cropmix, comAg,
+                        transDist) {
 
   #########################
   ### Extract Arguments ###
@@ -92,9 +77,12 @@ calcRevenue <- function(management, landScen,
   priceAgg <- unlist(strsplit(rankmethod, split = ":"))[2]
 
   if (grepl(pattern = "single", x = management)) {
-    m <- FALSE
+    m1 <- m2 <- FALSE
   } else {
-    m <- "TRUE:potential:endogenous"
+    m1 <- "TRUE:potential:endogenous"
+    if (grepl(pattern = "actual", x = management)) {
+      m2 <- "TRUE:actual:irrig_crop"
+    }
   }
 
   ######################
@@ -106,37 +94,95 @@ calcRevenue <- function(management, landScen,
                        iniyear = iniyear, selectyears = selectyears,
                        yieldcalib = yieldcalib,
                        priceAgg = priceAgg,
-                       multicropping = m,
+                       multicropping = m1,
                        aggregate = FALSE)
   # read in area for which revenue shall be calculated (in Mha)
-  irrigArea <- collapseNames(calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
-                                        lpjml = lpjml, climatetype = climatetype,
-                                        selectyears = selectyears, iniyear = iniyear,
-                                        efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                                        rankmethod = rankmethod, yieldcalib = yieldcalib,
-                                        allocationrule = allocationrule, gainthreshold = gainthreshold,
-                                        irrigationsystem = irrigationsystem, landScen = landScen,
-                                        cropmix = cropmix, comAg = comAg,
-                                        multicropping = multicropping, transDist = transDist,
-                                        aggregate = FALSE)[, , "irrigatable"])
+  pia <- collapseNames(calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+                                  lpjml = lpjml, climatetype = climatetype,
+                                  selectyears = selectyears, iniyear = iniyear,
+                                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                                  rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                  allocationrule = allocationrule, gainthreshold = gainthreshold,
+                                  irrigationsystem = irrigationsystem, landScen = landScen,
+                                  cropmix = cropmix, comAg = comAg,
+                                  multicropping = m2, transDist = transDist,
+                                  aggregate = FALSE))
 
   ####################
   ### Calculations ###
   ####################
   # Revenue (in mio. USD)
-  out <- irrigArea * yields[, , strsplit(management, split = "_")[[1]][2]]
+  if (management == "actual") {
+
+    # Potentially irrigated area under actual conditions (in Mha)
+    pia <- add_dimension(pia, dim = 3.4, nm = c("irrigated", "rainfed"), add = "irrigation")
+    pia[, , "rainfed"] <- 0
+
+    currCroparea <- new.magpie(cells_and_regions = getItems(pia, dim = 1),
+                               years = getItems(pia, dim = 2),
+                               names = getItems(pia, dim = 3),
+                               fill = 0)
+    getSets(currCroparea) <- getSets(pia)
+
+    # Croparea as reported by chosen data source (in Mha)
+    tmp <- calcOutput("CropareaAdjusted", iniyear = iniyear, aggregate = FALSE)
+
+    if (grepl("currIrrig", landScen)) {
+
+      # Areas reported to be irrigated
+      currCroparea[, , "irrigated"] <- tmp[, , "irrigated"]
+      # Mismatch of areas reported to be irrigated and those potentially irrigated
+      diff <- collapseNames(currCroparea[, , "irrigated"] - pia[, , "irrigated"])
+
+      if (any(round(diff, digits = 2) < 0)) {
+        stop("There is more PIA than currently irrigated area in the currIrrig scenario.
+        Please check calcRevenue and its upstream functions for potential bug!")
+      }
+
+      # All areas that cannot be irrigated following (according to the PIA) receive
+      # the rainfed yield for the calculation of the revenue
+      pia[, , "rainfed"] <- diff
+
+    } else {
+
+      # Rainfed and irrigated areas as reported currently
+      currCroparea[, , "rainfed"]   <- tmp[, , "rainfed"]
+      currCroparea[, , "irrigated"] <- tmp[, , "irrigated"]
+
+      # Mismatch of areas reported to be irrigated and those potentially irrigated
+      diff <- collapseNames(currCroparea[, , "irrigated"] - pia[, , "irrigated"])
+
+      if (any(round(diff, digits = 2) < 0)) {
+        stop("There is more PIA than currently irrigated area in the currIrrig scenario.
+        Please check calcRevenue and its upstream functions for potential bug!")
+      }
+
+      pia[, , "rainfed"] <- currCroparea[, , "rainfed"] + diff
+    }
+
+    # Cellular Revenue (in mio. USD): Crop-specific Potentially Irrigated Area (Mha) x
+    #                                 crop yields (USD/ha)
+    out <- collapseNames(dimSums(pia * yields, dim = c("crop", "irrigation")))
+
+  } else {
+    # Cellular Revenue (in mio. USD): Crop-specific Potentially Irrigated Area (Mha) x
+    #                                 crop yields (USD/ha)
+    out <- collapseNames(dimSums(pia * collapseNames(yields[, , strsplit(management, split = "_")[[1]][2]]),
+                                 dim = "crop"))
+  }
 
   # check for NAs and negative values
   if (any(is.na(out))) {
-    stop("produced NA irrigatable area")
+    stop("calcRevenue produced NA values")
   }
   if (any(out < 0)) {
-    stop("produced negative irrigatable area")
+    stop("calcRevenue produced negative values")
   }
 
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. USD",
-              description  = "Revenue achieved on selected area",
+              description  = "Potential revenue achieved on selected area
+                              under chosen management",
               isocountries = FALSE))
 }
