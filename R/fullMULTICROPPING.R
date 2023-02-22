@@ -136,28 +136,28 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
     calcOutput("IrrigAreaActuallyCommitted",
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
-               efrMethod = efrMethod, transDist = transDist,
+               efrMethod = efrMethod, transDist = t,
                multicropping = FALSE, aggregate = FALSE,
                file = paste0("comAgAreaACT_single_", t, ".mz"))
 
     calcOutput("IrrigAreaActuallyCommitted",
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
-               efrMethod = efrMethod, transDist = transDist,
+               efrMethod = efrMethod, transDist = t,
                multicropping = "TRUE:potential:endogenous",
                aggregate = FALSE,
                file = paste0("comAgAreaACT_multiple_", t, ".mz"))
 
     # Share current irrigation water that can be fulfilled by available water resources
     calcOutput("ShrHumanUsesFulfilled",
-               transDist = transDist,
+               transDist = t,
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, aggregate = FALSE,
                multicropping = FALSE,
                file = paste0("shrHumanUsesFulfilledSingle_", t, ".mz"))
     calcOutput("ShrHumanUsesFulfilled",
-               transDist = transDist,
+               transDist = t,
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, aggregate = FALSE,
@@ -244,7 +244,7 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
              multicropping = FALSE, aggregate = FALSE,
              file = "reqWatFullirrig_single.mz")
 
-  for (committed in c(TRUE, FALSE)) {
+  for (committed in c(FALSE, TRUE)) {
     for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
 
       ### Current irrigated area (IRR) ###
