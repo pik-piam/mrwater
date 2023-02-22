@@ -57,10 +57,13 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
   # MAIN RESULTS #
   ################
 
-  ### Settings ###
+  ### Croparea ###
   # share of crop area by crop type (chosen cropmix)
   calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_irrig",
              aggregate = FALSE, file = "cropareaShr.mz")
+
+  calcOutput("CropareaAdjusted", iniyear = iniyear, dataset = "Toolbox",
+             aggregate = FALSE, file = "cropareaToolbox.mz")
 
   ### Yield Gain ###
   # Single cropping yield gain
