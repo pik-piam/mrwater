@@ -79,7 +79,7 @@ calcRevenue <- function(management, landScen,
   if (grepl(pattern = "single", x = management)) {
     m1 <- m2 <- FALSE
   } else {
-    m1 <- "TRUE:potential:endogenous"
+    m1 <- m2 <- "TRUE:potential:endogenous"
   }
   if (grepl(pattern = "actual", x = management)) {
     m2   <- "TRUE:actual:irrig_crop"
