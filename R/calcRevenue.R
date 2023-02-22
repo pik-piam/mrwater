@@ -80,9 +80,12 @@ calcRevenue <- function(management, landScen,
     m1 <- m2 <- FALSE
   } else {
     m1 <- "TRUE:potential:endogenous"
-    if (grepl(pattern = "actual", x = management)) {
-      m2 <- "TRUE:actual:irrig_crop"
-    }
+  }
+  if (grepl(pattern = "actual", x = management)) {
+    m2   <- "TRUE:actual:irrig_crop"
+    land <- "currIrrig:NULL"
+  } else {
+    land <- landScen
   }
 
   ######################
@@ -103,7 +106,7 @@ calcRevenue <- function(management, landScen,
                                   efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                                   rankmethod = rankmethod, yieldcalib = yieldcalib,
                                   allocationrule = allocationrule, gainthreshold = gainthreshold,
-                                  irrigationsystem = irrigationsystem, landScen = landScen,
+                                  irrigationsystem = irrigationsystem, landScen = land,
                                   cropmix = cropmix, comAg = comAg,
                                   multicropping = m2, transDist = transDist,
                                   aggregate = FALSE))
@@ -113,6 +116,28 @@ calcRevenue <- function(management, landScen,
   ####################
   # Revenue (in mio. USD)
   if (management == "actual") {
+
+    # Single cropping yields
+    yieldsSingle <- calcOutput("YieldsValued",
+                               lpjml = lpjml, climatetype = climatetype,
+                               iniyear = iniyear, selectyears = selectyears,
+                               yieldcalib = yieldcalib,
+                               priceAgg = priceAgg,
+                               multicropping = FALSE,
+                               aggregate = FALSE)
+    deltaYields <- yields - yieldsSingle
+    deltaYields[deltaYields < 0] <- 0
+
+    # Cropping intensity
+    ci <- calcOutput("MulticroppingIntensity",
+                     scenario = strsplit(m2, split = ":")[[1]][3],
+                     selectyears = selectyears, sectoral = "kcr",
+                     lpjml = lpjml, climatetype = climatetype,
+                     aggregate = FALSE)
+    ci <- dimOrder(ci, c(2, 1), dim = 3)
+    ci <- ci[, , getItems(yields, dim = 3)]
+    # Share of area that is multicropped
+    shrMC <- (ci - 1)
 
     # Potentially irrigated area under actual conditions (in Mha)
     pia <- add_dimension(pia, dim = 3.4, nm = c("irrigated", "rainfed"), add = "irrigation")
@@ -127,42 +152,35 @@ calcRevenue <- function(management, landScen,
     # Croparea as reported by chosen data source (in Mha)
     tmp <- calcOutput("CropareaAdjusted", iniyear = iniyear, aggregate = FALSE)
 
+    # Areas reported to be irrigated
+    currCroparea[, , "irrigated"] <- tmp[, , "irrigated"]
+    # Mismatch of areas reported to be irrigated and those potentially irrigated
+    diff <- collapseNames(currCroparea[, , "irrigated"] - pia[, , "irrigated"])
+
+    if (any(round(diff, digits = 2) < 0)) {
+      stop("There is more PIA than currently irrigated area in the currIrrig scenario.
+            Please check calcRevenue and its upstream functions for potential bug!")
+    }
+
     if (grepl("currIrrig", landScen)) {
-
-      # Areas reported to be irrigated
-      currCroparea[, , "irrigated"] <- tmp[, , "irrigated"]
-      # Mismatch of areas reported to be irrigated and those potentially irrigated
-      diff <- collapseNames(currCroparea[, , "irrigated"] - pia[, , "irrigated"])
-
-      if (any(round(diff, digits = 2) < 0)) {
-        stop("There is more PIA than currently irrigated area in the currIrrig scenario.
-        Please check calcRevenue and its upstream functions for potential bug!")
-      }
+      # Only currently irrigated land is evaluated
+      shrMC[, , "rainfed"] <- 0
 
       # All areas that cannot be irrigated following (according to the PIA) receive
       # the rainfed yield for the calculation of the revenue
       pia[, , "rainfed"] <- diff
-
     } else {
-
-      # Rainfed and irrigated areas as reported currently
-      currCroparea[, , "rainfed"]   <- tmp[, , "rainfed"]
-      currCroparea[, , "irrigated"] <- tmp[, , "irrigated"]
-
-      # Mismatch of areas reported to be irrigated and those potentially irrigated
-      diff <- collapseNames(currCroparea[, , "irrigated"] - pia[, , "irrigated"])
-
-      if (any(round(diff, digits = 2) < 0)) {
-        stop("There is more PIA than currently irrigated area in the currIrrig scenario.
-        Please check calcRevenue and its upstream functions for potential bug!")
-      }
-
+      # Rainfed areas as reported currently
+      currCroparea[, , "rainfed"] <- tmp[, , "rainfed"]
+      # All areas that cannot be irrigated following (according to the PIA) receive
+      # the rainfed yield for the calculation of the revenue
       pia[, , "rainfed"] <- currCroparea[, , "rainfed"] + diff
     }
 
     # Cellular Revenue (in mio. USD): Crop-specific Potentially Irrigated Area (Mha) x
     #                                 crop yields (USD/ha)
-    out <- collapseNames(dimSums(pia * yields, dim = c("crop", "irrigation")))
+    out <- collapseNames(dimSums(pia * yieldsSingle + pia * deltaYields * shrMC,
+                                 dim = c("crop", "irrigation")))
 
   } else {
     # Cellular Revenue (in mio. USD): Crop-specific Potentially Irrigated Area (Mha) x
