@@ -39,11 +39,6 @@
 #'                         "potential:exogenous": potentially multicropped areas given
 #'                                                GAEZ suitability classification)
 #'                         (e.g. TRUE:actual:total; TRUE:none; FALSE)
-#' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
-#'                               Also needs specification of refYields, separated by ":".
-#'                               Options: FALSE (for single cropping analyses) or
-#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
-#'                      If FALSE: uncalibrated LPJmL yields are used
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -61,7 +56,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                                           selectyears, iniyear, comagyear,
                                           efrMethod, transDist,
                                           irrigationsystem, landScen, cropmix,
-                                          multicropping, yieldcalib) {
+                                          multicropping) {
 
   # cropland area per crop
   croparea <- calcOutput("CropAreaPotIrrig",
@@ -82,20 +77,6 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                          lpjml = lpjml, climatetype = climatetype,
                          irrigationsystem = irrigationsystem, multicropping = multicropping,
                          aggregate = FALSE)[, , croplist]
-
-  # correct irrigation water requirements where irrigation would lead to negative yield gains
-  # read in yield gain
-  tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
-                    lpjml = lpjml, climatetype = climatetype,
-                    iniyear = iniyear, selectyears = selectyears,
-                    yieldcalib = yieldcalib,
-                    multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
-                    aggregate = FALSE)[, , croplist]
-  tmp[tmp > 0] <- 1
-  tmp[tmp < 0] <- 0
-
-  irrigWat <- irrigWat * tmp
-
 
   # water requirements for full irrigation in cell accounting for cropshare (in mio. m^3)
   # Note on unit transformation:

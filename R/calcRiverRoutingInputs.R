@@ -250,8 +250,8 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                   comagyear = comagyear, efrMethod = efrMethod, transDist = transDist,
                                   lpjml = lpjml, climatetype = climatetype,
                                   irrigationsystem = irrigationsystem, landScen = landScen,
-                                  cropmix = cropmix, yieldcalib = yieldcalib,
-                                  multicropping = multicropping, aggregate = FALSE)
+                                  cropmix = cropmix, multicropping = multicropping,
+                                  aggregate = FALSE)
     currRequestWWlocal <- pmax(collapseNames(reqWatFullirrig[, , "withdrawal"]), 0)
     currRequestWClocal <- pmax(collapseNames(reqWatFullirrig[, , "consumption"]), 0)
     # Only request water where gain from irrigation exceeds chosen threshold

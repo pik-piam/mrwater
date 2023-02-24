@@ -223,27 +223,6 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
              aggregate = FALSE,
              file = "yieldsValued_multipleACT.mz")
 
-  # Required water for full irrigation per cell (in mio. m^3)
-  # (including already committed agricultural areas,
-  # i.e. full irrigation on all available cropland under chosen landScen)
-  calcOutput("FullIrrigationRequirement",
-             selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL, efrMethod = NULL, transDist = NULL,
-             lpjml = lpjml, climatetype = climatetype,
-             irrigationsystem = irrigationsystem, landScen = "currCropland:NULL",
-             cropmix = "hist_total", yieldcalib = yieldcalib,
-             multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
-             file = "reqWatFullirrig_multi.mz")
-
-  calcOutput("FullIrrigationRequirement",
-             selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL, efrMethod = NULL, transDist = NULL,
-             lpjml = lpjml, climatetype = climatetype,
-             irrigationsystem = irrigationsystem, landScen = "currCropland:NULL",
-             cropmix = "hist_total", yieldcalib = yieldcalib,
-             multicropping = FALSE, aggregate = FALSE,
-             file = "reqWatFullirrig_single.mz")
-
   for (committed in c(FALSE, TRUE)) {
     for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
 

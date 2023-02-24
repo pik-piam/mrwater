@@ -15,8 +15,7 @@ calcFullIrrigationRequirement(
   irrigationsystem,
   landScen,
   cropmix,
-  multicropping,
-  yieldcalib
+  multicropping
 )
 }
 \arguments{
@@ -67,12 +66,6 @@ Multiple Cropping Suitability mask selected
 "potential:exogenous": potentially multicropped areas given
                        GAEZ suitability classification)
 (e.g. TRUE:actual:total; TRUE:none; FALSE)}
-
-\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
-         Also needs specification of refYields, separated by ":".
-         Options: FALSE (for single cropping analyses) or
-                  "TRUE:actual:irrig_crop" (for multiple cropping analyses)
-If FALSE: uncalibrated LPJmL yields are used}
 }
 \value{
 magpie object in cellular resolution

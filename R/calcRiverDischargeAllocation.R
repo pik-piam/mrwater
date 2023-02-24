@@ -273,7 +273,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
 
   } else if (allocationrule == "upstreamfirst") {
     # The upstream-downstream surplus discharge allocation
-    # follows the same rules ad the upstream-downstream
+    # follows the same rules as the upstream-downstream
     # previous human use accounting
     tmp <- calcOutput("RiverHumanUseAccounting",
                       iteration = "potential_irrigation",
