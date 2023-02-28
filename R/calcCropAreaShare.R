@@ -39,8 +39,10 @@ calcCropAreaShare <- function(iniyear, cropmix) {
       irrigArea    <- collapseNames(croparea[, , "irrigated"])
       irrigcropShr <- irrigArea / dimSums(irrigArea, dim = 3)
 
-      cropareaShr <- irrigcropShr
-      cropareaShr[is.na(cropareaShr)] <- totalcropShr[is.na(cropareaShr)]
+      # where currently no irrigated area: use cropmix of total croparea
+      zeroIrrigArea <- (dimSums(irrigArea, dim = 3) == 0)
+      cropareaShr   <- irrigcropShr
+      cropareaShr[zeroIrrigArea] <- totalcropShr[zeroIrrigArea]
 
     } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "total") {
 
@@ -54,10 +56,11 @@ calcCropAreaShare <- function(iniyear, cropmix) {
 
     # correct NAs: where no current cropland available,
     # representative crops (maize, rapeseed, pulses) assumed as proxy
+    zeroCroparea <- (dimSums(croparea, dim = 3) == 0)
     proxyCrops <- c("maiz", "rapeseed", "puls_pro")
     otherCrops <- setdiff(getNames(cropareaShr), proxyCrops)
-    cropareaShr[, , proxyCrops][dimSums(croparea, dim = 3) == 0] <- 1 / length(proxyCrops)
-    cropareaShr[, , otherCrops][dimSums(croparea, dim = 3) == 0] <- 0
+    cropareaShr[, , proxyCrops][zeroCroparea] <- 1 / length(proxyCrops)
+    cropareaShr[, , otherCrops][zeroCroparea] <- 0
 
   } else {
 

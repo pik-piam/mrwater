@@ -71,7 +71,8 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
       # Share of monthly discharge that is accessible for human use
       x <- apply(pmin(monthlyDischarge, dischargeQuant), MARGIN = 1, sum) /
            apply(monthlyDischarge, MARGIN = 1, sum)
-      x[apply(monthlyDischarge, MARGIN = 1, sum) == 0] <- 0
+      # Where no discharge (in entire year): all accessible (is 0 if no natural discharge)
+      x[apply(monthlyDischarge, MARGIN = 1, sum) == 0] <- 1
 
     } else if (method == "CV") {
 
@@ -105,7 +106,7 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
   }
 
   # Check range of object
-  if (any(range(out) > 1) | any(range(out) < 0)) {
+  if (any(range(out) > 1) || any(range(out) < 0)) {
     stop("Discharge Accessibility Share is not between 0 and 1")
   }
 

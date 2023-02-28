@@ -51,7 +51,10 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
   gtrange           <- c(0, 10, 50, 100, 250, 300, 500, 600,
                          750, 900, 1000, 1500, 2000, 3000)
   efrMethod         <- "VMF:fair"
-  accessibilityrule <- "CV:2"
+
+  # For the purpose of a comparison of Currently Observed Irrigation Patterns
+  # and our estimated potential on currently Irrigated Land: all discharge is accessible
+  accessibilityrule <- "Q:1"
 
   ################
   # MAIN RESULTS #

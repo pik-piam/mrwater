@@ -25,17 +25,17 @@
 calcDischargeInaccessible <- function(lpjml, selectyears, climatetype, accessibilityrule) {
 
   # Discharge Accessibility Share
-  access_shr <- calcOutput("DischargeAccessibilityShare", selectyears = selectyears,
-                           lpjml = lpjml, climatetype = climatetype,
-                           accessibilityrule = accessibilityrule, aggregate = FALSE)
+  accessShr    <- calcOutput("DischargeAccessibilityShare", selectyears = selectyears,
+                             lpjml = lpjml, climatetype = climatetype,
+                             accessibilityrule = accessibilityrule, aggregate = FALSE)
 
   # Read in natural discharge (in mio. m^3 / yr)
-  discharge_nat   <- collapseNames(calcOutput("RiverNaturalFlows", selectyears = selectyears,
-                                              lpjml = lpjml, climatetype = climatetype,
-                                              aggregate = FALSE)[, , "discharge_nat"])
+  dischargeNat <- collapseNames(calcOutput("RiverNaturalFlows", selectyears = selectyears,
+                                           lpjml = lpjml, climatetype = climatetype,
+                                           aggregate = FALSE)[, , "discharge_nat"])
 
   # Calculate discharge accessible to humans (mio. m^3 / yr)
-  out <- (1 - access_shr) * discharge_nat
+  out <- (1 - accessShr) * dischargeNat
 
   # Check for NAs
   if (any(is.na(out))) {
