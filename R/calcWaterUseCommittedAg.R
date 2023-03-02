@@ -37,12 +37,6 @@ calcWaterUseCommittedAg <- function(lpjml, climatetype,
                                     selectyears, iniyear,
                                     multicropping) {
 
-  # multiple cropping as of current multiple cropping pattern
-  multicropping <- as.logical(str_split(multicropping, ":")[[1]][1])
-  if (multicropping) {
-    multicropping <- "TRUE:actual:irrig_crop"
-  }
-
   # Irrigation water requirements per cell per crop given irrigation
   # system initialization (in m^3 per hectare per year)
   irrigReq <- calcOutput("ActualIrrigWatRequirements",

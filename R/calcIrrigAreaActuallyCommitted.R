@@ -42,14 +42,6 @@ calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype, selectyears, iniy
                                            efrMethod,
                                            multicropping, transDist) {
 
-  # multiple cropping as of current multiple cropping pattern
-  m <- as.logical(stringr::str_split(multicropping, ":")[[1]][1])
-  if (m) {
-    m <- "TRUE:actual:irrig_crop"
-  } else {
-    m <- FALSE
-  }
-
   ######################
   ### Read in Inputs ###
   ######################
@@ -63,7 +55,7 @@ calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype, selectyears, iniy
                              irrigationsystem = "initialization",
                              selectyears = selectyears, iniyear = iniyear,
                              lpjml = lpjml, climatetype = climatetype,
-                             multicropping = m, aggregate = FALSE)
+                             multicropping = multicropping, aggregate = FALSE)
 
   # Water already committed to irrigation (in mio. m^3)
   comWater <- calcOutput("RiverHumanUseAccounting",

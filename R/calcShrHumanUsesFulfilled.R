@@ -89,10 +89,16 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
                                                              years = getYears(fulfilledCAUww),
                                                              names = getNames(fulfilledCAUww))
   # Committed Agricultural Water (in mio. m^3)
+  # multiple cropping as of current multiple cropping pattern
+  if (as.logical(str_split(multicropping, ":")[[1]][1])) {
+    m <- "TRUE:actual:irrig_crop"
+  } else {
+    m <- as.logical(str_split(multicropping, ":")[[1]][1])
+  }
   actCAU   <- calcOutput("WaterUseCommittedAg",
                          lpjml = lpjml, climatetype = climatetype,
                          selectyears = selectyears, iniyear = iniyear,
-                         multicropping = multicropping, aggregate = FALSE)
+                         multicropping = m, aggregate = FALSE)
   actCAUww[, , ] <- collapseNames(dimSums(actCAU[, , "withdrawal"], dim = 3))
   actCAUwc[, , ] <- collapseNames(dimSums(actCAU[, , "consumption"], dim = 3))
 

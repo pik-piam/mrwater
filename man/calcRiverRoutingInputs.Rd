@@ -34,9 +34,9 @@ or historical baseline "GSWP3-W5E5:historical"}
 
 \item{iniyear}{Initialization year of irrigation system}
 
-\item{iteration}{River routing iteration
-(non_agriculture, committed_agriculture,
-potential_irrigation).}
+\item{iteration}{Water use to be allocated in this river routing iteration
+(non_agriculture, committed_agriculture, potential_irrigation,
+special case (for current irrigated area analysis): "committed_agriculture_fullPotential").}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}

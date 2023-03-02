@@ -6,9 +6,9 @@
 #' @param lpjml             LPJmL version used
 #' @param selectyears       Years to be returned
 #'                          (Note: does not affect years of harmonization or smoothing)
-#' @param iteration         River routing iteration
-#'                          (non_agriculture, committed_agriculture,
-#'                          potential_irrigation).
+#' @param iteration         Water use to be allocated in this river routing iteration
+#'                          (non_agriculture, committed_agriculture, potential_irrigation,
+#'                          special case (for current irrigated area analysis): "committed_agriculture_fullPotential").
 #' @param climatetype       Switch between different climate scenarios
 #'                          or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear           Initialization year of irrigation system
@@ -116,7 +116,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
   }
 
   ## Routing-iteration-specific inputs
-  if (iteration == "non_agriculture") {
+  if (grepl(pattern = "non_agriculture", x = iteration)) {
     ## Previous Uses
     # Minimum flow requirements determined by natural flow river routing:
     # (full) Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
@@ -146,7 +146,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     discharge <- .transformObject(x = discharge,
                                   cells = cells, years = selectyears, scenarios = scenarios)
 
-  } else if (iteration == "committed_agriculture") {
+  } else if (grepl(pattern = "committed_agriculture", x = iteration)) {
     ## Previous Uses
     # Non-agricultural withdrawals and consumption
     previousHumanUse <- calcOutput("RiverHumanUseAccounting",
@@ -168,11 +168,16 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     prevReservedWC <- as.array(collapseNames(previousHumanUse[, , "reservedWC"]))
 
     ## Current Uses
+    if (grepl(pattern = "fullPotential", x = iteration)) {
+      m <- multicropping
+    } else {
+      m <- "TRUE:actual:irrig_crop"
+    }
     # Committed agricultural uses per crop (in mio. m^3 / yr)
     watComAg <- calcOutput("WaterUseCommittedAg",
                             lpjml = lpjml, climatetype = climatetype,
                             selectyears = selectyears, iniyear = iniyear,
-                            multicropping = multicropping, aggregate = FALSE)
+                            multicropping = m, aggregate = FALSE)
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
     currRequestWWlocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "withdrawal"],
                                                                  dim = "crop")),
@@ -185,7 +190,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Discharge from previous routing
     discharge <- collapseNames(previousHumanUse[, , "discharge"])
 
-} else if (iteration == "potential_irrigation") {
+} else if (grepl(pattern = "potential_irrigation", x = iteration)) {
 
     if (comAg == TRUE) {
       # accounting in potentials
