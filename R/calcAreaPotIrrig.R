@@ -56,6 +56,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   ######################
   # read in protected area
   protectArea <- calcOutput("ProtectArea", cells = "lpjcell", aggregate = FALSE)
+  # FELI: Switch to newest protected area function & double check which landarea is the base
 
   # select protection scenario
   if (!is.na(protectSCEN)) {
