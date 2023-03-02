@@ -168,11 +168,16 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     prevReservedWC <- as.array(collapseNames(previousHumanUse[, , "reservedWC"]))
 
     ## Current Uses
-    if (grepl(pattern = "fullPotential", x = iteration)) {
-      m <- multicropping
+    if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
+      if (grepl(pattern = "fullPotential", x = iteration)) {
+        m <- multicropping
+      } else {
+        m <- "TRUE:actual:irrig_crop"
+      }
     } else {
-      m <- "TRUE:actual:irrig_crop"
+      m <- FALSE
     }
+
     # Committed agricultural uses per crop (in mio. m^3 / yr)
     watComAg <- calcOutput("WaterUseCommittedAg",
                             lpjml = lpjml, climatetype = climatetype,

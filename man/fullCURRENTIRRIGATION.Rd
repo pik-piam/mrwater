@@ -4,10 +4,7 @@
 \alias{fullCURRENTIRRIGATION}
 \title{fullCURRENTIRRIGATION}
 \usage{
-fullCURRENTIRRIGATION(
-  yieldcalib = "TRUE:TRUE:actual:irrig_crop",
-  allocationrule = "optimization"
-)
+fullCURRENTIRRIGATION(yieldcalib = "TRUE:TRUE:actual:irrig_crop")
 }
 \arguments{
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
@@ -15,9 +12,6 @@ fullCURRENTIRRIGATION(
         Options: FALSE (for single cropping analyses) or
                  "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
-
-\item{allocationrule}{Rule to be applied for river basin discharge allocation
-across cells of river basin ("optimization", "upstreamfirst")}
 }
 \description{
 Function that produces output for irrigation potentials

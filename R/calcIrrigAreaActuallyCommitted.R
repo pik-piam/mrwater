@@ -25,6 +25,11 @@
 #'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param transDist      Water transport distance allowed to fulfill locally
 #'                       unfulfilled water demand by surrounding cell water availability
+#' @param iteration      Default: "committed_agriculture",
+#'                       Special case: "committed_agriculture_fullPotential".
+#'                       Special case should only be used for calculation of
+#'                       full multicropping potential committed agricultural area
+#'                       for case of Current Irrigation.
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -38,7 +43,8 @@
 #' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames
 #' @importFrom utils tail
 
-calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype, selectyears, iniyear,
+calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
+                                           lpjml, climatetype, selectyears, iniyear,
                                            efrMethod,
                                            multicropping, transDist) {
 
@@ -59,7 +65,7 @@ calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype, selectyears, iniy
 
   # Water already committed to irrigation (in mio. m^3)
   comWater <- calcOutput("RiverHumanUseAccounting",
-                          iteration = "committed_agriculture",
+                          iteration = iteration,
                           lpjml = lpjml, climatetype = climatetype,
                           transDist = transDist, comAg = NULL,
                           efrMethod = efrMethod, multicropping = multicropping,
@@ -83,7 +89,7 @@ calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype, selectyears, iniy
                     comWatWW / collapseNames(totalIrrigReq[, , "withdrawal"]),
                   0)
   wcShr <- ifelse(totalIrrigReq[, , "consumption"] > 0,
-                  comWatWC / collapseNames(totalIrrigReq[, , "consumption"]),
+                    comWatWC / collapseNames(totalIrrigReq[, , "consumption"]),
                   0)
 
   if (any(round(wwShr - wcShr, digits = 4) != 0)) {

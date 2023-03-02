@@ -7,8 +7,6 @@
 #'                               Options: FALSE (for single cropping analyses) or
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                       If FALSE: uncalibrated LPJmL yields are used
-#' @param allocationrule Rule to be applied for river basin discharge allocation
-#'                       across cells of river basin ("optimization", "upstreamfirst")
 #'
 #' @author Felicitas Beier
 #'
@@ -16,8 +14,7 @@
 #'
 #' @export
 
-fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
-                                  allocationrule = "optimization") {
+fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
 
   # Standard settings
   iniyear           <- "y2010"
@@ -119,7 +116,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
                aggregate = FALSE,
                file = paste0("comAgWatACT_multipleACT_", t, ".mz"))
     calcOutput("RiverHumanUseAccounting",
-               iteration = "committed_agriculture",
+               iteration = "committed_agriculture_fullPotential",
                lpjml = lpjml, climatetype = climatetype,
                efrMethod = efrMethod,
                selectyears = selectyears, iniyear = iniyear,
