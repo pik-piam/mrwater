@@ -129,7 +129,7 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
              rankmethod = NULL, gainthreshold = NULL,
              cropmix = NULL, yieldcalib = NULL,
              irrigationsystem = NULL, landScen = NULL,
-             multicropping = "TRUE:potential:endogenous",
+             multicropping = "TRUE:actual:irrig_crop",
              aggregate = FALSE,
              file = "comAgWatACT_multi.mz")
 
@@ -147,7 +147,7 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, transDist = t,
-               multicropping = "TRUE:potential:endogenous",
+               multicropping = "TRUE:actual:irrig_crop",
                aggregate = FALSE,
                file = paste0("comAgAreaACT_multiple_", t, ".mz"))
 
@@ -164,7 +164,7 @@ fullMULTICROPPING <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop",
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, aggregate = FALSE,
-               multicropping = "TRUE:potential:endogenous",
+               multicropping = "TRUE:actual:irrig_crop",
                file = paste0("shrHumanUsesFulfilledMultiple_", t, ".mz"))
 
   }

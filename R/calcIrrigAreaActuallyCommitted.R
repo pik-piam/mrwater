@@ -48,6 +48,17 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
                                            efrMethod,
                                            multicropping, transDist) {
 
+  ## Current Uses
+  if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
+    if (grepl(pattern = "fullPotential", x = iteration)) {
+      m <- multicropping
+    } else {
+      m <- "TRUE:actual:irrig_crop"
+    }
+  } else {
+    m <- FALSE
+  }
+
   ######################
   ### Read in Inputs ###
   ######################
@@ -61,14 +72,14 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
                              irrigationsystem = "initialization",
                              selectyears = selectyears, iniyear = iniyear,
                              lpjml = lpjml, climatetype = climatetype,
-                             multicropping = multicropping, aggregate = FALSE)
+                             multicropping = m, aggregate = FALSE)
 
   # Water already committed to irrigation (in mio. m^3)
   comWater <- calcOutput("RiverHumanUseAccounting",
                           iteration = iteration,
                           lpjml = lpjml, climatetype = climatetype,
                           transDist = transDist, comAg = NULL,
-                          efrMethod = efrMethod, multicropping = multicropping,
+                          efrMethod = efrMethod, multicropping = m,
                           selectyears = selectyears, iniyear = iniyear,
                           accessibilityrule = NULL,
                           rankmethod = NULL, gainthreshold = NULL,
