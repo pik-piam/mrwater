@@ -80,6 +80,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                file = paste0("comAgAreaACT_multipleACT_", t, ".mz"))
 
     calcOutput("IrrigAreaActuallyCommitted",
+               iteration = "committed_agriculture_fullPotential",
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, transDist = t,

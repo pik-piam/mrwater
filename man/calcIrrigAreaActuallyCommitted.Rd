@@ -5,6 +5,7 @@
 \title{calcIrrigAreaActuallyCommitted}
 \usage{
 calcIrrigAreaActuallyCommitted(
+  iteration = "committed_agriculture",
   lpjml,
   climatetype,
   selectyears,
@@ -15,6 +16,12 @@ calcIrrigAreaActuallyCommitted(
 )
 }
 \arguments{
+\item{iteration}{Default: "committed_agriculture",
+Special case: "committed_agriculture_fullPotential".
+Special case should only be used for calculation of
+full multicropping potential committed agricultural area
+for case of Current Irrigation.}
+
 \item{lpjml}{LPJmL version used}
 
 \item{climatetype}{Switch between different climate scenarios
