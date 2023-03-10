@@ -40,6 +40,15 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
   calcOutput("CropareaAdjusted", iniyear = iniyear, dataset = "Toolbox",
              aggregate = FALSE, file = "cropareaToolbox.mz")
 
+  calcOutput("CropareaToolbox", physical = TRUE, sectoral = "kcr",
+             cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
+             selectyears = selectyears, aggregate = FALSE,
+             file = "ToolboxPHYS.mz")
+  calcOutput("CropareaToolbox", physical = FALSE, sectoral = "kcr",
+             cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
+             selectyears = selectyears, aggregate = FALSE,
+             file = "ToolboxHARV.mz")
+
   ### Yield Gain ###
   # Single cropping yield gain
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
@@ -60,6 +69,23 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
              cropmix = "hist_irrig", yieldcalib = yieldcalib,
              multicropping = TRUE, aggregate = FALSE,
              file = "yieldgain_multiple.mz")
+
+  # Agricultural Water Consumption (NOLIM)
+  calcOutput("WaterUseCommittedAg",
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             multicropping = FALSE, aggregate = FALSE,
+             file = "comAg_single_NOLIM.mz")
+  calcOutput("WaterUseCommittedAg",
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
+             file = "comAg_multipleACT_NOLIM.mz")
+  calcOutput("WaterUseCommittedAg",
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
+             file = "comAg_multiplePOT_NOLIM.mz")
 
   for (t in c(0, 100, 200)) {
 
