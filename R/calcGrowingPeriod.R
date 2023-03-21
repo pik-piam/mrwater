@@ -1,11 +1,13 @@
 #' @title calcGrowingPeriod
-#' @description This function determines a mean sowing date and a mean growing period for each cell
-#' in order to determine when irrigation can take place.
+#' @description This function determines a mean sowing date and a mean growing period
+#'              for each cell in order to determine when irrigation can take place.
 #'
-#' @param lpjml Defines LPJmL version for crop/grass and natveg specific inputs
+#' @param lpjml       Defines LPJmL version for crop/grass and natveg specific inputs
 #' @param climatetype Switch between different climate scenarios
-#' @param stage Degree of processing: raw, smoothed, harmonized, harmonized2020
+#' @param stage       Degree of processing: raw, smoothed, harmonized, harmonized2020
 #' @param yield_ratio threshold for cell yield over global average. crops in cells below threshold will be ignored
+#' @param cells       Number of cells to be returned
+#'                    (select "magpiecell" for 59199 cells or "lpjcell" for 67420 cells)
 #'
 #' @return magpie object in cellular resolution
 #' @author Kristine Karstens, Felicitas Beier
@@ -22,7 +24,8 @@
 #' @export
 
 calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb"),
-                              climatetype = "GSWP3-W5E5:historical", stage = "harmonized2020", yield_ratio = 0.1) {
+                              climatetype = "GSWP3-W5E5:historical", stage = "harmonized2020", yield_ratio = 0.1,
+                              cells = "magpiecell") {
 
   cfg <- toolLPJmLVersion(version = lpjml["natveg"], climatetype = climatetype)
 
@@ -48,38 +51,40 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     # Read sowing and harvest date input (new for LPJmL5)
     ####################################################################################
 
-    LPJ2MAG      <- toolGetMapping("MAgPIE_LPJmL.csv",
-                                    type = "sectoral",
-                                    where = "mappingfolder")
+    lpj2mag <- toolGetMapping("MAgPIE_LPJmL.csv",
+                              type = "sectoral",
+                              where = "mappingfolder")
 
     # Read yields first
-    yields <- toolCoord2Isocell(collapseNames(calcOutput("LPJmL_new", version = lpjml["crop"],
-                                                          climatetype = climatetype, subtype = "harvest",
-                                                          stage = "raw", aggregate = FALSE)[, , "irrigated"]))
+    yields <- collapseNames(calcOutput("LPJmL_new", version = lpjml["crop"],
+                                        climatetype = climatetype, subtype = "harvest",
+                                        stage = "raw", aggregate = FALSE)[, , "irrigated"])
 
     # Load Sowing dates from LPJmL (use just rainfed dates since they do not differ for irrigated and rainfed)
-    sowd   <- toolCoord2Isocell(collapseNames(calcOutput("LPJmL_new", version = lpjml["crop"],
-                                                          climatetype = climatetype,  subtype = "sdate",
-                                                          stage = "raw", aggregate = FALSE)[, , "rainfed"]))
-    hard   <- toolCoord2Isocell(collapseNames(calcOutput("LPJmL_new", version = lpjml["crop"],
-                                                          climatetype = climatetype,  subtype = "hdate",
-                                                          stage = "raw", aggregate = FALSE)[, , "rainfed"]))
+    sowd   <- collapseNames(calcOutput("LPJmL_new", version = lpjml["crop"],
+                                      climatetype = climatetype,  subtype = "sdate",
+                                      stage = "raw", aggregate = FALSE)[, , "rainfed"])
+    hard   <- collapseNames(calcOutput("LPJmL_new", version = lpjml["crop"],
+                                      climatetype = climatetype,  subtype = "hdate",
+                                      stage = "raw", aggregate = FALSE)[, , "rainfed"])
 
-    goodCrops <- LPJ2MAG$MAgPIE[which(LPJ2MAG$LPJmL %in% getItems(sowd, dim = 3))]
-    badCrops  <- LPJ2MAG$MAgPIE[which(!LPJ2MAG$LPJmL %in% getItems(sowd, dim = 3))]
+    goodCrops <- lpj2mag$MAgPIE[which(lpj2mag$LPJmL %in% getItems(sowd, dim = 3))]
+    badCrops  <- lpj2mag$MAgPIE[which(!lpj2mag$LPJmL %in% getItems(sowd, dim = 3))]
 
-    sowd   <- toolAggregate(sowd, rel = LPJ2MAG,
+    sowd   <- toolAggregate(sowd, rel = lpj2mag,
                             from = "LPJmL", to = "MAgPIE",
                             dim = 3.1, partrel = TRUE)
-    hard   <- toolAggregate(hard, rel = LPJ2MAG,
+    hard   <- toolAggregate(hard, rel = lpj2mag,
                             from = "LPJmL", to = "MAgPIE",
                             dim = 3.1, partrel = TRUE)
-    yields <- toolAggregate(yields, rel = LPJ2MAG,
+    yields <- toolAggregate(yields, rel = lpj2mag,
                             from = "LPJmL", to = "MAgPIE",
                             dim = 3.1, partrel = TRUE)
 
-    if (length(badCrops) > 0) vcat(2, "No information on the growing period found for those crops: ",
-                                    paste(unique(badCrops), collapse = ", "))
+    if (length(badCrops) > 0) {
+      vcat(2, "No information on the growing period found for those crops: ",
+              paste(unique(badCrops), collapse = ", "))
+    }
 
     #####################################################################################
 
@@ -102,21 +107,21 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     #        (total cell area as aggregation weight)
     ####################################################################################
 
-    area   <- dimSums(calcOutput("LUH2v2", cellular = TRUE,
+    area   <- dimSums(calcOutput("LUH2v2", cellular = TRUE, cells = "lpjcell",
                                  aggregate = FALSE, years = "y1995"),
                       dim = 3)
     yields <- collapseNames(yields[, , goodCrops])
 
     cell2GLO     <- array(c(getItems(yields, dim = 1),
                           rep("GLO", 59199)), dim = c(59199, 2))
-    glo_yields   <- toolAggregate(yields, cell2GLO, weight = setYears(area, NULL))
-    ratio_yields <- yields / glo_yields
+    gloYields   <- toolAggregate(yields, cell2GLO, weight = setYears(area, NULL))
+    yieldsRatio <- yields / gloYields
 
-    rm_lowyield   <- yields
-    rm_lowyield[] <- 1
-    rm_lowyield[ratio_yields < 0.1] <- NA
+    rmLowYield       <- yields
+    rmLowYield[, , ] <- 1
+    rmLowYield[yieldsRatio < 0.1] <- NA
 
-    rm(ratio_yields, yields, area, glo_yields)
+    rm(yieldsRatio, yields, area, gloYields)
 
     ####################################################################################
 
@@ -124,18 +129,18 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     # Step 3 remove wintercrops from both calculations for the northern hemisphere: sowd>180, hard>365
     ####################################################################################
 
-    cells_northern_hemisphere <- which(magpie_coord[, 2] > 0)
-    rm_wintercrops            <- new.magpie(cells_and_regions = getCells(sowd),
+    cellsNrthnHem <- which(magpie_coord[, 2] > 0)
+    rmWintercrops            <- new.magpie(cells_and_regions = getCells(sowd),
                                             years = getYears(sowd),
                                             names = getNames(sowd),
                                             sets = c("region", "year", "crop"),
                                             fill = 1)
 
     # define all crops sowed after 180 days and where sowing date is after harvest date as wintercrops
-    rm_wintercrops[cells_northern_hemisphere, , ] <-
-      ifelse(sowd[cells_northern_hemisphere, , ] > 180 &
-               hard[cells_northern_hemisphere, , ] < sowd[cells_northern_hemisphere, , ],
-             NA, 1)
+    rmWintercrops[cellsNrthnHem, , ] <- ifelse(sowd[cellsNrthnHem, , ] > 180 &
+                                               hard[cellsNrthnHem, , ] < sowd[cellsNrthnHem, , ],
+                                                NA,
+                                              1)
 
     ####################################################################################
 
@@ -144,17 +149,12 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     ####################################################################################
 
     # calculate growing period as difference of sowing date to harvest date
-    # sowd <- sowd[,years,]
-    # hard <- hard[,years,]
-    grow_period <- hard - sowd
-    grow_period[which(hard < sowd)] <- 365 + grow_period[which(hard < sowd)]
+    growPeriod <- hard - sowd
+    growPeriod[which(hard < sowd)] <- 365 + growPeriod[which(hard < sowd)]
 
     # calculate the mean after removing the before determined winter- and low yielding crops
-    # rm_wintercrops <- rm_wintercrops[,years,]
-    # rm_lowyield    <- rm_lowyield[,years,]
-
-    n_crops          <- dimSums(rm_wintercrops * rm_lowyield, dim = 3, na.rm = TRUE)
-    meanGrper <- dimSums(grow_period * rm_wintercrops * rm_lowyield, dim = 3, na.rm = TRUE) / n_crops
+    nCrops    <- dimSums(rmWintercrops * rmLowYield, dim = 3, na.rm = TRUE)
+    meanGrper <- dimSums(growPeriod * rmWintercrops * rmLowYield, dim = 3, na.rm = TRUE) / nCrops
     meanGrper[is.infinite(meanGrper)] <- NA
 
     #############################################################################
@@ -163,9 +163,9 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     # Step 5 remove sowd1 for sowing date calculation
     ####################################################################################
 
-    rm_sowd1          <- sowd
-    rm_sowd1[]        <- 1
-    rm_sowd1[sowd == 1] <- NA
+    rmSOWD1            <- sowd
+    rmSOWD1[, , ]      <- 1
+    rmSOWD1[sowd == 1] <- NA
 
     ####################################################################################
 
@@ -173,12 +173,12 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     # Step 6 Calculate mean sowing date
     ####################################################################################
 
-    n_crops   <- dimSums(rm_wintercrops * rm_lowyield * rm_sowd1, dim = 3, na.rm = TRUE)
-    meanSowd <- dimSums(grow_period * rm_wintercrops * rm_lowyield * rm_sowd1, dim = 3, na.rm = TRUE) / n_crops
+    nCrops   <- dimSums(rmWintercrops * rmLowYield * rmSOWD1, dim = 3, na.rm = TRUE)
+    meanSowd <- dimSums(growPeriod * rmWintercrops * rmLowYield * rmSOWD1, dim = 3, na.rm = TRUE) / nCrops
     meanSowd[is.infinite(meanSowd)] <- NA
 
-    rm(rm_wintercrops, rm_lowyield, rm_sowd1)
-    rm(sowd, hard, grow_period)
+    rm(rmWintercrops, rmLowYield, rmSOWD1)
+    rm(sowd, hard, growPeriod)
     ####################################################################################
 
     ####################################################################################
@@ -189,11 +189,11 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     dams <- readSource("Dams", convert = "onlycorrect")
 
     for (t in getYears(meanSowd)) {
-      meanSowd[which(dams == 1), t]        <- 1
+      meanSowd[which(dams == 1), t]  <- 1
       meanGrper[which(dams == 1), t] <- 365
     }
 
-    meanSowd[is.na(meanSowd)]               <- 1
+    meanSowd[is.na(meanSowd)]   <- 1
     meanGrper[is.na(meanGrper)] <- 365
     meanSowd         <- round(meanSowd)
     meanGrper  <- round(meanGrper)
@@ -209,18 +209,18 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     names(monthLength) <- month
 
     # Determine which day belongs to which month
-    days_months        <- 1:365
-    names(days_months) <- 1:365
+    daysOfmonth        <- 1:365
+    names(daysOfmonth) <- 1:365
 
     before <- 0
-    for (i in 1:length(monthLength)) {
-      days_months[(before + 1):(before + monthLength[i])]        <- i
-      names(days_months)[(before + 1):(before + monthLength[i])] <- names(monthLength)[i]
+    for (i in seq_along(monthLength)) {
+      daysOfmonth[(before + 1):(before + monthLength[i])]        <- i
+      names(daysOfmonth)[(before + 1):(before + monthLength[i])] <- names(monthLength)[i]
       before <- before + monthLength[i]
     }
 
     # mag object for the growing days per month
-    grow_days_per_month <- new.magpie(cells_and_regions = getCells(meanSowd),
+    growdaysPERmonth <- new.magpie(cells_and_regions = getCells(meanSowd),
                                       years = getYears(meanSowd),
                                       names = month,
                                       fill = 0)
@@ -231,7 +231,7 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
 
     meanHard <- as.array(meanHard)
     meanSowd <- as.array(meanSowd)
-    grow_days_per_month <- as.array(grow_days_per_month)
+    growdaysPERmonth <- as.array(growdaysPERmonth)
 
     # Loop over the months to set the number of days that the growing period lasts in each month
     for (t in getYears(meanSowd)) {
@@ -242,28 +242,29 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
       badcells   <- ifelse(meanHard[, t, ] >= meanSowd[, t, ], 0, 1)
 
       for (month in 1:12) {
-        lastMonthday  <- which(days_months == month)[length(which(days_months == month))]
-        firstMonthday <- which(days_months == month)[1]
-        test_harvest_goodcells <- as.array(meanHard[, t, ] - firstMonthday + 1)
-        days_in_this_month_goodcells <- as.array(lastMonthday - meanSowd[, t, ] + 1)
-        days_in_this_month_goodcells[days_in_this_month_goodcells < 0] <- 0 # Month before sowing date
-        days_in_this_month_goodcells[days_in_this_month_goodcells > monthLength[month]] <- monthLength[month] # Month is completely after sowing date
-        days_in_this_month_goodcells[test_harvest_goodcells < 0] <- 0 # Month lies after harvest date
-        days_in_this_month_goodcells[test_harvest_goodcells > 0 & test_harvest_goodcells < monthLength[month]] <- days_in_this_month_goodcells[test_harvest_goodcells > 0 & test_harvest_goodcells < monthLength[month]] - (lastMonthday - meanHard[test_harvest_goodcells > 0 & test_harvest_goodcells < monthLength[month], t, ]) # Harvest date lies in the month. cut off the end of the month after harvest date
-        days_in_this_month_goodcells <- days_in_this_month_goodcells <- days_in_this_month_goodcells * goodcells
-        days_in_this_month_badcells_firstyear <- as.array(lastMonthday - meanSowd[, t, ] + 1)
-        days_in_this_month_badcells_firstyear[days_in_this_month_badcells_firstyear < 0] <- 0 # Month before sowing date
-        days_in_this_month_badcells_firstyear[days_in_this_month_badcells_firstyear > monthLength[month]] <- monthLength[month] # Month is completely after sowing date
-        days_in_this_month_badcells_secondyear <- as.array(meanHard[, t, ] - firstMonthday + 1)
-        days_in_this_month_badcells_secondyear[days_in_this_month_badcells_secondyear < 0] <- 0 # Month lies completely after harvest day
-        days_in_this_month_badcells_secondyear[days_in_this_month_badcells_secondyear > monthLength[month]] <- monthLength[month] # Month lies completely before harvest day
-        days_in_this_month_badcells <- (days_in_this_month_badcells_firstyear + days_in_this_month_badcells_secondyear) * badcells
+        lastMonthday  <- which(daysOfmonth == month)[length(which(daysOfmonth == month))]
+        firstMonthday <- which(daysOfmonth == month)[1]
+        testHarvestGoodcells <- as.array(meanHard[, t, ] - firstMonthday + 1)
+        daysGoodcells <- as.array(lastMonthday - meanSowd[, t, ] + 1)
+        daysGoodcells[daysGoodcells < 0] <- 0 # Month before sowing date
+        daysGoodcells[daysGoodcells > monthLength[month]] <- monthLength[month] # Month is completely after sowing date
+        daysGoodcells[testHarvestGoodcells < 0] <- 0 # Month lies after harvest date
+        daysGoodcells[testHarvestGoodcells > 0 &
+                      testHarvestGoodcells < monthLength[month]] <- daysGoodcells[testHarvestGoodcells > 0 & testHarvestGoodcells < monthLength[month]] - (lastMonthday - meanHard[testHarvestGoodcells > 0 & testHarvestGoodcells < monthLength[month], t, ]) # Harvest date lies in the month. cut off the end of the month after harvest date
+        daysGoodcells <- daysGoodcells <- daysGoodcells * goodcells
+        daysBadcellsFirstyear <- as.array(lastMonthday - meanSowd[, t, ] + 1)
+        daysBadcellsFirstyear[daysBadcellsFirstyear < 0] <- 0 # Month before sowing date
+        daysBadcellsFirstyear[daysBadcellsFirstyear > monthLength[month]] <- monthLength[month] # Month is completely after sowing date
+        daysBadcellsScdyear <- as.array(meanHard[, t, ] - firstMonthday + 1)
+        daysBadcellsScdyear[daysBadcellsScdyear < 0] <- 0 # Month lies completely after harvest day
+        daysBadcellsScdyear[daysBadcellsScdyear > monthLength[month]] <- monthLength[month] # Month lies completely before harvest day
+        daysBadcells <- (daysBadcellsFirstyear + daysBadcellsScdyear) * badcells
 
-        grow_days_per_month[, t, month] <- days_in_this_month_goodcells + days_in_this_month_badcells
+        growdaysPERmonth[, t, month] <- daysGoodcells + daysBadcells
       }
     }
 
-    out <- as.magpie(grow_days_per_month)
+    out <- as.magpie(growdaysPERmonth, spatial = 1)
 
     if (any(is.na(out))) {
       stop("calcGrowingPeriod produced NAs")
@@ -276,7 +277,7 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
       month        <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
       monthLength <- c(31,   28,   31,   30,   31,   30,   31,   31,   30,   31,   30,   31)
       names(monthLength) <- month
-      out[out > as.magpie(monthLength)] <- magpie_expand(as.magpie(monthLength), out)[out > as.magpie(monthLength)]
+      out[out > as.magpie(monthLength, spatial = 1)] <- magpie_expand(as.magpie(monthLength, spatial = 1), out)[out > as.magpie(monthLength, spatial = 1)]
       out[out < 0] <- 0
 
     }
@@ -285,7 +286,8 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
 
     # load smoothed data
     baseline <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = cfg$baseline_hist,
-                           stage = "smoothed", yield_ratio = yield_ratio, aggregate = FALSE)
+                           stage = "smoothed", yield_ratio = yield_ratio,
+                           cells = "lpjcell", aggregate = FALSE)
 
     if (climatetype == cfg$baseline_hist) {
 
@@ -293,8 +295,9 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
 
     } else {
 
-      x        <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = climatetype,
-                             stage = "smoothed", yield_ratio = yield_ratio, aggregate = FALSE)
+      x   <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = climatetype,
+                         stage = "smoothed", yield_ratio = yield_ratio,
+                         cells = "lpjcell", aggregate = FALSE)
       # Harmonize to baseline
       out <- toolHarmonize2Baseline(x = x, base = baseline, ref_year = cfg$ref_year_hist)
     }
@@ -302,29 +305,35 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
   } else if (stage == "harmonized2020") {
 
     # read in historical data for subtype
-    baseline2020    <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = cfg$baseline_gcm,
-                                  stage = "harmonized", yield_ratio = yield_ratio, aggregate = FALSE)
+    baseline2020 <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = cfg$baseline_gcm,
+                               stage = "harmonized", yield_ratio = yield_ratio,
+                               cells = "lpjcell", aggregate = FALSE)
 
     if (climatetype == cfg$baseline_gcm) {
       out <- baseline2020
 
     } else {
 
-      x        <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = climatetype,
-                             stage = "smoothed", yield_ratio = yield_ratio, aggregate = FALSE)
+      x   <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = climatetype,
+                         stage = "smoothed", yield_ratio = yield_ratio,
+                         cells = "lpjcell", aggregate = FALSE)
       out <- toolHarmonize2Baseline(x, baseline2020, ref_year = cfg$ref_year_gcm)
     }
 
   } else {
     stop("Stage argument not supported!")
- }
+  }
 
   # replace values above days of a month with days of the month & negative values with 0
   month        <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
   monthLength <- c(31,   28,   31,   30,   31,   30,   31,   31,   30,   31,   30,   31)
   names(monthLength) <- month
-  out[out > as.magpie(monthLength)] <- magpie_expand(as.magpie(monthLength), out)[out > as.magpie(monthLength)]
+  out[out > as.magpie(monthLength, spatial = 1)] <- magpie_expand(as.magpie(monthLength, spatial = 1), out)[out > as.magpie(monthLength, spatial = 1)]
   out[out < 0] <- 0
+
+  if (cells == "magpiecell") {
+    out <- toolCoord2Isocell(out)
+  }
 
   return(list(x            = out,
               weight       = NULL,

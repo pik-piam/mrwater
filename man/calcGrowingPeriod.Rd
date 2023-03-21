@@ -9,7 +9,8 @@ calcGrowingPeriod(
     "ggcmi_phase3_nchecks_9ca735cb"),
   climatetype = "GSWP3-W5E5:historical",
   stage = "harmonized2020",
-  yield_ratio = 0.1
+  yield_ratio = 0.1,
+  cells = "magpiecell"
 )
 }
 \arguments{
@@ -20,13 +21,16 @@ calcGrowingPeriod(
 \item{stage}{Degree of processing: raw, smoothed, harmonized, harmonized2020}
 
 \item{yield_ratio}{threshold for cell yield over global average. crops in cells below threshold will be ignored}
+
+\item{cells}{Number of cells to be returned
+(select "magpiecell" for 59199 cells or "lpjcell" for 67420 cells)}
 }
 \value{
 magpie object in cellular resolution
 }
 \description{
-This function determines a mean sowing date and a mean growing period for each cell
-in order to determine when irrigation can take place.
+This function determines a mean sowing date and a mean growing period
+             for each cell in order to determine when irrigation can take place.
 }
 \examples{
 \dontrun{

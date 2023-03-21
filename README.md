@@ -48,7 +48,7 @@ In case of questions / problems please contact Felicitas Beier <beier@pik-potsda
 
 To cite package **mrwater** in publications use:
 
-Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2023). _mrwater: madrat based MAgPIE water Input Data Library_. R package version 1.5.22, <https://github.com/pik-piam/mrwater>.
+Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2023). _mrwater: madrat based MAgPIE water Input Data Library_. R package version 1.5.22, <URL: https://github.com/pik-piam/mrwater>.
 
 A BibTeX entry for LaTeX users is
 
