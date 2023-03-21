@@ -27,7 +27,14 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
                               climatetype = "GSWP3-W5E5:historical", stage = "harmonized2020", yield_ratio = 0.1,
                               cells = "magpiecell") {
 
-  cfg <- toolLPJmLVersion(version = lpjml["natveg"], climatetype = climatetype)
+  cfgNatveg <- toolLPJmLVersion(version = lpjml["natveg"], climatetype = climatetype)
+  cfgCrop   <- toolLPJmLVersion(version = lpjml["crop"],   climatetype = climatetype)
+
+  lpjmlReadin  <- c(natveg = unname(cfgNatveg$readin_version),
+                    crop   = unname(cfgCrop$readin_version))
+
+  lpjmlBaseline <- c(natveg = unname(cfgNatveg$baseline_version),
+                      crop  = unname(cfgCrop$baseline_version))
 
   if (stage %in% c("raw", "smoothed")) {
 
@@ -51,22 +58,22 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     # Read sowing and harvest date input (new for LPJmL5)
     ####################################################################################
 
-    lpj2mag <- toolGetMapping("MAgPIE_LPJmL.csv",
-                              type = "sectoral",
-                              where = "mappingfolder")
+    lpj2mag      <- toolGetMapping("MAgPIE_LPJmL.csv",
+                                    type = "sectoral",
+                                    where = "mappingfolder")
 
     # Read yields first
-    yields <- collapseNames(calcOutput("LPJmL_new", version = lpjml["crop"],
-                                        climatetype = climatetype, subtype = "harvest",
-                                        stage = "raw", aggregate = FALSE)[, , "irrigated"])
+    yields <- collapseNames(calcOutput("LPJmL_new", version = lpjmlReadin["crop"],
+                                                          climatetype = climatetype, subtype = "harvest",
+                                                          stage = "raw", aggregate = FALSE)[, , "irrigated"])
 
     # Load Sowing dates from LPJmL (use just rainfed dates since they do not differ for irrigated and rainfed)
-    sowd   <- collapseNames(calcOutput("LPJmL_new", version = lpjml["crop"],
-                                      climatetype = climatetype,  subtype = "sdate",
-                                      stage = "raw", aggregate = FALSE)[, , "rainfed"])
-    hard   <- collapseNames(calcOutput("LPJmL_new", version = lpjml["crop"],
-                                      climatetype = climatetype,  subtype = "hdate",
-                                      stage = "raw", aggregate = FALSE)[, , "rainfed"])
+    sowd   <- collapseNames(calcOutput("LPJmL_new", version = lpjmlReadin["crop"],
+                                                          climatetype = climatetype,  subtype = "sdate",
+                                                          stage = "raw", aggregate = FALSE)[, , "rainfed"])
+    hard   <- collapseNames(calcOutput("LPJmL_new", version = lpjmlReadin["crop"],
+                                                          climatetype = climatetype,  subtype = "hdate",
+                                                          stage = "raw", aggregate = FALSE)[, , "rainfed"])
 
     goodCrops <- lpj2mag$MAgPIE[which(lpj2mag$LPJmL %in% getItems(sowd, dim = 3))]
     badCrops  <- lpj2mag$MAgPIE[which(!lpj2mag$LPJmL %in% getItems(sowd, dim = 3))]
@@ -241,6 +248,7 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
       goodcells  <- ifelse(meanHard[, t, ] >= meanSowd[, t, ], 1, 0)
       badcells   <- ifelse(meanHard[, t, ] >= meanSowd[, t, ], 0, 1)
 
+      #nolint start
       for (month in 1:12) {
         lastMonthday  <- which(daysOfmonth == month)[length(which(daysOfmonth == month))]
         firstMonthday <- which(daysOfmonth == month)[1]
@@ -262,7 +270,7 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
 
         growdaysPERmonth[, t, month] <- daysGoodcells + daysBadcells
       }
-    }
+    } #nolint end
 
     out <- as.magpie(growdaysPERmonth, spatial = 1)
 
@@ -285,11 +293,11 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
   } else if (stage == "harmonized") {
 
     # load smoothed data
-    baseline <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = cfg$baseline_hist,
+    baseline <- calcOutput("GrowingPeriod", lpjml = lpjmlBaseline, climatetype = cfgNatveg$baseline_hist,
                            stage = "smoothed", yield_ratio = yield_ratio,
                            cells = "lpjcell", aggregate = FALSE)
 
-    if (climatetype == cfg$baseline_hist) {
+    if (climatetype == cfgNatveg$baseline_hist) {
 
       out <- baseline
 
@@ -299,25 +307,25 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
                          stage = "smoothed", yield_ratio = yield_ratio,
                          cells = "lpjcell", aggregate = FALSE)
       # Harmonize to baseline
-      out <- toolHarmonize2Baseline(x = x, base = baseline, ref_year = cfg$ref_year_hist)
+      out <- toolHarmonize2Baseline(x = x, base = baseline, ref_year = cfgNatveg$ref_year_hist)
     }
 
   } else if (stage == "harmonized2020") {
 
     # read in historical data for subtype
-    baseline2020 <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = cfg$baseline_gcm,
+    baseline2020    <- calcOutput("GrowingPeriod", lpjml = lpjmlBaseline, climatetype = cfgNatveg$baseline_gcm,
                                stage = "harmonized", yield_ratio = yield_ratio,
                                cells = "lpjcell", aggregate = FALSE)
 
-    if (climatetype == cfg$baseline_gcm) {
+    if (climatetype == cfgNatveg$baseline_gcm) {
       out <- baseline2020
 
     } else {
 
-      x   <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = climatetype,
+      x        <- calcOutput("GrowingPeriod", lpjml = lpjmlReadin, climatetype = climatetype,
                          stage = "smoothed", yield_ratio = yield_ratio,
                          cells = "lpjcell", aggregate = FALSE)
-      out <- toolHarmonize2Baseline(x, baseline2020, ref_year = cfg$ref_year_gcm)
+      out <- toolHarmonize2Baseline(x, baseline2020, ref_year = cfgNatveg$ref_year_gcm)
     }
 
   } else {

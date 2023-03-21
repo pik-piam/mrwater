@@ -35,7 +35,7 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
   preservationstatus <- strsplit(efrMethod, ":")[[1]][2]
 
   # Monthly Discharge from LPJmL based on historical baseline (raw: including variation)
-  monthlyDischarge   <- setYears(calcOutput("LPJmL_new", version = lpjml[["natveg"]],
+  monthlyDischarge   <- setYears(calcOutput("LPJmL_new", version = cfg$readin_version,
                                              subtype = "mdischarge", climatetype = cfg$baseline_hist,
                                              stage = "raw", years = refYears, aggregate = FALSE),
                                   refYears)
