@@ -23,8 +23,10 @@
 #'
 #' @export
 
-calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb"),
-                              climatetype = "GSWP3-W5E5:historical", stage = "harmonized2020",
+calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
+                                        crop = "ggcmi_phase3_nchecks_9ca735cb"),
+                              climatetype = "GSWP3-W5E5:historical",
+                              stage = "harmonized2020",
                               yield_ratio = 0.1, # nolint
                               cells = "magpiecell") {
 
@@ -65,16 +67,16 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
 
     # Read yields first
     yields <- collapseNames(calcOutput("LPJmL_new", version = lpjmlReadin["crop"],
-                                                          climatetype = climatetype, subtype = "harvest",
-                                                          stage = "raw", aggregate = FALSE)[, , "irrigated"])
+                                       climatetype = climatetype, subtype = "harvest",
+                                       stage = "raw", aggregate = FALSE)[, , "irrigated"])
 
     # Load Sowing dates from LPJmL (use just rainfed dates since they do not differ for irrigated and rainfed)
     sowd   <- collapseNames(calcOutput("LPJmL_new", version = lpjmlReadin["crop"],
-                                                          climatetype = climatetype,  subtype = "sdate",
-                                                          stage = "raw", aggregate = FALSE)[, , "rainfed"])
+                                        climatetype = climatetype,  subtype = "sdate",
+                                        stage = "raw", aggregate = FALSE)[, , "rainfed"])
     hard   <- collapseNames(calcOutput("LPJmL_new", version = lpjmlReadin["crop"],
-                                                          climatetype = climatetype,  subtype = "hdate",
-                                                          stage = "raw", aggregate = FALSE)[, , "rainfed"])
+                                        climatetype = climatetype,  subtype = "hdate",
+                                        stage = "raw", aggregate = FALSE)[, , "rainfed"])
 
     goodCrops <- lpj2mag$MAgPIE[which(lpj2mag$LPJmL %in% getItems(sowd, dim = 3))]
     badCrops  <- lpj2mag$MAgPIE[which(!lpj2mag$LPJmL %in% getItems(sowd, dim = 3))]
@@ -169,22 +171,16 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     meanGrper <- dimSums(growPeriod * rmWintercrops * rmLowYield, dim = 3, na.rm = TRUE) / nCrops
     meanGrper[is.infinite(meanGrper)] <- NA
 
-    #############################################################################
-
     ####################################################################################
     # Step 5 remove sowd1 for sowing date calculation
     ####################################################################################
-
     rmSOWD1            <- sowd
     rmSOWD1[, , ]      <- 1
     rmSOWD1[sowd == 1] <- NA
 
     ####################################################################################
-
-    ####################################################################################
     # Step 6 Calculate mean sowing date
     ####################################################################################
-
     nCrops   <- dimSums(rmWintercrops * rmLowYield * rmSOWD1, dim = 3, na.rm = TRUE)
     meanSowd <- dimSums(growPeriod * rmWintercrops * rmLowYield * rmSOWD1, dim = 3, na.rm = TRUE) / nCrops
     meanSowd[is.infinite(meanSowd)] <- NA
@@ -254,6 +250,7 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
 
     meanHard <- as.array(meanHard)
     meanSowd <- as.array(meanSowd)
+
     growdaysPERmonth <- as.array(growdaysPERmonth)
 
     # Loop over the months to set the number of days that the growing period lasts in each month
@@ -332,8 +329,9 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
 
     # read in historical data for subtype
     baseline2020    <- calcOutput("GrowingPeriod", lpjml = lpjmlBaseline, climatetype = cfgNatveg$baseline_gcm,
-                               stage = "harmonized", yield_ratio = yield_ratio,
-                               cells = "lpjcell", aggregate = FALSE)
+                                  stage = "harmonized", yield_ratio = yield_ratio,
+                                 cells = "lpjcell", aggregate = FALSE)
+
 
     if (climatetype == cfgNatveg$baseline_gcm) {
       out <- baseline2020
