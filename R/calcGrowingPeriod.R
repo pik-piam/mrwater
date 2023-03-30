@@ -19,12 +19,13 @@
 #'
 #' @importFrom madrat toolGetMapping toolAggregate
 #' @importFrom magclass collapseNames getItems new.magpie getYears dimSums magpie_expand
-#' @importFrom mrcommons toolHarmonize2Baseline toolSmooth toolLPJmLVersion
+#' @importFrom mrcommons toolHarmonize2Baseline toolSmooth toolLPJmLVersion toolGetMappingCoord2Country
 #'
 #' @export
 
 calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop = "ggcmi_phase3_nchecks_9ca735cb"),
-                              climatetype = "GSWP3-W5E5:historical", stage = "harmonized2020", yield_ratio = 0.1,
+                              climatetype = "GSWP3-W5E5:historical", stage = "harmonized2020",
+                              yield_ratio = 0.1, # nolint
                               cells = "magpiecell") {
 
   cfgNatveg <- toolLPJmLVersion(version = lpjml["natveg"], climatetype = climatetype)
@@ -119,8 +120,9 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
                       dim = 3)
     yields <- collapseNames(yields[, , goodCrops])
 
-    cell2GLO     <- array(c(getItems(yields, dim = 1),
-                          rep("GLO", 59199)), dim = c(59199, 2))
+    cell2GLO    <- array(c(getItems(yields, dim = 1),
+                          rep("GLO", length(getItems(yields, dim = 1)))),
+                          dim = c(length(getItems(yields, dim = 1)), 2))
     gloYields   <- toolAggregate(yields, cell2GLO, weight = setYears(area, NULL))
     yieldsRatio <- yields / gloYields
 
@@ -135,13 +137,16 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     ####################################################################################
     # Step 3 remove wintercrops from both calculations for the northern hemisphere: sowd>180, hard>365
     ####################################################################################
+    # get northern hemisphere cells (where lat > 0)
+    mapping       <- toolGetMappingCoord2Country()
+    mapping$lat   <- as.numeric(gsub("p", ".", gsub(".*\\.", "", mapping$coords)))
+    cellsNrthnHem <- which(mapping$lat > 0)
 
-    cellsNrthnHem <- which(magpie_coord[, 2] > 0)
-    rmWintercrops            <- new.magpie(cells_and_regions = getCells(sowd),
-                                            years = getYears(sowd),
-                                            names = getNames(sowd),
-                                            sets = c("region", "year", "crop"),
-                                            fill = 1)
+    rmWintercrops <- new.magpie(cells_and_regions = getItems(sowd, dim = 1),
+                                years = getItems(sowd, dim = 2),
+                                names = getItems(sowd, dim = 3),
+                                sets = c("x", "y", "iso", "year", "crop"),
+                                fill = 1)
 
     # define all crops sowed after 180 days and where sowing date is after harvest date as wintercrops
     rmWintercrops[cellsNrthnHem, , ] <- ifelse(sowd[cellsNrthnHem, , ] > 180 &
@@ -193,7 +198,18 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     #        (reflecting that all crops have been eliminated).
     ####################################################################################
 
-    dams <- readSource("Dams", convert = "onlycorrect")
+    tmp <- readSource("Dams", convert = "onlycorrect")
+    tmp <- collapseDim(addLocation(tmp), dim = c("region", "region1"))
+
+    dams <- new.magpie(cells_and_regions = paste(getItems(meanSowd, dim = "x", full = TRUE),
+                                                 getItems(meanSowd, dim = "y", full = TRUE),
+                                                 sep = "."),
+                       years = getItems(tmp, dim = 2),
+                       names = getItems(tmp, dim = 3),
+                       sets = c("x", "y", "year", "data"),
+                       fill = 0)
+    dams[getItems(tmp, dim = 1), , ] <- tmp
+    getItems(dams, dim = 1, raw = TRUE) <- getItems(meanSowd, dim = 1)
 
     for (t in getYears(meanSowd)) {
       meanSowd[which(dams == 1), t]  <- 1
@@ -202,8 +218,8 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
 
     meanSowd[is.na(meanSowd)]   <- 1
     meanGrper[is.na(meanGrper)] <- 365
-    meanSowd         <- round(meanSowd)
-    meanGrper  <- round(meanGrper)
+    meanSowd  <- round(meanSowd)
+    meanGrper <- round(meanGrper)
 
     ####################################################################################
 
@@ -227,8 +243,8 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     }
 
     # mag object for the growing days per month
-    growdaysPERmonth <- new.magpie(cells_and_regions = getCells(meanSowd),
-                                      years = getYears(meanSowd),
+    growdaysPERmonth <- new.magpie(cells_and_regions = getItems(meanSowd, dim = 1),
+                                      years = getItems(meanSowd, dim = 2),
                                       names = month,
                                       fill = 0)
 
@@ -241,7 +257,7 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     growdaysPERmonth <- as.array(growdaysPERmonth)
 
     # Loop over the months to set the number of days that the growing period lasts in each month
-    for (t in getYears(meanSowd)) {
+    for (t in getItems(meanSowd, dim = 2)) {
 
       # goodcells are cells in which harvest date is after sowing date,
       # i.e. the cropping period does not cross the beginning of the year
@@ -273,6 +289,7 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
     } #nolint end
 
     out <- as.magpie(growdaysPERmonth, spatial = 1)
+    getSets(out) <- c("x", "y", "iso", "year", "data")
 
     if (any(is.na(out))) {
       stop("calcGrowingPeriod produced NAs")
@@ -285,7 +302,8 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
       month        <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
       monthLength <- c(31,   28,   31,   30,   31,   30,   31,   31,   30,   31,   30,   31)
       names(monthLength) <- month
-      out[out > as.magpie(monthLength, spatial = 1)] <- magpie_expand(as.magpie(monthLength, spatial = 1), out)[out > as.magpie(monthLength, spatial = 1)]
+      out[out > as.magpie(monthLength, spatial = 1)] <- magpie_expand(as.magpie(monthLength, spatial = 1),
+                                                                      out)[out > as.magpie(monthLength, spatial = 1)]
       out[out < 0] <- 0
 
     }
@@ -336,7 +354,8 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", c
   month        <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
   monthLength <- c(31,   28,   31,   30,   31,   30,   31,   31,   30,   31,   30,   31)
   names(monthLength) <- month
-  out[out > as.magpie(monthLength, spatial = 1)] <- magpie_expand(as.magpie(monthLength, spatial = 1), out)[out > as.magpie(monthLength, spatial = 1)]
+  out[out > as.magpie(monthLength, spatial = 1)] <- magpie_expand(as.magpie(monthLength, spatial = 1),
+                                                                  out)[out > as.magpie(monthLength, spatial = 1)]
   out[out < 0] <- 0
 
   if (cells == "magpiecell") {
