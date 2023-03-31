@@ -299,8 +299,8 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
       month        <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
       monthLength <- c(31,   28,   31,   30,   31,   30,   31,   31,   30,   31,   30,   31)
       names(monthLength) <- month
-      out[out > as.magpie(monthLength, spatial = 1)] <- magpie_expand(as.magpie(monthLength, spatial = 1),
-                                                                      out)[out > as.magpie(monthLength, spatial = 1)]
+      out[out > as.magpie(monthLength)] <- magpie_expand(as.magpie(monthLength),
+                                                         out)[out > as.magpie(monthLength)]
       out[out < 0] <- 0
 
     }
@@ -328,19 +328,18 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
   } else if (stage == "harmonized2020") {
 
     # read in historical data for subtype
-    baseline2020    <- calcOutput("GrowingPeriod", lpjml = lpjmlBaseline, climatetype = cfgNatveg$baseline_gcm,
+    baseline2020 <- calcOutput("GrowingPeriod", lpjml = lpjmlBaseline, climatetype = cfgNatveg$baseline_gcm,
                                   stage = "harmonized", yield_ratio = yield_ratio,
-                                 cells = "lpjcell", aggregate = FALSE)
+                                  cells = "lpjcell", aggregate = FALSE)
 
 
     if (climatetype == cfgNatveg$baseline_gcm) {
       out <- baseline2020
-
     } else {
 
-      x        <- calcOutput("GrowingPeriod", lpjml = lpjmlReadin, climatetype = climatetype,
-                         stage = "smoothed", yield_ratio = yield_ratio,
-                         cells = "lpjcell", aggregate = FALSE)
+      x   <- calcOutput("GrowingPeriod", lpjml = lpjmlReadin, climatetype = climatetype,
+                        stage = "smoothed", yield_ratio = yield_ratio,
+                        cells = "lpjcell", aggregate = FALSE)
       out <- toolHarmonize2Baseline(x, baseline2020, ref_year = cfgNatveg$ref_year_gcm)
     }
 
@@ -352,12 +351,12 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
   month        <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
   monthLength <- c(31,   28,   31,   30,   31,   30,   31,   31,   30,   31,   30,   31)
   names(monthLength) <- month
-  out[out > as.magpie(monthLength, spatial = 1)] <- magpie_expand(as.magpie(monthLength, spatial = 1),
-                                                                  out)[out > as.magpie(monthLength, spatial = 1)]
+  out[out > as.magpie(monthLength)] <- magpie_expand(as.magpie(monthLength),
+                                                     out)[out > as.magpie(monthLength)]
   out[out < 0] <- 0
 
   if (cells == "magpiecell") {
-    out <- toolCoord2Isocell(out)
+    out <- toolCoord2Isocell(out, cells = cells)
   }
 
   return(list(x            = out,
