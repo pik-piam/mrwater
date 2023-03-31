@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using the metadata from this file.
+type: software
+title: 'mrwater: madrat based MAgPIE water Input Data Library'
+version: 1.6.1.9003
+date-released: '2023-03-31'
+abstract: Provides functions for MAgPIE cellular input data generation and stand-alone
+  water calculations.
+authors:
+- family-names: Beier
+  given-names: Felicitas
+  email: beier@pik-potsdam.de
+- family-names: Heinke
+  given-names: Jens
+  email: heinke@pik-potsdam.de
+- family-names: Karstens
+  given-names: Kristine
+  email: karstens@pik-potsdam.de
+- family-names: Bodirsky
+  given-names: Benjamin Leon
+  email: bodirsky@pik-potsdam.de
+- family-names: Dietrich
+  given-names: Jan Philipp
+  email: dietrich@pik-potsdam.de
+license: LGPL-3.0
+repository-code: https://github.com/pik-piam/mrwater
+
