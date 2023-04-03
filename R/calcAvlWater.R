@@ -55,11 +55,6 @@ calcAvlWater <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop =
                                                       climatetype = climatetype,
                                                       aggregate = FALSE)
 
-    ### Calculate available water per month (monthAvlWat)
-    # Empty array
-    monthAvlWat     <- monthRunoffMAG
-    monthAvlWat[, , ] <- NA
-
     ## River basin water allocation algorithm:
     # Read in river structure
     rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
@@ -75,6 +70,11 @@ calcAvlWater <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop =
     # Transform to array (faster calculation)
     monthDischargeMAG <- as.array(collapseNames(monthDischargeMAG))
     monthRunoffMAG    <- as.array(collapseNames(monthRunoffMAG))
+
+    ### Calculate available water per month (monthAvlWat)
+    # Empty array
+    monthAvlWat <- monthRunoffMAG
+    monthAvlWat[, , ] <- NA
 
     # Sum the runoff in all basins and allocate it to the basin cells with discharge as weight
     for (basin in unique(basinCode)) {
