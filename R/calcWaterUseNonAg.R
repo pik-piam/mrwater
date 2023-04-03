@@ -316,7 +316,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
     ### Note: Seasonality "grper" will be deleted when we switch to new mrwater preprocessing
 
     # Get growing days per month
-    growDays <- calcOutput("GrowingPeriod", aggregate = FALSE,
+    growDays <- calcOutput("GrowingPeriod", aggregate = FALSE, cells = "lpjcell",
                            lpjml = lpjml, climatetype = climatetype, yield_ratio = 0.1)
 
     # Growing days per year
