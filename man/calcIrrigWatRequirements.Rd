@@ -4,7 +4,13 @@
 \alias{calcIrrigWatRequirements}
 \title{calcIrrigWatRequirements}
 \usage{
-calcIrrigWatRequirements(selectyears, lpjml, climatetype, multicropping)
+calcIrrigWatRequirements(
+  selectyears,
+  lpjml,
+  climatetype,
+  multicropping,
+  crops = "combined"
+)
 }
 \arguments{
 \item{selectyears}{Years to be returned}
@@ -26,6 +32,11 @@ Multiple Cropping Suitability mask selected
 "potential:exogenous": potentially multicropped areas given
                        GAEZ suitability classification)
 (e.g. TRUE:actual:total; TRUE:none; FALSE)}
+
+\item{crops}{standard: default crops,
+proxy: proxy crops for LPJmL to MAgPIE mapping and treatment of perennials
+combined: final output that includes special treatment of perennials
+and standard crop aggregation}
 }
 \value{
 magpie object in cellular resolution

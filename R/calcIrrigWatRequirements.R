@@ -19,6 +19,10 @@
 #'                      "potential:exogenous": potentially multicropped areas given
 #'                                             GAEZ suitability classification)
 #'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
+#' @param crops         standard: default crops,
+#'                      proxy: proxy crops for LPJmL to MAgPIE mapping and treatment of perennials
+#'                      combined: final output that includes special treatment of perennials
+#'                      and standard crop aggregation
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Jens Heinke
@@ -35,7 +39,7 @@
 #' @importFrom withr local_options
 
 calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
-                                     multicropping) {
+                                     multicropping, crops = "combined") {
 
   # Set size limit
   local_options(magclass_sizeLimit = 1e+12)
@@ -55,9 +59,9 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
 
   if (multicropping) {
 
-    # Read in whole-year blue water consumption for irrigated crops (in m^3 per ha per yr):
+    # Read in whole-year blue water consumption for irrigated annual crops (in m^3 per ha per yr):
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:year",
-                      areaMask = areaMask,
+                      areaMask = areaMask, crops = crops,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 
@@ -132,11 +136,30 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
   irrigReq[, , "withdrawal"]  <- watWW
 
   # Aggregate to MAgPIE crops
-  irrigReq <- toolAggregate(irrigReq, lpj2mag, from = "LPJmL", to = "MAgPIE",
-                             dim = "crop", partrel = TRUE)
+  if (crops == "combined") {
 
-  # Pasture is not irrigated in MAgPIE
-  irrigReq <- irrigReq[, , "pasture", invert = TRUE]
+    irrigReqStandard <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
+                                   lpjml = lpjml, climatetype = climatetype,
+                                   multicropping = multicropping, crops = "standard")
+    irrigReq <- toolAggregate(irrigReqStandard, lpj2mag, from = "LPJmL", to = "MAgPIE",
+                              dim = "crop", partrel = TRUE)
+
+    # Pasture is not irrigated in MAgPIE
+    irrigReq <- irrigReq[, , "pasture", invert = TRUE]
+
+    if (multicropping) {
+      # Special treatment of crops that are perennials in MAgPIE, but are proxied by an
+      # annual LPJmL crop type
+      irrigReqProxy <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
+                                     lpjml = lpjml, climatetype = climatetype,
+                                     multicropping = multicropping,
+                                     crops = "proxy")[, , c("groundnut", "maize")]
+      irrigReq[, , "oilpalm"]   <- irrigReqProxy[, , "groundnut"]
+      irrigReq[, , "others"]    <- irrigReqProxy[, , "maize"]
+      irrigReq[, , "cottn_pro"] <- irrigReqProxy[, , "groundnut"]
+    }
+  }
+
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {
