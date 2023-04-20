@@ -71,7 +71,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
     # (Note: areaMask argument not relevant here, but needs to be set)
     # ToDo: as soon as code review complete, set default in calcBlueWaterConsumption
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
-                      areaMask = "potential:endogenous",
+                      areaMask = "potential:endogenous", crops = "standard",
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 
@@ -140,7 +140,8 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
 
     irrigReqStandard <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                                    lpjml = lpjml, climatetype = climatetype,
-                                   multicropping = multicropping, crops = "standard")
+                                   multicropping = multicropping, crops = "standard",
+                                   aggregate = FALSE)
     irrigReq <- toolAggregate(irrigReqStandard, lpj2mag, from = "LPJmL", to = "MAgPIE",
                               dim = "crop", partrel = TRUE)
 
@@ -151,15 +152,14 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
       # Special treatment of crops that are perennials in MAgPIE, but are proxied by an
       # annual LPJmL crop type
       irrigReqProxy <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
-                                     lpjml = lpjml, climatetype = climatetype,
-                                     multicropping = multicropping,
-                                     crops = "proxy")[, , c("groundnut", "maize")]
+                                  lpjml = lpjml, climatetype = climatetype,
+                                  multicropping = multicropping, crops = "proxy",
+                                  aggregate = FALSE)[, , c("groundnut", "maize")]
       irrigReq[, , "oilpalm"]   <- irrigReqProxy[, , "groundnut"]
       irrigReq[, , "others"]    <- irrigReqProxy[, , "maize"]
       irrigReq[, , "cottn_pro"] <- irrigReqProxy[, , "groundnut"]
     }
   }
-
 
   # Check for NAs and negative values
   if (any(is.na(irrigReq))) {
