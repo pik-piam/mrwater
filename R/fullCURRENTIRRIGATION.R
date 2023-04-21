@@ -70,22 +70,22 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
              multicropping = TRUE, aggregate = FALSE,
              file = "yieldgain_multiple.mz")
 
-  # Agricultural Water Consumption (NOLIM)
+  # Agricultural Water Consumption (NOLIM) [in mio. m^3 per year]
   calcOutput("WaterUseCommittedAg",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              multicropping = FALSE, aggregate = FALSE,
-             file = "comAg_single_NOLIM.mz")
+             file = "comAgWat_single_NOLIM.mz")
   calcOutput("WaterUseCommittedAg",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
-             file = "comAg_multipleACT_NOLIM.mz")
+             file = "comAgWat_multipleACT_NOLIM.mz")
   calcOutput("WaterUseCommittedAg",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
-             file = "comAg_multiplePOT_NOLIM.mz")
+             file = "comAgWat_multiplePOT_NOLIM.mz")
 
   for (t in c(0, 100, 200)) {
 
@@ -172,6 +172,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
   # VALIDATION #
   ##############
   # Multiple cropping suitability per crop calculated based on crop and grass productivity
+  # (for LPJmL crop types)
   calcOutput("MulticroppingSuitability",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, suitability = "endogenous",
