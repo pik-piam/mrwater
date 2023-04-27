@@ -11,7 +11,7 @@ calcBlueWaterConsumption(
   fallowFactor = 0.75,
   areaMask,
   output,
-  crops = "standard"
+  proxycrops = "standard"
 )
 }
 \arguments{
@@ -42,8 +42,8 @@ season ("main" (LPJmL growing period), "year" (entire year)),
 separated by ":"
 ("crops:main", "crops:year", "grass:main", "grass:year")}
 
-\item{crops}{standard: default crops,
-proxy: proxy crops for LPJmL to MAgPIE mapping and treatment of perennials}
+\item{proxycrops}{standard: FALSE
+if TRUE: proxy crops of LPJmL for MAgPIE perennials selected}
 }
 \value{
 magpie object in cellular resolution
