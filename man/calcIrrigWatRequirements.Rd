@@ -9,7 +9,7 @@ calcIrrigWatRequirements(
   lpjml,
   climatetype,
   multicropping,
-  crops = "combined"
+  proxycrops = "combined"
 )
 }
 \arguments{
@@ -33,8 +33,8 @@ Multiple Cropping Suitability mask selected
                        GAEZ suitability classification)
 (e.g. TRUE:actual:total; TRUE:none; FALSE)}
 
-\item{crops}{standard: default crops,
-proxy: proxy crops for LPJmL to MAgPIE mapping and treatment of perennials
+\item{proxycrops}{standard: FALSE
+if TRUE: proxy crops of LPJmL for MAgPIE perennials selected
 combined: final output that includes special treatment of perennials
 and standard crop aggregation}
 }

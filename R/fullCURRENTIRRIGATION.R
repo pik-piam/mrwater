@@ -106,11 +106,11 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                file = paste0("comAgAreaACT_multipleACT_", t, ".mz"))
 
     calcOutput("IrrigAreaActuallyCommitted",
-               iteration = "committed_agriculture_fullPotential",
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, transDist = t,
                multicropping = "TRUE:potential:endogenous",
+               iteration = "committed_agriculture_fullPotential",
                aggregate = FALSE,
                file = paste0("comAgAreaACT_multiplePOT_", t, ".mz"))
 
@@ -165,6 +165,13 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                efrMethod = efrMethod, aggregate = FALSE,
                multicropping = "TRUE:actual:irrig_crop",
                file = paste0("shrHumanUsesFulfilledMultiple_", t, ".mz"))
+    calcOutput("ShrHumanUsesFulfilled",
+               transDist = t,
+               lpjml = lpjml, climatetype = climatetype,
+               selectyears = selectyears, iniyear = iniyear,
+               efrMethod = efrMethod, aggregate = FALSE,
+               multicropping = FALSE,
+               file = paste0("shrHumanUsesFulfilledSingle_", t, ".mz"))
 
   }
 

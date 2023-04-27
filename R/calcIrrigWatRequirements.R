@@ -19,8 +19,8 @@
 #'                      "potential:exogenous": potentially multicropped areas given
 #'                                             GAEZ suitability classification)
 #'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
-#' @param crops         standard: default crops,
-#'                      proxy: proxy crops for LPJmL to MAgPIE mapping and treatment of perennials
+#' @param proxycrops    standard: FALSE
+#'                      if TRUE: proxy crops of LPJmL for MAgPIE perennials selected
 #'                      combined: final output that includes special treatment of perennials
 #'                      and standard crop aggregation
 #'
@@ -39,7 +39,7 @@
 #' @importFrom withr local_options
 
 calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
-                                     multicropping, crops = "combined") {
+                                     multicropping, proxycrops = "combined") {
 
   # Set size limit
   local_options(magclass_sizeLimit = 1e+12)
@@ -61,7 +61,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
 
     # Read in whole-year blue water consumption for irrigated annual crops (in m^3 per ha per yr):
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:year",
-                      areaMask = areaMask, crops = crops,
+                      areaMask = areaMask, proxycrops = TRUE,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 
@@ -71,7 +71,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
     # (Note: areaMask argument not relevant here, but needs to be set)
     # ToDo: as soon as code review complete, set default in calcBlueWaterConsumption
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
-                      areaMask = "potential:endogenous", crops = "standard",
+                      areaMask = "potential:endogenous", proxycrops = FALSE,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 
@@ -136,11 +136,11 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
   irrigReq[, , "withdrawal"]  <- watWW
 
   # Aggregate to MAgPIE crops
-  if (crops == "combined") {
+  if (proxycrops == "combined") {
 
     irrigReqStandard <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                                    lpjml = lpjml, climatetype = climatetype,
-                                   multicropping = multicropping, crops = "standard",
+                                   multicropping = multicropping, proxycrops = FALSE,
                                    aggregate = FALSE)
     irrigReq <- toolAggregate(irrigReqStandard, lpj2mag, from = "LPJmL", to = "MAgPIE",
                               dim = "crop", partrel = TRUE)
@@ -153,7 +153,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
       # annual LPJmL crop type
       irrigReqProxy <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                                   lpjml = lpjml, climatetype = climatetype,
-                                  multicropping = multicropping, crops = "proxy",
+                                  multicropping = multicropping, proxycrops = TRUE,
                                   aggregate = FALSE)[, , c("groundnut", "maize")]
       irrigReq[, , "oilpalm"]   <- irrigReqProxy[, , "groundnut"]
       irrigReq[, , "others"]    <- irrigReqProxy[, , "maize"]
