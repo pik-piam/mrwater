@@ -350,7 +350,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
   } else if (cells == "lpjcell") {
     # Correct cell naming
     out <- out[selectcells, , ]
-    getItems(out, raw = TRUE) <- paste(map$coords, map$iso, sep = ".")
+    getItems(out, dim = 1, raw = TRUE) <- paste(map$coords, map$iso, sep = ".")
     getSets(out, fulldim = FALSE)[1] <- "x.y.iso"
   }
 
