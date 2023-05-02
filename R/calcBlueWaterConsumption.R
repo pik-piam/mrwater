@@ -41,7 +41,7 @@
 
 calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
                                      fallowFactor = 0.75, areaMask,
-                                     output, proxycrops = "standard") {
+                                     output, proxycrops = FALSE) {
 
   # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
   if (grepl("historical", climatetype)) {

@@ -11,7 +11,7 @@ calcBlueWaterConsumption(
   fallowFactor = 0.75,
   areaMask,
   output,
-  proxycrops = "standard"
+  proxycrops = FALSE
 )
 }
 \arguments{

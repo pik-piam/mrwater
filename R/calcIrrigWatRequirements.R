@@ -61,7 +61,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
 
     # Read in whole-year blue water consumption for irrigated annual crops (in m^3 per ha per yr):
     bwc <- calcOutput("BlueWaterConsumption", output = "crops:year",
-                      areaMask = areaMask, proxycrops = TRUE,
+                      areaMask = areaMask, proxycrops = FALSE,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, aggregate = FALSE)
 
