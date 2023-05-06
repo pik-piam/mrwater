@@ -140,8 +140,8 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
 
     irrigReqStandard <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                                    lpjml = lpjml, climatetype = climatetype,
-                                   multicropping = multicropping, proxycrops = FALSE,
-                                   aggregate = FALSE)
+                                   multicropping = paste(multicropping, areaMask, sep = ":"),
+                                   proxycrops = FALSE, aggregate = FALSE)
     irrigReq <- toolAggregate(irrigReqStandard, lpj2mag, from = "LPJmL", to = "MAgPIE",
                               dim = "crop", partrel = TRUE)
 
@@ -153,8 +153,8 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
       # annual LPJmL crop type
       irrigReqProxy <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                                   lpjml = lpjml, climatetype = climatetype,
-                                  multicropping = multicropping, proxycrops = TRUE,
-                                  aggregate = FALSE)[, , c("groundnut", "maize")]
+                                  multicropping = paste(multicropping, areaMask, sep = ":"),
+                                  proxycrops = TRUE, aggregate = FALSE)[, , c("groundnut", "maize")]
       irrigReq[, , "oilpalm"]   <- irrigReqProxy[, , "groundnut"]
       irrigReq[, , "others"]    <- irrigReqProxy[, , "maize"]
       irrigReq[, , "cottn_pro"] <- irrigReqProxy[, , "groundnut"]
