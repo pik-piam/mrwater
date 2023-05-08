@@ -130,6 +130,8 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # Calculate grass BWC in off season
     if (proxycrops) {
       # for perennial proxy crops (groundnut, maize): grass BWC everywhere
+      shrMC       <- suitMC
+      shrMC[, , ] <- 1
       grassBWC2nd <- grassBWC2nd
     } else {
       # for annual crops: grass BWC where multiple cropping is suitable
