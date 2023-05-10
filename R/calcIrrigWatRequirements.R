@@ -19,8 +19,13 @@
 #'                      "potential:exogenous": potentially multicropped areas given
 #'                                             GAEZ suitability classification)
 #'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
-#' @param crops         standard: default crops,
-#'                      proxy: proxy crops for LPJmL to MAgPIE mapping and treatment of perennials
+#' @param proxycrops    only relevant for multicropping == TRUE
+#'                      (must be set to "combined" otherwise, default);
+#'                      required for special treatment of LPJmL annual crops that serve as
+#'                      proxy for MAgPIE perennials;
+#'                      Arguments: TRUE, FALSE, combined
+#'                      FALSE: standard crops
+#'                      TRUE: proxy crops of LPJmL for MAgPIE perennials selected
 #'                      combined: final output that includes special treatment of perennials
 #'                      and standard crop aggregation
 #'
@@ -39,108 +44,27 @@
 #' @importFrom withr local_options
 
 calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
-                                     multicropping, crops = "combined") {
+                                     multicropping, proxycrops = "combined") {
 
   # Set size limit
   local_options(magclass_sizeLimit = 1e+12)
 
   # Extract multiple cropping suitability mask
-  areaMask      <- paste(str_split(multicropping, ":")[[1]][2],
-                         str_split(multicropping, ":")[[1]][3],
-                         sep = ":")
-  multicropping <- as.logical(str_split(multicropping, ":")[[1]][1])
+  areaMask  <- paste(str_split(multicropping, ":")[[1]][2],
+                     str_split(multicropping, ":")[[1]][3],
+                     sep = ":")
+  mcBoolean <- as.logical(str_split(multicropping, ":")[[1]][1])
 
-  ##############################
-  ######## Read in data ########
-  ##############################
-  ### Mappings
+  # Crop mapping
   lpj2mag <- toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral",
                             where = "mappingfolder")
 
-  if (multicropping) {
-
-    # Read in whole-year blue water consumption for irrigated annual crops (in m^3 per ha per yr):
-    bwc <- calcOutput("BlueWaterConsumption", output = "crops:year",
-                      areaMask = areaMask, crops = crops,
-                      lpjml = lpjml, climatetype = climatetype,
-                      selectyears = selectyears, aggregate = FALSE)
-
-  } else {
-
-    # Read in main-season blue water consumption for irrigated crops (in m^3 per ha per yr):
-    # (Note: areaMask argument not relevant here, but needs to be set)
-    # ToDo: as soon as code review complete, set default in calcBlueWaterConsumption
-    bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
-                      areaMask = "potential:endogenous", crops = "standard",
-                      lpjml = lpjml, climatetype = climatetype,
-                      selectyears = selectyears, aggregate = FALSE)
-
-  }
-
-  years       <- getItems(bwc, dim = "year")
-  cropnames   <- getItems(bwc, dim = "crop")
-  systemnames <- c("drip", "sprinkler", "surface")
-
-  ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
-  #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-  ### Alternatively: use regional efficiencies from Sauer et al. (2010), Table 5,
-  fieldEff <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
-                                       years = years,
-                                       names = cropnames,
-                                       sets = c("x.y.iso", "year", "crop")),
-                            dim = 3.1, add = "system", nm = systemnames)
-  fieldEff[, , "drip"]      <- 0.88 # Sauer: 0.8-0.93
-  fieldEff[, , "sprinkler"] <- 0.78 # Sauer: 0.6-0.86
-  fieldEff[, , "surface"]   <- 0.52 # Sauer: 0.25-0.5
-  #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-
-  ### Conveyance efficiency proxy [placeholder]
-  #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-  convEff <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
-                                      years = years,
-                                      names = cropnames,
-                                      sets = c("x.y.iso", "year", "crop")),
-                          dim = 3.1, add = "system", nm = systemnames)
-  convEff[, , "drip"]      <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
-  convEff[, , "sprinkler"] <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
-  convEff[, , "surface"]   <- 0.7
-  #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-
-  ##############################
-  ######## Calculations ########
-  ##############################
-
-  # Calculate project efficiency from given field and conveyance efficiencies
-  projectEff <- fieldEff * convEff
-
-  # Water withdrawal = crop water consumption + field losses + conveyance losses
-  watWW <- bwc / projectEff
-
-  # Conveyance loss (from river to field)
-  convLoss <- watWW * (1 - convEff)
-
-  # consumptive irrigation water = consumptive plant transpiration + evaporative conveyance loss
-  # (Note: According to Rost et al. (2008) 50% of conveyance loss are evaporative)
-  # ["Half of conveyance losses are assumed to occur due to evaporation from open
-  # water bodies and the remainder is added to the return flow as drainage." (Schaphoff 2018)]
-  watWC <- bwc + 0.5 * convLoss
-
-  # Output: irrigation water requirements (consumption and withdrawals)
-  irrigReq <- new.magpie(cells_and_regions = getCells(watWC),
-                         years = years,
-                         names = getItems(watWC, dim = 3),
-                         sets = c("x.y.iso", "year", "crop.system"))
-  irrigReq <- add_dimension(irrigReq, dim = 3.4, add = "irrig_type",
-                            nm = c("consumption", "withdrawal"))
-  irrigReq[, , "consumption"] <- watWC
-  irrigReq[, , "withdrawal"]  <- watWW
-
   # Aggregate to MAgPIE crops
-  if (crops == "combined") {
+  if (proxycrops == "combined") {
 
     irrigReqStandard <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                                    lpjml = lpjml, climatetype = climatetype,
-                                   multicropping = multicropping, crops = "standard",
+                                   multicropping = multicropping, proxycrops = FALSE,
                                    aggregate = FALSE)
     irrigReq <- toolAggregate(irrigReqStandard, lpj2mag, from = "LPJmL", to = "MAgPIE",
                               dim = "crop", partrel = TRUE)
@@ -148,17 +72,93 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
     # Pasture is not irrigated in MAgPIE
     irrigReq <- irrigReq[, , "pasture", invert = TRUE]
 
-    if (multicropping) {
+    if (mcBoolean) {
       # Special treatment of crops that are perennials in MAgPIE, but are proxied by an
       # annual LPJmL crop type
       irrigReqProxy <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
                                   lpjml = lpjml, climatetype = climatetype,
-                                  multicropping = multicropping, crops = "proxy",
+                                  multicropping = multicropping, proxycrops = TRUE,
                                   aggregate = FALSE)[, , c("groundnut", "maize")]
       irrigReq[, , "oilpalm"]   <- irrigReqProxy[, , "groundnut"]
       irrigReq[, , "others"]    <- irrigReqProxy[, , "maize"]
       irrigReq[, , "cottn_pro"] <- irrigReqProxy[, , "groundnut"]
     }
+  } else {
+
+    # Read in blue water consumption
+    if (mcBoolean) {
+      # Read in whole-year blue water consumption for irrigated annual crops (in m^3 per ha per yr):
+      bwc <- calcOutput("BlueWaterConsumption", output = "crops:year",
+                        areaMask = areaMask, proxycrops = proxycrops,
+                        lpjml = lpjml, climatetype = climatetype,
+                        selectyears = selectyears, aggregate = FALSE)
+    } else {
+      # Read in main-season blue water consumption for irrigated crops (in m^3 per ha per yr):
+      # (Note: areaMask argument not relevant here, but needs to be set)
+      # ToDo: as soon as code review complete, set default in calcBlueWaterConsumption
+      bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
+                        areaMask = "potential:endogenous", proxycrops = FALSE,
+                        lpjml = lpjml, climatetype = climatetype,
+                        selectyears = selectyears, aggregate = FALSE)
+    }
+
+    years       <- getItems(bwc, dim = "year")
+    cropnames   <- getItems(bwc, dim = "crop")
+    systemnames <- c("drip", "sprinkler", "surface")
+
+    ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
+    #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
+    ### Alternatively: use regional efficiencies from Sauer et al. (2010), Table 5,
+    fieldEff <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
+                                         years = years,
+                                         names = cropnames,
+                                         sets = c("x.y.iso", "year", "crop")),
+                              dim = 3.1, add = "system", nm = systemnames)
+    fieldEff[, , "drip"]      <- 0.88 # Sauer: 0.8-0.93
+    fieldEff[, , "sprinkler"] <- 0.78 # Sauer: 0.6-0.86
+    fieldEff[, , "surface"]   <- 0.52 # Sauer: 0.25-0.5
+    #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
+
+    ### Conveyance efficiency proxy [placeholder]
+    #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
+    convEff <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
+                                        years = years,
+                                        names = cropnames,
+                                        sets = c("x.y.iso", "year", "crop")),
+                             dim = 3.1, add = "system", nm = systemnames)
+    convEff[, , "drip"]      <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
+    convEff[, , "sprinkler"] <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
+    convEff[, , "surface"]   <- 0.7
+    #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
+
+    ##############################
+    ######## Calculations ########
+    ##############################
+
+    # Calculate project efficiency from given field and conveyance efficiencies
+    projectEff <- fieldEff * convEff
+
+    # Water withdrawal = crop water consumption + field losses + conveyance losses
+    watWW <- bwc / projectEff
+
+    # Conveyance loss (from river to field)
+    convLoss <- watWW * (1 - convEff)
+
+    # consumptive irrigation water = consumptive plant transpiration + evaporative conveyance loss
+    # (Note: According to Rost et al. (2008) 50% of conveyance loss are evaporative)
+    # ["Half of conveyance losses are assumed to occur due to evaporation from open
+    # water bodies and the remainder is added to the return flow as drainage." (Schaphoff 2018)]
+    watWC <- bwc + 0.5 * convLoss
+
+    # Output: irrigation water requirements (consumption and withdrawals)
+    irrigReq <- new.magpie(cells_and_regions = getCells(watWC),
+                           years = years,
+                           names = getItems(watWC, dim = 3),
+                           sets = c("x.y.iso", "year", "crop.system"))
+    irrigReq <- add_dimension(irrigReq, dim = 3.4, add = "irrig_type",
+                              nm = c("consumption", "withdrawal"))
+    irrigReq[, , "consumption"] <- watWC
+    irrigReq[, , "withdrawal"]  <- watWW
   }
 
   # Check for NAs and negative values

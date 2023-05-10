@@ -24,8 +24,8 @@
 #'                                              temperature and productivity limits
 #'                      "potential:exogenous": potentially multicropped areas given
 #'                                             GAEZ suitability classification
-#' @param crops         standard: default crops,
-#'                      proxy: proxy crops for LPJmL to MAgPIE mapping and treatment of perennials
+#' @param proxycrops    standard: FALSE
+#'                      if TRUE: proxy crops of LPJmL for MAgPIE perennials selected
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -41,7 +41,7 @@
 
 calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
                                      fallowFactor = 0.75, areaMask,
-                                     output, crops = "standard") {
+                                     output, proxycrops = FALSE) {
 
   # Read in input data already time-smoothed and for climate scenarios harmonized to the baseline
   if (grepl("historical", climatetype)) {
@@ -128,8 +128,10 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     grassBWC2nd[grassBWC2nd < 0] <- 0
 
     # Calculate grass BWC in off season
-    if (crops == "proxy") {
+    if (proxycrops) {
       # for perennial proxy crops (groundnut, maize): grass BWC everywhere
+      shrMC       <- suitMC
+      shrMC[, , ] <- 1
       grassBWC2nd <- grassBWC2nd
     } else {
       # for annual crops: grass BWC where multiple cropping is suitable
