@@ -37,13 +37,13 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
   calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_irrig",
              aggregate = FALSE, file = "cropareaShr.mz")
 
-  calcOutput("CropareaAdjusted", iniyear = iniyear, dataset = "Toolbox",
+  calcOutput("CropareaAdjusted", iniyear = iniyear,
+             dataset = "Toolbox", sectoral = "kcr",
              aggregate = FALSE, file = "cropareaToolbox.mz")
+  calcOutput("CropareaAdjusted", iniyear = iniyear,
+             dataset = "Toolbox", sectoral = "lpj",
+             aggregate = FALSE, file = "cropareaToolbox_lpj.mz")
 
-  calcOutput("CropareaToolbox", physical = TRUE, sectoral = "lpj",
-             cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
-             selectyears = selectyears, aggregate = FALSE,
-             file = "ToolboxPHYS_lpj.mz")
   calcOutput("CropareaToolbox", physical = TRUE, sectoral = "kcr",
              cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
