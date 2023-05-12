@@ -2,10 +2,11 @@
 #' @description This returns croparea as reported by FAO and LUH for the
 #'              initialization year and
 #'
-#' @param iniyear initialization year
-#' @param dataset LUH or Toolbox.
-#'                Note: once migration to Toolbox data is complete, this function
-#'                can be replaced with calcCropareaToolbox
+#' @param iniyear  initialization year
+#' @param dataset  LUH or Toolbox.
+#'                 Note: once migration to Toolbox data is complete, this function
+#'                 can be replaced with calcCropareaToolbox
+#' @param sectoral crops to be reported: "kcr" for MAgPIE items, and "lpj" for LPJmL items
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -19,13 +20,13 @@
 #' @importFrom magclass getCells getNames add_dimension new.magpie
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox") {
+calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox", sectoral = "kcr") {
 
   # read in physical croparea per crop and management type (in Mha)
   if (dataset == "LUH") {
 
     phys <- calcOutput("Croparea", years = iniyear, physical = TRUE,
-                       sectoral = "kcr", irrigation = TRUE,
+                       sectoral = sectoral, irrigation = TRUE,
                        cells = "lpjcell", cellular = TRUE,
                        aggregate = FALSE)
     map             <- toolGetMappingCoord2Country()
@@ -33,7 +34,7 @@ calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox") {
 
   } else if (dataset == "Toolbox") {
 
-    phys <- calcOutput("CropareaToolbox", physical = TRUE, sectoral = "kcr",
+    phys <- calcOutput("CropareaToolbox", physical = TRUE, sectoral = sectoral,
                          cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
                          selectyears = iniyear, aggregate = FALSE)
 

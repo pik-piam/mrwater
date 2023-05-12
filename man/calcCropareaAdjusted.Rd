@@ -4,7 +4,7 @@
 \alias{calcCropareaAdjusted}
 \title{calcCropareaAdjusted}
 \usage{
-calcCropareaAdjusted(iniyear, dataset = "Toolbox")
+calcCropareaAdjusted(iniyear, dataset = "Toolbox", sectoral = "kcr")
 }
 \arguments{
 \item{iniyear}{initialization year}
@@ -12,6 +12,8 @@ calcCropareaAdjusted(iniyear, dataset = "Toolbox")
 \item{dataset}{LUH or Toolbox.
 Note: once migration to Toolbox data is complete, this function
 can be replaced with calcCropareaToolbox}
+
+\item{sectoral}{crops to be reported: "kcr" for MAgPIE items, and "lpj" for LPJmL items}
 }
 \value{
 magpie object in cellular resolution
