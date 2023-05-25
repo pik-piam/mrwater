@@ -53,6 +53,22 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
              selectyears = selectyears, aggregate = FALSE,
              file = "ToolboxHARV.mz")
 
+  ### Crop Yields ###
+  # single cropping yields (in USD/ha)
+  calcOutput("YieldsValued",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears,
+             yieldcalib = yieldcalib, priceAgg = "GLO",
+             multicropping = FALSE, aggregate = FALSE,
+             file = "yield_single.mz")
+  # multiple cropping yields (in USD/ha)
+  calcOutput("YieldsValued",
+             lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears,
+             yieldcalib = yieldcalib, priceAgg = "GLO",
+             multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
+             file = "yield_multiple.mz")
+
   ### Yield Gain ###
   # Single cropping yield gain
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
