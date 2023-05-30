@@ -205,6 +205,10 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
              selectyears = selectyears, suitability = "endogenous",
              aggregate = FALSE, file = "suitMC_LPJmL.mz")
 
+  # Multiple cropping zones according to GAEZ
+  calcOutput("MultipleCroppingZones", layers = 8,
+             aggregate = FALSE, file = "suitMC_GAEZ.mz")
+
   # Inverted Growing Period Runs
   # crop yields
 
