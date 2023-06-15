@@ -114,7 +114,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # Delta ET (irrigated ET - rainfed ET) as proxy for blue water consumption (BWC)
     # of grass throughout the whole year
     annualBWCgrass <- collapseNames(grassETannual[, , "irrigated"]) -
-                        collapseNames(grassETannual[, , "rainfed"])
+                        collapseNames(grassETannual[, , "rainfed"]) # transpiration statt ET
     annualBWCgrass[annualBWCgrass < 0] <- 0
 
     # Delta ET (irrigated ET - rainfed ET) as proxy for BWC
