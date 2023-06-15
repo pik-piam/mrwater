@@ -339,7 +339,8 @@ calcRiverHumanUseAccounting <- function(iteration,
   # Check whether water has been lost
   basinDischarge <- .transformObject(x = 0,
                                      gridcells = gridcells,
-                                     years = selectyears, names = dimnames)
+                                     years = selectyears,
+                                     names = dimnames)
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
   totalWat <- dimSums(basinDischarge, dim = 1) +
                 dimSums(out[, , "currHumanWCtotal"],
@@ -347,10 +348,12 @@ calcRiverHumanUseAccounting <- function(iteration,
                   dimSums(inputData[, , "prevReservedWC"], dim = 1)
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
-  if (!all(abs(totalWat - mean(totalWat)) < 1e-06)) {
-    stop("In calcRiverHumanUseAccounting:
-          Scenarios differ. That should not be the case.
-          Total water volume should always be the same")
+  for (y in selectyears) {
+    if (!all(abs(totalWat[, y, ] - mean(totalWat[, y, ])) < 1e-06)) {
+      stop("In calcRiverHumanUseAccounting:
+            Scenarios differ. That should not be the case.
+            Total water volume should always be the same")
+    }
   }
   # Total water (summed basin discharge + consumed)
   # must be same as natural summed basin discharge
