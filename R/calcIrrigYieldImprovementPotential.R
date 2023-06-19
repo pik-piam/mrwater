@@ -86,10 +86,11 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   # also: under N-stress, irrigation may lead to lower yields,
   # (the latter is only relevant for limited-N-LPJmL version, default: unlimited N))
 
-  # share of crop area by crop type
-  cropareaShr <- calcOutput("CropAreaShare",
-                            iniyear = iniyear, cropmix = cropmix,
-                            aggregate = FALSE)
+  # share of crop area by crop type (same for all years)
+  cropareaShr <- setYears(calcOutput("CropAreaShare",
+                                     iniyear = iniyear, cropmix = cropmix,
+                                     aggregate = FALSE),
+                          NULL)
 
   # Selected crops
   if (!is.null(cropmix)) {
@@ -141,12 +142,13 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
 
       # irrigation water requirements for given irrigation system
       # per crop (in m^3 per hectare per year)
-      irrigWat <- collapseNames(calcOutput("ActualIrrigWatRequirements",
-                                           selectyears = selectyears, iniyear = iniyear,
-                                           lpjml = lpjml, climatetype = climatetype,
-                                           irrigationsystem = irrigationsystem,
-                                           multicropping = m,
-                                           aggregate = FALSE)[, , "withdrawal"])
+      irrigWat <- setYears(collapseNames(calcOutput("ActualIrrigWatRequirements",
+                                                    selectyears = selectyears, iniyear = iniyear,
+                                                    lpjml = lpjml, climatetype = climatetype,
+                                                    irrigationsystem = irrigationsystem,
+                                                    multicropping = m,
+                                                    aggregate = FALSE)[, , "withdrawal"]),
+                           NULL)
       # Correction of small irrigWatReq: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
       irrigWat[irrigWat < 10] <- 0
 
