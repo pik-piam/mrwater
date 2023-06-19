@@ -148,7 +148,7 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                                                     irrigationsystem = irrigationsystem,
                                                     multicropping = m,
                                                     aggregate = FALSE)[, , "withdrawal"]),
-                           NULL)
+                           selectyears)
       # Correction of small irrigWatReq: where < 10 m^3/ha (= 1mm = 1 l/m^2 = 10 m^3/ha): 0
       irrigWat[irrigWat < 10] <- 0
 
