@@ -314,13 +314,17 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                         dim = c("x", "y", "iso", "data")) +
                                   dimSums(inputData[, , "prevReservedWC"],
                                           dim = c("x", "y", "iso", "data"))
+
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
-  if (!all(abs(totalWat - mean(totalWat)) < 1e-06)) {
-    stop("In calcRiverDischargeAllocation:
-          Scenarios differ. That should not be the case.
-          Total water volume should always be the same")
+  for (y in selectyears) {
+    if (!all(abs(totalWat[, y, ] - mean(totalWat[, y, ])) < 1e-06)) {
+      stop("In calcRiverDischargeAllocation:
+            Scenarios differ. That should not be the case.
+            Total water volume should always be the same")
+    }
   }
+
   # Total water (summed basin discharge + consumed)
   # must be same as natural summed basin discharge
   natDischarge <- .transformObject(x = collapseNames(natDischarge[, , "discharge_nat"]),
