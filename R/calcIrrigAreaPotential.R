@@ -114,6 +114,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
                             selectyears = selectyears, iniyear = iniyear,
                             efrMethod = efrMethod, multicropping = m,
                             transDist = transDist, aggregate = FALSE)
+    names(dimnames(comAgArea))[2] <- "year"
     getSets(comAgArea) <- c("x", "y", "iso", "year", "crop", "irrig_type", "EFP", "scen")
     comAgArea <- collapseNames(dimOrder(comAgArea, perm = c(3, 4, 2, 1), dim = 3))
 

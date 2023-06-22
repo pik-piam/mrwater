@@ -63,8 +63,9 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
   ### Read in Inputs ###
   ######################
   # Read in cropland area (by crop) from crop area initialization (in Mha)
-  comArea <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
-                        iniyear = iniyear, aggregate = FALSE)
+  comArea <- setYears(calcOutput("IrrigAreaCommitted", selectyears = selectyears,
+                                 iniyear = iniyear, aggregate = FALSE),
+                      NULL)
 
   # Irrigation water requirements per cell per crop
   # given irrigation system (in m^3 per hectare per year)
