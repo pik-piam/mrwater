@@ -207,11 +207,11 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
   if (cropAggregation) {
     out <- dimSums(out, dim = "crop")
-    description <- "Potentially irrigated area (total)
-                    given land and water constraints"
+    description <- paste0("Potentially irrigated area (total)",
+                          "given land and water constraints")
   } else {
-    description <- "Crop-specific area that can be irrigated
-                    given land and water constraints"
+    description <- paste0("Crop-specific area that can be irrigated",
+                          "given land and water constraints")
   }
 
   return(list(x            = out,
