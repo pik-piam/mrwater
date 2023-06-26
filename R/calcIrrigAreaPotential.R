@@ -114,6 +114,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
                             selectyears = selectyears, iniyear = iniyear,
                             efrMethod = efrMethod, multicropping = m,
                             transDist = transDist, aggregate = FALSE)
+    names(dimnames(comAgArea))[2] <- "year"
     getSets(comAgArea) <- c("x", "y", "iso", "year", "crop", "irrig_type", "EFP", "scen")
     comAgArea <- collapseNames(dimOrder(comAgArea, perm = c(3, 4, 2, 1), dim = 3))
 
@@ -206,11 +207,11 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
   if (cropAggregation) {
     out <- dimSums(out, dim = "crop")
-    description <- "Potentially irrigated area (total)
-                    given land and water constraints"
+    description <- paste0("Potentially irrigated area (total)",
+                          "given land and water constraints")
   } else {
-    description <- "Crop-specific area that can be irrigated
-                    given land and water constraints"
+    description <- paste0("Crop-specific area that can be irrigated",
+                          "given land and water constraints")
   }
 
   return(list(x            = out,
