@@ -8,7 +8,7 @@ calcAvlWater(
   lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop =
     "ggcmi_phase3_nchecks_9ca735cb"),
   climatetype = "GSWP3-W5E5:historical",
-  cells = "magpiecell",
+  cells = "lpjcell",
   stage = "harmonized2020",
   seasonality = "grper"
 )

@@ -28,7 +28,7 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
                               climatetype = "GSWP3-W5E5:historical",
                               stage = "harmonized2020",
                               yield_ratio = 0.1, # nolint
-                              cells = "magpiecell") {
+                              cells = "lpjcell") {
 
   cfgNatveg <- toolLPJmLVersion(version = lpjml["natveg"], climatetype = climatetype)
   cfgCrop   <- toolLPJmLVersion(version = lpjml["crop"],   climatetype = climatetype)

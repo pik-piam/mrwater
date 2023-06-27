@@ -37,7 +37,7 @@
 #' @importFrom mrcommons toolCell2isoCell toolCoord2Isocell toolGetMappingCoord2Country toolHarmonize2Baseline
 #' @importFrom magpiesets addLocation findset
 
-calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "magpiecell",
+calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lpjcell",
                               datasource = "WATCH_ISIMIP_WATERGAP", usetype = "all",
                               seasonality = "grper", harmonType = "average",
                               lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",

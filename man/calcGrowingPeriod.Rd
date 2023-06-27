@@ -10,7 +10,7 @@ calcGrowingPeriod(
   climatetype = "GSWP3-W5E5:historical",
   stage = "harmonized2020",
   yield_ratio = 0.1,
-  cells = "magpiecell"
+  cells = "lpjcell"
 )
 }
 \arguments{
