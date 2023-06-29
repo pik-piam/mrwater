@@ -70,35 +70,20 @@ fullMULTICROPPING <- function() {
              selectyears = selectyears, aggregate = FALSE,
              file = "ToolboxHARV.mz")
 
-
-  ### Revenue achieved on respective land area ###
-  for (o in c("biomass", "revenue")) {
-    for (man in c("single:potential", "single:counterfactual",
-                  "actMC:potential", "actMC:counterfactual",
-                  "potMC:potential", "potMC:counterfactual")) {
-      for (a in c("actual", "currIrrig:NA", "currCropland:NA")) {
-        for (calib in c(FALSE, yieldcalib)) {
-          calcOutput("CropProductionRevenue",
-                     outputtype = o,
-                     scenario =   paste(efp, ssp, sep = "."),
-                     management = man,
-                     area = a,
-                     yieldcalib = calib,
-                     lpjml = lpjml, climatetype = climatetype,
-                     selectyears = selectyears, iniyear = iniyear,
-                     efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                     rankmethod = rankmethod,
-                     allocationrule = allocationrule, gainthreshold = gtrange,
-                     irrigationsystem = irrigationsystem, cropmix = cropmix,
-                     transDist = transDist, comAg = comAg,
-                     file = paste0(o, gsub(":", "_", man),
-                                   str_split(a, ":")[[1]][1], "calib", calib,
-                                   ".mz"), aggregate = FALSE)
-        }
-      }
-    }
-  }
-
+  ####################
+  #   MULTICROPPING  #
+  ####################
+  # current multiple cropping intensity
+  calcOutput("MulticroppingIntensity",
+              scenario = "irrig_crop",
+              selectyears = selectyears, sectoral = "kcr",
+              lpjml = lpjml, climatetype = climatetype,
+              file = "croppingIntensity.mz", aggregate = FALSE)
+  # potential multiple cropping suitability
+  calcOutput("MulticroppingSuitability", selectyears = selectyears,
+             lpjml = lpjml, climatetype = climatetype,
+             temperatureGCM = NULL, minThreshold = 100, suitability = "endogenous",
+             file = "multicroppingSuitability.mz", aggregate = FALSE)
 
   ###############
   # CROP YIELDS #
@@ -121,7 +106,7 @@ fullMULTICROPPING <- function() {
   calcOutput("YieldsValued",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
-             yieldcalib = "TRUE:TRUE:actual:irrig_crop", priceAgg = "GLO",
+             yieldcalib = "TRUE:FALSE", priceAgg = "GLO",
              multicropping = FALSE, aggregate = FALSE,
              file = "yieldValued_single_calib.mz")
   # actual (calibrated) yields under multiple cropping (in USD/ha)
@@ -147,7 +132,7 @@ fullMULTICROPPING <- function() {
   # actual (calibrated) yield under single cropping (in tDM)
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
-             yieldcalib = "TRUE:TRUE:actual:irrig_crop",
+             yieldcalib = "TRUE:FALSE",
              multicropping = FALSE, aggregate = FALSE,
              file = "yield_single.mz")
   # actual (calibrated) yield under multiple cropping (in tDM)
@@ -161,7 +146,7 @@ fullMULTICROPPING <- function() {
   #########################
   # IRRIGATION POTENTIALS #
   #########################
-  for (committed in c(TRUE)) {
+  for (committed in c(FALSE)) {
     for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
 
       ### Current irrigated area (IRR) ###
@@ -251,6 +236,47 @@ fullMULTICROPPING <- function() {
                                as.character(committed), "_multipleACT.mz"))
     }
   }
+
+  ###########
+  # Revenue #
+  ###########
+  ### Revenue achieved on respective land area ###
+  for (o in c("biomass", "revenue")) {
+    for (man in c("single:potential", "single:counterfactual",
+                  "actMC:potential", "actMC:counterfactual",
+                  "potMC:potential", "potMC:counterfactual")) {
+      for (a in c("actual", "currIrrig:NA", "currCropland:NA")) {
+        for (calib in c(FALSE, TRUE)) {
+
+          if (calib) {
+            c <- "TRUE:TRUE:actual:irrig_crop"
+          } else {
+            c <- FALSE
+          }
+
+          calcOutput("CropProductionRevenue",
+                     outputtype = o,
+                     scenario =   paste(efp, ssp, sep = "."),
+                     management = man,
+                     area = a,
+                     yieldcalib = c,
+                     lpjml = lpjml, climatetype = climatetype,
+                     selectyears = selectyears, iniyear = iniyear,
+                     efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                     rankmethod = rankmethod,
+                     allocationrule = allocationrule, gainthreshold = gtrange,
+                     irrigationsystem = irrigationsystem, cropmix = cropmix,
+                     transDist = transDist, comAg = comAg,
+                     file = paste0(o, "_",
+                                   gsub(":", "_", man), "_",
+                                   str_split(a, ":")[[1]][1],
+                                   "calib", calib,
+                                   ".mz"), aggregate = FALSE)
+        }
+      }
+    }
+  }
+
 
 
   # ### Yield Gain ###
