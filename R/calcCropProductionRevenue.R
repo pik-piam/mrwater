@@ -8,6 +8,8 @@
 #'                                     crop biomass (in tDM)
 #'                          "revenue": returns the revenue in terms of price x quantity
 #'                                     of crop production (in USD)
+#' @param scenario          EFP and non-agricultural water use scenario separated with a "."
+#'                          (e.g. "on.ssp2")
 #' @param management        management in terms of irrigation and multiple cropping practices
 #'                          consisting of multiple cropping scenario ("single", actMC", "potMC")
 #'                          and ("potential", "counterfactual")
@@ -85,7 +87,7 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames
 
-calcCropProductionRevenue <- function(outputtype, management, area,
+calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                       lpjml, climatetype, selectyears, iniyear,
                                       efrMethod, accessibilityrule,
                                       rankmethod, yieldcalib, allocationrule, gainthreshold,
@@ -135,7 +137,7 @@ calcCropProductionRevenue <- function(outputtype, management, area,
                                 aggregate = FALSE)
     # Crop-specific (potentially) irrigated areas (in Mha)
     # depending on chosen land, management, and water limitation scenario
-    cropareaIrrig <- calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+    cropareaIrrig <- collapseNames(calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
                                 cropmix = cropmix, landScen = landScen,
                                 transDist = transDist, multicropping = m2,
                                 lpjml = lpjml, climatetype = climatetype,
@@ -144,13 +146,14 @@ calcCropProductionRevenue <- function(outputtype, management, area,
                                 rankmethod = rankmethod, yieldcalib = yieldcalib,
                                 allocationrule = allocationrule, gainthreshold = gainthreshold,
                                 irrigationsystem = irrigationsystem,
-                                comAg = comAg, aggregate = FALSE)
+                                comAg = comAg, aggregate = FALSE)[, , scenario])
   }
 
   ### Yields ###
   # Crop-specific rainfed and irrigated yields
   # depending on chosen output type (biomass or revenue), they are given in tDM/ha or USD/ha
   if (outputtype == "biomass") {
+
     # Yields in tDM/ha
     yields <- calcOutput("YieldsAdjusted",
                          lpjml = lpjml, climatetype = climatetype,
@@ -163,14 +166,14 @@ calcCropProductionRevenue <- function(outputtype, management, area,
                                iniyear = iniyear, selectyears = selectyears,
                                yieldcalib = yieldcalib,
                                multicropping = FALSE, aggregate = FALSE)
-    deltaYields <- yields - yieldsSingle
-    deltaYields[deltaYields < 0] <- 0
+
     unit        <- "tDM"
     description <- paste0("Crop- and irrigation-specific ",
                           "biomass production on selected area ",
                           "under chosen management scenario.")
 
   } else if (outputtype == "revenue") {
+
     # Yields (in USD/ha)
     yields <- calcOutput("YieldsValued",
                          lpjml = lpjml, climatetype = climatetype,
@@ -187,8 +190,6 @@ calcCropProductionRevenue <- function(outputtype, management, area,
                                priceAgg = priceAgg,
                                multicropping = FALSE,
                                aggregate = FALSE)
-    deltaYields <- yields - yieldsSingle
-    deltaYields[deltaYields < 0] <- 0
 
     unit        <- "USD"
     description <- paste0("Crop- and irrigation-specific ",
@@ -201,15 +202,13 @@ calcCropProductionRevenue <- function(outputtype, management, area,
          `'revenue'` for associated revenue with production quantity in USD.")
   }
 
-  ####################
-  ### Preparations ###
-  ####################
-  croplist   <- getItems(cropareaTotal, dim = 3)
-  production <- new.magpie(cells_and_regions = getItems(cropareaIrrig, dim = 1),
-                           years = selectyears,
-                           names = c(paste("irrigated", croplist, sep = "."),
-                                     paste("rainfed", croplist, sep = ".")),
-                           fill = NA)
+  # reorder third dimension (switch irrigation and crop)
+  yields <- dimOrder(yields, c(2, 1), dim = 3)
+  yieldsSingle <- dimOrder(yieldsSingle, c(2, 1), dim = 3)
+
+  # difference between multiple cropped and single yields
+  deltaYields <- yields - yieldsSingle
+  deltaYields[deltaYields < 0] <- 0
 
   ### Share Multicropped ###
   if (grepl(pattern = "actMC", x = management)) {
@@ -221,7 +220,6 @@ calcCropProductionRevenue <- function(outputtype, management, area,
                      selectyears = selectyears, sectoral = "kcr",
                      lpjml = lpjml, climatetype = climatetype,
                      aggregate = FALSE)
-    ci <- dimOrder(ci, c(2, 1), dim = 3)
     ci <- ci[, , getItems(yields, dim = 3)]
 
     # Share of area that is multicropped
@@ -232,10 +230,19 @@ calcCropProductionRevenue <- function(outputtype, management, area,
     # for single: no multiplecropping (deltaYield will be 0)
     shrMC <- new.magpie(cells_and_regions = getItems(cropareaIrrig, dim = 1),
                         years = selectyears,
-                        names = c(paste("irrigated", croplist, sep = "."),
-                                  paste("rainfed", croplist, sep = ".")),
+                        names = getItems(yields, dim = 3),
+                        sets = c("x", "y", "iso", "year", "irrigation", "crop"),
                         fill = 1)
   }
+
+  ####################
+  ### Preparations ###
+  ####################
+  production <- new.magpie(cells_and_regions = getItems(cropareaIrrig, dim = 1),
+                           years = selectyears,
+                           names = getItems(yields, dim = 3),
+                           sets = c("x", "y", "iso", "year", "irrigation", "crop"),
+                           fill = NA)
 
   ####################
   ### Calculations ###
@@ -244,7 +251,7 @@ calcCropProductionRevenue <- function(outputtype, management, area,
   # Rainfed cropland
   cropareaRainfed <- cropareaTotal - cropareaIrrig
 
-  if (any(round(cropareaRainfed) < 0)) {
+  if (any(round(cropareaRainfed, digits = 3) < 0)) {
     stop("In mrwater::calcCropProductionRevenue: rainfed croparea became negative.
          This should not be the case and indicates a data mismatch
          between total cropland and irrigated croparea.
@@ -276,7 +283,7 @@ calcCropProductionRevenue <- function(outputtype, management, area,
   if (any(is.na(production))) {
     stop("mrwater::calcCropProductionRevenue produced NA values")
   }
-  if (any(round(production) < 0)) {
+  if (any(round(production, digits = 3) < 0)) {
     stop("mrwater::calcCropProductionRevenue produced negative values")
   }
 

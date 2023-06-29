@@ -6,6 +6,7 @@
 \usage{
 calcCropProductionRevenue(
   outputtype,
+  scenario,
   management,
   area,
   lpjml,
@@ -29,6 +30,9 @@ calcCropProductionRevenue(
            crop biomass (in tDM)
 "revenue": returns the revenue in terms of price x quantity
            of crop production (in USD)}
+
+\item{scenario}{EFP and non-agricultural water use scenario separated with a "."
+(e.g. "on.ssp2")}
 
 \item{management}{management in terms of irrigation and multiple cropping practices
 consisting of multiple cropping scenario ("single", actMC", "potMC")
