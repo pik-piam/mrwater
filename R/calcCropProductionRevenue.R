@@ -135,6 +135,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                 efrMethod = NULL,
                                 multicropping = FALSE, transDist = NULL,
                                 aggregate = FALSE)
+
     # Crop-specific (potentially) irrigated areas (in Mha)
     # depending on chosen land, management, and water limitation scenario
     cropareaIrrig <- collapseNames(calcOutput("IrrigAreaPotential", cropAggregation = FALSE,

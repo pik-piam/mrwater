@@ -43,7 +43,7 @@ fullMULTICROPPING <- function() {
   # potential yields from LPJmL to derive multiple cropping potentials
   yieldcalib        <- FALSE
   # reserve already irrigated areas for irrigation
-  comAg             <- TRUE
+  comAg             <- FALSE ##### For testing only! Should be TRUE in the end
 
 
   ####################
