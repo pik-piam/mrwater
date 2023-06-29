@@ -150,7 +150,7 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
   }
 
   # Check for negatives
-  if (any(round(yields) < 0)) {
+  if (any(round(yields, digits = 3) < 0)) {
     stop("Function calcYieldsValued produced negative values")
   }
 

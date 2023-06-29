@@ -165,7 +165,7 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
   ##############
   ### Checks ###
   ##############
-  if (any(round(out) < 0, na.rm = TRUE)) {
+  if (any(round(out, digits = 3) < 0, na.rm = TRUE)) {
     stop("calcShrHumanUsesFulfilled produced negative values")
   }
 

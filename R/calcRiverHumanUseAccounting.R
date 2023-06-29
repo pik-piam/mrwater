@@ -327,7 +327,7 @@ calcRiverHumanUseAccounting <- function(iteration,
   if (any(is.na(out))) {
     stop("calcRiverHumanUseAccounting produced NAs!")
   }
-  if (any(round(out) < 0)) {
+  if (any(round(out, digits = 3) < 0)) {
     stop("calcRiverHumanUseAccounting produced negative values")
   }
   # Check if too much water has been allocated

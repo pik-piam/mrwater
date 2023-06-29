@@ -179,7 +179,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
     stop("Function AreapotCropland produced NA values")
   }
 
-  if (any(round(out) < 0)) {
+  if (any(round(out, digits = 3) < 0)) {
     stop("Function AreapotCropland produced negative values")
   }
 

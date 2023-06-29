@@ -302,7 +302,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   if (any(is.na(out))) {
     stop("calcRiverDischargeAllocation produced NAs")
   }
-  if (any(round(out) < 0)) {
+  if (any(round(out, digits = 3) < 0)) {
     stop("calcRiverDischargeAllocation produced negative values")
   }
   # No water should be lost
