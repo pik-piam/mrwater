@@ -12,7 +12,6 @@
 fullMULTICROPPING <- function() {
 
 
-
   # scenarios for paper: landScen <- "currCropland:NA", "currIrrig:NA"
 
   # Standard settings
@@ -41,7 +40,7 @@ fullMULTICROPPING <- function() {
   # default transport distance is 100 km (sensitivity is provided in SI)
   transDist         <- 100
   # potential yields from LPJmL to derive multiple cropping potentials
-  yieldcalib        <- FALSE
+  yieldcalib        <- "TRUE:TRUE:actual:irrig_crop" # FALSE
   # reserve already irrigated areas for irrigation
   comAg             <- FALSE ##### For testing only! Should be TRUE in the end
 
@@ -106,7 +105,7 @@ fullMULTICROPPING <- function() {
   calcOutput("YieldsValued",
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
-             yieldcalib = "TRUE:FALSE", priceAgg = "GLO",
+             yieldcalib = "TRUE:TRUE:actual:irrig_crop", priceAgg = "GLO", #### or TRUE:FALSE?
              multicropping = FALSE, aggregate = FALSE,
              file = "yieldValued_single_calib.mz")
   # actual (calibrated) yields under multiple cropping (in USD/ha)
@@ -132,15 +131,15 @@ fullMULTICROPPING <- function() {
   # actual (calibrated) yield under single cropping (in tDM)
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
-             yieldcalib = "TRUE:FALSE",
+             yieldcalib = "TRUE:TRUE:actual:irrig_crop", #### or TRUE:FALSE?
              multicropping = FALSE, aggregate = FALSE,
-             file = "yield_single.mz")
+             file = "yield_single_calib.mz")
   # actual (calibrated) yield under multiple cropping (in tDM)
   calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
              yieldcalib = "TRUE:TRUE:actual:irrig_crop",
              multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
-             file = "yield_multiple.mz")
+             file = "yield_multiple_calib.mz")
 
 
   #########################
