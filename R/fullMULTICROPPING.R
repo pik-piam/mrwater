@@ -69,6 +69,22 @@ fullMULTICROPPING <- function() {
              selectyears = selectyears, aggregate = FALSE,
              file = "ToolboxHARV.mz")
 
+  ######################
+  # WATER REQUIREMENTS #
+  ######################
+  calcOutput("ActualIrrigWatRequirements",
+              irrigationsystem = irrigationsystem,
+              selectyears = selectyears, iniyear = iniyear,
+              lpjml = lpjml, climatetype = climatetype,
+              multicropping = FALSE, aggregate = FALSE,
+              file = "watReq_single.mz")
+  calcOutput("ActualIrrigWatRequirements",
+             irrigationsystem = irrigationsystem,
+             selectyears = selectyears, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype,
+             multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
+             file = "watReq_multiple.mz")
+
   ####################
   #   MULTICROPPING  #
   ####################
