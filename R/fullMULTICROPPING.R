@@ -27,8 +27,8 @@ fullMULTICROPPING <- function() {
 
   # Settings for optimization algorithm
   accessibilityrule <- "CV:2"
-  allocationrule    <- "optimization"
-  rankmethod        <- "USD_ha:GLO:TRUE"
+  allocationrule    <- "upstreamfirst" # "optimization"
+  rankmethod        <- "USD_m3:GLO:TRUE"
   plotyear          <- selectyears
   ssp               <- "ssp2"
   efp               <- "off"
@@ -42,14 +42,26 @@ fullMULTICROPPING <- function() {
   # potential yields from LPJmL to derive multiple cropping potentials
   yieldcalib        <- "TRUE:TRUE:actual:irrig_crop" # FALSE
   # reserve already irrigated areas for irrigation
-  comAg             <- FALSE ##### For testing only! Should be TRUE in the end
+  comAg             <- TRUE
 
+
+  #########################
+  # Groundwater component #
+  #########################
+  for (t in c(0, 100, 200)) {
+    calcOutput("NonrenGroundwatUse", lpjml = lpjml, climatetype = climatetype,
+               transDistGW = 100, multicropping = "TRUE:actual:irrig_crop",
+               selectyears = selectyears, iniyear = iniyear,
+               aggregate = FALSE,
+               file = paste0("groundwater_tD", as.character(t), ".mz"))
+
+  }
 
   ####################
   # CURRENT CROPAREA #
   ####################
   # share of crop area by crop type (chosen cropmix)
-  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_irrig",
+  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
              aggregate = FALSE, file = "cropareaShr.mz")
 
   # croparea in Mha

@@ -2,6 +2,7 @@
 
 export(calcEconOfIrrig)
 export(calcGrowingPeriod)
+export(calcNonrenGroundwatUse)
 export(calcRiverRoutingInputs)
 export(calcShrHumanUsesFulfilled)
 export(calcYieldgainArea)

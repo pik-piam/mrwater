@@ -114,6 +114,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   watNonAgWC <- collapseNames(watNonAg[, , "currHumanWCtotal"])
 
   if (comAg == TRUE) {
+
     # Water already committed to irrigation
     currHuman <- calcOutput("RiverHumanUseAccounting",
                              iteration = "committed_agriculture",
@@ -138,6 +139,8 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   currHumanWW <- collapseNames(currHuman[, , "currHumanWWtotal"])
   currHumanWC <- collapseNames(currHuman[, , "currHumanWCtotal"])
 
+  ##### To Do: add groundwater somewhere here
+
   # Function outputs
   watAgWW  <- watAvlAgWW + currHumanWW
   watAgWC  <- watAvlAgWC + currHumanWC
@@ -155,7 +158,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = "potential water availability for agricultural usage
-                              or total human water usage",
+              description  = paste0("potential water availability for agricultural usage ",
+                                    "or total human water usage"),
               isocountries = FALSE))
 }

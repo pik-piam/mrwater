@@ -118,6 +118,8 @@ calcIrrigAreaPotential <- function(cropAggregation,
     getSets(comAgArea) <- c("x", "y", "iso", "year", "crop", "irrig_type", "EFP", "scen")
     comAgArea <- collapseNames(dimOrder(comAgArea, perm = c(3, 4, 2, 1), dim = 3))
 
+    ### To Do: add groundwater somewhere here
+
     # Water actually committed to agriculture (in mio. m^3)
     comWater <- calcOutput("RiverHumanUseAccounting",
                            iteration = "committed_agriculture",
