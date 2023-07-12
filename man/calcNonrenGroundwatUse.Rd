@@ -10,8 +10,7 @@ calcNonrenGroundwatUse(
   transDistGW = 100,
   multicropping = "TRUE:actual:irrig_crop",
   selectyears,
-  iniyear,
-  efrMethod
+  iniyear
 )
 }
 \arguments{
@@ -41,9 +40,6 @@ Multiple Cropping Suitability mask selected
 \item{selectyears}{Years to be returned}
 
 \item{iniyear}{Initialization year}
-
-\item{efrMethod}{EFR method used including selected strictness of EFRs
-(e.g. Smakhtin:good, VMF:fair)}
 }
 \value{
 cellular magpie object

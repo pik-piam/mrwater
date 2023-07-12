@@ -32,7 +32,7 @@ toolRegionSums <- function(x, region) {
                                       # "VAT" "VGB" missing in LPJmL cells
     # aggregate to regions
     if (!is.na(map) && map == "H12") {
-      regmap        <- toolGetMapping("regionmappingH12.csv")
+      regmap        <- toolGetMapping("regionmappingH12.csv", where = "mappingfolder")
       names(regmap) <- c("Country", "iso", "reg")
       x             <- toolAggregate(x, rel = regmap, from = "iso", to = "reg", dim = 1)
     } else if (!is.na(map) && map != "H12") {

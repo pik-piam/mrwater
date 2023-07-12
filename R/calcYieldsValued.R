@@ -73,7 +73,8 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
     pricesRegional <- collapseDim(calcOutput("PriceAgriculture", unit = priceUnit,
                                              datasource = "FAO",
                                              aggregate = TRUE, regionmapping = "regionmappingH12.csv"))
-    pricesRegional <- toolAggregate(pricesRegional, rel = toolGetMapping("regionmappingH12.csv"),
+    pricesRegional <- toolAggregate(pricesRegional, rel = toolGetMapping("regionmappingH12.csv",
+                                    where = "mappingfolder"),
                                     from = "RegionCode", to = "CountryCode")
     p[p == 0] <- pricesRegional[p == 0]
 
