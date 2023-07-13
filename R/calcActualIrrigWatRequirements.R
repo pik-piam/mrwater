@@ -51,8 +51,9 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
   if (irrigationsystem == "initialization") {
 
     # Irrigation system area share per crop
-    irrigSystemShr <- calcOutput("IrrigSystemShr", iniyear = iniyear,
-                                 aggregate = FALSE)
+    irrigSystemShr <- setYears(calcOutput("IrrigSystemShr", iniyear = iniyear,
+                                          aggregate = FALSE),
+                               NULL)
 
     # total irrigation water requirements per crop given
     # irrigation system share (in m^3 per ha per yr)
@@ -80,8 +81,9 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
   }
 
   # Weight: irrigated area (only used for aggregation)
-  irrigArea <- calcOutput("CropareaAdjusted", iniyear = iniyear,
-                           aggregate = FALSE)
+  irrigArea <- setYears(calcOutput("CropareaAdjusted", iniyear = iniyear,
+                                   aggregate = FALSE),
+                        NULL)
 
   # Small additive term to account for places with 0 irrigated area
   irrigArea <- collapseNames(irrigArea[, , "irrigated"]) + 1e-9

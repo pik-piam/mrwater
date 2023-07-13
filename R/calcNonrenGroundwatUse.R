@@ -140,6 +140,7 @@ calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
                                 selectyears = pstYrs, iniyear = iniyear,
                                 multicropping = m, aggregate = FALSE),
                     dim = "crop")
+
   # Non-Agricultural Water in the past (in mio. m^3 / yr)
   actNAU <- collapseNames(calcOutput("WaterUseNonAg",
                           selectyears = pstYrs, cells = "lpjcell",
@@ -160,9 +161,11 @@ calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
   ### Prepare output ###
   ######################
   out <- new.magpie(fill = NA,
-                    cells_and_regions = getItems(fulfilledCAU, dim = 1),
+                    cells_and_regions = getItems(missingCAU, dim = 1),
                     years = selectyears,
                     names = c("withdrawal", "consumption"))
+  getSets(out) <- c("x", "y", "iso", "year", "data")
+
   if (output == "total") {
     out[, pstYrs, ] <- missingWat[, pstYrs, ]
     out[, ftrYrs, ] <- missingWat[, lastYr, ]
