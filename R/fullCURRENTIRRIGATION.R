@@ -111,6 +111,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
 
     # Committed agricultural area
     calcOutput("IrrigAreaActuallyCommitted",
+               fossilGW = FALSE,
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, transDist = t,
@@ -118,6 +119,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                file = paste0("comAgAreaACT_single_", t, ".mz"))
 
     calcOutput("IrrigAreaActuallyCommitted",
+               fossilGW = FALSE,
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, transDist = t,
@@ -126,6 +128,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                file = paste0("comAgAreaACT_multipleACT_", t, ".mz"))
 
     calcOutput("IrrigAreaActuallyCommitted",
+               fossilGW = FALSE,
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, transDist = t,

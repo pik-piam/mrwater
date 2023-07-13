@@ -64,6 +64,8 @@
 #'                          FALSE: irrigatable area limited by water availability
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand by surrounding cell water availability
+#' @param fossilGW          If TRUE: non-renewable groundwater can be used.
+#'                          If FALSE: non-renewable groundwater cannot be used.
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -83,7 +85,8 @@
 calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climatetype,
                                    efrMethod, yieldcalib, irrigationsystem,
                                    accessibilityrule, rankmethod,
-                                   gainthreshold, allocationrule, transDist = transDist,
+                                   gainthreshold, allocationrule,
+                                   transDist = transDist, fossilGW,
                                    landScen, cropmix, multicropping, unlimited) {
 
   thresholdtype <- paste("USD_ha",
@@ -131,7 +134,8 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                      rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
                                      irrigationsystem = irrigationsystem,
                                      landScen = landScen, cropmix = cropmix,
-                                     comAg = FALSE, multicropping = multicropping, transDist = transDist,
+                                     comAg = FALSE, multicropping = multicropping,
+                                     transDist = transDist, fossilGW = fossilGW,
                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
     d    <- "Potentially Irrigated Area considering land and water constraints"
 

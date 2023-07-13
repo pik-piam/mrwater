@@ -5,6 +5,7 @@
 \title{calcNonrenGroundwatUse}
 \usage{
 calcNonrenGroundwatUse(
+  output,
   lpjml,
   climatetype,
   transDistGW = 100,
@@ -14,6 +15,10 @@ calcNonrenGroundwatUse(
 )
 }
 \arguments{
+\item{output}{"total": total groundwater use (non-agricultural and agricultural),
+"nonAg": groundwater use in non-agricultural sector (industry, domestic, electricity),
+"comAg": groundwater use in agricultural sector (currently irrigated area)}
+
 \item{lpjml}{LPJmL version used}
 
 \item{climatetype}{Switch between different climate scenarios or

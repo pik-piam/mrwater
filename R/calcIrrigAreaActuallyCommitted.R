@@ -25,6 +25,8 @@
 #'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param transDist      Water transport distance allowed to fulfill locally
 #'                       unfulfilled water demand by surrounding cell water availability
+#' @param fossilGW       If TRUE: non-renewable groundwater can be used.
+#'                       If FALSE: non-renewable groundwater cannot be used.
 #' @param iteration      Default: "committed_agriculture",
 #'                       Special case: "committed_agriculture_fullPotential".
 #'                       Special case should only be used for calculation of
@@ -46,7 +48,7 @@
 calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
                                            lpjml, climatetype,
                                            selectyears, iniyear,
-                                           efrMethod,
+                                           efrMethod, fossilGW,
                                            multicropping, transDist) {
 
   ## Current Uses
@@ -64,8 +66,9 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
   ### Read in Inputs ###
   ######################
   # Read in cropland area (by crop) from crop area initialization (in Mha)
-  comArea <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
-                         iniyear = iniyear, aggregate = FALSE)
+  comArea <- calcOutput("IrrigAreaCommitted",
+                        selectyears = selectyears, iniyear = iniyear,
+                        aggregate = FALSE)
 
   # Irrigation water requirements per cell per crop
   # given irrigation system (in m^3 per hectare per year)
@@ -89,6 +92,15 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
                           aggregate = FALSE)
   comWatWW <- collapseNames(comWater[, , "currHumanWWtotal"])
   comWatWC <- collapseNames(comWater[, , "currHumanWCtotal"])
+
+  if (fossilGW) {
+    gw <- calcOutput("NonrenGroundwatUse", output = "comAg",
+                     lpjml = lpjml, climatetype = climatetype,
+                     selectyears = selectyears, iniyear = iniyear,
+                     aggregate = FALSE)
+    comWatWW <- comWatWW + collapseNames(gw[, , "withdrawal"])
+    comWatWC <- comWatWC + collapseNames(gw[, , "consumption"])
+  }
 
   ####################
   ### Calculations ###

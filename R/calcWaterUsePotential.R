@@ -46,6 +46,8 @@
 #' @param comAg             If TRUE: currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param fossilGW          If TRUE: non-renewable groundwater can be used.
+#'                          If FALSE: non-renewable groundwater cannot be used.
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
 #'                          Multiple Cropping Suitability mask selected
 #'                          ("endogenous": suitability for multiple cropping determined
@@ -72,13 +74,16 @@
 calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             gainthreshold, irrigationsystem, iniyear,
-                            landScen, cropmix, comAg, multicropping, transDist) {
+                            landScen, cropmix, comAg, fossilGW,
+                            multicropping, transDist) {
 
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
 
-  # Water potentially available for irrigation (accounting for previously committed agricultural uses)
+  # Water potentially available for additional irrigation
+  # (accounting for previously committed agricultural uses:
+  #  if comAg: this water fraction is already reserved)
   watAvlAg  <- collapseNames(calcOutput("RiverDischargeAllocation",
                                         lpjml = lpjml, climatetype = climatetype,
                                         selectyears = selectyears, transDist = transDist,
@@ -113,6 +118,16 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   watNonAgWW <- collapseNames(watNonAg[, , "currHumanWWtotal"])
   watNonAgWC <- collapseNames(watNonAg[, , "currHumanWCtotal"])
 
+  # Fossil groundwater use
+  if (fossilGW) {
+    gw <- calcOutput("NonrenGroundwatUse", output = "nonAg",
+                     lpjml = lpjml, climatetype = climatetype,
+                     selectyears = selectyears, iniyear = iniyear,
+                     aggregate = FALSE)
+    watNonAgWW <- watNonAgWW + collapseNames(gw[, , "withdrawal"])
+    watNonAgWC <- watNonAgWC + collapseNames(gw[, , "consumption"])
+  }
+
   if (comAg == TRUE) {
 
     # Water already committed to irrigation
@@ -128,6 +143,16 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                              irrigationsystem = NULL, landScen = NULL,
                              aggregate = FALSE)
 
+    # Fossil groundwater use
+    if (fossilGW) {
+      gw <- calcOutput("NonrenGroundwatUse", output = "comAg",
+                       lpjml = lpjml, climatetype = climatetype,
+                       selectyears = selectyears, iniyear = iniyear,
+                       aggregate = FALSE)
+      currHuman <- currHuman + collapseNames(gw[, , "withdrawal"])
+      currHuman <- currHuman + collapseNames(gw[, , "consumption"])
+    }
+
   } else {
 
     # No water is previously committed
@@ -138,8 +163,6 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
 
   currHumanWW <- collapseNames(currHuman[, , "currHumanWWtotal"])
   currHumanWC <- collapseNames(currHuman[, , "currHumanWCtotal"])
-
-  ##### To Do: add groundwater somewhere here
 
   # Function outputs
   watAgWW  <- watAvlAgWW + currHumanWW

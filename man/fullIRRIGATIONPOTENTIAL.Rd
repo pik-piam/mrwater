@@ -8,6 +8,7 @@ fullIRRIGATIONPOTENTIAL(
   efrMethod = "VMF:fair",
   accessibilityrule = "CV:2",
   transDist = 0,
+  fossilGW = FALSE,
   allocationrule = "optimization",
   rankmethod = "USD_ha:GLO:TRUE",
   gainthreshold = 500,
@@ -34,6 +35,9 @@ or base value for exponential curve separated by : (CV:2)}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}
+
+\item{fossilGW}{If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 across cells of river basin ("optimization", "upstreamfirst")}

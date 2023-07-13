@@ -75,6 +75,8 @@
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand by surrounding cell water availability
+#' @param fossilGW          If TRUE: non-renewable groundwater can be used.
+#'                          If FALSE: non-renewable groundwater cannot be used.
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -92,7 +94,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                       efrMethod, accessibilityrule,
                                       rankmethod, yieldcalib, allocationrule, gainthreshold,
                                       irrigationsystem, cropmix, comAg,
-                                      transDist) {
+                                      transDist, fossilGW) {
 
   #########################
   ### Extract Arguments ###
@@ -140,7 +142,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     # depending on chosen land, management, and water limitation scenario
     cropareaIrrig <- collapseNames(calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
                                 cropmix = cropmix, landScen = landScen,
-                                transDist = transDist, multicropping = m2,
+                                transDist = transDist, fossilGW = fossilGW, multicropping = m2,
                                 lpjml = lpjml, climatetype = climatetype,
                                 selectyears = selectyears, iniyear = iniyear,
                                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,

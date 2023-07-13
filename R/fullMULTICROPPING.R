@@ -27,18 +27,20 @@ fullMULTICROPPING <- function() {
 
   # Settings for optimization algorithm
   accessibilityrule <- "CV:2"
-  allocationrule    <- "upstreamfirst" # "optimization"
+  allocationrule    <- "upstreamfirst" # "optimization" #### or "upstreamfirst"?
   rankmethod        <- "USD_m3:GLO:TRUE"
   plotyear          <- selectyears
   ssp               <- "ssp2"
   efp               <- "off"
-  cropmix           <- "hist_total"
+  cropmix           <- "hist_irrig"
 
   # Assumption in this study:
   # only technical potential is reported for the purpose of this analysis:
   gtrange           <- 0
   # default transport distance is 100 km (sensitivity is provided in SI)
   transDist         <- 100
+  # fossil groundwater use is activated
+  fossilGW          <- TRUE
   # potential yields from LPJmL to derive multiple cropping potentials
   yieldcalib        <- "TRUE:TRUE:actual:irrig_crop" # FALSE
   # reserve already irrigated areas for irrigation
@@ -49,8 +51,9 @@ fullMULTICROPPING <- function() {
   # Groundwater component #
   #########################
   for (t in c(0, 100, 200)) {
-    calcOutput("NonrenGroundwatUse", lpjml = lpjml, climatetype = climatetype,
-               transDistGW = 100, multicropping = "TRUE:actual:irrig_crop",
+    calcOutput("NonrenGroundwatUse", output = "total",
+               lpjml = lpjml, climatetype = climatetype,
+               transDistGW = t, multicropping = "TRUE:actual:irrig_crop",
                selectyears = selectyears, iniyear = iniyear,
                aggregate = FALSE,
                file = paste0("groundwater_tD", as.character(t), ".mz"))
@@ -60,7 +63,7 @@ fullMULTICROPPING <- function() {
   ####################
   # CURRENT CROPAREA #
   ####################
-  # share of crop area by crop type (chosen cropmix)
+  # share of crop area by crop type used to determine potentially irrigated areas
   calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
              aggregate = FALSE, file = "cropareaShr.mz")
 
@@ -173,7 +176,7 @@ fullMULTICROPPING <- function() {
   #########################
   # IRRIGATION POTENTIALS #
   #########################
-  for (committed in c(FALSE)) {
+  for (committed in c(TRUE)) {
     for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
 
       ### Current irrigated area (IRR) ###
@@ -185,9 +188,9 @@ fullMULTICROPPING <- function() {
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = "hist_irrig",
+                 irrigationsystem = irrigationsystem, cropmix = cropmix,
                  landScen = "currIrrig:NULL", comAg = committed,
-                 transDist = transDist,
+                 transDist = transDist, fossilGW = fossilGW,
                  multicropping = FALSE, aggregate = FALSE,
                  file = paste0(o, "EconACTUNSUS", "comAg",
                                as.character(committed), "_single.mz"))
@@ -199,9 +202,9 @@ fullMULTICROPPING <- function() {
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = "hist_irrig",
+                 irrigationsystem = irrigationsystem, cropmix = cropmix,
                  landScen = "currIrrig:NULL", comAg = committed,
-                 transDist = transDist,
+                 transDist = transDist, fossilGW = fossilGW,
                  multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
                  file = paste0(o, "EconACTUNSUS", "comAg",
                                as.character(committed), "_multiplePOT.mz"))
@@ -212,9 +215,9 @@ fullMULTICROPPING <- function() {
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = "hist_irrig",
+                 irrigationsystem = irrigationsystem, cropmix = cropmix,
                  landScen = "currIrrig:NULL", comAg = committed,
-                 transDist = transDist,
+                 transDist = transDist, fossilGW = fossilGW,
                  multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
                  file = paste0(o, "EconACTUNSUS", "comAg",
                                as.character(committed), "_multipleACT.mz"))
@@ -228,9 +231,9 @@ fullMULTICROPPING <- function() {
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = "hist_total",
+                 irrigationsystem = irrigationsystem, cropmix = cropmix,
                  landScen = "currCropland:NULL", comAg = committed,
-                 transDist = transDist,
+                 transDist = transDist, fossilGW = fossilGW,
                  multicropping = FALSE, aggregate = FALSE,
                  file = paste0(o, "EconCURUNSUS", "comAg",
                                as.character(committed), "_single.mz"))
@@ -242,9 +245,9 @@ fullMULTICROPPING <- function() {
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = "hist_total",
+                 irrigationsystem = irrigationsystem, cropmix = cropmix,
                  landScen = "currCropland:NULL", comAg = committed,
-                 transDist = transDist,
+                 transDist = transDist, fossilGW = fossilGW,
                  multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
                  file = paste0(o, "EconCURUNSUS", "comAg",
                                as.character(committed), "_multiplePOT.mz"))
@@ -255,9 +258,9 @@ fullMULTICROPPING <- function() {
                  efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                  rankmethod = rankmethod, yieldcalib = yieldcalib,
                  allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = "hist_total",
+                 irrigationsystem = irrigationsystem, cropmix = cropmix,
                  landScen = "currCropland:NULL", comAg = committed,
-                 transDist = transDist,
+                 transDist = transDist, fossilGW = fossilGW,
                  multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
                  file = paste0(o, "EconCURUNSUS", "comAg",
                                as.character(committed), "_multipleACT.mz"))
@@ -293,7 +296,7 @@ fullMULTICROPPING <- function() {
                      rankmethod = rankmethod,
                      allocationrule = allocationrule, gainthreshold = gtrange,
                      irrigationsystem = irrigationsystem, cropmix = cropmix,
-                     transDist = transDist, comAg = comAg,
+                     transDist = transDist, fossilGW = fossilGW, comAg = comAg,
                      file = paste0(o, "_",
                                    gsub(":", "_", man), "_",
                                    str_split(a, ":")[[1]][1],
@@ -348,6 +351,7 @@ fullMULTICROPPING <- function() {
 
     # Committed agricultural area
     calcOutput("IrrigAreaActuallyCommitted",
+               fossilGW = FALSE,
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, transDist = t,
@@ -355,6 +359,7 @@ fullMULTICROPPING <- function() {
                file = paste0("comAgAreaACT_single_", t, ".mz"))
 
     calcOutput("IrrigAreaActuallyCommitted",
+               fossilGW = FALSE,
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, transDist = t,
@@ -363,6 +368,7 @@ fullMULTICROPPING <- function() {
                file = paste0("comAgAreaACT_multipleACT_", t, ".mz"))
 
     calcOutput("IrrigAreaActuallyCommitted",
+               fossilGW = FALSE,
                lpjml = lpjml, climatetype = climatetype,
                selectyears = selectyears, iniyear = iniyear,
                efrMethod = efrMethod, transDist = t,
@@ -533,21 +539,6 @@ fullMULTICROPPING <- function() {
 #
 #   for (t in c(0, 100, 200)) {
 #
-#     # Committed agricultural area
-#     calcOutput("IrrigAreaActuallyCommitted",
-#                lpjml = lpjml, climatetype = climatetype,
-#                selectyears = selectyears, iniyear = iniyear,
-#                efrMethod = efrMethod, transDist = t,
-#                multicropping = FALSE, aggregate = FALSE,
-#                file = paste0("comAgAreaACT_single_", t, ".mz"))
-#
-#     calcOutput("IrrigAreaActuallyCommitted",
-#                lpjml = lpjml, climatetype = climatetype,
-#                selectyears = selectyears, iniyear = iniyear,
-#                efrMethod = efrMethod, transDist = t,
-#                multicropping = "TRUE:actual:irrig_crop",
-#                aggregate = FALSE,
-#                file = paste0("comAgAreaACT_multiple_", t, ".mz"))
 #
 #     # Share current irrigation water that can be fulfilled by available water resources
 #     calcOutput("ShrHumanUsesFulfilled",

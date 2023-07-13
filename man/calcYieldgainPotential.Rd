@@ -18,6 +18,7 @@ calcYieldgainPotential(
   gainthreshold,
   allocationrule,
   transDist = transDist,
+  fossilGW,
   landScen,
   cropmix,
   multicropping,
@@ -75,6 +76,9 @@ across cells of river basin ("optimization", "upstreamfirst", "equality")}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}
+
+\item{fossilGW}{If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)

@@ -19,6 +19,7 @@ calcWaterUsePotential(
   landScen,
   cropmix,
   comAg,
+  fossilGW,
   multicropping,
   transDist
 )
@@ -81,6 +82,9 @@ or selection of proxycrops)}
 \item{comAg}{If TRUE: currently already irrigated areas in
          initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential)}
+
+\item{fossilGW}{If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
 Multiple Cropping Suitability mask selected
