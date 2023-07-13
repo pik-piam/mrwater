@@ -158,14 +158,16 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
       multicropping <- "TRUE:actual:irrig_crop"
     }
 
-    # subtract physical area already reserved for irrigation by committed agricultural uses
+    # subtract physical area already reserved for irrigation with renewable water resources
+    # by committed agricultural uses in water allocation algorithm
     # (to avoid double accounting)
     comIrrigArea <- collapseNames(calcOutput("IrrigAreaActuallyCommitted",
-                                              selectyears = selectyears, iniyear = comagyear,
-                                              lpjml = lpjml, climatetype = climatetype,
-                                              efrMethod = efrMethod,
-                                              multicropping = multicropping, transDist = transDist,
-                                              aggregate = FALSE))
+                                             fossilGW = FALSE,
+                                             selectyears = selectyears, iniyear = comagyear,
+                                             lpjml = lpjml, climatetype = climatetype,
+                                             efrMethod = efrMethod,
+                                             multicropping = multicropping, transDist = transDist,
+                                             aggregate = FALSE))
     comIrrigArea <- collapseNames(dimSums(comIrrigArea, dim = 3))
     out          <- out - comIrrigArea
   }
@@ -186,6 +188,6 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   return(list(x            = out,
               weight       = NULL,
               unit         = "Mha",
-              description  = "area potentially available for irrigated agriculture",
+              description  = "Area potentially available for irrigated agriculture",
               isocountries = FALSE))
 }

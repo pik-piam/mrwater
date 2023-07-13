@@ -6,6 +6,9 @@
 #'              The water use in the initialization year is fixed in the future as
 #'              non-renewable groundwater.
 #'
+#' @param output        "total": total groundwater use (non-agricultural and agricultural),
+#'                      "nonAg": groundwater use in non-agricultural sector (industry, domestic, electricity),
+#'                      "comAg": groundwater use in agricultural sector (currently irrigated area)
 #' @param lpjml         LPJmL version used
 #' @param climatetype   Switch between different climate scenarios or
 #'                      historical baseline "GSWP3-W5E5:historical"
@@ -41,7 +44,7 @@
 #'
 #' @export
 
-calcNonrenGroundwatUse <- function(lpjml, climatetype,
+calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
                                    transDistGW = 100, multicropping = "TRUE:actual:irrig_crop",
                                    selectyears, iniyear) {
 
@@ -152,8 +155,6 @@ calcNonrenGroundwatUse <- function(lpjml, climatetype,
   missingNAU <- actNAU - fulfilledNAU
   missingCAU <- actCAU - fulfilledCAU
   missingWat <- missingNAU + missingCAU
-  # clean up work space:
-  rm(missingNAU, missingCAU, actCAU, actNAU, fulfilledCAU, fulfilledNAU)
 
   ######################
   ### Prepare output ###
@@ -162,8 +163,20 @@ calcNonrenGroundwatUse <- function(lpjml, climatetype,
                     cells_and_regions = getItems(fulfilledCAU, dim = 1),
                     years = selectyears,
                     names = c("withdrawal", "consumption"))
-  out[, pstYrs, ] <- missingWat[, pstYrs, ]
-  out[, ftrYrs, ] <- missingWat[, lastYr, ]
+  if (output == "total") {
+    out[, pstYrs, ] <- missingWat[, pstYrs, ]
+    out[, ftrYrs, ] <- missingWat[, lastYr, ]
+  } else if (output == "nonAg") {
+    out[, pstYrs, ] <- missingNAU[, pstYrs, ]
+    out[, ftrYrs, ] <- missingNAU[, lastYr, ]
+  } else if (output == "comAg") {
+    out[, pstYrs, ] <- missingCAU[, pstYrs, ]
+    out[, ftrYrs, ] <- missingCAU[, lastYr, ]
+  } else {
+    stop("Please select whether total groundwater use or sector-wise groundwater use
+         shall be reported by calcNonrenGroundwaterUse")
+  }
+
 
   ##############
   ### Checks ###

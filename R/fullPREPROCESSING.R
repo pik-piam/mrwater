@@ -57,6 +57,9 @@ fullPREPROCESSING <- function(protectLand = "HalfEarth",
   allocationrule    <- "optimization"
   rankmethod        <- "USD_m3:GLO:TRUE"
 
+  # To DO: distinguish sustainable and unsustainable scenarios
+  fossilGW <- TRUE
+
   ################
   # MAIN RESULTS #
   ################
@@ -70,7 +73,8 @@ fullPREPROCESSING <- function(protectLand = "HalfEarth",
               gainthreshold = gt, irrigationsystem = irrigationsystem,
               landScen = landScen,
               cropmix = cropmix, comAg = TRUE,
-              multicropping = multicropping, transDist = transDist,
+              multicropping = multicropping,
+              transDist = transDist, fossilGW = fossilGW,
               aggregate = FALSE, file = "potIrrigArea.mz") # Note: switch to aggregate = "cluster" (but need to switch to different clustering first)
 
   # Potential irrigation water consumption (PIWC)

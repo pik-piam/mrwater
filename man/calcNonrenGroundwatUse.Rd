@@ -5,16 +5,20 @@
 \title{calcNonrenGroundwatUse}
 \usage{
 calcNonrenGroundwatUse(
+  output,
   lpjml,
   climatetype,
   transDistGW = 100,
   multicropping = "TRUE:actual:irrig_crop",
   selectyears,
-  iniyear,
-  efrMethod
+  iniyear
 )
 }
 \arguments{
+\item{output}{"total": total groundwater use (non-agricultural and agricultural),
+"nonAg": groundwater use in non-agricultural sector (industry, domestic, electricity),
+"comAg": groundwater use in agricultural sector (currently irrigated area)}
+
 \item{lpjml}{LPJmL version used}
 
 \item{climatetype}{Switch between different climate scenarios or
@@ -41,9 +45,6 @@ Multiple Cropping Suitability mask selected
 \item{selectyears}{Years to be returned}
 
 \item{iniyear}{Initialization year}
-
-\item{efrMethod}{EFR method used including selected strictness of EFRs
-(e.g. Smakhtin:good, VMF:fair)}
 }
 \value{
 cellular magpie object

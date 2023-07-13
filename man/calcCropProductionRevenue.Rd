@@ -22,7 +22,8 @@ calcCropProductionRevenue(
   irrigationsystem,
   cropmix,
   comAg,
-  transDist
+  transDist,
+  fossilGW
 )
 }
 \arguments{
@@ -114,6 +115,9 @@ if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}
+
+\item{fossilGW}{If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 }
 \value{
 magpie object in cellular resolution

@@ -49,6 +49,8 @@
 #' @param comAg             If TRUE: currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
 #'                          if FALSE: no irrigation areas reserved (irrigation potential)
+#' @param fossilGW          If TRUE: non-renewable groundwater can be used.
+#'                          If FALSE: non-renewable groundwater cannot be used.
 #' @param multicropping     Multicropping activated (TRUE) or not (FALSE) and
 #'                          Multiple Cropping Suitability mask selected
 #'                          (mask can be:
@@ -83,7 +85,8 @@ calcIrrigAreaPotential <- function(cropAggregation,
                                    efrMethod, accessibilityrule,
                                    rankmethod, yieldcalib, allocationrule,
                                    gainthreshold, irrigationsystem, landScen,
-                                   cropmix, comAg, multicropping, transDist) {
+                                   cropmix, comAg, fossilGW,
+                                   multicropping, transDist) {
 
   ## Read in water available for irrigation (in mio. m^3)
   avlWat <- calcOutput("WaterUsePotential", selectyears = selectyears,
@@ -94,7 +97,8 @@ calcIrrigAreaPotential <- function(cropAggregation,
                         irrigationsystem = irrigationsystem, iniyear = iniyear,
                         landScen = landScen, cropmix = cropmix,
                         comAg = comAg, multicropping = multicropping,
-                        transDist = transDist, aggregate = FALSE)
+                        transDist = transDist, fossilGW = fossilGW,
+                        aggregate = FALSE)
   avlWatWC <- collapseNames(avlWat[, , "wat_ag_wc"])
   avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
 
@@ -110,6 +114,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
     # Actually committed irrigated area (crop-specific)
     comAgArea <- calcOutput("IrrigAreaActuallyCommitted",
+                            fossilGW = fossilGW,
                             lpjml = lpjml, climatetype = climatetype,
                             selectyears = selectyears, iniyear = iniyear,
                             efrMethod = efrMethod, multicropping = m,
@@ -117,8 +122,6 @@ calcIrrigAreaPotential <- function(cropAggregation,
     names(dimnames(comAgArea))[2] <- "year"
     getSets(comAgArea) <- c("x", "y", "iso", "year", "crop", "irrig_type", "EFP", "scen")
     comAgArea <- collapseNames(dimOrder(comAgArea, perm = c(3, 4, 2, 1), dim = 3))
-
-    ### To Do: add groundwater somewhere here
 
     # Water actually committed to agriculture (in mio. m^3)
     comWater <- calcOutput("RiverHumanUseAccounting",
@@ -135,6 +138,16 @@ calcIrrigAreaPotential <- function(cropAggregation,
     comWatWW <- collapseNames(comWater[, , "currHumanWWtotal"])
     comWatWC <- collapseNames(comWater[, , "currHumanWCtotal"])
 
+    # Fossil groundwater use
+    if (fossilGW) {
+      gw <- calcOutput("NonrenGroundwatUse", output = "comAg",
+                       lpjml = lpjml, climatetype = climatetype,
+                       selectyears = selectyears, iniyear = iniyear,
+                       aggregate = FALSE)
+      comWatWW <- comWatWW + collapseNames(gw[, , "withdrawal"])
+      comWatWC <- comWatWC + collapseNames(gw[, , "consumption"])
+    }
+
 
   } else {
 
@@ -145,7 +158,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
     comWatWC[, , ] <- 0
   }
 
-  # Water available for potential irrigation (in mio. m^3)
+  # Water available for potential additional irrigation (in mio. m^3)
   avlWatWW <- avlWatWW - comWatWW
   avlWatWC <- avlWatWC - comWatWC
 
@@ -157,9 +170,9 @@ calcIrrigAreaPotential <- function(cropAggregation,
                          comagyear = NULL, efrMethod = NULL,
                          transDist = NULL,
                          aggregate = FALSE)
-  watReqWW <- watReqWC <- new.magpie(cells_and_regions = getCells(avlWatWW),
-                                     years = getYears(avlWatWW),
-                                     names = getNames(avlWatWW),
+  watReqWW <- watReqWC <- new.magpie(cells_and_regions = getItems(avlWatWW, dim = 1),
+                                     years = getItems(avlWatWW, dim = 2),
+                                     names = getItems(avlWatWW, dim = 3),
                                      fill = NA)
 
   watReqWW[, , ] <- collapseNames(watReq[, , "withdrawal"])
