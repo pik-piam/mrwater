@@ -43,7 +43,6 @@
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames
-#' @importFrom utils tail
 
 calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
                                            lpjml, climatetype,
@@ -126,7 +125,7 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
   # Fossil groundwater use to fulfill committed agricultural water use
   if (fossilGW) {
     gw <- calcOutput("NonrenGroundwatUse",
-                      output = "comAg",
+                      output = "comAg", multicropping = m,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, iniyear = iniyear,
                       aggregate = FALSE)
