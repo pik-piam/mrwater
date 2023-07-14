@@ -183,11 +183,11 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                             lpjml = lpjml, climatetype = climatetype,
                             selectyears = selectyears, iniyear = iniyear,
                             multicropping = m, aggregate = FALSE)
-    # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
+    # Committed Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
     currRequestWWlocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "withdrawal"],
                                                                  dim = "crop")),
                                           cells = cells, years = selectyears, scenarios = scenarios)
-    # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
+    # Committed Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
     currRequestWClocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "consumption"],
                                                                  dim = "crop")),
                                           cells = cells, years = selectyears, scenarios = scenarios)
@@ -195,7 +195,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Discharge from previous routing
     discharge <- collapseNames(previousHumanUse[, , "discharge"])
 
-} else if (grepl(pattern = "potential_irrigation", x = iteration)) {
+  } else if (grepl(pattern = "potential_irrigation", x = iteration)) {
 
     if (comAg == TRUE) {
       # accounting in potentials

@@ -32,7 +32,7 @@ fullMULTICROPPING <- function() {
   plotyear          <- selectyears
   ssp               <- "ssp2"
   efp               <- "off"
-  cropmix           <- "hist_irrig"
+  cropmix           <- "hist_total"
 
   # Assumption in this study:
   # only technical potential is reported for the purpose of this analysis:

@@ -56,6 +56,6 @@ calcWaterUseCommittedAg <- function(lpjml, climatetype,
   return(list(x            = comAg,
               weight       = NULL,
               unit         = "mio. m^3 per year",
-              description  = "agricultural water demands per crop given selected cropmix",
+              description  = "agricultural water demands per crop given currently irrigated area",
               isocountries = FALSE))
 }

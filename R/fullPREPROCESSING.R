@@ -75,7 +75,12 @@ fullPREPROCESSING <- function(protectLand = "HalfEarth",
               cropmix = cropmix, comAg = TRUE,
               multicropping = multicropping,
               transDist = transDist, fossilGW = fossilGW,
-              aggregate = FALSE, file = "potIrrigArea.mz") # Note: switch to aggregate = "cluster" (but need to switch to different clustering first)
+              aggregate = FALSE, file = "potIrrigArea.mz")
+  ## To Do
+  # Note: switch to aggregate = "cluster" (but need to switch to different clustering first)
+
+  # make function that combines all required scenarios:
+  # GW on and off; EFP on and off; different SSPs
 
   # Potential irrigation water consumption (PIWC)
 
