@@ -93,22 +93,13 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
   comWatWW <- collapseNames(comWater[, , "currHumanWWtotal"])
   comWatWC <- collapseNames(comWater[, , "currHumanWCtotal"])
 
-  if (fossilGW) {
-    gw <- calcOutput("NonrenGroundwatUse", output = "comAg",
-                     lpjml = lpjml, climatetype = climatetype,
-                     selectyears = selectyears, iniyear = iniyear,
-                     aggregate = FALSE)
-    comWatWW <- comWatWW + collapseNames(gw[, , "withdrawal"])
-    comWatWC <- comWatWC + collapseNames(gw[, , "consumption"])
-  }
-
   ####################
   ### Calculations ###
   ####################
   # Total irrigation requirements per cell (in mio. m^3)
   totalIrrigReq <- dimSums(cropIrrigReq * comArea, dim = "crop")
 
-  # Share of Area that is irrigated given limited water availability
+  # Share of Area that is irrigated given limited renewable water availability
   wwShr <- ifelse(totalIrrigReq[, , "withdrawal"] > 0,
                     comWatWW / collapseNames(totalIrrigReq[, , "withdrawal"]),
                   0)
@@ -116,22 +107,71 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
                     comWatWC / collapseNames(totalIrrigReq[, , "consumption"]),
                   0)
 
+  ### Checks ###
   if (any(round(wwShr - wcShr, digits = 4) != 0)) {
     stop("There seems to be a mismatch in consumption and withdrawal
          in calcIrrigAreaActuallyCommitted.
          Please make sure that the fulfilled ratio is the same
          for consumption and withdrawal")
   }
+  if (any(round(wcShr, digits = 4) > 1)) {
+    stop("In calcAreaActuallyCommitted: Water requirements are over-fulfilled.
+          This should not be the case in the initialization year. Please double-check!
+          A wild guess: it might be related to the fossil groundwater calculation.")
+  }
 
-  # Area Actually Committed for Irrigation given available water (in Mha)
+  # Area Actually Committed for Irrigation given available renewable water resource (in Mha)
   out <- comArea * wcShr
+
+  # Fossil groundwater use to fulfill committed agricultural water use
+  if (fossilGW) {
+    gw <- calcOutput("NonrenGroundwatUse",
+                      output = "comAg",
+                      lpjml = lpjml, climatetype = climatetype,
+                      selectyears = selectyears, iniyear = iniyear,
+                      aggregate = FALSE)
+    comWatWW <- comWatWW + collapseNames(gw[, , "withdrawal"])
+    comWatWC <- comWatWC + collapseNames(gw[, , "consumption"])
+
+    # Share of Area that is irrigated given limited water availability
+    # under consideration of fossil GW
+    wwShr <- ifelse(totalIrrigReq[, , "withdrawal"] > 0,
+                      comWatWW / collapseNames(totalIrrigReq[, , "withdrawal"]),
+                    0)
+    wcShr <- ifelse(totalIrrigReq[, , "consumption"] > 0,
+                     comWatWC / collapseNames(totalIrrigReq[, , "consumption"]),
+                    0)
+
+    ### Checks ###
+    if (any(round(wwShr[, iniyear, "off"] - wcShr[, iniyear, "off"], digits = 4) != 0)) {
+      stop("There seems to be a mismatch in consumption and withdrawal
+          in calcIrrigAreaActuallyCommitted.
+          Please make sure that the fulfilled ratio is the same
+          for consumption and withdrawal")
+    }
+    if (any(round(wcShr[, iniyear, "off"], digits = 4) > 1)) {
+      stop("In calcAreaActuallyCommitted: Water requirements are over-fulfilled.
+            This should not be the case in the initialization year. Please double-check!
+            A wild guess: it might be related to the fossil groundwater calculation.")
+    }
+
+    # In future time steps (after initialization year) [because of depreciation of irrigated areas]
+    # and under an environmental flow policy scenario,
+    # the irrigated area may be over-fulfilled by non-renewable groundwater.
+    # These values are capped to 1:
+    wcShr[wcShr > 1] <- 1
+
+    # Area Actually Committed for Irrigation given available water (in Mha)
+    out[, , "off"] <- comArea * wcShr[, , "off"]
+    # Note: In an environmental flow scenario, non-renewable groundwater cannot be used
+  }
 
   # check for NAs and negative values
   if (any(is.na(out))) {
-    stop("produced NA irrigation water requirements")
+    stop("calcIrrigAreaActuallyCommitted produced NA irrigated areas")
   }
   if (any(out < 0)) {
-    stop("produced negative irrigation water requirements")
+    stop("calcIrrigAreaActuallyCommitted produced negative irrigated areas")
   }
 
   return(list(x            = out,

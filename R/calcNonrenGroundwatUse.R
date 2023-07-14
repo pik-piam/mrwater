@@ -184,7 +184,7 @@ calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
   ##############
   ### Checks ###
   ##############
-  if (any(round(out, digits = 3) < 0, na.rm = TRUE)) {
+  if (any(round(out, digits = 4) < 0, na.rm = TRUE)) {
     stop("calcNonrenGroundwatUse produced negative values")
   }
   if (any(is.na(out))) {
