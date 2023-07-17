@@ -206,18 +206,18 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
   # check for NAs and negative values
   if (any(is.na(out))) {
-    stop("produced NA irrigatable area")
+    stop("calcIrrigAreaPotential produced NA irrigatable area")
   }
   if (any(out < 0)) {
-    stop("produced negative irrigatable area")
+    stop("calcirrigAreaPotential produced negative irrigatable area")
   }
 
   if (cropAggregation) {
     out <- dimSums(out, dim = "crop")
-    description <- paste0("Potentially irrigated area (total)",
+    description <- paste0("Potentially irrigated area (total) ",
                           "given land and water constraints")
   } else {
-    description <- paste0("Crop-specific area that can be irrigated",
+    description <- paste0("Crop-specific area that can be irrigated ",
                           "given land and water constraints")
   }
 

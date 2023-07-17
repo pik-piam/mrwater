@@ -36,7 +36,7 @@ fullMULTICROPPING <- function() {
 
   # Assumption in this study:
   # only technical potential is reported for the purpose of this analysis:
-  gtrange           <- 0
+  gtrange <- gainthreshold <- 0
   # default transport distance is 100 km (sensitivity is provided in SI)
   transDist         <- 100
   # fossil groundwater use is activated
@@ -176,96 +176,55 @@ fullMULTICROPPING <- function() {
   #########################
   # IRRIGATION POTENTIALS #
   #########################
-  for (committed in c(TRUE)) {
-    for (o in c("IrrigArea", "wat_ag_ww", "wat_ag_wc")) {
+  # potentially irrigated area on current cropland (under single cropping conditions)
+  calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+             gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+             landScen = "currCropland:NULL",
+             cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+             multicropping = FALSE, transDist = transDist,
+             aggregate = FALSE,
+             file = "piaCUR_single.mz")
+  # potentially irrigated area on current cropland (under current multiple cropping conditions)
+  calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+             gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+             landScen = "currCropland:NULL",
+             cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+             multicropping = "TRUE:actual:irrig_crop", transDist = transDist,
+             aggregate = FALSE,
+             file = "piaCUR_multACT.mz")
+  # potentially irrigated area on current cropland (under consideration of potential multiple cropping)
+  calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+             gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+             landScen = "currCropland:NULL",
+             cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+             multicropping = "TRUE:potential:endogenous", transDist = transDist,
+             aggregate = FALSE,
+             file = "piaCUR_multPOT.mz")
+  # potentially irrigated area on currently irrigated cropland (under consideration of potential multiple cropping)
+  calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+             gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+             landScen = "currIrrig:NULL",
+             cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+             multicropping = "TRUE:potential:endogenous", transDist = transDist,
+             aggregate = FALSE,
+             file = "piaIRR_multPOT.mz")
 
-      ### Current irrigated area (IRR) ###
-      # under single cropping
-      calcOutput("EconOfIrrig",
-                 scenario = ssp, output = o, gtrange = gtrange,
-                 selectyears = plotyear, iniyear = iniyear,
-                 lpjml = lpjml, climatetype = climatetype,
-                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                 rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
-                 landScen = "currIrrig:NULL", comAg = committed,
-                 transDist = transDist, fossilGW = fossilGW,
-                 multicropping = FALSE, aggregate = FALSE,
-                 file = paste0(o, "EconACTUNSUS", "comAg",
-                               as.character(committed), "_single.mz"))
-      # under multiple cropping
-      calcOutput("EconOfIrrig",
-                 scenario = ssp, output = o, gtrange = gtrange,
-                 selectyears = plotyear, iniyear = iniyear,
-                 lpjml = lpjml, climatetype = climatetype,
-                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                 rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
-                 landScen = "currIrrig:NULL", comAg = committed,
-                 transDist = transDist, fossilGW = fossilGW,
-                 multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
-                 file = paste0(o, "EconACTUNSUS", "comAg",
-                               as.character(committed), "_multiplePOT.mz"))
-      calcOutput("EconOfIrrig",
-                 scenario = ssp, output = o, gtrange = gtrange,
-                 selectyears = plotyear, iniyear = iniyear,
-                 lpjml = lpjml, climatetype = climatetype,
-                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                 rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
-                 landScen = "currIrrig:NULL", comAg = committed,
-                 transDist = transDist, fossilGW = fossilGW,
-                 multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
-                 file = paste0(o, "EconACTUNSUS", "comAg",
-                               as.character(committed), "_multipleACT.mz"))
-
-      ### Current cropland (CUR) ###
-      # under single cropping
-      calcOutput("EconOfIrrig",
-                 scenario = ssp, output = o, gtrange = gtrange,
-                 selectyears = plotyear, iniyear = iniyear,
-                 lpjml = lpjml, climatetype = climatetype,
-                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                 rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
-                 landScen = "currCropland:NULL", comAg = committed,
-                 transDist = transDist, fossilGW = fossilGW,
-                 multicropping = FALSE, aggregate = FALSE,
-                 file = paste0(o, "EconCURUNSUS", "comAg",
-                               as.character(committed), "_single.mz"))
-      # under multiple cropping
-      calcOutput("EconOfIrrig",
-                 scenario = ssp, output = o, gtrange = gtrange,
-                 selectyears = plotyear, iniyear = iniyear,
-                 lpjml = lpjml, climatetype = climatetype,
-                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                 rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
-                 landScen = "currCropland:NULL", comAg = committed,
-                 transDist = transDist, fossilGW = fossilGW,
-                 multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
-                 file = paste0(o, "EconCURUNSUS", "comAg",
-                               as.character(committed), "_multiplePOT.mz"))
-      calcOutput("EconOfIrrig",
-                 scenario = ssp, output = o, gtrange = gtrange,
-                 selectyears = plotyear, iniyear = iniyear,
-                 lpjml = lpjml, climatetype = climatetype,
-                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                 rankmethod = rankmethod, yieldcalib = yieldcalib,
-                 allocationrule = allocationrule,
-                 irrigationsystem = irrigationsystem, cropmix = cropmix,
-                 landScen = "currCropland:NULL", comAg = committed,
-                 transDist = transDist, fossilGW = fossilGW,
-                 multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
-                 file = paste0(o, "EconCURUNSUS", "comAg",
-                               as.character(committed), "_multipleACT.mz"))
-    }
-  }
 
   ###########
   # Revenue #
