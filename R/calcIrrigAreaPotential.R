@@ -88,7 +88,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
                                    cropmix, comAg, fossilGW,
                                    multicropping, transDist) {
 
-  ## Read in water available for irrigation (in mio. m^3)
+  ## Read in (renewable and non-renewable) water available for irrigation (in mio. m^3)
   avlWat <- calcOutput("WaterUsePotential", selectyears = selectyears,
                         lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
                         accessibilityrule = accessibilityrule, rankmethod = rankmethod,
@@ -124,30 +124,14 @@ calcIrrigAreaPotential <- function(cropAggregation,
     comAgArea <- collapseNames(dimOrder(comAgArea, perm = c(3, 4, 2, 1), dim = 3))
 
     # Water actually committed to agriculture (in mio. m^3)
-    comWater <- calcOutput("RiverHumanUseAccounting",
-                           iteration = "committed_agriculture",
-                           lpjml = lpjml, climatetype = climatetype,
-                           transDist = transDist, comAg = NULL,
-                           efrMethod = efrMethod, multicropping = m,
-                           selectyears = selectyears, iniyear = iniyear,
-                           accessibilityrule = NULL,
-                           rankmethod = NULL, gainthreshold = NULL,
-                           cropmix = NULL, yieldcalib = NULL,
-                           irrigationsystem = NULL, landScen = NULL,
-                           aggregate = FALSE)
-    comWatWW <- collapseNames(comWater[, , "currHumanWWtotal"])
-    comWatWC <- collapseNames(comWater[, , "currHumanWCtotal"])
-
-    # Fossil groundwater use
-    if (fossilGW) {
-      gw <- calcOutput("NonrenGroundwatUse", output = "comAg",
-                       lpjml = lpjml, climatetype = climatetype,
-                       selectyears = selectyears, iniyear = iniyear,
-                       aggregate = FALSE)
-      comWatWW <- comWatWW + collapseNames(gw[, , "withdrawal"])
-      comWatWC <- comWatWC + collapseNames(gw[, , "consumption"])
-    }
-
+    comWatAct <- calcOutput("WaterUseActuallyCommittedAg",
+                            lpjml = lpjml, climatetype = climatetype,
+                            selectyears = selectyears, iniyear = iniyear,
+                            multicropping = m, efrMethod = efrMethod,
+                            fossilGW = fossilGW, transDist = transDist,
+                            aggregate = FALSE)
+    comWatWW <- collapseNames(dimSums(comWatAct, dim = "crop")[, , "withdrawal"])
+    comWatWC <- collapseNames(dimSums(comWatAct, dim = "crop")[, , "consumption"])
 
   } else {
 
@@ -158,9 +142,17 @@ calcIrrigAreaPotential <- function(cropAggregation,
     comWatWC[, , ] <- 0
   }
 
-  # Water available for potential additional irrigation (in mio. m^3)
+  # Water available for potential additional irrigation beyond committed ag. use (in mio. m^3)
   avlWatWW <- avlWatWW - comWatWW
   avlWatWC <- avlWatWC - comWatWC
+
+  # Check
+  if (avlWatWW < 0 || avlWatWC < 0) {
+    stop("In calcIrrigAreaPotential: available water for additional irrigation beyond
+         committed agricultural use became negative. This should not be the case.
+         Please double check. A wild guess: this may be related to the non-renewabled
+         groundwater implementation.")
+  }
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
