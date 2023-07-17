@@ -29,10 +29,8 @@ fullMULTICROPPING <- function() {
   accessibilityrule <- "CV:2"
   allocationrule    <- "upstreamfirst" # "optimization" #### or "upstreamfirst"?
   rankmethod        <- "USD_m3:GLO:TRUE"
-  plotyear          <- selectyears
   ssp               <- "ssp2"
   efp               <- "off"
-  cropmix           <- "hist_total"
 
   # Assumption in this study:
   # only technical potential is reported for the purpose of this analysis:
@@ -45,6 +43,9 @@ fullMULTICROPPING <- function() {
   yieldcalib        <- "TRUE:TRUE:actual:irrig_crop" # FALSE
   # reserve already irrigated areas for irrigation
   comAg             <- TRUE
+  # With comAg being activated, the cropmix for the remaining area should be hist_rainf
+  # such that total crop areas match
+  cropmix           <- "hist_rainf"
 
 
   #########################
@@ -83,6 +84,10 @@ fullMULTICROPPING <- function() {
              cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
              file = "ToolboxHARV.mz")
+
+  # fallow land (in Mha)
+  calcOutput("FallowLand", years = selectyears, aggregate = FALSE,
+             file = "fallowLand.mz")
 
   ######################
   # WATER REQUIREMENTS #
