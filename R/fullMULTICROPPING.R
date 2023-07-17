@@ -184,7 +184,7 @@ fullMULTICROPPING <- function() {
   # potentially irrigated area on current cropland (under single cropping conditions)
   calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
              lpjml = lpjml, climatetype = climatetype,
-             selectyears = selectyears, iniyear,
+             selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
              gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
@@ -196,7 +196,7 @@ fullMULTICROPPING <- function() {
   # potentially irrigated area on current cropland (under current multiple cropping conditions)
   calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
              lpjml = lpjml, climatetype = climatetype,
-             selectyears = selectyears, iniyear,
+             selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
              gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
@@ -208,7 +208,7 @@ fullMULTICROPPING <- function() {
   # potentially irrigated area on current cropland (under consideration of potential multiple cropping)
   calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
              lpjml = lpjml, climatetype = climatetype,
-             selectyears = selectyears, iniyear,
+             selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
              gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
@@ -220,7 +220,7 @@ fullMULTICROPPING <- function() {
   # potentially irrigated area on currently irrigated cropland (under consideration of potential multiple cropping)
   calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
              lpjml = lpjml, climatetype = climatetype,
-             selectyears = selectyears, iniyear,
+             selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
              rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
              gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
