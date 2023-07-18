@@ -34,7 +34,7 @@ toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
 
   # Available water
   # (Note: since it is compared to water reserved in previous time step,
-  #        it needs to include prevWC, otherwise: there would be double-accouting)
+  #        it needs to include prevWC, otherwise: there would be double-accounting)
   avlWat <- q[1] + prevWC
 
   ############################################
