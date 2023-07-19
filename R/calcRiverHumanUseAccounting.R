@@ -188,7 +188,8 @@ calcRiverHumanUseAccounting <- function(iteration,
       tmpDischarge      <- discharge[, y, scen]
 
       # Cells to be calculated
-      cellsCalc <- which(tmpRequestWWlocal > 0)
+      cellsCalc <- unique(c(which(tmpRequestWWlocal > 0),
+                            which(tmpDischarge + prevReservedWC[ , y, scen] < prevReservedWW[ , y, scen])))
       cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
       cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
