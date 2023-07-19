@@ -180,7 +180,6 @@ calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
          shall be reported by calcNonrenGroundwaterUse")
   }
 
-
   ##############
   ### Checks ###
   ##############

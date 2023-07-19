@@ -188,8 +188,7 @@ calcRiverHumanUseAccounting <- function(iteration,
       tmpDischarge      <- discharge[, y, scen]
 
       # Cells to be calculated
-      cellsCalc <- unique(c(which(tmpRequestWWlocal > 0),
-                            which(tmpDischarge + prevReservedWC[ , y, scen] < prevReservedWW[ , y, scen])))
+      cellsCalc <- which(tmpRequestWWlocal > 0)
       cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
       cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
@@ -331,13 +330,19 @@ calcRiverHumanUseAccounting <- function(iteration,
   if (any(is.na(out))) {
     stop("calcRiverHumanUseAccounting produced NAs!")
   }
-  if (any(round(out, digits = 3) < 0)) {
+  if (any(round(out, digits = 6) < 0)) {
     stop("calcRiverHumanUseAccounting produced negative values")
   }
   # Check if too much water has been allocated
   # (currRequestWClocal should always be smaller than currRequestWCtotal)
   if (any((out[, , "currHumanWClocal"] - out[, , "currHumanWCtotal"]) > 1e-6)) {
     stop("Too much water has been allocated
+          in calcRiverHumanUseAccounting.")
+  }
+  # Check whether more than available discharge has been reserved
+  if (any(round(out[, , "discharge"] + out[, , "reservedWC"] - out[, , "reservedWW"],
+                digits = 6) < 0)) {
+    stop("Too much water has been reserved
           in calcRiverHumanUseAccounting.")
   }
   # Check whether water has been lost

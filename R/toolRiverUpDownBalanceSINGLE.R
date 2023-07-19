@@ -56,9 +56,10 @@ toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
       # Current water uses fulfilled given withdrawal constraint
       currWC[1] <- frac * currWC[1]
     }
+
     # Update discharge in current cell and downstream cells
     # for case where sufficient water available for requirements
-    # (Subtract local water consumption in current cell (and previous if applicable)
+    # (Subtract local water consumption in current cell (and downstream if applicable)
     q <- q - currWC[1]
 
   } else {
@@ -67,7 +68,7 @@ toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
     ###########################
     #### Available Water in cell is not sufficient to fulfill previously determined requirements ####
     #### -> no more water can be withdrawn locally                                               ####
-    #### &  if possible: upstream consumption is reduced to release missing water                ####
+    #### &  if possible: upstream consumption of current use is reduced to release missing water ####
     # (Note: This is necessary to allocate the release of water
     #        equally to all upstream cells (considering all
     #        tributaries and all cells in each of them))

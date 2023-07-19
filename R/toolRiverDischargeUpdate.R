@@ -49,7 +49,7 @@ toolRiverDischargeUpdate <- function(rs, runoffWOEvap, watCons) {
     stop("toolRiverDischargeUpdate finished with NA discharge")
   }
   # Check for negative discharge
-  if (any(round(discharge, digits = 3) < 0)) {
+  if (any(round(discharge, digits = 6) < 0)) {
     stop("toolRiverDischargeUpdate finished with negative values")
   }
 

@@ -129,8 +129,16 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     # Crop-specific irrigated and rainfed cropareas (in Mha)
     # depending on chosen land and management scenario
     # Note: no committed agricultural areas subtracted because full area is needed here
+    # For (rainfed) areas to match under committed ag. scenario, hist_total needs to be selected as cropmix
+    # for total crop areas
+    if (comAg) {
+      cmix <- "hist_total"
+    } else {
+      cmix <- cmix
+    }
     cropareaTotal <- calcOutput("CropAreaPotIrrig",
-                                cropmix = cropmix, landScen = landScen,
+                                cropmix = cmix,
+                                landScen = landScen,
                                 selectyears = selectyears, iniyear = iniyear,
                                 comagyear = NULL,
                                 lpjml = NULL, climatetype = NULL,
