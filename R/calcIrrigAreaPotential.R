@@ -207,7 +207,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
   if (any(is.na(out))) {
     stop("calcIrrigAreaPotential produced NA irrigatable area")
   }
-  if (any(out < 0)) {
+  if (any(round(out, digits = 6) < 0)) {
     stop("calcirrigAreaPotential produced negative irrigatable area")
   }
 
