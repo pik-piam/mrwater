@@ -140,7 +140,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
           # Select cells to be calculated
           cellsCalc <- unique(c(which(tmpRequestWWlocal > 0),
-                                which(tmpDischarge[c] + tmpPrevWC[c] < tmpPrevWW[c])))
+                                which(tmpDischarge + tmpPrevWC < tmpPrevWW)))
           cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
           cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
