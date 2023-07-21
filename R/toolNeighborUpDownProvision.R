@@ -1,9 +1,9 @@
 #' @title       toolNeighborUpDownProvision
-#' @description This function calculates water provision by 
+#' @description This function calculates water provision by
 #'              surrounding grid cells for upstream-downstream
 #'              allocation set-up
 #'
-#' @param rs             River structure including information 
+#' @param rs             River structure including information
 #'                       on neighboring cells
 #' @param transDist      Water transport distance allowed to fulfill locally
 #'                       unfulfilled water demand by surrounding cell water availability
@@ -11,12 +11,12 @@
 #' @param scenarios      Vector of scenarios for which neighbor allocation shall be applied
 #' @param listNeighborIN List of arrays required for the algorithm:
 #'                       yearlyRunoff, lakeEvap
-#'                       reserved flows from previous water allocation round 
+#'                       reserved flows from previous water allocation round
 #'                       (prevReservedWC, prevReservedWW)
-#'                       missing water at this stage of water allocation 
+#'                       missing water at this stage of water allocation
 #'                       (missingWW, missingWC)
 #'                       discharge
-#' 
+#'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
 #'
@@ -139,7 +139,8 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           tmpRequestWWtotal <- tmpRequestWWlocal
 
           # Select cells to be calculated
-          cellsCalc <- which(tmpRequestWWlocal > 0)
+          cellsCalc <- unique(c(which(tmpRequestWWlocal > 0),
+                                which(tmpDischarge[c] + tmpPrevWC[c] < tmpPrevWW[c])))
           cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
           cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
@@ -200,7 +201,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           # Update water that is still missing in main river cell(s)
           tmpMissWW <- tmpMissWW * (1 - fracFromNeighbor)
           tmpMissWC <- tmpMissWC * (1 - fracFromNeighbor)
-          
+
           # repeat until no more missing water OR no more neighbor cells
           if (all(tmpMissWW <= 0) && all(tmpMissWC <= 0)) {
             break
