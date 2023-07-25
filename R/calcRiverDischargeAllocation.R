@@ -111,6 +111,21 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                           aggregate = FALSE)
   dischargeMAG <- collapseNames(inputData[, , "discharge"])
 
+  # Inaccessible discharge
+  inaccessibleDischarge <- calcOutput("DischargeInaccessibleAdd",
+                                      selectyears = selectyears,
+                                      lpjml = lpjml, climatetype = climatetype,
+                                      accessibilityrule = accessibilityrule,
+                                      aggregate = FALSE)
+  # Correct inaccessible discharge for available discharge after previous routings
+  tmp <- dischargeMAG - inaccessibleDischarge
+  tmp[tmp > 0]  <- inaccessibleDischarge
+  tmp[tmp <= 0] <- dischargeMAG
+  inaccessibleDischarge <- tmp
+
+  # Inaccessible discharge is added to previously reserved withdrawal
+  inputData[, , "prevReservedWW"] <- inputData[, , "prevReservedWW"] + inaccessibleDischarge
+
   # Object dimensions:
   gridcells <- getItems(dischargeMAG, dim = 1)
   dimnames  <- getItems(dischargeMAG, dim = 3)
@@ -340,7 +355,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = paste0("River routing outputs
-                                     after Surplus Discharge Allocation"),
+              description  = paste0("River routing outputs ",
+                                     "after Surplus Discharge Allocation"),
               isocountries = FALSE))
 }

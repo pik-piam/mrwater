@@ -40,6 +40,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
   missWW <- listNeighborIN$missingWW
   missWC <- listNeighborIN$missingWC
   discharge <- listNeighborIN$discharge
+  inaccD    <- listNeighborIN$inaccD
 
   l <- length(rs$cells)
   names(rs$neighborcell) <- 1:l  ## check whether still necessary
@@ -162,7 +163,8 @@ toolNeighborUpDownProvision <- function(rs, transDist,
               # Reserved Water Use Accounting
               tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWC = tmpPrevWC[c],
                                                                 prevWW = tmpPrevWW[c],
-                                                                currWW = tmpRequestWWlocal[c]),
+                                                                currWW = tmpRequestWWlocal[c],
+                                                                inaccD = inaccD[c]),
                                                   inoutLIST = list(q = tmpDischarge[cellsDischarge],
                                                                    currWC = tmpRequestWClocal[cellsRequest]))
 

@@ -159,6 +159,13 @@ calcRiverHumanUseAccounting <- function(iteration,
   # Reduce to one object (for performance reasons)
   runoffWOEvap <- yearlyRunoff - lakeEvap
 
+  # Inaccessible discharge
+  inaccessibleDischarge <- calcOutput("DischargeInaccessibleAdd",
+                                      selectyears = selectyears,
+                                      lpjml = lpjml, climatetype = climatetype,
+                                      accessibilityrule = accessibilityrule,
+                                      aggregate = FALSE)
+
   # Initialize river routing variables and dimensions
   fracFulfilled <- missingWW <- missingWC <- as.array(.transformObject(x = 0,
                                                                        gridcells = gridcells,
@@ -172,6 +179,7 @@ calcRiverHumanUseAccounting <- function(iteration,
                                               gridcells = gridcells,
                                               years = selectyears, names = dimnames))
   discharge      <- as.array(dischargeMAG)
+  inaccessD      <- as.array(inaccessibleDischarge)
   prevReservedWW <- as.array(collapseNames(inputData[, , "prevReservedWW"]))
   prevReservedWC <- as.array(collapseNames(inputData[, , "prevReservedWC"]))
   currRequestWWlocal <- currRequestWWtotal <- as.array(collapseNames(inputData[, , "currRequestWWlocal"]))
@@ -211,7 +219,8 @@ calcRiverHumanUseAccounting <- function(iteration,
 
           tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWC = prevReservedWC[c, y, scen],
                                                             prevWW = prevReservedWW[c, y, scen],
-                                                            currWW = tmpRequestWWlocal[c]),
+                                                            currWW = tmpRequestWWlocal[c],
+                                                            inaccD = inaccessD[c]),
                                               inoutLIST = list(q = tmpDischarge[cellsDischarge],
                                                                currWC = tmpRequestWClocal[cellsRequest]))
 
@@ -255,6 +264,7 @@ calcRiverHumanUseAccounting <- function(iteration,
     tmp <- toolNeighborUpDownProvision(rs = rs, transDist = transDist,
                                        years = years, scenarios = scenarios,
                        listNeighborIN = list(discharge = discharge,
+                                             inaccD = inaccessD,
                                              prevReservedWC = prevReservedWC,
                                              prevReservedWW = prevReservedWW,
                                              missingWC = missingWC,

@@ -143,8 +143,8 @@ toolRiverDischargeAllocationSINGLE <- function(rs, c,
 
         # Checks
         if (round(missingWW, digits = 4) < 0) {
-          stop(paste0("More water than necessary provided
-                      in toolRiverDischargeAllocation by neighborcell ", n,
+          stop(paste0("More water than necessary provided ",
+                      "in toolRiverDischargeAllocation by neighborcell ", n,
                       "to main cell ", c))
         }
         # Exit Neighbor Water Provision when enough water provided

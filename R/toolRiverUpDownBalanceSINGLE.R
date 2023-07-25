@@ -27,6 +27,7 @@ toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
   prevWC <- inLIST$prevWC
   prevWW <- inLIST$prevWW
   currWW <- inLIST$currWW
+  inaccD <- inLIST$inaccD
 
   # Inputs that are also outputs (updated by this algorithm):
   q      <- inoutLIST$q
@@ -48,9 +49,12 @@ toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
   if (avlWat >= prevWW) {
     # Are current withdrawals requested?
     if (currWW > 0) {
+
       # (I) Water withdrawal constraint: All withdrawals that can be fulfilled considering
-      #                                  local previously determined water requirements are served
-      frac <- min((avlWat - prevWW) / currWW,
+      #                                  local previously determined water requirements
+      #                                  (and optionally inaccessible discharge)
+      #                                  are served
+      frac <- min(max(avlWat - prevWW - inaccD, 0) / currWW,
                   1)
 
       # Current water uses fulfilled given withdrawal constraint
@@ -60,6 +64,12 @@ toolRiverUpDownBalanceSINGLE <- function(inLIST, inoutLIST) {
     # Update discharge in current cell and downstream cells
     # for case where sufficient water available for requirements
     # (Subtract local water consumption in current cell (and downstream if applicable)
+    if (q[1] < currWC[1]) { #### Can this happen? If not: To Do: remove the stop
+      stop("in toolRiverUpDownBalance: Current local consumption would exceed available discharge!")
+      frac <- min((q[1] - currWC[1]) / currWC[1],
+                  1)
+      currWC[1] <- frac * currWC[1]
+    }
     q <- q - currWC[1]
 
   } else {

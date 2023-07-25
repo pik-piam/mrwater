@@ -239,17 +239,9 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                               cropmix = NULL, yieldcalib = NULL,
                               irrigationsystem = NULL, landScen = NULL,
                               aggregate = FALSE)
-    # Reserved minimum flow: Inaccessible discharge +
-    #                        Environmental Flow Requirements (adjusted for
-    #                        part that is fulfilled by inaccessible water) +
-    #                        Reserved for Non-Agricultural withdrawal +
-    #                        [Reserved Committed Agricultural withdrawal, if activated] (in mio. m^3 / yr)
-    prevReservedWW <- calcOutput("RiverWatReserved",
-                                  transDist = transDist, accessibilityrule = accessibilityrule,
-                                  selectyears = selectyears, iniyear = iniyear,
-                                  lpjml = lpjml, climatetype = climatetype,
-                                  comAg = comAg, multicropping = multicropping,
-                                  efrMethod = efrMethod, aggregate = FALSE)
+
+    # Non-agricultural and committed agricultural withdrawal
+    prevReservedWW <- collapseNames(prevRouting[, , "reservedWW"])
     # Non-agricultural and committed agricultural consumption
     prevReservedWC <- collapseNames(prevRouting[, , "reservedWC"])
 
@@ -273,7 +265,8 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
   } else {
     stop("Please specify iteration for which river routing inputs shall be calculated:
-         non_agriculture, committed_agriculture or potential")
+         non_agriculture, committed_agriculture, potential_irrigation,
+         or committed_agriculture_fullPotential")
   }
 
   ###############
