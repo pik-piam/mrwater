@@ -16,6 +16,8 @@
 #'                          discharge that is exceeded x percent of the time on average throughout a year
 #'                          (Qx, e.g. Q75: 0.25, Q50: 0.5)
 #'                          or base value for exponential curve separated by : (CV:2)
+#' @param efrMethod         EFR method used including selected strictness of EFRs
+#'                          (Smakhtin:good, VMF:fair)
 #'
 #' @importFrom madrat calcOutput
 #'
@@ -30,22 +32,34 @@
 
 calcDischargeInaccessibleAdd <- function(selectyears = selectyears,
                                          lpjml = lpjml, climatetype = climatetype,
-                                         accessibilityrule = accessibilityrule) {
+                                         accessibilityrule = accessibilityrule,
+                                         efrMethod = efrMethod) {
 
+  # Discharge that is inaccessible to humans due to variability
   inaccessibleDischarge <- calcOutput("DischargeInaccessible", selectyears = selectyears,
                                       lpjml = lpjml, climatetype = climatetype,
                                       accessibilityrule = accessibilityrule,
                                       aggregate = FALSE)
 
+  # Environmental flow requirements that can be fulfilled with inaccessible discharge
   inaccessibleEFR       <- calcOutput("EnvmtlFlowRequirementsInaccess", selectyears = selectyears,
                                       lpjml = lpjml, climatetype = climatetype,
                                       accessibilityrule = accessibilityrule,
+                                      efrMethod = efrMethod,
                                       aggregate = FALSE)
 
-  out <- inaccessibleDischarge - inaccessibleEFR
+  # Prepare output to be returned
+  out <- new.magpie(cells_and_regions = getItems(inaccessibleDischarge, dim = 1),
+                    years = getItems(inaccessibleDischarge, dim = 2),
+                    names = c("on", "off"),
+                    fill = 0,
+                    sets = c("x", "y", "iso", "year", "EFR"))
+
+  out[, , "on"]  <- inaccessibleDischarge - inaccessibleEFR
+  out[, , "off"] <- inaccessibleDischarge
 
   # Check for NAs and negative values
-  if (any(out < 0)) {
+  if (any(round(out, digits = 6) < 0)) {
     stop("mrwater::calcDischargeInaccessibleAdd produced negative water volumes.")
   }
   if (any(is.na(out))) {

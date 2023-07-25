@@ -111,21 +111,6 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                           aggregate = FALSE)
   dischargeMAG <- collapseNames(inputData[, , "discharge"])
 
-  # Inaccessible discharge
-  inaccessibleDischarge <- calcOutput("DischargeInaccessibleAdd",
-                                      selectyears = selectyears,
-                                      lpjml = lpjml, climatetype = climatetype,
-                                      accessibilityrule = accessibilityrule,
-                                      aggregate = FALSE)
-  # Correct inaccessible discharge for available discharge after previous routings
-  tmp <- dischargeMAG - inaccessibleDischarge
-  tmp[tmp > 0]  <- inaccessibleDischarge
-  tmp[tmp <= 0] <- dischargeMAG
-  inaccessibleDischarge <- tmp
-
-  # Inaccessible discharge is added to previously reserved withdrawal
-  inputData[, , "prevReservedWW"] <- inputData[, , "prevReservedWW"] + inaccessibleDischarge
-
   # Object dimensions:
   gridcells <- getItems(dischargeMAG, dim = 1)
   dimnames  <- getItems(dischargeMAG, dim = 3)
@@ -150,6 +135,26 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                     sets = c("x.y.iso", "year", "data"))
   out <- .transformObject(x = out, gridcells = gridcells,
                           years = selectyears, names = dimnames)
+
+  # Inaccessible discharge
+  inaccessibleDischarge <- calcOutput("DischargeInaccessibleAdd",
+                                      selectyears = selectyears,
+                                      lpjml = lpjml, climatetype = climatetype,
+                                      accessibilityrule = accessibilityrule,
+                                      efrMethod = efrMethod,
+                                      aggregate = FALSE)
+  inaccessibleDischarge <- .transformObject(inaccessibleDischarge,
+                                            gridcells = gridcells,
+                                            years = selectyears,
+                                            names = dimnames)
+  # Correct inaccessible discharge for available discharge after previous routings
+  inaccessibleDischarge <- ifelse(dischargeMAG - inaccessibleDischarge > 0,
+                                    inaccessibleDischarge,
+                                  dischargeMAG)
+
+  # Inaccessible discharge is added to previously reserved withdrawal
+  inputData[, , "prevReservedWW"] <- inputData[, , "prevReservedWW"] + inaccessibleDischarge
+
 
   #######################################
   ###### Read in Required Inputs ########

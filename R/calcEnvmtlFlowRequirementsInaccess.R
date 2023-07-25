@@ -30,7 +30,6 @@
 #'
 calcEnvmtlFlowRequirementsInaccess <- function(lpjml, selectyears, climatetype,
                                                efrMethod, accessibilityrule) {
-
   # Read in full volume of EFRs (in mio. m^3) including HFRs and LFRs
   efr <- calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
                     climatetype = climatetype, lpjml = lpjml, efrMethod = efrMethod,
@@ -46,7 +45,7 @@ calcEnvmtlFlowRequirementsInaccess <- function(lpjml, selectyears, climatetype,
 
   # Calculate EFRs that can be fulfilled by inaccessible discharge
   # Note: only high flow requirements can be served by highly variable inaccessible discharge
-  out <- efr[, , "HFR"] - constrainingHFR
+  out <- collapseNames(efr[, , "HFR"] - constrainingHFR)
 
   # Check for NAs and negative values
   if (any(is.na(out))) {
@@ -55,7 +54,8 @@ calcEnvmtlFlowRequirementsInaccess <- function(lpjml, selectyears, climatetype,
   }
   if (any(round(out, digits = 6) < 0)) {
     stop(paste0("mrwater::calcEnvmtlFlowRequirementsInaccess ",
-                "produced negative EFR"))  }
+                "produced negative EFR"))
+  }
 
   return(list(x            = out,
               weight       = NULL,

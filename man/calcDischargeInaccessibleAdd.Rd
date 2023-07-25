@@ -8,7 +8,8 @@ calcDischargeInaccessibleAdd(
   selectyears = selectyears,
   lpjml = lpjml,
   climatetype = climatetype,
-  accessibilityrule = accessibilityrule
+  accessibilityrule = accessibilityrule,
+  efrMethod = efrMethod
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ combined with scalar value defining the strictness of accessibility restriction:
 discharge that is exceeded x percent of the time on average throughout a year
 (Qx, e.g. Q75: 0.25, Q50: 0.5)
 or base value for exponential curve separated by : (CV:2)}
+
+\item{efrMethod}{EFR method used including selected strictness of EFRs
+(Smakhtin:good, VMF:fair)}
 }
 \value{
 magpie object in cellular resolution
