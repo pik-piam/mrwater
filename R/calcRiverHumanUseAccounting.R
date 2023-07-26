@@ -310,6 +310,14 @@ calcRiverHumanUseAccounting <- function(iteration,
                    calcRiverHumanUseAccounting with iteration = ",
                    iteration, " some water was not properly allocated."))
     }
+    # The water volume assigned to/from a neighbor must not exceed the missing water requested
+    if (any(apply(missingWC, MARGIN = 3, FUN = sum) - apply(tmp$fromNeighborWC, MARGIN = 3, FUN = sum) < 0) ||
+        any(apply(missingWW, MARGIN = 3, FUN = sum) - apply(tmp$fromNeighborWW, MARGIN = 3, FUN = sum) < 0)) {
+      stop(paste0(
+        "More water than was requested has been assigned ",
+        "in toolNeighborUpDownProvision of calcRiverHumanUseAccounting ",
+        "of iteration = ", iteration))
+    }
   } else {
     # total and local currently requested water fulfilled is the same in this case
     currRequestWWtotal <- currRequestWWlocal

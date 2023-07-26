@@ -136,6 +136,9 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     } else {
       cmix <- cmix
     }
+    if (grepl("currIrrig", landScen)) {
+      cropmix <- cmix <- "hist_irrig"
+    }
     cropareaTotal <- calcOutput("CropAreaPotIrrig",
                                 cropmix = cmix,
                                 landScen = landScen,
@@ -268,6 +271,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
          between total cropland and irrigated croparea.
          Please check!")
   }
+  cropareaRainfed[cropareaRainfed < 0] <- 0
 
   ### Yields ###
   # rainfed yield

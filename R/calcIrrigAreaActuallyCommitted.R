@@ -141,15 +141,10 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
                                     comWatWC / collapseNames(totalIrrigReq[, , "consumption"]),
                                   0))
 
-    ### Checks ###
-    if (m != FALSE && any(round(wcShr[, iniyear, "off"], digits = 4) > 1)) {
-      stop("In calcAreaActuallyCommitted: Water requirements are over-fulfilled.
-        This should not be the case in the initialization year. Please double-check!
-        A wild guess: it might be related to the fossil groundwater calculation.")
-    }
     # In future time steps (after initialization year) [because of depreciation of irrigated areas]
     # and under an environmental flow policy scenario,
     # and in the single-cropping scenario [because default is current multiple cropping],
+    # and for lower chosen transport distance than for determination of non-renewable groundwater,
     # the irrigated area may be over-fulfilled by non-renewable groundwater.
     # These values are capped to 1:
     wcShr[wcShr > 1] <- 1
