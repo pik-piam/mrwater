@@ -84,7 +84,7 @@ calcYieldgainArea <- function(rangeGT, lpjml, selectyears, iniyear,
   return(list(x            = out,
               weight       = NULL,
               unit         = "Mha",
-              description  = "Potentially irrigated area
-                              only considering land constraint",
+              description  = paste0("Potentially irrigated area ",
+                                    "only considering land constraint"),
               isocountries = FALSE))
 }

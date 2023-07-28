@@ -24,6 +24,11 @@
 #' @param transDist      if comagyear != NULL: Water transport distance allowed to fulfill locally
 #'                       unfulfilled water demand by surrounding cell water availability
 #'                       of committed agricultural uses
+#' @param scenarios      Scenarios for object dimension consisting of "EFP.scenario".
+#'                       Default is c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
+#'                                    "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")
+#'                       If scenarios change, they have to be adjusted in the default 
+#'                       setting of this function.
 #'
 #'
 #' @return magpie object in cellular resolution
@@ -40,7 +45,9 @@
 
 calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
                              lpjml, climatetype, efrMethod,
-                             multicropping, transDist) {
+                             multicropping, transDist,
+                             scenarios = c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
+                                           "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")) {
 
   # retrieve function arguments
   protectSCEN <- as.list(strsplit(landScen, split = ":"))[[1]][2]
@@ -56,7 +63,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   ######################
   # read in protected area
   protectArea <- calcOutput("ProtectArea", cells = "lpjcell", aggregate = FALSE)
-  # FELI: Switch to newest protected area function & double check which landarea is the base
+  # To Do (FELI): Switch to newest protected area function & double check which landarea is the base
 
   # select protection scenario
   if (!is.na(protectSCEN)) {
@@ -132,7 +139,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
 
   # area that is not protected
   areaNOprotect <- landarea - protectArea
-
+  
 
   #########################################################
   ### Land that is potentially available for irrigation ###
@@ -140,15 +147,22 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   # Combine land scenario and protection component
   out <- pmin(areaNOprotect, landAVL)
 
-
-  # Adjust dimensionality (necessary when >1 year selected)
-  tmp <- out
-  out <- new.magpie(cells_and_regions  = getCells(out),
-                     years             = selectyears,
-                     names             = getNames(out),
-                     fill              = 1)
-  out <- tmp * out
-  getSets(out) <- c("x", "y", "iso", "year", "data")
+  # Transform object dimensionality
+  .transformObject <- function(x, gridcells, years, names) {
+    # empty magpie object structure
+    object0 <- new.magpie(cells_and_regions = gridcells,
+                          years = years,
+                          names = names,
+                          fill = 0,
+                          sets = c("x.y.iso", "year", "EFP.scen"))
+    # bring object x to dimension of object0
+    out <- object0 + x
+    return(out)
+  }
+  out <- .transformObject(x = out,
+                          gridcells = getItems(out, dim = 1),
+                          years = selectyears,
+                          names = scenarios)
 
   # Areas that are already irrigated (by committed agricultural uses)
   if (!is.null(comagyear)) {
@@ -168,13 +182,13 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
                                              efrMethod = efrMethod,
                                              multicropping = multicropping, transDist = transDist,
                                              aggregate = FALSE))
-    comIrrigArea <- collapseNames(dimSums(comIrrigArea, dim = 3))
+    if (any(scenarios != unique(getItems(dimSums(comIrrigArea, dim = 3.1), dim = 3)))) {
+      stop("Apparently the number of scenarios or format has change.
+           Please adjust default argument of mrwater::calcAreaPotIrrig accordingly.")
+    }
+    comIrrigArea <- collapseNames(dimSums(comIrrigArea, dim = 3.1))
     out          <- out - comIrrigArea
   }
-
-  # correct negative land availability due to mismatch of available land
-  # and protected land or rounding imprecision
-  out[out < 0] <- 0
 
   # Checks
   if (any(is.na(out))) {
@@ -184,6 +198,9 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   if (any(round(out, digits = 3) < 0)) {
     stop("mrwater::calcAreaPotIrrig produced negative values")
   }
+
+  # correct negative land availability due to rounding imprecision
+  out[out < 0] <- 0
 
   return(list(x            = out,
               weight       = NULL,

@@ -108,13 +108,13 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
   if (unlimited) {
 
     # Area that can potentially be irrigated without water limitation
-    area <- calcOutput("AreaPotIrrig",
-                       selectyears = selectyears, iniyear = iniyear,
-                       landScen = landScen, comagyear = NULL,
-                       lpjml = NULL, climatetype = NULL,
-                       efrMethod = NULL,
-                       multicropping = NULL, transDist = NULL,
-                       aggregate = FALSE)
+    area <- collapseNames(calcOutput("AreaPotIrrig",
+                                      selectyears = selectyears, iniyear = iniyear,
+                                      landScen = landScen, comagyear = NULL,
+                                      lpjml = NULL, climatetype = NULL,
+                                      efrMethod = NULL,
+                                      multicropping = NULL, transDist = NULL,
+                                      aggregate = FALSE)[, , scenario])
 
     # share of crop area by crop type
     cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,

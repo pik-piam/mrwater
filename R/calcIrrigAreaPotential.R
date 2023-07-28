@@ -146,7 +146,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
   avlWatWC <- avlWatWC - comWatWC
 
   # Check
-  if (avlWatWW < 0 || avlWatWC < 0) {
+  if (any(round(avlWatWW, digits = 6) < 0) || any(round(avlWatWC, digits = 6) < 0)) {
     stop("In calcIrrigAreaPotential: available water for additional irrigation beyond
          committed agricultural use became negative. This should not be the case.
          Please double check. A wild guess: this may be related to the non-renewabled
@@ -205,10 +205,10 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
   # check for NAs and negative values
   if (any(is.na(out))) {
-    stop("calcIrrigAreaPotential produced NA irrigatable area")
+    stop("mrwater::calcIrrigAreaPotential produced NA irrigatable area")
   }
   if (any(round(out, digits = 6) < 0)) {
-    stop("calcirrigAreaPotential produced negative irrigatable area")
+    stop("mrwater::calcIrrigAreaPotential produced negative irrigatable area")
   }
 
   if (cropAggregation) {

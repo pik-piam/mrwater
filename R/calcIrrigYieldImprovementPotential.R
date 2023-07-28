@@ -115,14 +115,16 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
 
       # croparea per crop given chosen land scenario (in Mha)
       # (excluding already committed agricultural areas if comagyear != NULL)
-      croparea <- calcOutput("CropAreaPotIrrig",
-                             selectyears = selectyears, comagyear = comagyear,
-                             iniyear = iniyear,
-                             cropmix = cropmix, landScen = landScen,
-                             lpjml = lpjml, climatetype = climatetype,
-                             efrMethod = efrMethod,
-                             multicropping = multicropping, transDist = transDist,
-                             aggregate = FALSE)
+      # Note: one scenario selected for obtaining one cell ranking
+      #       (only makes a difference if committed agricultural uses is activated)
+      croparea <- collapseNames(calcOutput("CropAreaPotIrrig",
+                                          selectyears = selectyears, comagyear = comagyear,
+                                          iniyear = iniyear,
+                                          cropmix = cropmix, landScen = landScen,
+                                          lpjml = lpjml, climatetype = climatetype,
+                                          efrMethod = efrMethod,
+                                          multicropping = multicropping, transDist = transDist,
+                                          aggregate = FALSE)[, , "off.ISIMIP"])
 
       # absolute irrigation yield gain on available area
       yieldGain <- dimSums(yieldGain * croparea, dim = "crop")

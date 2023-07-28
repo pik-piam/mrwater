@@ -68,7 +68,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                          multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
                          transDist = transDist,
                          aggregate = FALSE)
-  croplist <- getItems(croparea, dim = 3)
+  croplist <- getItems(croparea, dim = "crop")
 
   # read in irrigation water requirements for given irrigation system
   # per crop (in m^3 per hectare per year)

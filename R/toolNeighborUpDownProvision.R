@@ -44,7 +44,6 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
   l <- length(rs$cells)
   names(rs$neighborcell) <- 1:l  ## check whether still necessary
-  names(rs$neighbordist) <- 1:l  ## check whether still necessary
 
   # initialize objects
   fracFulfilled <- missWW

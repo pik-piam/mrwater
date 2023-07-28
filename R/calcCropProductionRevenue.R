@@ -139,15 +139,15 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     if (grepl("currIrrig", landScen)) {
       cropmix <- cmix <- "hist_irrig"
     }
-    cropareaTotal <- calcOutput("CropAreaPotIrrig",
-                                cropmix = cmix,
-                                landScen = landScen,
-                                selectyears = selectyears, iniyear = iniyear,
-                                comagyear = NULL,
-                                lpjml = NULL, climatetype = NULL,
-                                efrMethod = NULL,
-                                multicropping = FALSE, transDist = NULL,
-                                aggregate = FALSE)
+    cropareaTotal <- collapseNames(calcOutput("CropAreaPotIrrig",
+                                              cropmix = cmix,
+                                              landScen = landScen,
+                                              selectyears = selectyears, iniyear = iniyear,
+                                              comagyear = NULL,
+                                              lpjml = NULL, climatetype = NULL,
+                                              efrMethod = NULL,
+                                              multicropping = FALSE, transDist = NULL,
+                                              aggregate = FALSE)[, , scenario])
 
     # Crop-specific (potentially) irrigated areas (in Mha)
     # depending on chosen land, management, and water limitation scenario
@@ -217,7 +217,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
   }
 
   # reorder third dimension (switch irrigation and crop)
-  yields <- dimOrder(yields, c(2, 1), dim = 3)
+  yields       <- dimOrder(yields, c(2, 1), dim = 3)
   yieldsSingle <- dimOrder(yieldsSingle, c(2, 1), dim = 3)
 
   # difference between multiple cropped and single yields
@@ -264,13 +264,14 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
   ### Area ###
   # Rainfed cropland
   cropareaRainfed <- cropareaTotal - cropareaIrrig
-
+  # Check for negative rainfed cropareas
   if (any(round(cropareaRainfed, digits = 3) < 0)) {
     stop("In mrwater::calcCropProductionRevenue: rainfed croparea became negative.
          This should not be the case and indicates a data mismatch
          between total cropland and irrigated croparea.
          Please check!")
   }
+  # remove negatives due to rounding imprecision
   cropareaRainfed[cropareaRainfed < 0] <- 0
 
   ### Yields ###
