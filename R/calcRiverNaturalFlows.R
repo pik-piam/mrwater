@@ -90,7 +90,7 @@ calcRiverNaturalFlows <- function(selectyears, lpjml, climatetype) {
 return(list(x            = out,
             weight       = NULL,
             unit         = "mio. m^3",
-            description  = "Cellular natural discharge and lake evaporation
-                            in natural river condition",
+            description  = paste0("Cellular natural discharge and lake evaporation ",
+                                  "under natural river condition"),
             isocountries = FALSE))
 }

@@ -56,7 +56,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
     protectSCEN <- NA
   }
 
-  landScen    <- as.list(strsplit(landScen, split = ":"))[[1]][1]
+  landScen <- as.list(strsplit(landScen, split = ":"))[[1]][1]
 
   ######################
   ### Protected area ###

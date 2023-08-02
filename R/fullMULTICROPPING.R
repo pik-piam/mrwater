@@ -23,7 +23,7 @@ fullMULTICROPPING <- function() {
   # Newest LPJmL runs
   lpjml             <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
                          crop = "ggcmi_phase3_nchecks_bft_e511ac58")
-  climatetype       <- "MRI-ESM2-0:ssp370"
+  climatetype       <- "GSWP3-W5E5:historical"
 
   # Settings for optimization algorithm
   accessibilityrule <- "CV:2"

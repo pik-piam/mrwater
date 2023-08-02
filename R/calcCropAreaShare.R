@@ -40,7 +40,7 @@ calcCropAreaShare <- function(iniyear, cropmix) {
       irrigArea    <- collapseNames(croparea[, , "irrigated"])
       irrigcropShr <- irrigArea / dimSums(irrigArea, dim = 3)
 
-      # where currently no irrigated area: use cropmix of total croparea
+      # where currently no irrigated area: use cropmix of total croparea (i.e. rainfed)
       zeroIrrigArea <- (dimSums(irrigArea, dim = 3) == 0)
       cropareaShr   <- irrigcropShr
       cropareaShr[zeroIrrigArea] <- totalcropShr[zeroIrrigArea]
@@ -93,8 +93,8 @@ calcCropAreaShare <- function(iniyear, cropmix) {
   }
 
   if (any(is.na(cropareaShr))) {
-    stop("produced NA crop area share.
-         Please check: calcCropAreaShare!")
+    stop("mrwater::calcCropAreaShare produced NA values.
+         Please check!")
   }
 
   return(list(x            = cropareaShr,

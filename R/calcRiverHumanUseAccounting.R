@@ -210,8 +210,9 @@ calcRiverHumanUseAccounting <- function(iteration,
       tmpDischarge      <- discharge[, y, scen]
 
       # Cells to be calculated
-      cellsCalc <- unique(c(which(tmpRequestWWlocal > 0),
-                            which(tmpDischarge + prevReservedWC[, y, scen] < prevReservedWW[, y, scen])))
+      cellsCalc <- unique(c(which(round(tmpRequestWWlocal, digits = 8) > 0),
+                            which(round(tmpDischarge + prevReservedWC[, y, scen] -
+                                          prevReservedWW[, y, scen], digits = 8) < 0)))
       cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
       cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
@@ -219,8 +220,10 @@ calcRiverHumanUseAccounting <- function(iteration,
         # Does the respective cell request water withdrawal?
         # Or: Is available water smaller than previously reserved withdrawal?
         #     Then: update of discharge required.
-        if ((tmpRequestWWlocal[c] > 0) ||
-            ((tmpDischarge[c] + prevReservedWC[c, y, scen]) < prevReservedWW[c, y, scen])) {
+        if ((round(tmpRequestWWlocal[c], digits = 8) > 0) ||
+            (round((tmpDischarge[c] + prevReservedWC[c, y, scen]) - 
+                        prevReservedWW[c, y, scen],
+                    digits = 8) < 0)) {
 
           cellsRequest <- cellsDischarge <- c
           if (length(rs$upstreamcells[[c]]) > 0) {
@@ -234,11 +237,11 @@ calcRiverHumanUseAccounting <- function(iteration,
                                                             prevWW = prevReservedWW[c, y, scen],
                                                             currWW = tmpRequestWWlocal[c],
                                                             inaccD = inaccessD[c, y, scen]),
-                                              inoutLIST = list(q = tmpDischarge[cellsDischarge],
+                                              inoutLIST = list(disc = tmpDischarge[cellsDischarge],
                                                                currWC = tmpRequestWClocal[cellsRequest]))
 
           # Updated flows
-          tmpDischarge[cellsDischarge]    <- tmp$q
+          tmpDischarge[cellsDischarge]    <- tmp$disc
           tmpRequestWClocal[cellsRequest] <- tmp$currWC
         }
       }

@@ -132,9 +132,16 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     # For (rainfed) areas to match under committed ag. scenario, hist_total needs to be selected as cropmix
     # for total crop areas
     if (comAg) {
-      cmix <- "hist_total"
+      cmix      <- "hist_total"
+      comagyear <- iniyear
+      lj        <- lpjml
+      ct        <- climatetype
+      eM        <- efrMethod
+      tD        <- transDist
     } else {
-      cmix <- cmix
+      cmix      <- cmix
+      comagyear <-  lj <- ct <- NULL
+      eM <- tD <- NULL
     }
     if (grepl("currIrrig", landScen)) {
       cropmix <- cmix <- "hist_irrig"
@@ -143,10 +150,10 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                               cropmix = cmix,
                                               landScen = landScen,
                                               selectyears = selectyears, iniyear = iniyear,
-                                              comagyear = NULL,
-                                              lpjml = NULL, climatetype = NULL,
-                                              efrMethod = NULL,
-                                              multicropping = FALSE, transDist = NULL,
+                                              comagyear = comagyear,
+                                              lpjml = lj, climatetype = ct,
+                                              efrMethod = eM,
+                                              multicropping = m2, transDist = tD,
                                               aggregate = FALSE)[, , scenario])
 
     # Crop-specific (potentially) irrigated areas (in Mha)
@@ -265,7 +272,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
   # Rainfed cropland
   cropareaRainfed <- cropareaTotal - cropareaIrrig
   # Check for negative rainfed cropareas
-  if (any(round(cropareaRainfed, digits = 3) < 0)) {
+  if (any(round(cropareaRainfed, digits = 6) < 0)) {
     stop("In mrwater::calcCropProductionRevenue: rainfed croparea became negative.
          This should not be the case and indicates a data mismatch
          between total cropland and irrigated croparea.
@@ -276,7 +283,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
 
   ### Yields ###
   # rainfed yield
-  rfYld <- collapseNames(yieldsSingle[, , "rainfed"])
+  rfYld      <- collapseNames(yieldsSingle[, , "rainfed"])
   deltaYldrf <- collapseNames(deltaYields[, , "rainfed"])
   if (grepl("counterfactual", management)) {
     # counterfactual case where irrigated areas are managed under rainfed conditions

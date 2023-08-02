@@ -24,24 +24,23 @@ toolRiverDischargeUpdate <- function(rs, runoffWOEvap, watCons) {
   ###########################################
   ###### River Discharge Calculation ########
   ###########################################
-  for (o in 1:max(rs$calcorder)) {
+  # All grid cells in the river network
+  cellsCalc <- seq_along(runoffWOEvap)
+  # Ordering grid cells from upstream to downstream
+  cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
-    # Note: the calcorder ensures that the upstreamcells are calculated first
-    cells <- which(rs$calcorder == o)
+  for (c in cellsCalc) {
 
-    for (c in cells) {
-
-      # available water
+      # available water in cell
       avlWat[c] <- inflow[c] + runoffWOEvap[c]
 
-      # discharge
+      # discharge out of cell
       discharge[c] <- avlWat[c] - watCons[c]
 
-      # inflow into nextcell
-      if (rs$nextcell[c] > 0) {
-        inflow[rs$nextcell[c]] <- inflow[rs$nextcell[c]] + discharge[c]
+        # inflow into nextcell
+        if (rs$nextcell[c] > 0) {
+          inflow[rs$nextcell[c]] <- inflow[rs$nextcell[c]] + discharge[c]
       }
-    }
   }
 
   # Check for NAs
