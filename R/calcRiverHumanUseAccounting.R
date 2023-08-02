@@ -221,7 +221,7 @@ calcRiverHumanUseAccounting <- function(iteration,
         # Or: Is available water smaller than previously reserved withdrawal?
         #     Then: update of discharge required.
         if ((round(tmpRequestWWlocal[c], digits = 8) > 0) ||
-            (round((tmpDischarge[c] + prevReservedWC[c, y, scen]) - 
+            (round((tmpDischarge[c] + prevReservedWC[c, y, scen]) -
                         prevReservedWW[c, y, scen],
                     digits = 8) < 0)) {
 
@@ -233,7 +233,7 @@ calcRiverHumanUseAccounting <- function(iteration,
             cellsDischarge <- c(cellsDischarge, unlist(rs$downstreamcells[[c]]))
           }
 
-          tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWC = prevReservedWC[c, y, scen],
+          tmp <- toolRiverUpDownBalance(inLIST = list(prevWC = prevReservedWC[c, y, scen],
                                                             prevWW = prevReservedWW[c, y, scen],
                                                             currWW = tmpRequestWWlocal[c],
                                                             inaccD = inaccessD[c, y, scen]),

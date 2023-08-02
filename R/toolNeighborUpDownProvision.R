@@ -160,15 +160,15 @@ toolNeighborUpDownProvision <- function(rs, transDist,
               }
 
               # Reserved Water Use Accounting
-              tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWC = tmpPrevWC[c],
+              tmp <- toolRiverUpDownBalance(inLIST = list(prevWC = tmpPrevWC[c],
                                                                 prevWW = tmpPrevWW[c],
                                                                 currWW = tmpRequestWWlocal[c],
                                                                 inaccD = inaccD[c]),
-                                                  inoutLIST = list(q = tmpDischarge[cellsDischarge],
+                                                  inoutLIST = list(disc = tmpDischarge[cellsDischarge],
                                                                    currWC = tmpRequestWClocal[cellsRequest]))
 
               # Updated flows
-              tmpDischarge[cellsDischarge]    <- tmp$q
+              tmpDischarge[cellsDischarge]    <- tmp$disc
               tmpRequestWClocal[cellsRequest] <- tmp$currWC
             }
           }

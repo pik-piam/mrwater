@@ -261,12 +261,12 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
             inoutLIST <- list(discharge = discharge[selectCells, y, scen],
                               prevReservedWW = prevReservedWW[selectCells, y, scen])
 
-            tmp <- toolRiverDischargeAllocationSINGLE(c = c, rs = rs,
-                                                      downCells = downCells,
-                                                      transDist = transDist,
-                                                      iteration = "main",
-                                                      inoutLIST = inoutLIST,
-                                                      inLIST = inLIST)
+            tmp <- toolRiverDischargeAllocation(c = c, rs = rs,
+                                                downCells = downCells,
+                                                transDist = transDist,
+                                                iteration = "main",
+                                                inoutLIST = inoutLIST,
+                                                inLIST = inLIST)
 
             discharge[selectCells, y, scen]      <- tmp$discharge
             prevReservedWW[selectCells, y, scen] <- tmp$prevReservedWW
