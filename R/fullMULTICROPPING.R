@@ -250,7 +250,7 @@ fullMULTICROPPING <- function() {
 
           calcOutput("CropProductionRevenue",
                      outputtype = o,
-                     scenario =   paste(efp, ssp, sep = "."),
+                     scenario = paste(efp, ssp, sep = "."),
                      management = man,
                      area = a,
                      yieldcalib = c,

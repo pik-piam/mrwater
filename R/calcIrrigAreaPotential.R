@@ -111,6 +111,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
     } else {
       m <- FALSE
     }
+    comagyear <- iniyear
 
     # Actually committed irrigated area (crop-specific)
     comAgArea <- calcOutput("IrrigAreaActuallyCommitted",
@@ -133,6 +134,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
     comWatWC <- collapseNames(dimSums(comWatAct, dim = "crop")[, , "consumption"])
 
   } else {
+    comagyear <- NULL
 
     # No water or areas committed to current agricultural uses
     comAgArea <- 0
@@ -170,13 +172,13 @@ calcIrrigAreaPotential <- function(cropAggregation,
   watReqWC[, , ] <- collapseNames(watReq[, , "consumption"])
 
   # Read in area that can potentially be irrigated
-  # (including total potentially irrigatable area; defined by comagyear=NULL)
+  # (excluding already committed areas if comAg is activated)
   areaPotIrrig <- calcOutput("AreaPotIrrig",
                              selectyears = selectyears, iniyear = iniyear,
-                             landScen = landScen, comagyear = NULL,
-                             lpjml = NULL, climatetype = NULL,
-                             efrMethod = NULL,
-                             multicropping = NULL, transDist = NULL,
+                             landScen = landScen, comagyear = comagyear,
+                             lpjml = lpjml, climatetype = climatetype,
+                             efrMethod = efrMethod,
+                             multicropping = multicropping, transDist = transDist,
                              aggregate = FALSE)
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated

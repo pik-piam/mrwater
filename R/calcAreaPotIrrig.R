@@ -168,7 +168,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   if (!is.null(comagyear)) {
 
     # Committed Agricultural Areas under multiple cropping
-    if (multicropping) {
+    if (multicropping != FALSE) {
       multicropping <- "TRUE:actual:irrig_crop"
     }
 
@@ -195,10 +195,10 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
     stop("mrwater::calcAreaPotIrrig produced NA values")
   }
 
-  if (any(round(out, digits = 3) < 0)) {
+  if (any(round(out, digits = 6) < 0)) {
     stop("mrwater::calcAreaPotIrrig produced negative values")
   }
-
+  
   # correct negative land availability due to rounding imprecision
   out[out < 0] <- 0
 
