@@ -58,7 +58,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                                           irrigationsystem, landScen, cropmix,
                                           multicropping) {
 
-  # cropland area per crop
+  # cropland area per crop (in Mha)
   croparea <- calcOutput("CropAreaPotIrrig",
                          selectyears = selectyears, comagyear = comagyear,
                          iniyear = iniyear,
@@ -101,19 +101,19 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
 
   # Checks
   if (any(is.na(irrigWat))) {
-    stop("calcFullIrrigationRequirements:
+    stop("mrwater::calcFullIrrigationRequirements:
          produced NA full irrigation requirements")
   }
   if (any(irrigWat < 0)) {
-    stop("calcFullIrrigationRequirements:
+    stop("mrwater::calcFullIrrigationRequirements:
          produced negative full irrigation requirements")
   }
 
   return(list(x            = irrigWat,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = "Full irrigation requirements per cell
-                              for selected cropmix
-                              and irrigation system",
+              description  = paste0("Full irrigation requirements ",
+                                    "per cell for selected cropmix ",
+                                    "and irrigation system"),
               isocountries = FALSE))
 }

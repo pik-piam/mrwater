@@ -98,7 +98,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   watAvlAgWC <- collapseNames(watAvlAg[, , "currWCtotal"])
 
 
-  watNonAgWW <- watNonAgWC <- currHumanWW <- currHumanWC <- new.magpie(cells_and_regions = getCells(watAvlAgWW),
+  watNonAgWW <- watNonAgWC <- watComAgWW <- watComAgWC <- new.magpie(cells_and_regions = getCells(watAvlAgWW),
                          years = getYears(watAvlAgWW),
                          names = getNames(watAvlAgWW),
                          fill = 0)
@@ -130,7 +130,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
 
   if (comAg == TRUE) {
 
-    # Water already committed to irrigation
+    # (Renewable) water already committed to irrigation in algorithm
     currHuman <- calcOutput("RiverHumanUseAccounting",
                              iteration = "committed_agriculture",
                              lpjml = lpjml, climatetype = climatetype,
@@ -149,24 +149,24 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                        lpjml = lpjml, climatetype = climatetype,
                        selectyears = selectyears, iniyear = iniyear,
                        aggregate = FALSE)
-      currHuman <- currHuman + collapseNames(gw[, , "withdrawal"])
-      currHuman <- currHuman + collapseNames(gw[, , "consumption"])
+      currHuman[, , "currHumanWWtotal"] <- currHuman[, , "currHumanWWtotal"] + collapseNames(gw[, , "withdrawal"])
+      currHuman[, , "currHumanWCtotal"] <- currHuman[, , "currHumanWCtotal"] + collapseNames(gw[, , "consumption"])
     }
 
   } else {
 
     # No water is previously committed
     currHuman       <- watNonAg
-    currHuman[, , ] <- 0
+    currHuman[, , "currHumanWWtotal"] <- currHuman[, , "currHumanWCtotal"] <- 0
 
   }
 
-  currHumanWW <- collapseNames(currHuman[, , "currHumanWWtotal"])
-  currHumanWC <- collapseNames(currHuman[, , "currHumanWCtotal"])
+  watComAgWW <- collapseNames(currHuman[, , "currHumanWWtotal"])
+  watComAgWC <- collapseNames(currHuman[, , "currHumanWCtotal"])
 
   # Function outputs
-  watAgWW  <- watAvlAgWW + currHumanWW
-  watAgWC  <- watAvlAgWC + currHumanWC
+  watAgWW <- watAvlAgWW + watComAgWW
+  watAgWC <- watAvlAgWC + watComAgWC
   watTotWW <- watNonAgWW + watAgWW
   watTotWC <- watNonAgWC + watAgWC
 

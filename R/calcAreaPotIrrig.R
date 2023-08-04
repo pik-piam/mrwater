@@ -139,7 +139,6 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
 
   # area that is not protected
   areaNOprotect <- landarea - protectArea
-  
 
   #########################################################
   ### Land that is potentially available for irrigation ###
@@ -198,7 +197,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   if (any(round(out, digits = 6) < 0)) {
     stop("mrwater::calcAreaPotIrrig produced negative values")
   }
-  
+
   # correct negative land availability due to rounding imprecision
   out[out < 0] <- 0
 

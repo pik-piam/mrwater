@@ -133,34 +133,30 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     # for total crop areas
     if (comAg) {
       cmix      <- "hist_total"
-      comagyear <- iniyear
-      lj        <- lpjml
-      ct        <- climatetype
-      eM        <- efrMethod
-      tD        <- transDist
     } else {
       cmix      <- cmix
-      comagyear <-  lj <- ct <- NULL
-      eM <- tD <- NULL
     }
     if (grepl("currIrrig", landScen)) {
       cropmix <- cmix <- "hist_irrig"
     }
+    # all of available croparea (in Mha)
     cropareaTotal <- collapseNames(calcOutput("CropAreaPotIrrig",
                                               cropmix = cmix,
                                               landScen = landScen,
                                               selectyears = selectyears, iniyear = iniyear,
-                                              comagyear = comagyear,
-                                              lpjml = lj, climatetype = ct,
-                                              efrMethod = eM,
-                                              multicropping = m2, transDist = tD,
+                                              comagyear = NULL,
+                                              lpjml = NULL, climatetype = NULL,
+                                              efrMethod = NULL,
+                                              multicropping = as.logical(stringr::str_split(m2, ":")[[1]][1]),
+                                              transDist = NULL,
                                               aggregate = FALSE)[, , scenario])
 
     # Crop-specific (potentially) irrigated areas (in Mha)
     # depending on chosen land, management, and water limitation scenario
     cropareaIrrig <- collapseNames(calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
                                 cropmix = cropmix, landScen = landScen,
-                                transDist = transDist, fossilGW = fossilGW, multicropping = m2,
+                                transDist = transDist, fossilGW = fossilGW,
+                                multicropping = m2,
                                 lpjml = lpjml, climatetype = climatetype,
                                 selectyears = selectyears, iniyear = iniyear,
                                 efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -271,6 +267,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
   ### Area ###
   # Rainfed cropland
   cropareaRainfed <- cropareaTotal - cropareaIrrig
+
   # Check for negative rainfed cropareas
   if (any(round(cropareaRainfed, digits = 6) < 0)) {
     stop("In mrwater::calcCropProductionRevenue: rainfed croparea became negative.

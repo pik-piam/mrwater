@@ -101,6 +101,8 @@ calcIrrigAreaPotential <- function(cropAggregation,
                         aggregate = FALSE)
   avlWatWC <- collapseNames(avlWat[, , "wat_ag_wc"])
   avlWatWW <- collapseNames(avlWat[, , "wat_ag_ww"])
+  # extract right order of third dimension
+  scenarios <- getItems(avlWatWW, dim = 3)
 
   if (comAg) {
 
@@ -113,7 +115,8 @@ calcIrrigAreaPotential <- function(cropAggregation,
     }
     comagyear <- iniyear
 
-    # Actually committed irrigated area (crop-specific)
+    # Actually committed irrigated area (crop-specific) (in Mha)
+    # including non-renewable groundwater (if activated)
     comAgArea <- calcOutput("IrrigAreaActuallyCommitted",
                             fossilGW = fossilGW,
                             lpjml = lpjml, climatetype = climatetype,
@@ -124,6 +127,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
     comAgArea <- collapseNames(dimOrder(comAgArea, perm = c(2, 3, 1), dim = 3))
 
     # Water actually committed to agriculture (in mio. m^3)
+    # including non-renewable groundwater (if activated)
     comWatAct <- calcOutput("WaterUseActuallyCommittedAg",
                             lpjml = lpjml, climatetype = climatetype,
                             selectyears = selectyears, iniyear = iniyear,
@@ -143,7 +147,9 @@ calcIrrigAreaPotential <- function(cropAggregation,
     comWatWC[, , ] <- 0
   }
 
-  # Water available for potential additional irrigation beyond committed ag. use (in mio. m^3)
+  # Water available for potential additional irrigation
+  # beyond committed ag. use considering (renewable and non-renewable)
+  # availability (in mio. m^3)
   avlWatWW <- avlWatWW - comWatWW
   avlWatWC <- avlWatWC - comWatWC
 
@@ -154,22 +160,26 @@ calcIrrigAreaPotential <- function(cropAggregation,
          Please double check. A wild guess: this may be related to the non-renewabled
          groundwater implementation.")
   }
+  # Correct rounding imprecision
+  avlWatWW[avlWatWW < 0] <- 0
+  avlWatWC[avlWatWC < 0] <- 0
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
+  # required for irrigation of additional irrigation (beyond committed agriculture)
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
                          lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                          irrigationsystem = irrigationsystem, landScen = landScen,
                          cropmix = cropmix, multicropping = multicropping,
-                         comagyear = NULL, efrMethod = NULL,
-                         transDist = NULL,
+                         comagyear = comagyear, efrMethod = efrMethod,
+                         transDist = transDist,
                          aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getItems(avlWatWW, dim = 1),
                                      years = getItems(avlWatWW, dim = 2),
-                                     names = getItems(avlWatWW, dim = 3),
+                                     names = scenarios,
                                      fill = NA)
 
-  watReqWW[, , ] <- collapseNames(watReq[, , "withdrawal"])
-  watReqWC[, , ] <- collapseNames(watReq[, , "consumption"])
+  watReqWW[, , ] <- collapseNames(watReq[, , "withdrawal"][, , scenarios])
+  watReqWC[, , ] <- collapseNames(watReq[, , "consumption"][, , scenarios])
 
   # Read in area that can potentially be irrigated
   # (excluding already committed areas if comAg is activated)
@@ -203,7 +213,15 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
   # crop-specific potentially irrigated area
   out <- collapseNames(irrigatableArea * cropareaShr)
-  out <- out + comAgArea
+  out <- out + comAgArea[, , getItems(out, dim = 3)]
+
+  if (grepl("currIrrig", landScen) && !multicropping && fossilGW) {
+    # In single cropping case, currently irrigated area can be over-fulfilled
+    # when non-renewable groundwater use is activated because
+    # groundwater is calculated based on actual multiple cropping patterns
+    # This is corrected here:
+    out <- pmin(out, comAgArea[, , getItems(out, dim = 3)])
+  }
 
   # check for NAs and negative values
   if (any(is.na(out))) {
