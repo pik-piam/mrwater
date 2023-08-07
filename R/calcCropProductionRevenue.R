@@ -237,6 +237,8 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                      selectyears = selectyears, sectoral = "kcr",
                      lpjml = lpjml, climatetype = climatetype,
                      aggregate = FALSE)
+    # reorder third dimension (switch irrigation and crop)
+    ci <- dimOrder(ci, c(2, 1), dim = 3)
     ci <- ci[, , getItems(yields, dim = 3)]
 
     # Share of area that is multicropped
