@@ -215,12 +215,15 @@ calcIrrigAreaPotential <- function(cropAggregation,
   out <- collapseNames(irrigatableArea * cropareaShr)
   out <- out + comAgArea[, , getItems(out, dim = 3)]
 
-  if (grepl("currIrrig", landScen) && !multicropping && fossilGW) {
+  if (grepl("currIrrig", landScen) &&
+        !(as.logical(stringr::str_split(multicropping, ":")[[1]][1])) &&
+          fossilGW) {
     # In single cropping case, currently irrigated area can be over-fulfilled
     # when non-renewable groundwater use is activated because
     # groundwater is calculated based on actual multiple cropping patterns
     # This is corrected here:
     out <- pmin(out, comAgArea[, , getItems(out, dim = 3)])
+    # Note: maybe same special treatment is required for different transport distances
   }
 
   # check for NAs and negative values
