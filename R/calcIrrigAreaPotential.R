@@ -213,7 +213,11 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
   # crop-specific potentially irrigated area
   out <- collapseNames(irrigatableArea * cropareaShr)
-  out <- out + comAgArea[, , getItems(out, dim = 3)]
+  # Fix dimensions
+  if (comAg) {
+    comAgArea <- comAgArea[, , getItems(out, dim = 3)]
+  }
+  out <- out + comAgArea
 
   if (grepl("currIrrig", landScen) &&
         !(as.logical(stringr::str_split(multicropping, ":")[[1]][1])) &&
@@ -222,8 +226,9 @@ calcIrrigAreaPotential <- function(cropAggregation,
     # when non-renewable groundwater use is activated because
     # groundwater is calculated based on actual multiple cropping patterns
     # This is corrected here:
-    out <- pmin(out, comAgArea[, , getItems(out, dim = 3)])
+    out <- pmin(out, comAgArea)
     # Note: maybe same special treatment is required for different transport distances
+    #       of groundwater and rest of algorithm
   }
 
   # check for NAs and negative values
