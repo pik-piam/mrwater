@@ -89,6 +89,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
                                    multicropping, transDist) {
 
   ## Read in (renewable and non-renewable) water available for irrigation (in mio. m^3)
+  #  including committed agricultural water (if activated)
   avlWat <- calcOutput("WaterUsePotential", selectyears = selectyears,
                         lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
                         accessibilityrule = accessibilityrule, rankmethod = rankmethod,
@@ -228,7 +229,8 @@ calcIrrigAreaPotential <- function(cropAggregation,
     # This is corrected here:
     out <- pmin(out, comAgArea)
     # Note: maybe same special treatment is required for different transport distances
-    #       of groundwater and rest of algorithm
+    #       of groundwater and rest of algorithm?
+    # Maybe this also applies for currCropland, but then cannot be solved via pmin with out object
   }
 
   # check for NAs and negative values
