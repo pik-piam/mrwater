@@ -181,11 +181,11 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
                                              efrMethod = efrMethod,
                                              multicropping = multicropping, transDist = transDist,
                                              aggregate = FALSE))
-    if (any(scenarios != unique(getItems(dimSums(comIrrigArea, dim = 3.1), dim = 3)))) {
+    if (any(scenarios != unique(getItems(dimSums(comIrrigArea, dim = "crop"), dim = 3)))) {
       stop("Apparently the number of scenarios or format has changed.
            Please adjust default argument of mrwater::calcAreaPotIrrig accordingly.")
     }
-    comIrrigArea <- collapseNames(dimSums(comIrrigArea, dim = 3.1))
+    comIrrigArea <- collapseNames(dimSums(comIrrigArea, dim = "crop"))
     out          <- out - comIrrigArea
   }
 

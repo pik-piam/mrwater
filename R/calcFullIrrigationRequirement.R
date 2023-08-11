@@ -77,6 +77,25 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                          lpjml = lpjml, climatetype = climatetype,
                          irrigationsystem = irrigationsystem, multicropping = multicropping,
                          aggregate = FALSE)[, , croplist]
+  # Transform object dimensionality
+  .transformObject <- function(x, gridcells, years, names) {
+    # empty magpie object structure
+    object0 <- new.magpie(
+      cells_and_regions = gridcells,
+      years = years,
+      names = names,
+      fill = 0,
+      sets = c("x.y.iso", "year", "EFP.scen.crop")
+    )
+    # bring object x to dimension of object0
+    out <- object0 + x
+    return(out)
+  }
+  irrigWat <- .transformObject(x = irrigWat,
+                               gridcells = getItems(irrigWat, dim = 1),
+                               years = getItems(irrigWat, dim = 2),
+                               names = getItems(croparea, dim = 3))
+
 
   # # correct irrigation water requirements where irrigation would lead to 0 yield gains
   # tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
