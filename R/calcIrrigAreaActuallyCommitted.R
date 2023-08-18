@@ -96,15 +96,19 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
   ### Calculations ###
   ####################
   # Total irrigation requirements per cell (in mio. m^3)
-  totalIrrigReq <- dimSums(cropIrrigReq * comArea, dim = "crop")
+  totalIrrigReqWW <- collapseNames(dimSums(cropIrrigReq[, , "withdrawal"] * comArea,
+                                  dim = "crop"))
+  totalIrrigReqWC <- collapseNames(dimSums(cropIrrigReq[, , "consumption"] * comArea,
+                                  dim = "crop"))
 
   # Share of Area that is irrigated given limited renewable water availability
-  wwShr <- ifelse(totalIrrigReq[, , "withdrawal"] > 0,
-                    comWatWW / collapseNames(totalIrrigReq[, , "withdrawal"]),
-                  0)
-  wcShr <- ifelse(totalIrrigReq[, , "consumption"] > 0,
-                    comWatWC / collapseNames(totalIrrigReq[, , "consumption"]),
-                  0)
+  # Note: Areas that are reported to be irrigated 
+  wwShr <- ifelse(totalIrrigReqWW > 0,
+                    comWatWW / totalIrrigReqWW,
+                  1)
+  wcShr <- ifelse(totalIrrigReqWC > 0,
+                    comWatWC / totalIrrigReqWC,
+                  1)
 
   ### Checks ###
   if (any(round(wwShr - wcShr, digits = 4) != 0)) {
@@ -134,12 +138,12 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
 
     # Share of Area that is irrigated given limited water availability
     # under consideration of fossil GW
-    wwShr <- collapseNames(ifelse(totalIrrigReq[, , "withdrawal"] > 0,
-                                    comWatWW / collapseNames(totalIrrigReq[, , "withdrawal"]),
-                                  0))
-    wcShr <- collapseNames(ifelse(totalIrrigReq[, , "consumption"] > 0,
-                                    comWatWC / collapseNames(totalIrrigReq[, , "consumption"]),
-                                  0))
+    wwShr <- collapseNames(ifelse(totalIrrigReqWW > 0,
+                                    comWatWW / totalIrrigReqWW,
+                                  1))
+    wcShr <- collapseNames(ifelse(totalIrrigReqWC > 0,
+                                    comWatWC / totalIrrigReqWC,
+                                  1))
 
     # In future time steps (after initialization year) [because of depreciation of irrigated areas]
     # and under an environmental flow policy scenario,

@@ -234,9 +234,9 @@ calcRiverHumanUseAccounting <- function(iteration,
           }
 
           tmp <- toolRiverUpDownBalance(inLIST = list(prevWC = prevReservedWC[c, y, scen],
-                                                            prevWW = prevReservedWW[c, y, scen],
-                                                            currWW = tmpRequestWWlocal[c],
-                                                            inaccD = inaccessD[c, y, scen]),
+                                                      prevWW = prevReservedWW[c, y, scen],
+                                                      currWW = tmpRequestWWlocal[c],
+                                                      inaccD = inaccessD[c, y, scen]),
                                               inoutLIST = list(disc = tmpDischarge[cellsDischarge],
                                                                currWC = tmpRequestWClocal[cellsRequest]))
 
@@ -251,6 +251,10 @@ calcRiverHumanUseAccounting <- function(iteration,
   }
 
   # Update current withdrawal
+  # Note: currRequestWCtotal has not yet been changed at this point,
+  #       i.e. represents currRequestWClocal before toolRiverUpDownBalance
+  #       It is used to calculate the ratio to correct withdrawals
+  #       that are not an output of the toolRiverUpDownBalance
   fracFulfilled <- ifelse(currRequestWCtotal > 0,
                             currRequestWClocal / currRequestWCtotal,
                           0)

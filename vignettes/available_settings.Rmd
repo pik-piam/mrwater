@@ -1,0 +1,40 @@
+---
+title: "Available argument settings in mrwater"
+author: "Felicitas D. Beier"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Available argument settings in mrwater}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r Setup, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, echo = TRUE, eval = FALSE, comment = "#>")
+```
+
+```{r Settings, echo = FALSE}
+library(mrwater)
+```
+
+## Overview
+
+The following document provides an overview of available 
+arguments in the mrwater library.
+It includes a full list of available arguments with 
+definitions. 
+Furthermore, it informs about certain argument combinations
+that should be avoided due to resulting inconsistencies.
+
+## Scenario Setting arguments
+
+```{r ScenarioSettings, echo = FALSE}
+lpjml       <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
+                 crop = "ggcmi_phase3_nchecks_bft_e511ac58")
+climatetype <- "GSWP3-W5E5:historical"
+```
+
+## River Discharge Allocation Arguments
+
+
+

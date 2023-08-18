@@ -88,6 +88,24 @@ calcIrrigAreaPotential <- function(cropAggregation,
                                    cropmix, comAg, fossilGW,
                                    multicropping, transDist) {
 
+    # Check whether arguments are combined correctly.
+    if (comAg && cropmix != "hist_rainfed") {
+      warning("You activated the committed agricultural iteration
+               (comAg = TRUE)
+               to calculate the potentially irrigated areas.
+               This setting usually has to be combined with 
+               cropmix = 'hist_rainfed'.
+               Please double-check!")
+    }
+    if (!comAg && cropmix != "hist_total") {
+      warning("You are calculating potentially irrigated areas
+               without considering previously reserved 
+               'committed agricultural uses' (comAg = FALSE).
+               This setting usually has to be combined with
+               cropmix = 'hist_total'.
+               Please double-check!")
+    }
+
   ## Read in (renewable and non-renewable) water available for irrigation (in mio. m^3)
   #  including committed agricultural water (if activated)
   avlWat <- calcOutput("WaterUsePotential", selectyears = selectyears,
@@ -211,12 +229,46 @@ calcIrrigAreaPotential <- function(cropAggregation,
   cropareaShr <- calcOutput("CropAreaShare",
                             iniyear = iniyear, cropmix = cropmix,
                             aggregate = FALSE)
+  # Exclude areas where no water is required for irrigation
+  # from additionally irrigated areas as it is not required there
+  # and rainfed production is assumed.
+  cropIrrigReq <- calcOutput("ActualIrrigWatRequirements",
+                              irrigationsystem = irrigationsystem,
+                              selectyears = selectyears, iniyear = iniyear,
+                              lpjml = lpjml, climatetype = climatetype,
+                              multicropping = multicropping, aggregate = FALSE)
+  # check
+  if (any(cropIrrigReq[, , "consumption"] == 0 & cropIrrigReq[, , "withdrawal"] != 0)) {
+    stop("Check what's wrong in irrigation water requirements of
+          mrwater::calcIrrigAreaPotential")
+  }
+  cropIrrigReq <- collapseNames(cropIrrigReq[, , "consumption"])
+  # where no water is required for irrigation, no irrigation takes place
+  cropareaShr[cropIrrigReq == 0] <- 0
 
   # crop-specific potentially irrigated area
   out <- collapseNames(irrigatableArea * cropareaShr)
+
   # Fix dimensions
   if (comAg) {
     comAgArea <- comAgArea[, , getItems(out, dim = 3)]
+
+    # Additional (potential) irrigated areas cannot exceed currently rainfed land
+    rfdCroparea <- collapseNames(calcOutput("CropareaAdjusted",
+                                        iniyear = iniyear,
+                                        aggregate = FALSE)[, , "rainfed"])
+
+    if (any(round(rfdCroparea - out[, iniyear, ], digits = 6) < 0)) {
+      warning("More additional irrigated area has been allocated 
+      in rainfed areas than is available with the settings: 
+      landScen = ", as.character(landScen), ", 
+      cropmix = ", as.character(cropmix), ", 
+      comAg = ", as.character(comAg), ",
+      fossilGW = ", as.character(fossilGW), ",
+      multicropping, ", as.character(multicropping), ", and 
+      transDist = ", as.character(transDist), ".
+      Please look for the bug starting in calcIrrigAreaPotential")
+    }
   }
   out <- out + comAgArea
 
@@ -233,7 +285,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
     # Maybe this also applies for currCropland, but then cannot be solved via pmin with out object
   }
 
-  # check for NAs and negative values
+  # Checks
   if (any(is.na(out))) {
     stop("mrwater::calcIrrigAreaPotential produced NA irrigatable area")
   }
@@ -242,7 +294,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
   }
 
   if (cropAggregation) {
-    out <- dimSums(out, dim = "crop")
+    out         <- dimSums(out, dim = "crop")
     description <- paste0("Potentially irrigated area (total) ",
                           "given land and water constraints")
   } else {

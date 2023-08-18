@@ -171,7 +171,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   # Add country information
   map          <- toolGetMappingCoord2Country(extended = FALSE, pretty = FALSE)
   rs0$isoCoord <- paste(rs0$coordinates, map$iso, sep = ".")
-  # Reduce list size
+  # Reduce list size (for performance reasons)
   rs <- list()
   rs$cells           <- rs0$cells
   rs$isoCoord        <- rs0$isoCoord
@@ -355,6 +355,13 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                 digits = 6) != 0)) {
     stop("In calcRiverDischargeAllocation:
           Water has been lost during the Neighbor Water Provision Algorithm")
+  }
+
+  # Check whether discharge inaccessibility constraint is violated
+  if (any(round(dischargeMAG - inaccessibleDischarge - collapseNames(out[, , "currWWlocal"]),
+                digits = 6) < 0)) {
+    stop("In calcRiverDischargeAllocation: 
+          More than accessible water has been allocated locally.")
   }
 
   return(list(x            = out,

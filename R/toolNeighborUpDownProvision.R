@@ -161,11 +161,11 @@ toolNeighborUpDownProvision <- function(rs, transDist,
 
               # Reserved Water Use Accounting
               tmp <- toolRiverUpDownBalance(inLIST = list(prevWC = tmpPrevWC[c],
-                                                                prevWW = tmpPrevWW[c],
-                                                                currWW = tmpRequestWWlocal[c],
-                                                                inaccD = inaccD[c]),
-                                                  inoutLIST = list(disc = tmpDischarge[cellsDischarge],
-                                                                   currWC = tmpRequestWClocal[cellsRequest]))
+                                                          prevWW = tmpPrevWW[c],
+                                                          currWW = tmpRequestWWlocal[c],
+                                                          inaccD = inaccD[c]),
+                                            inoutLIST = list(disc = tmpDischarge[cellsDischarge],
+                                                             currWC = tmpRequestWClocal[cellsRequest]))
 
               # Updated flows
               tmpDischarge[cellsDischarge]    <- tmp$disc
@@ -176,7 +176,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           # before next round of neighbor water provision
           tmpPrevWC <- tmpPrevWC + tmpRequestWClocal
           fracFulfilled <- ifelse(tmpRequestWCtotal > 0,
-                                     tmpRequestWClocal / tmpRequestWCtotal,
+                                     tmpRequestWClocal / tmpRequestWCtotal, #### CHECK: Does this make sense? Or hast tmpRequestWCtotal been adjusted in-between?
                                   0)
           tmpRequestWWlocal <- fracFulfilled * tmpRequestWWtotal
           tmpPrevWW <- tmpPrevWW + tmpRequestWWlocal

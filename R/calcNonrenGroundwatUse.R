@@ -62,7 +62,7 @@ calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
   transDist <- transDistGW
 
   # Groundwater is calculated based on full water use of the past given all available water (EFP off).
-  # In the past, the non-agriculture scenarios are identical. Therefore, ISIMIP is used.
+  # In the past, the non-agriculture scenarios are identical. Therefore, ISIMIP can be used as representative case.
   scenNonAg <- "ISIMIP"
   scenEFP   <- "off"
 

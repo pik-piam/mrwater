@@ -27,7 +27,7 @@ fullMULTICROPPING <- function() {
 
   # Settings for optimization algorithm
   accessibilityrule <- "CV:2"
-  allocationrule    <- "upstreamfirst" # "optimization" #### or "upstreamfirst"?
+  allocationrule    <- "optimization" # JENS/BENNI: "optimization" #### or "upstreamfirst"?
   rankmethod        <- "USD_m3:GLO:TRUE"
   ssp               <- "ssp2"
   efp               <- "off"
@@ -47,6 +47,24 @@ fullMULTICROPPING <- function() {
   # such that total crop areas match
   cropmix           <- "hist_rainf"
 
+
+  ################################
+  # Extract setting combinations #
+  ################################
+  if (comAg && grepl("hist", cropmix)) {
+    # If committed agricultural areas are reserved
+    # (based on the currently irrigated cropmix),
+    # the remaining (additional) irrigated areas 
+    # have to be based on the rainfed cropmix
+    cropmix <- "hist_rainf"
+  }
+  if (!comAg && grepl("hist", cropmix)) {
+    # If committed agricultural areas are
+    # not considered in deriving potentially irrigated areas,
+    # the potentially irrigated areas
+    # have to be based on the total cropmix
+    cropmix <- "hist_total"
+  }
 
   #########################
   # Groundwater component #
