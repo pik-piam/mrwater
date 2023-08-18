@@ -7,7 +7,7 @@
 toolNeighborUpDownProvision(rs, transDist, years, scenarios, listNeighborIN)
 }
 \arguments{
-\item{rs}{River structure including information 
+\item{rs}{River structure including information
 on neighboring cells}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
@@ -19,9 +19,9 @@ unfulfilled water demand by surrounding cell water availability}
 
 \item{listNeighborIN}{List of arrays required for the algorithm:
 yearlyRunoff, lakeEvap
-reserved flows from previous water allocation round 
+reserved flows from previous water allocation round
 (prevReservedWC, prevReservedWW)
-missing water at this stage of water allocation 
+missing water at this stage of water allocation
 (missingWW, missingWC)
 discharge}
 }
@@ -29,7 +29,7 @@ discharge}
 magpie object in cellular resolution
 }
 \description{
-This function calculates water provision by 
+This function calculates water provision by
              surrounding grid cells for upstream-downstream
              allocation set-up
 }

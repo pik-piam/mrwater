@@ -1,4 +1,4 @@
-#' @title       toolRiverDischargeAllocationSINGLE
+#' @title       toolRiverDischargeAllocation
 #' @description This tool function allocates discharge
 #'              for grid cells respecting upstream-downstream relationships
 #'              and various water constraints
@@ -22,10 +22,10 @@
 #' @author Felicitas Beier, Jens Heinke, Jan Philipp Dietrich
 #'
 
-toolRiverDischargeAllocationSINGLE <- function(rs, c,
-                                               downCells,
-                                               iteration, transDist,
-                                               inLIST, inoutLIST) {
+toolRiverDischargeAllocation <- function(rs, c,
+                                        downCells,
+                                        iteration, transDist,
+                                        inLIST, inoutLIST) {
   # Inputs
   currReqWW <- inLIST$currReqWW
   currReqWC <- inLIST$currReqWC
@@ -124,12 +124,12 @@ toolRiverDischargeAllocationSINGLE <- function(rs, c,
                                   prevReservedWW = prevReservedWW[names(selectCells)])
 
         # Neighbor Water Provision
-        tmp <- toolRiverDischargeAllocationSINGLE(c = n, rs = rs,
-                                                  downCells = selectCells[-1],
-                                                  transDist = 0,
-                                                  iteration = "neighbor",
-                                                  inLIST = inLISTneighbor,
-                                                  inoutLIST = inoutLISTneighbor)
+        tmp <- toolRiverDischargeAllocation(c = n, rs = rs,
+                                            downCells = selectCells[-1],
+                                            transDist = 0,
+                                            iteration = "neighbor",
+                                            inLIST = inLISTneighbor,
+                                            inoutLIST = inoutLISTneighbor)
         discharge[names(selectCells)]       <- tmp$discharge
         prevReservedWW[names(selectCells)]  <- tmp$prevReservedWW
 
@@ -143,8 +143,8 @@ toolRiverDischargeAllocationSINGLE <- function(rs, c,
 
         # Checks
         if (round(missingWW, digits = 4) < 0) {
-          stop(paste0("More water than necessary provided
-                      in toolRiverDischargeAllocation by neighborcell ", n,
+          stop(paste0("More water than necessary provided ",
+                      "in toolRiverDischargeAllocation by neighborcell ", n,
                       "to main cell ", c))
         }
         # Exit Neighbor Water Provision when enough water provided

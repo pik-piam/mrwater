@@ -1,6 +1,6 @@
 # madrat based MAgPIE water Input Data Library
 
-R package **mrwater**, version **1.6.20.9002**
+R package **mrwater**, version **1.9.10.9001**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/mrwater)](https://cran.r-project.org/package=mrwater)  [![R build status](https://github.com/pik-piam/mrwater/workflows/check/badge.svg)](https://github.com/pik-piam/mrwater/actions) [![codecov](https://codecov.io/gh/pik-piam/mrwater/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/mrwater) [![r-universe](https://pik-piam.r-universe.dev/badges/mrwater)](https://pik-piam.r-universe.dev/builds)
 
@@ -36,8 +36,10 @@ update.packages()
 The package comes with vignettes describing the basic functionality of the package and how to use it. You can load them with the following command (the package needs to be installed):
 
 ```r
-vignette("mrwater")        # mrwater Documentation
-vignette("riverstructure") # mrwater River Structure
+vignette("assumptions")        # mrwater Assumptions
+vignette("available_settings") # Available argument settings in mrwater
+vignette("mrwater")            # mrwater Documentation
+vignette("riverstructure")     # mrwater River Structure
 ```
 
 ## Questions / Problems
@@ -48,7 +50,7 @@ In case of questions / problems please contact Felicitas Beier <beier@pik-potsda
 
 To cite package **mrwater** in publications use:
 
-Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2023). _mrwater: madrat based MAgPIE water Input Data Library_. R package version 1.6.20.9002, <https://github.com/pik-piam/mrwater>.
+Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2023). _mrwater: madrat based MAgPIE water Input Data Library_. R package version 1.9.10.9001, <https://github.com/pik-piam/mrwater>.
 
 A BibTeX entry for LaTeX users is
 
@@ -57,7 +59,7 @@ A BibTeX entry for LaTeX users is
   title = {mrwater: madrat based MAgPIE water Input Data Library},
   author = {Felicitas Beier and Jens Heinke and Kristine Karstens and Benjamin Leon Bodirsky and Jan Philipp Dietrich},
   year = {2023},
-  note = {R package version 1.6.20.9002},
+  note = {R package version 1.9.10.9001},
   url = {https://github.com/pik-piam/mrwater},
 }
 ```

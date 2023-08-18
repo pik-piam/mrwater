@@ -21,6 +21,7 @@ calcEconOfIrrig(
   landScen,
   cropmix,
   transDist,
+  fossilGW,
   comAg,
   multicropping
 )
@@ -88,6 +89,9 @@ or selection of proxycrops)}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}
+
+\item{fossilGW}{If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{comAg}{if TRUE: the currently already irrigated areas
          in initialization year are reserved for irrigation,

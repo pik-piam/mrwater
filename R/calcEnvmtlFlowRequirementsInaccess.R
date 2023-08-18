@@ -1,7 +1,6 @@
-#' @title       calcEnvmtlFlowRequirementConstraint
+#' @title       calcEnvmtlFlowRequirementsInaccess
 #' @description This function calculates environmental flow requirements (EFR)
-#'              that go beyond the requirements that can be fulfilled by
-#'              inaccessible discharge (i.e. that constrain human uses)
+#'              that are inaccessible to humans
 #'              based on EFRs and inaccessible discharge calculated from
 #'              LPJmL monthly discharge
 #'
@@ -26,12 +25,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("EnvmtlFlowRequirementConstraint", aggregate = FALSE)
+#' calcOutput("calcEnvmtlFlowRequirementsInaccess", aggregate = FALSE)
 #' }
 #'
-calcEnvmtlFlowRequirementsConstraint <- function(lpjml, selectyears, climatetype,
-                                                 efrMethod, accessibilityrule) {
-
+calcEnvmtlFlowRequirementsInaccess <- function(lpjml, selectyears, climatetype,
+                                               efrMethod, accessibilityrule) {
   # Read in full volume of EFRs (in mio. m^3) including HFRs and LFRs
   efr <- calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
                     climatetype = climatetype, lpjml = lpjml, efrMethod = efrMethod,
@@ -45,17 +43,25 @@ calcEnvmtlFlowRequirementsConstraint <- function(lpjml, selectyears, climatetype
   # Calculate HFRs that exceed inaccessible discharge
   constrainingHFR <- pmax(collapseNames(efr[, , "HFR"]) - dischargeInaccess, 0)
 
-  # Calculate EFRs (mio. m^3 / yr)
-  out <- collapseNames(efr[, , "LFR"]) + constrainingHFR
+  # Calculate EFRs that can be fulfilled by inaccessible discharge
+  # Note: only high flow requirements can be served by highly variable inaccessible discharge
+  out <- collapseNames(efr[, , "HFR"] - constrainingHFR)
 
-  # Check for NAs
+  # Check for NAs and negative values
   if (any(is.na(out))) {
-    stop("produced NA EFR in calcEFRconstraint")
+    stop(paste0("mrwater::calcEnvmtlFlowRequirementsInaccess ",
+                "produced NA EFR"))
+  }
+  if (any(round(out, digits = 6) < 0)) {
+    stop(paste0("mrwater::calcEnvmtlFlowRequirementsInaccess ",
+                "produced negative EFR"))
   }
 
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = "Environmental flow requirements per cell per year",
+              description  = paste0("Environmental flow requirements ",
+                                    "that can be served by inaccessible discharge ",
+                                    "per cell per year"),
               isocountries = FALSE))
 }

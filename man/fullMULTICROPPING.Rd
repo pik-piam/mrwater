@@ -4,43 +4,12 @@
 \alias{fullMULTICROPPING}
 \title{fullMULTICROPPING}
 \usage{
-fullMULTICROPPING(
-  yieldcalib = "TRUE:TRUE:actual:irrig_crop",
-  allocationrule = "optimization",
-  rankmethod = "USD_ha:GLO:TRUE",
-  transDist = 100
-)
-}
-\arguments{
-\item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
-        Also needs specification of refYields, separated by ":".
-        Options: FALSE (for single cropping analyses) or
-                 "TRUE:actual:irrig_crop" (for multiple cropping analyses)
-If FALSE: uncalibrated LPJmL yields are used}
-
-\item{allocationrule}{Rule to be applied for river basin discharge allocation
-across cells of river basin ("optimization", "upstreamfirst")}
-
-\item{rankmethod}{Rank and optimization method consisting of
-Unit according to which rank is calculated:
-USD_ha (USD per hectare) for relative area return, or
-USD_m3 (USD per cubic meter) for relative volumetric return;
-USD for absolute return (total profit);
-Price aggregation:
-"GLO" for global average prices, or
-"ISO" for country-level prices
-and boolean indicating fullpotential (TRUE, i.e. cell
-receives full irrigation requirements in total area)
-or reduced potential (FALSE, reduced potential of cell
-receives at later stage in allocation algorithm);
-separated by ":"}
-
-\item{transDist}{Water transport distance allowed to fulfill locally
-unfulfilled water demand by surrounding cell water availability}
+fullMULTICROPPING()
 }
 \description{
-Function that produces output for irrigation potentials
-             under multiple cropping on cellular resolution.
+Function that produces output for multiple cropping and
+             irrigation potentials on current cropland
+             at cellular resolution.
 }
 \author{
 Felicitas Beier

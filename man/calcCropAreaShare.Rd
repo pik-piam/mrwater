@@ -12,6 +12,7 @@ calcCropAreaShare(iniyear, cropmix)
 \item{cropmix}{Cropmix for which croparea share is calculated
 (options:
 "hist_irrig" for historical cropmix on currently irrigated area,
+"hist_rainf" for historical cropmix on currently irrigated area,
 "hist_total" for historical cropmix on total cropland,
 or selection of proxycrops)}
 }

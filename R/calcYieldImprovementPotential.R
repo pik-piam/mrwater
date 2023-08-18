@@ -103,7 +103,7 @@ calcYieldImprovementPotential <- function(lpjml, climatetype, yieldgaintype, pri
   }
 
   # Check for negatives
-  if (any(round(yieldGain) < 0)) {
+  if (any(round(yieldGain, digits = 3) < 0)) {
     stop("Function YieldImprovementPotential produced negative values")
   }
 

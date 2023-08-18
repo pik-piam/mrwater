@@ -58,7 +58,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                                           irrigationsystem, landScen, cropmix,
                                           multicropping) {
 
-  # cropland area per crop
+  # cropland area per crop (in Mha)
   croparea <- calcOutput("CropAreaPotIrrig",
                          selectyears = selectyears, comagyear = comagyear,
                          iniyear = iniyear,
@@ -68,7 +68,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                          multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
                          transDist = transDist,
                          aggregate = FALSE)
-  croplist <- getItems(croparea, dim = 3)
+  croplist <- getItems(croparea, dim = "crop")
 
   # read in irrigation water requirements for given irrigation system
   # per crop (in m^3 per hectare per year)
@@ -77,6 +77,25 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                          lpjml = lpjml, climatetype = climatetype,
                          irrigationsystem = irrigationsystem, multicropping = multicropping,
                          aggregate = FALSE)[, , croplist]
+  # Transform object dimensionality
+  .transformObject <- function(x, gridcells, years, names) {
+    # empty magpie object structure
+    object0 <- new.magpie(
+      cells_and_regions = gridcells,
+      years = years,
+      names = names,
+      fill = 0,
+      sets = c("x.y.iso", "year", "EFP.scen.crop")
+    )
+    # bring object x to dimension of object0
+    out <- object0 + x
+    return(out)
+  }
+  irrigWat <- .transformObject(x = irrigWat,
+                               gridcells = getItems(irrigWat, dim = 1),
+                               years = getItems(irrigWat, dim = 2),
+                               names = getItems(croparea, dim = 3))
+
 
   # # correct irrigation water requirements where irrigation would lead to 0 yield gains
   # tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
@@ -101,19 +120,19 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
 
   # Checks
   if (any(is.na(irrigWat))) {
-    stop("calcFullIrrigationRequirements:
+    stop("mrwater::calcFullIrrigationRequirements:
          produced NA full irrigation requirements")
   }
   if (any(irrigWat < 0)) {
-    stop("calcFullIrrigationRequirements:
+    stop("mrwater::calcFullIrrigationRequirements:
          produced negative full irrigation requirements")
   }
 
   return(list(x            = irrigWat,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = "Full irrigation requirements per cell
-                              for selected cropmix
-                              and irrigation system",
+              description  = paste0("Full irrigation requirements ",
+                                    "per cell for selected cropmix ",
+                                    "and irrigation system"),
               isocountries = FALSE))
 }

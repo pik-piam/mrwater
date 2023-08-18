@@ -85,9 +85,9 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
   ##############################
   # (would be required)
   actCAUww <- actCAUwc <- actNAUww <- actNAUwc <- new.magpie(fill = NA,
-                                                             cells_and_regions = getCells(fulfilledCAUww),
-                                                             years = getYears(fulfilledCAUww),
-                                                             names = getNames(fulfilledCAUww))
+                                                             cells_and_regions = getItems(fulfilledCAUww, dim = 1),
+                                                             years = getItems(fulfilledCAUww, dim = 2),
+                                                             names = getItems(fulfilledCAUww, dim = 3))
   # Committed Agricultural Water (in mio. m^3)
   # multiple cropping as of current multiple cropping pattern
   if (as.logical(str_split(multicropping, ":")[[1]][1])) {
@@ -165,14 +165,14 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
   ##############
   ### Checks ###
   ##############
-  if (any(round(out) < 0, na.rm = TRUE)) {
+  if (any(round(out, digits = 3) < 0, na.rm = TRUE)) {
     stop("calcShrHumanUsesFulfilled produced negative values")
   }
 
   return(list(x            = out,
               weight       = NULL,
               unit         = "fraction",
-              description  = "share of human water use
-                              that cannot be fulfilled",
+              description  = paste0("share of human water use ",
+                                    "that cannot be fulfilled"),
               isocountries = FALSE))
 }

@@ -46,8 +46,9 @@ calcWaterUseCommittedAg <- function(lpjml, climatetype,
                          multicropping = multicropping, aggregate = FALSE)
 
   # Read in cropland area (by crop) from crop area initialization (in mio. ha)
-  grownCrops <- calcOutput("IrrigAreaCommitted", selectyears = selectyears,
-                           iniyear = iniyear, aggregate = FALSE)
+  grownCrops <- calcOutput("IrrigAreaCommitted",
+                           selectyears = selectyears, iniyear = iniyear,
+                           aggregate = FALSE)
 
   # Committed agricultural uses (in mio. m^3 per year)
   comAg <- irrigReq * grownCrops
@@ -55,6 +56,6 @@ calcWaterUseCommittedAg <- function(lpjml, climatetype,
   return(list(x            = comAg,
               weight       = NULL,
               unit         = "mio. m^3 per year",
-              description  = "agricultural water demands per crop given current cropmix",
+              description  = "agricultural water demands per crop given currently irrigated area",
               isocountries = FALSE))
 }

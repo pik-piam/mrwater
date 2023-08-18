@@ -13,7 +13,9 @@ calcAreaPotIrrig(
   climatetype,
   efrMethod,
   multicropping,
-  transDist
+  transDist,
+  scenarios = c("on.ISIMIP", "on.ssp1", "on.ssp2", "on.ssp3", "off.ISIMIP", "off.ssp1",
+    "off.ssp2", "off.ssp3")
 )
 }
 \arguments{
@@ -47,6 +49,12 @@ agricultural use (e.g., Smakhtin:good, VMF:fair)}
 \item{transDist}{if comagyear != NULL: Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability
 of committed agricultural uses}
+
+\item{scenarios}{Scenarios for object dimension consisting of "EFP.scenario".
+Default is c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
+             "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")
+If scenarios change, they have to be adjusted in the default 
+setting of this function.}
 }
 \value{
 magpie object in cellular resolution

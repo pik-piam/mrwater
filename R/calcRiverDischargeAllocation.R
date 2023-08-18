@@ -136,6 +136,26 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   out <- .transformObject(x = out, gridcells = gridcells,
                           years = selectyears, names = dimnames)
 
+  # Inaccessible discharge
+  inaccessibleDischarge <- calcOutput("DischargeInaccessibleAdd",
+                                      selectyears = selectyears,
+                                      lpjml = lpjml, climatetype = climatetype,
+                                      accessibilityrule = accessibilityrule,
+                                      efrMethod = efrMethod,
+                                      aggregate = FALSE)
+  inaccessibleDischarge <- .transformObject(inaccessibleDischarge,
+                                            gridcells = gridcells,
+                                            years = selectyears,
+                                            names = dimnames)
+  # Correct inaccessible discharge for available discharge after previous routings
+  inaccessibleDischarge <- ifelse(dischargeMAG - inaccessibleDischarge > 0,
+                                    inaccessibleDischarge,
+                                  dischargeMAG)
+
+  # Inaccessible discharge is added to previously reserved withdrawal
+  inputData[, , "prevReservedWW"] <- inputData[, , "prevReservedWW"] + inaccessibleDischarge
+
+
   #######################################
   ###### Read in Required Inputs ########
   #######################################
@@ -151,7 +171,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   # Add country information
   map          <- toolGetMappingCoord2Country(extended = FALSE, pretty = FALSE)
   rs0$isoCoord <- paste(rs0$coordinates, map$iso, sep = ".")
-  # Reduce list size
+  # Reduce list size (for performance reasons)
   rs <- list()
   rs$cells           <- rs0$cells
   rs$isoCoord        <- rs0$isoCoord
@@ -241,12 +261,12 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
             inoutLIST <- list(discharge = discharge[selectCells, y, scen],
                               prevReservedWW = prevReservedWW[selectCells, y, scen])
 
-            tmp <- toolRiverDischargeAllocationSINGLE(c = c, rs = rs,
-                                                      downCells = downCells,
-                                                      transDist = transDist,
-                                                      iteration = "main",
-                                                      inoutLIST = inoutLIST,
-                                                      inLIST = inLIST)
+            tmp <- toolRiverDischargeAllocation(c = c, rs = rs,
+                                                downCells = downCells,
+                                                transDist = transDist,
+                                                iteration = "main",
+                                                inoutLIST = inoutLIST,
+                                                inLIST = inLIST)
 
             discharge[selectCells, y, scen]      <- tmp$discharge
             prevReservedWW[selectCells, y, scen] <- tmp$prevReservedWW
@@ -302,7 +322,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   if (any(is.na(out))) {
     stop("calcRiverDischargeAllocation produced NAs")
   }
-  if (any(round(out) < 0)) {
+  if (any(round(out, digits = 3) < 0)) {
     stop("calcRiverDischargeAllocation produced negative values")
   }
   # No water should be lost
@@ -337,10 +357,17 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
           Water has been lost during the Neighbor Water Provision Algorithm")
   }
 
+  # Check whether discharge inaccessibility constraint is violated
+  if (any(round(dischargeMAG - inaccessibleDischarge - collapseNames(out[, , "currWWlocal"]),
+                digits = 6) < 0)) {
+    stop("In calcRiverDischargeAllocation: 
+          More than accessible water has been allocated locally.")
+  }
+
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3",
-              description  = paste0("River routing outputs
-                                     after Surplus Discharge Allocation"),
+              description  = paste0("River routing outputs ",
+                                     "after Surplus Discharge Allocation"),
               isocountries = FALSE))
 }

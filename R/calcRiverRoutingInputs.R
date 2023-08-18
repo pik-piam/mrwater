@@ -155,7 +155,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                     efrMethod = efrMethod, multicropping = multicropping,
                                     selectyears = selectyears, iniyear = iniyear,
                                     transDist = transDist, comAg = NULL,
-                                    accessibilityrule = NULL,
+                                    accessibilityrule = accessibilityrule,
                                     rankmethod = NULL, gainthreshold = NULL,
                                     cropmix = NULL, yieldcalib = NULL,
                                     irrigationsystem = NULL, landScen = NULL,
@@ -183,11 +183,11 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                             lpjml = lpjml, climatetype = climatetype,
                             selectyears = selectyears, iniyear = iniyear,
                             multicropping = m, aggregate = FALSE)
-    # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
+    # Committed Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
     currRequestWWlocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "withdrawal"],
                                                                  dim = "crop")),
                                           cells = cells, years = selectyears, scenarios = scenarios)
-    # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
+    # Committed Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
     currRequestWClocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "consumption"],
                                                                  dim = "crop")),
                                           cells = cells, years = selectyears, scenarios = scenarios)
@@ -195,7 +195,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Discharge from previous routing
     discharge <- collapseNames(previousHumanUse[, , "discharge"])
 
-} else if (grepl(pattern = "potential_irrigation", x = iteration)) {
+  } else if (grepl(pattern = "potential_irrigation", x = iteration)) {
 
     if (comAg == TRUE) {
       # accounting in potentials
@@ -234,22 +234,14 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                               efrMethod = efrMethod, multicropping = multicropping,
                               selectyears = selectyears, iniyear = iniyear,
                               transDist = transDist, comAg = NULL,
-                              accessibilityrule = NULL,
+                              accessibilityrule = accessibilityrule,
                               rankmethod = NULL, gainthreshold = NULL,
                               cropmix = NULL, yieldcalib = NULL,
                               irrigationsystem = NULL, landScen = NULL,
                               aggregate = FALSE)
-    # Reserved minimum flow: Inaccessible discharge +
-    #                        Environmental Flow Requirements (adjusted for
-    #                        part that is fulfilled by inaccessible water) +
-    #                        Reserved for Non-Agricultural withdrawal +
-    #                        [Reserved Committed Agricultural withdrawal, if activated] (in mio. m^3 / yr)
-    prevReservedWW <- calcOutput("RiverWatReserved",
-                                  transDist = transDist, accessibilityrule = accessibilityrule,
-                                  selectyears = selectyears, iniyear = iniyear,
-                                  lpjml = lpjml, climatetype = climatetype,
-                                  comAg = comAg, multicropping = multicropping,
-                                  efrMethod = efrMethod, aggregate = FALSE)
+
+    # Non-agricultural and committed agricultural withdrawal
+    prevReservedWW <- collapseNames(prevRouting[, , "reservedWW"])
     # Non-agricultural and committed agricultural consumption
     prevReservedWC <- collapseNames(prevRouting[, , "reservedWC"])
 
@@ -273,7 +265,8 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
   } else {
     stop("Please specify iteration for which river routing inputs shall be calculated:
-         non_agriculture, committed_agriculture or potential")
+         non_agriculture, committed_agriculture, potential_irrigation,
+         or committed_agriculture_fullPotential")
   }
 
   ###############

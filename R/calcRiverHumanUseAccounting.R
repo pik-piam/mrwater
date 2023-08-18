@@ -159,6 +159,24 @@ calcRiverHumanUseAccounting <- function(iteration,
   # Reduce to one object (for performance reasons)
   runoffWOEvap <- yearlyRunoff - lakeEvap
 
+  # Inaccessible discharge
+  if (iteration == "potential_irrigation") {
+    inaccessibleDischarge <- calcOutput("DischargeInaccessibleAdd",
+                                        selectyears = selectyears,
+                                        lpjml = lpjml, climatetype = climatetype,
+                                        accessibilityrule = accessibilityrule,
+                                        efrMethod = efrMethod,
+                                        aggregate = FALSE)
+  } else {
+  # For all currently reserved human uses, we assume that hardly accessible
+  # discharge is made accessible, i.e. there is no inaccessible discharge
+    inaccessibleDischarge <- new.magpie(cells_and_regions = getItems(runoffWOEvap, dim = 1),
+                                        years = getItems(runoffWOEvap, dim = 2),
+                                        names = c("on", "off"),
+                                        fill = 0,
+                                        sets = c("x", "y", "iso", "year", "EFR"))
+  }
+
   # Initialize river routing variables and dimensions
   fracFulfilled <- missingWW <- missingWC <- as.array(.transformObject(x = 0,
                                                                        gridcells = gridcells,
@@ -172,6 +190,10 @@ calcRiverHumanUseAccounting <- function(iteration,
                                               gridcells = gridcells,
                                               years = selectyears, names = dimnames))
   discharge      <- as.array(dischargeMAG)
+  inaccessD      <- as.array(.transformObject(x = inaccessibleDischarge,
+                                              gridcells = gridcells,
+                                              years = selectyears,
+                                              names = dimnames))
   prevReservedWW <- as.array(collapseNames(inputData[, , "prevReservedWW"]))
   prevReservedWC <- as.array(collapseNames(inputData[, , "prevReservedWC"]))
   currRequestWWlocal <- currRequestWWtotal <- as.array(collapseNames(inputData[, , "currRequestWWlocal"]))
@@ -188,14 +210,20 @@ calcRiverHumanUseAccounting <- function(iteration,
       tmpDischarge      <- discharge[, y, scen]
 
       # Cells to be calculated
-      cellsCalc <- which(tmpRequestWWlocal > 0)
+      cellsCalc <- unique(c(which(round(tmpRequestWWlocal, digits = 8) > 0),
+                            which(round(tmpDischarge + prevReservedWC[, y, scen] -
+                                          prevReservedWW[, y, scen], digits = 8) < 0)))
       cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
       cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
       for (c in cellsCalc) {
-
-        if ((tmpRequestWWlocal[c] > 0) ||
-            ((tmpDischarge[c] + prevReservedWC[c, y, scen]) < prevReservedWW[c, y, scen])) {
+        # Does the respective cell request water withdrawal?
+        # Or: Is available water smaller than previously reserved withdrawal?
+        #     Then: update of discharge required.
+        if ((round(tmpRequestWWlocal[c], digits = 8) > 0) ||
+            (round((tmpDischarge[c] + prevReservedWC[c, y, scen]) -
+                        prevReservedWW[c, y, scen],
+                    digits = 8) < 0)) {
 
           cellsRequest <- cellsDischarge <- c
           if (length(rs$upstreamcells[[c]]) > 0) {
@@ -205,14 +233,15 @@ calcRiverHumanUseAccounting <- function(iteration,
             cellsDischarge <- c(cellsDischarge, unlist(rs$downstreamcells[[c]]))
           }
 
-          tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWC = prevReservedWC[c, y, scen],
-                                                            prevWW = prevReservedWW[c, y, scen],
-                                                            currWW = tmpRequestWWlocal[c]),
-                                              inoutLIST = list(q = tmpDischarge[cellsDischarge],
+          tmp <- toolRiverUpDownBalance(inLIST = list(prevWC = prevReservedWC[c, y, scen],
+                                                      prevWW = prevReservedWW[c, y, scen],
+                                                      currWW = tmpRequestWWlocal[c],
+                                                      inaccD = inaccessD[c, y, scen]),
+                                              inoutLIST = list(disc = tmpDischarge[cellsDischarge],
                                                                currWC = tmpRequestWClocal[cellsRequest]))
 
           # Updated flows
-          tmpDischarge[cellsDischarge]    <- tmp$q
+          tmpDischarge[cellsDischarge]    <- tmp$disc
           tmpRequestWClocal[cellsRequest] <- tmp$currWC
         }
       }
@@ -222,6 +251,10 @@ calcRiverHumanUseAccounting <- function(iteration,
   }
 
   # Update current withdrawal
+  # Note: currRequestWCtotal has not yet been changed at this point,
+  #       i.e. represents currRequestWClocal before toolRiverUpDownBalance
+  #       It is used to calculate the ratio to correct withdrawals
+  #       that are not an output of the toolRiverUpDownBalance
   fracFulfilled <- ifelse(currRequestWCtotal > 0,
                             currRequestWClocal / currRequestWCtotal,
                           0)
@@ -251,6 +284,7 @@ calcRiverHumanUseAccounting <- function(iteration,
     tmp <- toolNeighborUpDownProvision(rs = rs, transDist = transDist,
                                        years = years, scenarios = scenarios,
                        listNeighborIN = list(discharge = discharge,
+                                             inaccD = inaccessD,
                                              prevReservedWC = prevReservedWC,
                                              prevReservedWW = prevReservedWW,
                                              missingWC = missingWC,
@@ -282,6 +316,14 @@ calcRiverHumanUseAccounting <- function(iteration,
       stop(paste0("After Neighbor Water Provision in
                    calcRiverHumanUseAccounting with iteration = ",
                    iteration, " some water was not properly allocated."))
+    }
+    # The water volume assigned to/from a neighbor must not exceed the missing water requested
+    if (any(apply(missingWC, MARGIN = 3, FUN = sum) - apply(tmp$fromNeighborWC, MARGIN = 3, FUN = sum) < 0) ||
+        any(apply(missingWW, MARGIN = 3, FUN = sum) - apply(tmp$fromNeighborWW, MARGIN = 3, FUN = sum) < 0)) {
+      stop(paste0(
+        "More water than was requested has been assigned ",
+        "in toolNeighborUpDownProvision of calcRiverHumanUseAccounting ",
+        "of iteration = ", iteration))
     }
   } else {
     # total and local currently requested water fulfilled is the same in this case
@@ -327,14 +369,20 @@ calcRiverHumanUseAccounting <- function(iteration,
   if (any(is.na(out))) {
     stop("calcRiverHumanUseAccounting produced NAs!")
   }
-  if (any(round(out) < 0)) {
+  if (any(round(out, digits = 6) < 0)) {
     stop("calcRiverHumanUseAccounting produced negative values")
   }
   # Check if too much water has been allocated
   # (currRequestWClocal should always be smaller than currRequestWCtotal)
   if (any((out[, , "currHumanWClocal"] - out[, , "currHumanWCtotal"]) > 1e-6)) {
     stop("Too much water has been allocated
-          in calcRiverHumanUseAccounting.")
+          in calcRiverHumanUseAccounting in iteration = ", iteration, ".")
+  }
+  # Check whether more than available discharge has been reserved
+  if (any(round(out[, , "discharge"] + out[, , "reservedWC"] - out[, , "reservedWW"],
+                digits = 6) < 0)) {
+    stop("Too much water has been reserved
+          in calcRiverHumanUseAccounting in iteration = ", iteration, ".")
   }
   # Check whether water has been lost
   basinDischarge <- .transformObject(x = 0,

@@ -63,9 +63,10 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
                      aggregate = FALSE)
 
   # share of crop area by crop type
-  cropareaShr <- calcOutput("CropAreaShare",
-                            iniyear = iniyear, cropmix = cropmix,
-                            aggregate = FALSE)
+  cropareaShr <- setYears(calcOutput("CropAreaShare",
+                                     iniyear = iniyear, cropmix = cropmix,
+                                     aggregate = FALSE),
+                          NULL)
 
   # land area per crop
   out <- land * cropareaShr
@@ -75,7 +76,7 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
     stop("Function calcCropAreaPotIrrig produced NA values")
   }
 
-  if (any(round(out) < 0)) {
+  if (any(round(out, digits = 3) < 0)) {
     stop("Function calcCropAreaPotIrrig produced negative values")
   }
 

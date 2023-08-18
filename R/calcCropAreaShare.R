@@ -5,6 +5,7 @@
 #' @param cropmix Cropmix for which croparea share is calculated
 #'                (options:
 #'                "hist_irrig" for historical cropmix on currently irrigated area,
+#'                "hist_rainf" for historical cropmix on currently irrigated area,
 #'                "hist_total" for historical cropmix on total cropland,
 #'                or selection of proxycrops)
 #'
@@ -39,7 +40,7 @@ calcCropAreaShare <- function(iniyear, cropmix) {
       irrigArea    <- collapseNames(croparea[, , "irrigated"])
       irrigcropShr <- irrigArea / dimSums(irrigArea, dim = 3)
 
-      # where currently no irrigated area: use cropmix of total croparea
+      # where currently no irrigated area: use cropmix of total croparea (i.e. rainfed)
       zeroIrrigArea <- (dimSums(irrigArea, dim = 3) == 0)
       cropareaShr   <- irrigcropShr
       cropareaShr[zeroIrrigArea] <- totalcropShr[zeroIrrigArea]
@@ -49,8 +50,20 @@ calcCropAreaShare <- function(iniyear, cropmix) {
       # historical share of crop types in cropland per cell
       cropareaShr <- totalcropShr
 
+    } else if (as.list(strsplit(cropmix, split = "_"))[[1]][2] == "rainf") {
+
+      # rainfed croparea
+      rfdArea    <- collapseNames(croparea[, , "rainfed"])
+      rfdcropShr <- rfdArea / dimSums(rfdArea, dim = 3)
+
+      # where currently no rainfed area: use cropmix of total croparea
+      zeroRfdArea <- (dimSums(rfdArea, dim = 3) == 0)
+      cropareaShr <- rfdcropShr
+      cropareaShr[zeroRfdArea] <- totalcropShr[zeroRfdArea]
+
+
     } else {
-      stop("Please select hist_irrig or hist_total when
+      stop("Please select hist_irrig, hist_rainf, or hist_total when
            selecting historical cropmix")
     }
 
@@ -80,8 +93,8 @@ calcCropAreaShare <- function(iniyear, cropmix) {
   }
 
   if (any(is.na(cropareaShr))) {
-    stop("produced NA crop area share.
-         Please check: calcCropAreaShare!")
+    stop("mrwater::calcCropAreaShare produced NA values.
+         Please check!")
   }
 
   return(list(x            = cropareaShr,

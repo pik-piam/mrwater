@@ -1,9 +1,9 @@
 #' @title       toolNeighborUpDownProvision
-#' @description This function calculates water provision by 
+#' @description This function calculates water provision by
 #'              surrounding grid cells for upstream-downstream
 #'              allocation set-up
 #'
-#' @param rs             River structure including information 
+#' @param rs             River structure including information
 #'                       on neighboring cells
 #' @param transDist      Water transport distance allowed to fulfill locally
 #'                       unfulfilled water demand by surrounding cell water availability
@@ -11,12 +11,12 @@
 #' @param scenarios      Vector of scenarios for which neighbor allocation shall be applied
 #' @param listNeighborIN List of arrays required for the algorithm:
 #'                       yearlyRunoff, lakeEvap
-#'                       reserved flows from previous water allocation round 
+#'                       reserved flows from previous water allocation round
 #'                       (prevReservedWC, prevReservedWW)
-#'                       missing water at this stage of water allocation 
+#'                       missing water at this stage of water allocation
 #'                       (missingWW, missingWC)
 #'                       discharge
-#' 
+#'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getNames new.magpie getCells setCells mbind setYears dimSums
 #'
@@ -40,10 +40,10 @@ toolNeighborUpDownProvision <- function(rs, transDist,
   missWW <- listNeighborIN$missingWW
   missWC <- listNeighborIN$missingWC
   discharge <- listNeighborIN$discharge
+  inaccD    <- listNeighborIN$inaccD
 
   l <- length(rs$cells)
   names(rs$neighborcell) <- 1:l  ## check whether still necessary
-  names(rs$neighbordist) <- 1:l  ## check whether still necessary
 
   # initialize objects
   fracFulfilled <- missWW
@@ -139,7 +139,8 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           tmpRequestWWtotal <- tmpRequestWWlocal
 
           # Select cells to be calculated
-          cellsCalc <- which(tmpRequestWWlocal > 0)
+          cellsCalc <- unique(c(which(tmpRequestWWlocal > 0),
+                                which(tmpDischarge + tmpPrevWC < tmpPrevWW)))
           cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
           cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
@@ -159,14 +160,15 @@ toolNeighborUpDownProvision <- function(rs, transDist,
               }
 
               # Reserved Water Use Accounting
-              tmp <- toolRiverUpDownBalanceSINGLE(inLIST = list(prevWC = tmpPrevWC[c],
-                                                                prevWW = tmpPrevWW[c],
-                                                                currWW = tmpRequestWWlocal[c]),
-                                                  inoutLIST = list(q = tmpDischarge[cellsDischarge],
-                                                                   currWC = tmpRequestWClocal[cellsRequest]))
+              tmp <- toolRiverUpDownBalance(inLIST = list(prevWC = tmpPrevWC[c],
+                                                          prevWW = tmpPrevWW[c],
+                                                          currWW = tmpRequestWWlocal[c],
+                                                          inaccD = inaccD[c]),
+                                            inoutLIST = list(disc = tmpDischarge[cellsDischarge],
+                                                             currWC = tmpRequestWClocal[cellsRequest]))
 
               # Updated flows
-              tmpDischarge[cellsDischarge]    <- tmp$q
+              tmpDischarge[cellsDischarge]    <- tmp$disc
               tmpRequestWClocal[cellsRequest] <- tmp$currWC
             }
           }
@@ -174,7 +176,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           # before next round of neighbor water provision
           tmpPrevWC <- tmpPrevWC + tmpRequestWClocal
           fracFulfilled <- ifelse(tmpRequestWCtotal > 0,
-                                     tmpRequestWClocal / tmpRequestWCtotal,
+                                     tmpRequestWClocal / tmpRequestWCtotal, #### CHECK: Does this make sense? Or hast tmpRequestWCtotal been adjusted in-between?
                                   0)
           tmpRequestWWlocal <- fracFulfilled * tmpRequestWWtotal
           tmpPrevWW <- tmpPrevWW + tmpRequestWWlocal
@@ -200,7 +202,7 @@ toolNeighborUpDownProvision <- function(rs, transDist,
           # Update water that is still missing in main river cell(s)
           tmpMissWW <- tmpMissWW * (1 - fracFromNeighbor)
           tmpMissWC <- tmpMissWC * (1 - fracFromNeighbor)
-          
+
           # repeat until no more missing water OR no more neighbor cells
           if (all(tmpMissWW <= 0) && all(tmpMissWC <= 0)) {
             break

@@ -24,6 +24,11 @@
 #' @param transDist      if comagyear != NULL: Water transport distance allowed to fulfill locally
 #'                       unfulfilled water demand by surrounding cell water availability
 #'                       of committed agricultural uses
+#' @param scenarios      Scenarios for object dimension consisting of "EFP.scenario".
+#'                       Default is c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
+#'                                    "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")
+#'                       If scenarios change, they have to be adjusted in the default 
+#'                       setting of this function.
 #'
 #'
 #' @return magpie object in cellular resolution
@@ -40,7 +45,9 @@
 
 calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
                              lpjml, climatetype, efrMethod,
-                             multicropping, transDist) {
+                             multicropping, transDist,
+                             scenarios = c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
+                                           "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")) {
 
   # retrieve function arguments
   protectSCEN <- as.list(strsplit(landScen, split = ":"))[[1]][2]
@@ -49,14 +56,14 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
     protectSCEN <- NA
   }
 
-  landScen    <- as.list(strsplit(landScen, split = ":"))[[1]][1]
+  landScen <- as.list(strsplit(landScen, split = ":"))[[1]][1]
 
   ######################
   ### Protected area ###
   ######################
   # read in protected area
   protectArea <- calcOutput("ProtectArea", cells = "lpjcell", aggregate = FALSE)
-  # FELI: Switch to newest protected area function & double check which landarea is the base
+  # To Do (FELI): Switch to newest protected area function & double check which landarea is the base
 
   # select protection scenario
   if (!is.na(protectSCEN)) {
@@ -133,59 +140,70 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   # area that is not protected
   areaNOprotect <- landarea - protectArea
 
-
   #########################################################
   ### Land that is potentially available for irrigation ###
   #########################################################
   # Combine land scenario and protection component
   out <- pmin(areaNOprotect, landAVL)
 
-
-  # Adjust dimensionality (necessary when >1 year selected)
-  tmp <- out
-  out <- new.magpie(cells_and_regions  = getCells(out),
-                     years             = selectyears,
-                     names             = getNames(out),
-                     fill              = 1)
-  out <- tmp * out
-  getSets(out) <- c("x", "y", "iso", "year", "data")
+  # Transform object dimensionality
+  .transformObject <- function(x, gridcells, years, names) {
+    # empty magpie object structure
+    object0 <- new.magpie(cells_and_regions = gridcells,
+                          years = years,
+                          names = names,
+                          fill = 0,
+                          sets = c("x.y.iso", "year", "EFP.scen"))
+    # bring object x to dimension of object0
+    out <- object0 + x
+    return(out)
+  }
+  out <- .transformObject(x = out,
+                          gridcells = getItems(out, dim = 1),
+                          years = selectyears,
+                          names = scenarios)
 
   # Areas that are already irrigated (by committed agricultural uses)
   if (!is.null(comagyear)) {
 
     # Committed Agricultural Areas under multiple cropping
-    if (multicropping) {
+    if (multicropping != FALSE) {
       multicropping <- "TRUE:actual:irrig_crop"
     }
 
-    # subtract physical area already reserved for irrigation by committed agricultural uses
+    # subtract physical area already reserved for irrigation with renewable water resources
+    # by committed agricultural uses in water allocation algorithm
     # (to avoid double accounting)
     comIrrigArea <- collapseNames(calcOutput("IrrigAreaActuallyCommitted",
-                                              selectyears = selectyears, iniyear = comagyear,
-                                              lpjml = lpjml, climatetype = climatetype,
-                                              efrMethod = efrMethod,
-                                              multicropping = multicropping, transDist = transDist,
-                                              aggregate = FALSE))
-    comIrrigArea <- collapseNames(dimSums(comIrrigArea, dim = 3))
+                                             fossilGW = FALSE,
+                                             selectyears = selectyears, iniyear = comagyear,
+                                             lpjml = lpjml, climatetype = climatetype,
+                                             efrMethod = efrMethod,
+                                             multicropping = multicropping, transDist = transDist,
+                                             aggregate = FALSE))
+    if (any(scenarios != unique(getItems(dimSums(comIrrigArea, dim = "crop"), dim = 3)))) {
+      stop("Apparently the number of scenarios or format has changed.
+           Please adjust default argument of mrwater::calcAreaPotIrrig accordingly.")
+    }
+    comIrrigArea <- collapseNames(dimSums(comIrrigArea, dim = "crop"))
     out          <- out - comIrrigArea
   }
 
-  # correct negative land availability due to mismatch of available land
-  # and protected land or rounding imprecision
-  out[out < 0] <- 0
-
   # Checks
   if (any(is.na(out))) {
-    stop("Function AreapotCropland produced NA values")
+    stop("mrwater::calcAreaPotIrrig produced NA values")
   }
 
-  if (any(round(out) < 0)) {
-    stop("Function AreapotCropland produced negative values")
+  if (any(round(out, digits = 6) < 0)) {
+    stop("mrwater::calcAreaPotIrrig produced negative values")
   }
+
+  # correct negative land availability due to rounding imprecision
+  out[out < 0] <- 0
 
   return(list(x            = out,
               weight       = NULL,
               unit         = "Mha",
-              description  = "area potentially available for irrigated agriculture",
+              description  = "Area potentially available for irrigated agriculture",
               isocountries = FALSE))
 }

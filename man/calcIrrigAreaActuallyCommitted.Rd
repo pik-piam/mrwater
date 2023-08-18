@@ -11,6 +11,7 @@ calcIrrigAreaActuallyCommitted(
   selectyears,
   iniyear,
   efrMethod,
+  fossilGW,
   multicropping,
   transDist
 )
@@ -34,6 +35,9 @@ or historical baseline "GSWP3-W5E5:historical"}
 
 \item{efrMethod}{EFR method used including selected strictness of EFRs
 (Smakhtin:good, VMF:fair)}
+
+\item{fossilGW}{If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
 Multiple Cropping Suitability mask selected
