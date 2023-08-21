@@ -272,10 +272,18 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
 
   # Check for negative rainfed cropareas
   if (any(round(cropareaRainfed, digits = 6) < 0)) {
-    stop("In mrwater::calcCropProductionRevenue: rainfed croparea became negative.
+    warning(paste0("In mrwater::calcCropProductionRevenue: rainfed croparea became negative.
          This should not be the case and indicates a data mismatch
          between total cropland and irrigated croparea.
-         Please check!")
+         Please check for the following settings: ",
+         "outputtype: ", outputtype,
+         "management: ", management,
+         "area: ", area,
+         "allocationrule: ", allocationrule, 
+         "cropmix: ", cropmix, 
+         "comAg: ", comAg,
+         "transDist: ", transDist,
+         "fossilGW: ", fossilGW))
   }
   # remove negatives due to rounding imprecision
   cropareaRainfed[cropareaRainfed < 0] <- 0

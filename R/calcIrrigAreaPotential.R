@@ -89,7 +89,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
                                    multicropping, transDist) {
 
     # Check whether arguments are combined correctly.
-    if (comAg && cropmix != "hist_rainfed") {
+    if (comAg && cropmix != "hist_rainf") {
       warning("You activated the committed agricultural iteration
                (comAg = TRUE)
                to calculate the potentially irrigated areas.
