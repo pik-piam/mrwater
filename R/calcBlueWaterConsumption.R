@@ -157,6 +157,9 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
       }
     }
 
+    # leave negative in for fit;
+    # correct negative bwc in end (when for crop)
+
     # crop blue water consumption in off season
     bwc2nd   <- grassBWC2nd * coeff
     bwcTotal <- bwc1st[, , crops] + bwc2nd * shrMC

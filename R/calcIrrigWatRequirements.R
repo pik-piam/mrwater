@@ -82,6 +82,7 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
       irrigReq[, , "oilpalm"]   <- irrigReqProxy[, , "groundnut"]
       irrigReq[, , "others"]    <- irrigReqProxy[, , "maize"]
       irrigReq[, , "cottn_pro"] <- irrigReqProxy[, , "groundnut"]
+      #@JENS (KRISTINE): Please double-check whether this makes sense
     }
   } else {
 

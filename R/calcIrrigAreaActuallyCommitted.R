@@ -102,7 +102,7 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
                                   dim = "crop"))
 
   # Share of Area that is irrigated given limited renewable water availability
-  # Note: Areas that are reported to be irrigated 
+  # Note: Areas that are reported to be irrigated
   wwShr <- ifelse(totalIrrigReqWW > 0,
                     comWatWW / totalIrrigReqWW,
                   1)
@@ -129,7 +129,7 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
   # Fossil groundwater use to fulfill committed agricultural water use
   if (fossilGW) {
     gw <- calcOutput("NonrenGroundwatUse",
-                      output = "comAg",
+                      output = "comAg", multicropping = m,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, iniyear = iniyear,
                       aggregate = FALSE)
@@ -154,6 +154,8 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
     wcShr[wcShr > 1] <- 1
     wwShr[wwShr > 1] <- 1
 
+    ### This could introduce a mismatch between wcShr and wwShr... where wcShr > 1 -> wwShr also needs to be > 1, right?
+
     if (any(round(wwShr[, iniyear, "off"] - wcShr[, iniyear, "off"], digits = 4) != 0)) {
       stop("There seems to be a mismatch in consumption and withdrawal
           in calcIrrigAreaActuallyCommitted.
@@ -164,6 +166,10 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
     # Area Actually Committed for Irrigation given available water (in Mha)
     out[, , "off"] <- comArea * wcShr[, , "off"]
     # Note: In an environmental flow scenario, non-renewable groundwater cannot be used
+
+    #### @JENS: Or should it be added to both EFR.on and off?
+    # --> Yes; for both "on" and "off" should be included
+
   }
 
   # check for NAs and negative values

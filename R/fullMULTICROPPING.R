@@ -54,7 +54,7 @@ fullMULTICROPPING <- function() {
   if (comAg && grepl("hist", cropmix)) {
     # If committed agricultural areas are reserved
     # (based on the currently irrigated cropmix),
-    # the remaining (additional) irrigated areas 
+    # the remaining (additional) irrigated areas
     # have to be based on the rainfed cropmix
     cropmix <- "hist_rainf"
   }
@@ -199,6 +199,7 @@ fullMULTICROPPING <- function() {
   #########################
   # IRRIGATION POTENTIALS #
   #########################
+  ### (a) Areas ###
   # potentially irrigated area on current cropland (under single cropping conditions)
   calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
              lpjml = lpjml, climatetype = climatetype,
@@ -247,6 +248,56 @@ fullMULTICROPPING <- function() {
              multicropping = "TRUE:potential:endogenous", transDist = transDist,
              aggregate = FALSE,
              file = "piaIRR_multPOT.mz")
+
+  ### (B) Water Use ###
+  # potentially irrigation water on current cropland (under single cropping conditions)
+  calcOutput("WaterUsePotential", cropAggregation = FALSE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+             gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+             landScen = "currCropland:NULL",
+             cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+             multicropping = FALSE, transDist = transDist,
+             aggregate = FALSE,
+             file = "piwCUR_single.mz")
+  # potentially irrigation water on current cropland (under current multiple cropping conditions)
+  calcOutput("WaterUsePotential", cropAggregation = FALSE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+             gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+             landScen = "currCropland:NULL",
+             cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+             multicropping = "TRUE:actual:irrig_crop", transDist = transDist,
+             aggregate = FALSE,
+             file = "piwCUR_multACT.mz")
+  # potentially irrigation water on current cropland (under consideration of potential multiple cropping)
+  calcOutput("WaterUsePotential", cropAggregation = FALSE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+             gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+             landScen = "currCropland:NULL",
+             cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+             multicropping = "TRUE:potential:endogenous", transDist = transDist,
+             aggregate = FALSE,
+             file = "piwCUR_multPOT.mz")
+  # potentially irrigation water on currently irrigated cropland (under consideration of potential multiple cropping)
+  calcOutput("WaterUsePotential", cropAggregation = FALSE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,
+             gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
+             landScen = "currIrrig:NULL",
+             cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+             multicropping = "TRUE:potential:endogenous", transDist = transDist,
+             aggregate = FALSE,
+             file = "piwIRR_multPOT.mz")
 
 
   ### Yield Gain ###

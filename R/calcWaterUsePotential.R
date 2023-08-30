@@ -121,6 +121,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   # Fossil groundwater use
   if (fossilGW) {
     gw <- calcOutput("NonrenGroundwatUse", output = "nonAg",
+                     multicropping = multicropping,
                      lpjml = lpjml, climatetype = climatetype,
                      selectyears = selectyears, iniyear = iniyear,
                      aggregate = FALSE)
@@ -146,6 +147,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
     # Fossil groundwater use
     if (fossilGW) {
       gw <- calcOutput("NonrenGroundwatUse", output = "comAg",
+                       multicropping = multicropping,
                        lpjml = lpjml, climatetype = climatetype,
                        selectyears = selectyears, iniyear = iniyear,
                        aggregate = FALSE)
