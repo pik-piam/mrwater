@@ -64,7 +64,7 @@ unfulfilled water demand by surrounding cell water availability}
 if FALSE: no irrigation areas reserved (irrigation potential).
 Only relevant for iteration = potential}
 
-\item{fossilGW}{For case of iteration = potential_irrigation to determine full irrigation requirements based on the 
+\item{fossilGW}{For case of iteration = potential_irrigation to determine full irrigation requirements based on the
 correct available area:
 If TRUE: non-renewable groundwater can be used.
 If FALSE: non-renewable groundwater cannot be used.}

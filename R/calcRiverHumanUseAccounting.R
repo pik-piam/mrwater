@@ -8,7 +8,7 @@
 #' @param iteration     Water use to be allocated in this river routing iteration
 #'                      (non_agriculture, committed_agriculture, potential_irrigation,
 #'                      special case (for current irrigated area analysis): "committed_agriculture_fullPotential").
-#' @param fossilGW      For case of iteration = potential_irrigation to determine full irrigation requirements based on the 
+#' @param fossilGW      For case of iteration = potential_irrigation to determine full irrigation requirements based on the
 #'                      correct available area:
 #'                      If TRUE: non-renewable groundwater can be used.
 #'                      If FALSE: non-renewable groundwater cannot be used.
@@ -117,7 +117,7 @@ calcRiverHumanUseAccounting <- function(iteration,
 
   ### Inputs from previous river routings
   inputData <- calcOutput("RiverRoutingInputs",
-                          iteration = iteration,
+                          iteration = iteration, fossilGW = fossilGW,
                           lpjml = lpjml, climatetype = climatetype,
                           transDist = transDist, comAg = comAg,
                           selectyears = selectyears, iniyear = iniyear,
