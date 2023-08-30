@@ -144,7 +144,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                               cropmix = cmix,
                                               landScen = landScen,
                                               selectyears = selectyears, iniyear = iniyear,
-                                              comagyear = NULL,
+                                              comagyear = NULL, fossilGW = NULL,
                                               lpjml = NULL, climatetype = NULL,
                                               efrMethod = NULL,
                                               multicropping = as.logical(stringr::str_split(m2, ":")[[1]][1]),
@@ -184,7 +184,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                yieldcalib = yieldcalib,
                                multicropping = FALSE, aggregate = FALSE)
 
-    unit        <- "tDM"
+    unit        <- "mio. tDM"
     description <- paste0("Crop- and irrigation-specific ",
                           "biomass production on selected area ",
                           "under chosen management scenario.")
@@ -208,7 +208,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                multicropping = FALSE,
                                aggregate = FALSE)
 
-    unit        <- "USD"
+    unit        <- "mio. USD"
     description <- paste0("Crop- and irrigation-specific ",
                           "production revenue on selected area ",
                           "under chosen management scenario.")

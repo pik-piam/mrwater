@@ -61,7 +61,7 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
   potArea <- collapseNames(calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
                                       landScen = landScen, comagyear = NULL,
                                       lpjml = NULL, climatetype = NULL,
-                                      efrMethod = NULL,
+                                      efrMethod = NULL, fossilGW = NULL,
                                       multicropping = NULL, transDist = NULL,
                                       aggregate = FALSE)[, , "off.ISIMIP"])
 
@@ -70,7 +70,8 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
                         unit = paste("USD_ha", unlist(strsplit(unit, split = ":"))[2], sep = ":"),
                         selectyears = selectyears, iniyear = iniyear,
                         lpjml = lpjml, climatetype = climatetype,
-                        comagyear = NULL, efrMethod = NULL, transDist = NULL,
+                        comagyear = NULL, efrMethod = NULL,
+                        transDist = NULL, fossilGW = NULL,
                         irrigationsystem = irrigationsystem,
                         landScen = landScen, cropmix = cropmix,
                         yieldcalib = yieldcalib,
@@ -91,8 +92,8 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
 
   return(list(x            = potArea,
               weight       = NULL,
-              unit         = "mio. ha",
-              description  = "Area that could be irrigated when water would not be
-                              a limiting factor given chosen gainthreshold and land constraint",
+              unit         = "Mha",
+              description  = paste0("Area that could be irrigated when water would not be ",
+                             "a limiting factor given chosen gainthreshold and land constraint"),
               isocountries = FALSE))
 }

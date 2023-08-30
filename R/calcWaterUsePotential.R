@@ -70,7 +70,7 @@
 #' \dontrun{
 #' calcOutput("WaterUsePotential", aggregate = FALSE)
 #' }
-#'
+
 calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                             accessibilityrule, rankmethod, yieldcalib, allocationrule,
                             gainthreshold, irrigationsystem, iniyear,
@@ -92,7 +92,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                                         allocationrule = allocationrule,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
-                                        cropmix = cropmix, comAg = comAg,
+                                        cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
                                         multicropping = multicropping, aggregate = FALSE))
   watAvlAgWW <- collapseNames(watAvlAg[, , "currWWtotal"])
   watAvlAgWC <- collapseNames(watAvlAg[, , "currWCtotal"])
@@ -110,7 +110,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                          transDist = transDist, comAg = NULL,
                          efrMethod = efrMethod, multicropping = multicropping,
                          selectyears = selectyears, iniyear = iniyear,
-                         accessibilityrule = NULL,
+                         accessibilityrule = NULL, fossilGW = NULL,
                          rankmethod = NULL, gainthreshold = NULL,
                          cropmix = NULL, yieldcalib = NULL,
                          irrigationsystem = NULL, landScen = NULL,
@@ -138,7 +138,7 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                              transDist = transDist, comAg = NULL,
                              efrMethod = efrMethod, multicropping = multicropping,
                              selectyears = selectyears, iniyear = iniyear,
-                             accessibilityrule = NULL,
+                             accessibilityrule = NULL, fossilGW = NULL,
                              rankmethod = NULL, gainthreshold = NULL,
                              cropmix = NULL, yieldcalib = NULL,
                              irrigationsystem = NULL, landScen = NULL,

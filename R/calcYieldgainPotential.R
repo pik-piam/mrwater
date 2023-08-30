@@ -86,7 +86,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                    efrMethod, yieldcalib, irrigationsystem,
                                    accessibilityrule, rankmethod,
                                    gainthreshold, allocationrule,
-                                   transDist = transDist, fossilGW,
+                                   transDist, fossilGW,
                                    landScen, cropmix, multicropping, unlimited) {
 
   thresholdtype <- paste("USD_ha",
@@ -112,7 +112,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                       selectyears = selectyears, iniyear = iniyear,
                                       landScen = landScen, comagyear = NULL,
                                       lpjml = NULL, climatetype = NULL,
-                                      efrMethod = NULL,
+                                      efrMethod = NULL, fossilGW = NULL,
                                       multicropping = NULL, transDist = NULL,
                                       aggregate = FALSE)[, , scenario])
 

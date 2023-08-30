@@ -13,22 +13,27 @@
 #'                      if !NULL: already irrigated area is subtracted;
 #'                      year specified here is the year of the initialization
 #'                      used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)
-#' @param lpjml         if comagyear != NULL: LPJmL version used to calculate committed
+#' @param fossilGW      This argument is only relevant when comagyear != NULL 
+#'                      as it determines the area that is set aside as it is already
+#'                      reserved by the committed agriculture iteration.
+#'                      If TRUE: non-renewable groundwater can be used.
+#'                      If FALSE: non-renewable groundwater cannot be used.
+#' @param lpjml         If comagyear != NULL: LPJmL version used to calculate committed
 #'                      agricultural use
-#' @param climatetype   if comagyear != NULL: climate scenario used to calculate committed
+#' @param climatetype   If comagyear != NULL: climate scenario used to calculate committed
 #'                      agricultural use
 #'                      or historical baseline "GSWP3-W5E5:historical"
-#' @param efrMethod     if comagyear != NULL: EFR method used to calculate committed
+#' @param efrMethod     If comagyear != NULL: EFR method used to calculate committed
 #'                      agricultural use (e.g., Smakhtin:good, VMF:fair)
 #' @param multicropping TRUE or FALSE (for committed agricultural area accounting)
-#' @param transDist      if comagyear != NULL: Water transport distance allowed to fulfill locally
-#'                       unfulfilled water demand by surrounding cell water availability
-#'                       of committed agricultural uses
-#' @param scenarios      Scenarios for object dimension consisting of "EFP.scenario".
-#'                       Default is c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
-#'                                    "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")
-#'                       If scenarios change, they have to be adjusted in the default 
-#'                       setting of this function.
+#' @param transDist     If comagyear != NULL: Water transport distance allowed to fulfill locally
+#'                      unfulfilled water demand by surrounding cell water availability
+#'                      of committed agricultural uses
+#' @param scenarios     Scenarios for object dimension consisting of "EFP.scenario".
+#'                      Default is c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
+#'                                   "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")
+#'                      If scenarios change, they have to be adjusted in the default 
+#'                      setting of this function.
 #'
 #'
 #' @return magpie object in cellular resolution
@@ -44,7 +49,7 @@
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
 calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
-                             lpjml, climatetype, efrMethod,
+                             lpjml, climatetype, efrMethod, fossilGW,
                              multicropping, transDist,
                              scenarios = c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
                                            "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")) {
@@ -175,7 +180,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
     # by committed agricultural uses in water allocation algorithm
     # (to avoid double accounting)
     comIrrigArea <- collapseNames(calcOutput("IrrigAreaActuallyCommitted",
-                                             fossilGW = FALSE,
+                                             fossilGW = fossilGW,
                                              selectyears = selectyears, iniyear = comagyear,
                                              lpjml = lpjml, climatetype = climatetype,
                                              efrMethod = efrMethod,

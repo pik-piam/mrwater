@@ -17,7 +17,7 @@ calcYieldgainPotential(
   rankmethod,
   gainthreshold,
   allocationrule,
-  transDist = transDist,
+  transDist,
   fossilGW,
   landScen,
   cropmix,

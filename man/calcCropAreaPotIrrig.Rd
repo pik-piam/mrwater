@@ -10,6 +10,7 @@ calcCropAreaPotIrrig(
   iniyear,
   cropmix,
   landScen,
+  fossilGW,
   lpjml,
   climatetype,
   efrMethod,
@@ -38,6 +39,12 @@ or selection of proxycrops as vector)}
 2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
 For case of no land protection select "NA"
 or do not specify second part of the argument}
+
+\item{fossilGW}{This argument is only relevant when comagyear != NULL
+as it determines the area that is set aside as it is already
+reserved by the committed agriculture iteration.
+If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{lpjml}{if comagyear != NULL: LPJmL version used to calculate committed
 agricultural use}

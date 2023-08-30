@@ -109,7 +109,6 @@ This function returns the potential water quantity
 \dontrun{
 calcOutput("WaterUsePotential", aggregate = FALSE)
 }
-
 }
 \author{
 Felicitas Beier, Jens Heinke

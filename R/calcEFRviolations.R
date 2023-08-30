@@ -103,14 +103,14 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod, transD
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
                                         cropmix = cropmix, comAg = comAg,
-                                        multicropping = multicropping,
+                                        multicropping = multicropping, fossilGW = FALSE,
                                         aggregate = FALSE)[, , "discharge"][, , scenario])
 
   envFlow   <- collapseNames(calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
                                         lpjml = lpjml, climatetype = climatetype,
                                         efrMethod = efrMethod, aggregate = FALSE)[, , "EFR"])
 
-  violation <- discharge - envFlow
+  violation <- discharge - envFlow          # To Do: I think this is not correct
   violation[violation > 0] <- 0
 
   # Check correct cell order:

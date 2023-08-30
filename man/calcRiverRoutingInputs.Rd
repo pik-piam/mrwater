@@ -10,6 +10,7 @@ calcRiverRoutingInputs(
   selectyears,
   iniyear,
   iteration,
+  fossilGW,
   transDist,
   efrMethod,
   accessibilityrule,
@@ -37,6 +38,10 @@ or historical baseline "GSWP3-W5E5:historical"}
 \item{iteration}{Water use to be allocated in this river routing iteration
 (non_agriculture, committed_agriculture, potential_irrigation,
 special case (for current irrigated area analysis): "committed_agriculture_fullPotential").}
+
+\item{fossilGW}{For case of potential_irrigation:
+If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}

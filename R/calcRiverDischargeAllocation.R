@@ -64,6 +64,10 @@
 #'                          "potential:exogenous": potentially multicropped areas given
 #'                                                 GAEZ suitability classification)
 #'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
+#' @param fossilGW      To determine full irrigation requirements based on the
+#'                      correct available area:
+#'                      If TRUE: non-renewable groundwater can be used.
+#'                      If FALSE: non-renewable groundwater cannot be used.
 #'
 #' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
@@ -81,7 +85,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                          selectyears, efrMethod,
                                          accessibilityrule, transDist,
                                          rankmethod, yieldcalib,
-                                         allocationrule,
+                                         allocationrule, fossilGW,
                                          gainthreshold, irrigationsystem, iniyear, landScen,
                                          cropmix, comAg, multicropping) {
   # Retrieve arguments
@@ -101,7 +105,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   inputData <- calcOutput("RiverRoutingInputs",
                           iteration = "potential_irrigation",
                           lpjml = lpjml, climatetype = climatetype,
-                          transDist = transDist, comAg = comAg,
+                          transDist = transDist, comAg = comAg, fossilGW = fossilGW,
                           selectyears = selectyears, iniyear = iniyear,
                           efrMethod = efrMethod, multicropping = multicropping,
                           accessibilityrule = accessibilityrule,

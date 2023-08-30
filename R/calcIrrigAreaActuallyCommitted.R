@@ -79,7 +79,7 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
 
   # Water already committed to irrigation (in mio. m^3)
   comWater <- calcOutput("RiverHumanUseAccounting",
-                          iteration = iteration,
+                          iteration = iteration, fossilGW = NULL,
                           lpjml = lpjml, climatetype = climatetype,
                           transDist = transDist, comAg = NULL,
                           efrMethod = efrMethod, multicropping = m,
