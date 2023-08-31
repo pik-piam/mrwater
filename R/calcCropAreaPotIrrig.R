@@ -178,7 +178,7 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
     out <- currRF * rfdCropmix + currIRnores * irrCropmix
 
     ### Checks ###
-    if (any(round(total * totCropmix - out - actComAgArea * irrCropmix, digits = 6)) < 0) {
+    if (any(round(total * totCropmix - out - actComAgArea * irrCropmix, digits = 6) < 0)) {
       stop("There is a mismatch in the crop-specific irrigation area accounting.
         Please check what is wrong starting in mrwater::calcCropAreaPotIrrig")
     }

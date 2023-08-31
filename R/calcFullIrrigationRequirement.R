@@ -126,7 +126,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
     stop("mrwater::calcFullIrrigationRequirements:
          produced NA full irrigation requirements")
   }
-  if (any(irrigWat < 0)) {
+  if (any(round(irrigWat, digits = 6) < 0)) {
     stop("mrwater::calcFullIrrigationRequirements:
          produced negative full irrigation requirements")
   }
