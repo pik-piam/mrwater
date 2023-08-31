@@ -136,21 +136,30 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
     }
 
     # Cropmixes for crop-specific area accounting
-    # rainfed cropmix
-    rfdCropmix <- setYears(calcOutput("CropAreaShare",
-                            iniyear = iniyear, cropmix = "hist_rainf",
-                            aggregate = FALSE),
-                          NULL)
-    # irrigated cropmix
-    irrCropmix <- setYears(calcOutput("CropAreaShare",
-                            iniyear = iniyear, cropmix = "hist_irrig",
-                            aggregate = FALSE),
-                          NULL)
-    # total cropmix
-    totCropmix <- setYears(calcOutput("CropAreaShare",
-                            iniyear = iniyear, cropmix = "hist_total",
-                            aggregate = FALSE),
-                          NULL)
+    if (grepl("currIrrig", landScen)) {
+      rfdCropmix <- irrCropmix <- totCropmix <- setYears(calcOutput("CropAreaShare",
+                                                                    iniyear = iniyear,
+                                                                    cropmix = "hist_irrig",
+                                                                    aggregate = FALSE),
+                                                         NULL)
+
+    } else {
+      # rainfed cropmix
+      rfdCropmix <- setYears(calcOutput("CropAreaShare",
+                                        iniyear = iniyear, cropmix = "hist_rainf",
+                                        aggregate = FALSE),
+                             NULL)
+      # irrigated cropmix
+      irrCropmix <- setYears(calcOutput("CropAreaShare",
+                                        iniyear = iniyear, cropmix = "hist_irrig",
+                                        aggregate = FALSE),
+                             NULL)
+      # total cropmix
+      totCropmix <- setYears(calcOutput("CropAreaShare",
+                                        iniyear = iniyear, cropmix = "hist_total",
+                                        aggregate = FALSE),
+                             NULL)
+    }
 
     ### Calculations ###
     # Area that is actually committed as seen by the algorithm
