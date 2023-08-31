@@ -304,7 +304,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                       lpjml = lpjml, climatetype = climatetype,
                       efrMethod = efrMethod, multicropping = multicropping,
                       selectyears = selectyears, iniyear = iniyear,
-                      transDist = transDist, comAg = comAg,
+                      transDist = transDist, comAg = comAg, fossilGW = fossilGW,
                       accessibilityrule = accessibilityrule,
                       rankmethod = rankmethod, gainthreshold = gainthreshold,
                       cropmix = cropmix, yieldcalib = yieldcalib,
@@ -364,7 +364,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   # Check whether discharge inaccessibility constraint is violated
   if (any(round(dischargeMAG - inaccessibleDischarge - collapseNames(out[, , "currWWlocal"]),
                 digits = 6) < 0)) {
-    stop("In calcRiverDischargeAllocation: 
+    stop("In calcRiverDischargeAllocation:
           More than accessible water has been allocated locally.")
   }
 
