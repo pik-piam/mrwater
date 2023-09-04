@@ -45,7 +45,7 @@ or historical baseline "GSWP3-W5E5:historical"}
 \item{efrMethod}{If comagyear != NULL: EFR method used to calculate committed
 agricultural use (e.g., Smakhtin:good, VMF:fair)}
 
-\item{fossilGW}{This argument is only relevant when comagyear != NULL 
+\item{fossilGW}{This argument is only relevant when comagyear != NULL
 as it determines the area that is set aside as it is already
 reserved by the committed agriculture iteration.
 If TRUE: non-renewable groundwater can be used.
@@ -60,7 +60,7 @@ of committed agricultural uses}
 \item{scenarios}{Scenarios for object dimension consisting of "EFP.scenario".
 Default is c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
              "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")
-If scenarios change, they have to be adjusted in the default 
+If scenarios change, they have to be adjusted in the default
 setting of this function.}
 }
 \value{

@@ -68,7 +68,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              landScen = paste0("potCropland:", protectLand),
              lpjml = NULL, climatetype = NULL,
              efrMethod = NULL, fossilGW = FALSE,
-             multicropping = NULL, transDist = NULL,
+             multicropping = FALSE, transDist = NULL,
              aggregate = FALSE,
              file = "avlIrrigarea_pot.mz")
 

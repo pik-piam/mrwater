@@ -13,7 +13,7 @@
 #'                      if !NULL: already irrigated area is subtracted;
 #'                      year specified here is the year of the initialization
 #'                      used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)
-#' @param fossilGW      This argument is only relevant when comagyear != NULL 
+#' @param fossilGW      This argument is only relevant when comagyear != NULL
 #'                      as it determines the area that is set aside as it is already
 #'                      reserved by the committed agriculture iteration.
 #'                      If TRUE: non-renewable groundwater can be used.
@@ -32,7 +32,7 @@
 #' @param scenarios     Scenarios for object dimension consisting of "EFP.scenario".
 #'                      Default is c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
 #'                                   "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")
-#'                      If scenarios change, they have to be adjusted in the default 
+#'                      If scenarios change, they have to be adjusted in the default
 #'                      setting of this function.
 #'
 #'
@@ -144,6 +144,12 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
 
   # area that is not protected
   areaNOprotect <- landarea - protectArea
+  # correct areas where more area is protected than land is available
+  if (any(areaNOprotect < 0)) {
+    warning("The protected area seems to be calculated based on a different
+            land availability than LUH. Negative values are set to 0 in calcAreaPotIrrig")
+    areaNOprotect[areaNOprotect < 0] <- 0
+  }
 
   #########################################################
   ### Land that is potentially available for irrigation ###
