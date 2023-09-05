@@ -50,7 +50,6 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   multicropping     <- FALSE
   yieldcalib        <- "TRUE:FALSE"
   cropmix           <- "hist_total"
-  protectLand       <- "HalfEarth"
   irrigationsystem  <- "initialization"
 
   # retrieve arguments
@@ -61,6 +60,33 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   ################
   # MAIN RESULTS #
   ################
+
+  # Current cropland area
+  calcOutput("CropareaAdjusted",
+             iniyear = iniyear, dataset = "Toolbox",
+             aggregate = FALSE,
+             file = "croparea.mz")
+
+  # Crop yields (in USD/ha)
+  calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears,
+             yieldcalib = yieldcalib,
+             priceAgg = str_split(rankmethod, pattern = ":")[[1]][2],
+             multicropping = FALSE, aggregate = FALSE,
+             file = "yields.mz")
+
+  # Yield gain through irrigation (in )
+  # Cellular yield improvement potential for all crops (in USD/ha)
+  calcOutput("IrrigYieldImprovementPotential",
+              selectyears = selectyears, iniyear = iniyear,
+              lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
+              unit = thresholdtype, yieldcalib = yieldcalib,
+              comagyear = NULL, efrMethod = NULL, transDist = NULL,
+              irrigationsystem = irrigationsystem,
+              landScen = "currCropland:NA",
+              multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
+              aggregate = FALSE,
+              file = "yieldgain.mz")
 
   # The transformation elasticity between rainfed and irrigated area (tau_Li)
   # is calculated based on currently irrigated area and the maximum
