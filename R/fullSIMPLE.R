@@ -67,6 +67,13 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              aggregate = FALSE,
              file = "croparea.mz")
 
+  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_rainf",
+             aggregate = FALSE, file = "cropmix_rf.mz")
+  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_irrig",
+             aggregate = FALSE, file = "cropmix_ir.mz")
+  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_total",
+             aggregate = FALSE, file = "cropmix_tot.mz")
+
   # Crop yields (in USD/ha)
   calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = selectyears,
