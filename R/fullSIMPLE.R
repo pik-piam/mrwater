@@ -61,6 +61,28 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   # MAIN RESULTS #
   ################
 
+  # Environmental Flow Requirements
+  # (share of discharge that has to be reserved for the environment)
+  calcOutput("EnvmtlFlowRequirementsShare", lpjml = lpjml,
+             climatetype = climatetype, efrMethod = efrMethod,
+             aggregate = FALSE,
+             file = "EFRshare.mz")
+
+  # To derive the country-/basin-level transformation elasticity
+  # for the CET function, PIA is calculated for different thresholds
+  calcOutput("EconOfIrrig", scenario = ssp, output = "IrrigArea",
+             gtrange = seq(0, 3000, 100),
+             selectyears = selectyears, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem, cropmix = cropmix,
+             landScen = "currCropland:NULL",
+             comAg = TRUE, transDist = transDist, fossilGW = fossilGW,
+             multicropping = multicropping, aggregate = FALSE,
+             file = paste0("IrrigArea", "EconCUR.mz"))
+
   # Current cropland area
   calcOutput("CropareaAdjusted",
              iniyear = iniyear, dataset = "Toolbox",
@@ -114,6 +136,19 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
               transDist = transDist, fossilGW = fossilGW,
               aggregate = FALSE,
               file = "PIA_CUR.mz")
+  calcOutput("IrrigAreaPotential", gainthreshold = 0,
+             cropAggregation = TRUE,
+             selectyears = selectyears, iniyear = iniyear,
+             climatetype = climatetype, lpjml = lpjml,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem,
+             landScen = "potCropland:NA", cropmix = cropmix,
+             comAg = TRUE, multicropping = multicropping,
+             transDist = transDist, fossilGW = fossilGW,
+             aggregate = FALSE,
+             file = "PIA_POT.mz")
 
   # Currently irrigated area
   calcOutput("IrrigAreaPotential", gainthreshold = 0,
@@ -156,6 +191,17 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
               transDist = transDist, fossilGW = fossilGW,
               aggregate = FALSE,
               file = "PIWW_CUR.mz")
+  calcOutput("WaterUsePotential", gainthreshold = 0,
+             selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem, iniyear = iniyear,
+             landScen = "potCropland:NA", cropmix = cropmix,
+             comAg = TRUE, multicropping = multicropping,
+             transDist = transDist, fossilGW = fossilGW,
+             aggregate = FALSE,
+             file = "PIWW_POT.mz")
 
   # Current irrigation water withdrawal
   calcOutput("WaterUsePotential", gainthreshold = 0,
