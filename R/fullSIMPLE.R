@@ -49,7 +49,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   accessibilityrule <- "CV:2"
   multicropping     <- FALSE
   yieldcalib        <- "TRUE:FALSE"
-  cropmix           <- "hist_total"
+  cropmix           <- "hist_rainf"
   irrigationsystem  <- "initialization"
 
   # retrieve arguments
@@ -115,7 +115,18 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
               landScen = "currCropland:NA",
               multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
               aggregate = FALSE,
-              file = "yieldgain.mz")
+              file = "yieldgainCUR.mz")
+
+  calcOutput("IrrigYieldImprovementPotential",
+             selectyears = selectyears, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
+             unit = thresholdtype, yieldcalib = yieldcalib,
+             comagyear = NULL, efrMethod = NULL, transDist = NULL,
+             irrigationsystem = irrigationsystem,
+             landScen = "potCropland:NA",
+             multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
+             aggregate = FALSE,
+             file = "yieldgainPOT.mz")
 
   # The transformation elasticity between rainfed and irrigated area (tau_Li)
   # is calculated based on currently irrigated area and the maximum
