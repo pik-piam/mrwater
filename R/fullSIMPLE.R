@@ -76,66 +76,6 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              aggregate = FALSE,
              file = "EFRshare.mz")
 
-  # To derive the country-/basin-level transformation elasticity
-  # for the CET function, PIA is calculated for different thresholds
-  calcOutput("EconOfIrrig", scenario = ssp, output = "IrrigArea",
-             gtrange = seq(0, 3000, 100),
-             selectyears = selectyears, iniyear = iniyear,
-             lpjml = lpjml, climatetype = climatetype,
-             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-             rankmethod = rankmethod, yieldcalib = yieldcalib,
-             allocationrule = allocationrule,
-             irrigationsystem = irrigationsystem, cropmix = cropmix,
-             landScen = "currCropland:NULL",
-             comAg = FALSE, transDist = transDist, fossilGW = fossilGW,
-             multicropping = multicropping, aggregate = FALSE,
-             file = paste0("IrrigArea", "EconCUR.mz"))
-
-  # Current cropland area
-  calcOutput("CropareaAdjusted",
-             iniyear = iniyear, dataset = "Toolbox",
-             aggregate = FALSE,
-             file = "croparea.mz")
-
-  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_rainf",
-             aggregate = FALSE, file = "cropmix_rf.mz")
-  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_irrig",
-             aggregate = FALSE, file = "cropmix_ir.mz")
-  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_total",
-             aggregate = FALSE, file = "cropmix_tot.mz")
-
-  # Crop yields (in USD/ha)
-  calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
-             iniyear = iniyear, selectyears = selectyears,
-             yieldcalib = yieldcalib,
-             priceAgg = str_split(rankmethod, pattern = ":")[[1]][2],
-             multicropping = FALSE, aggregate = FALSE,
-             file = "yields.mz")
-
-  # Yield gain through irrigation (in )
-  # Cellular yield improvement potential for all crops (in USD/ha)
-  calcOutput("IrrigYieldImprovementPotential",
-              selectyears = selectyears, iniyear = iniyear,
-              lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-              unit = thresholdtype, yieldcalib = yieldcalib,
-              comagyear = NULL, efrMethod = NULL, transDist = NULL,
-              irrigationsystem = irrigationsystem,
-              landScen = "currCropland:NA",
-              multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
-              aggregate = FALSE,
-              file = "yieldgainCUR.mz")
-
-  calcOutput("IrrigYieldImprovementPotential",
-             selectyears = selectyears, iniyear = iniyear,
-             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
-             unit = thresholdtype, yieldcalib = yieldcalib,
-             comagyear = NULL, efrMethod = NULL, transDist = NULL,
-             irrigationsystem = irrigationsystem,
-             landScen = "potCropland:NA",
-             multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
-             aggregate = FALSE,
-             file = "yieldgainPOT.mz")
-
   # The transformation elasticity between rainfed and irrigated area (tau_Li)
   # is calculated based on currently irrigated area and the maximum
   # potentially irrigated area
@@ -317,4 +257,65 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              fossilGW = fossilGW, transDist = transDist,
              aggregate = FALSE,
              file = "comAgWat.mz")
+
+  # Current cropland area
+  calcOutput("CropareaAdjusted",
+             iniyear = iniyear, dataset = "Toolbox",
+             aggregate = FALSE,
+             file = "croparea.mz")
+
+  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_rainf",
+             aggregate = FALSE, file = "cropmix_rf.mz")
+  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_irrig",
+             aggregate = FALSE, file = "cropmix_ir.mz")
+  calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_total",
+             aggregate = FALSE, file = "cropmix_tot.mz")
+
+  # Crop yields (in USD/ha)
+  calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
+             iniyear = iniyear, selectyears = selectyears,
+             yieldcalib = yieldcalib,
+             priceAgg = str_split(rankmethod, pattern = ":")[[1]][2],
+             multicropping = FALSE, aggregate = FALSE,
+             file = "yields.mz")
+
+  # Yield gain through irrigation (in )
+  # Cellular yield improvement potential for all crops (in USD/ha)
+  calcOutput("IrrigYieldImprovementPotential",
+             selectyears = selectyears, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
+             unit = thresholdtype, yieldcalib = yieldcalib,
+             comagyear = NULL, efrMethod = NULL, transDist = NULL,
+             irrigationsystem = irrigationsystem,
+             landScen = "currCropland:NA",
+             multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
+             aggregate = FALSE,
+             file = "yieldgainCUR.mz")
+
+  calcOutput("IrrigYieldImprovementPotential",
+             selectyears = selectyears, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
+             unit = thresholdtype, yieldcalib = yieldcalib,
+             comagyear = NULL, efrMethod = NULL, transDist = NULL,
+             irrigationsystem = irrigationsystem,
+             landScen = "potCropland:NA",
+             multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
+             aggregate = FALSE,
+             file = "yieldgainPOT.mz")
+
+  # To derive the country-/basin-level transformation elasticity
+  # for the CET function, PIA is calculated for different thresholds
+  calcOutput("EconOfIrrig", scenario = ssp, output = "IrrigArea",
+             gtrange = seq(0, 3000, 100),
+             selectyears = selectyears, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem, cropmix = cropmix,
+             landScen = "currCropland:NULL",
+             comAg = FALSE, transDist = transDist, fossilGW = fossilGW,
+             multicropping = multicropping, aggregate = FALSE,
+             file = paste0("IrrigArea", "EconCUR.mz"))
+
 }
