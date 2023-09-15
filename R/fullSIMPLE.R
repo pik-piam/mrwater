@@ -30,8 +30,8 @@
 #' @export
 
 fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
-                              allocationrule = "optimization",
-                              rankmethod = "USD_m3:GLO:TRUE") {
+                       allocationrule = "optimization",
+                       rankmethod = "USD_m3:GLO:TRUE") {
 
   # The analysis is calculated for the 2010
   iniyear           <- 2010
@@ -61,6 +61,14 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   # MAIN RESULTS #
   ################
 
+  # Non-renewable groundwater
+  calcOutput("NonrenGroundwatUse", output = "comAg",
+             lpjml = lpjml, climatetype = climatetype,
+             transDistGW = 100, multicropping = "TRUE:actual:irrig_crop",
+             selectyears = selectyears, iniyear = iniyear,
+             aggregate = FALSE,
+             file = "agGWvolume.mz")
+
   # Environmental Flow Requirements
   # (share of discharge that has to be reserved for the environment)
   calcOutput("EnvmtlFlowRequirementsShare", lpjml = lpjml,
@@ -79,7 +87,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              allocationrule = allocationrule,
              irrigationsystem = irrigationsystem, cropmix = cropmix,
              landScen = "currCropland:NULL",
-             comAg = TRUE, transDist = transDist, fossilGW = fossilGW,
+             comAg = FALSE, transDist = transDist, fossilGW = fossilGW,
              multicropping = multicropping, aggregate = FALSE,
              file = paste0("IrrigArea", "EconCUR.mz"))
 
@@ -144,9 +152,23 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
               irrigationsystem = irrigationsystem,
               landScen = "currCropland:NA", cropmix = cropmix,
               comAg = TRUE, multicropping = multicropping,
-              transDist = transDist, fossilGW = fossilGW,
+              transDist = transDist, fossilGW = TRUE,
               aggregate = FALSE,
-              file = "PIA_CUR.mz")
+              file = "PIA_CUR_wfGW.mz")
+  calcOutput("IrrigAreaPotential", gainthreshold = 0,
+             cropAggregation = TRUE,
+             selectyears = selectyears, iniyear = iniyear,
+             climatetype = climatetype, lpjml = lpjml,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem,
+             landScen = "currCropland:NA", cropmix = cropmix,
+             comAg = TRUE, multicropping = multicropping,
+             transDist = transDist, fossilGW = FALSE,
+             aggregate = FALSE,
+             file = "PIA_CUR_wofGW.mz")
+
   calcOutput("IrrigAreaPotential", gainthreshold = 0,
              cropAggregation = TRUE,
              selectyears = selectyears, iniyear = iniyear,
@@ -157,9 +179,22 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              irrigationsystem = irrigationsystem,
              landScen = "potCropland:NA", cropmix = cropmix,
              comAg = TRUE, multicropping = multicropping,
-             transDist = transDist, fossilGW = fossilGW,
+             transDist = transDist, fossilGW = TRUE,
              aggregate = FALSE,
-             file = "PIA_POT.mz")
+             file = "PIA_POT_wfGW.mz")
+  calcOutput("IrrigAreaPotential", gainthreshold = 0,
+             cropAggregation = TRUE,
+             selectyears = selectyears, iniyear = iniyear,
+             climatetype = climatetype, lpjml = lpjml,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem,
+             landScen = "potCropland:NA", cropmix = cropmix,
+             comAg = TRUE, multicropping = multicropping,
+             transDist = transDist, fossilGW = FALSE,
+             aggregate = FALSE,
+             file = "PIA_POT_wofGW.mz")
 
   # Currently irrigated area
   calcOutput("IrrigAreaPotential", gainthreshold = 0,
@@ -172,9 +207,23 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              irrigationsystem = irrigationsystem,
              landScen = "currIrrig:NA", cropmix = cropmix,
              comAg = TRUE, multicropping = multicropping,
-             transDist = transDist, fossilGW = fossilGW,
+             transDist = transDist, fossilGW = TRUE,
              aggregate = FALSE,
-             file = "PIA_IRR.mz")
+             file = "PIA_IRR_wfGW.mz")
+  calcOutput("IrrigAreaPotential", gainthreshold = 0,
+             cropAggregation = TRUE,
+             selectyears = selectyears, iniyear = iniyear,
+             climatetype = climatetype, lpjml = lpjml,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem,
+             landScen = "currIrrig:NA", cropmix = cropmix,
+             comAg = TRUE, multicropping = multicropping,
+             transDist = transDist, fossilGW = FALSE,
+             aggregate = FALSE,
+             file = "PIA_IRR_wofGW.mz")
+
   # (just to check: should be the same as committed ag)
   calcOutput("IrrigAreaActuallyCommitted",
              fossilGW = fossilGW,
@@ -199,9 +248,21 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
               irrigationsystem = irrigationsystem, iniyear = iniyear,
               landScen = "currCropland:NA", cropmix = cropmix,
               comAg = TRUE, multicropping = multicropping,
-              transDist = transDist, fossilGW = fossilGW,
+              transDist = transDist, fossilGW = TRUE,
               aggregate = FALSE,
-              file = "PIWW_CUR.mz")
+              file = "PIWW_CUR_wfGW.mz")
+  calcOutput("WaterUsePotential", gainthreshold = 0,
+             selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem, iniyear = iniyear,
+             landScen = "currCropland:NA", cropmix = cropmix,
+             comAg = TRUE, multicropping = multicropping,
+             transDist = transDist, fossilGW = FALSE,
+             aggregate = FALSE,
+             file = "PIWW_CUR_wofGW.mz")
+
   calcOutput("WaterUsePotential", gainthreshold = 0,
              selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
              accessibilityrule = accessibilityrule, efrMethod = efrMethod,
@@ -210,9 +271,20 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
              landScen = "potCropland:NA", cropmix = cropmix,
              comAg = TRUE, multicropping = multicropping,
-             transDist = transDist, fossilGW = fossilGW,
+             transDist = transDist, fossilGW = TRUE,
              aggregate = FALSE,
-             file = "PIWW_POT.mz")
+             file = "PIWW_POT_wfGW.mz")
+  calcOutput("WaterUsePotential", gainthreshold = 0,
+             selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem, iniyear = iniyear,
+             landScen = "potCropland:NA", cropmix = cropmix,
+             comAg = TRUE, multicropping = multicropping,
+             transDist = transDist, fossilGW = FALSE,
+             aggregate = FALSE,
+             file = "PIWW_POT_wofGW.mz")
 
   # Current irrigation water withdrawal
   calcOutput("WaterUsePotential", gainthreshold = 0,
@@ -223,9 +295,20 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              irrigationsystem = irrigationsystem, iniyear = iniyear,
              landScen = "currIrrig:NA", cropmix = cropmix,
              comAg = TRUE, multicropping = multicropping,
-             transDist = transDist, fossilGW = fossilGW,
+             transDist = transDist, fossilGW = TRUE,
              aggregate = FALSE,
-             file = "PIWW_IRR.mz")
+             file = "PIWW_IRR_wfGW.mz")
+  calcOutput("WaterUsePotential", gainthreshold = 0,
+             selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
+             accessibilityrule = accessibilityrule, efrMethod = efrMethod,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             irrigationsystem = irrigationsystem, iniyear = iniyear,
+             landScen = "currIrrig:NA", cropmix = cropmix,
+             comAg = TRUE, multicropping = multicropping,
+             transDist = transDist, fossilGW = FALSE,
+             aggregate = FALSE,
+             file = "PIWW_IRR_wofGW.mz")
   # (just to confirm. should be the same)
   calcOutput("WaterUseActuallyCommittedAg",
              lpjml = lpjml, climatetype = climatetype,
