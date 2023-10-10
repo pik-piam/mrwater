@@ -69,6 +69,7 @@
 #' @param cropmix           Selected cropmix (options:
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
+#'                          "hist_rainf" for historical rainfed cropmix,
 #'                          or selection of proxycrops)
 #' @param comAg             If TRUE: currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
@@ -134,7 +135,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     if (comAg) {
       cmix      <- "hist_total"
     } else {
-      cmix      <- cmix
+      cmix      <- cropmix
     }
     if (grepl("currIrrig", landScen)) {
       cropmix <- cmix <- "hist_irrig"
@@ -279,8 +280,8 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
          "outputtype: ", outputtype,
          "management: ", management,
          "area: ", area,
-         "allocationrule: ", allocationrule, 
-         "cropmix: ", cropmix, 
+         "allocationrule: ", allocationrule,
+         "cropmix: ", cropmix,
          "comAg: ", comAg,
          "transDist: ", transDist,
          "fossilGW: ", fossilGW))
