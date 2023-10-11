@@ -98,7 +98,6 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
       ci <- collapseNames(calcOutput("MulticroppingIntensity",
                                      scenario = strsplit(areaMask, split = ":")[[1]][2],
                                      selectyears = selectyears,
-                                     lpjml = lpjml, climatetype = climatetype,
                                      aggregate = FALSE)[, , "irrigated"][, , crops])
       # Share of area that is multicropped
       shrMC <- (ci - 1)

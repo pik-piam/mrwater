@@ -130,7 +130,6 @@ fullMULTICROPPING <- function() {
   calcOutput("MulticroppingIntensity",
               scenario = "irrig_crop",
               selectyears = selectyears, sectoral = "kcr",
-              lpjml = lpjml, climatetype = climatetype,
               file = "croppingIntensity.mz", aggregate = FALSE)
   # potential multiple cropping suitability
   calcOutput("MulticroppingSuitability", selectyears = selectyears,
@@ -466,6 +465,8 @@ fullMULTICROPPING <- function() {
   # Revenue #
   ###########
   ### Revenue achieved on respective land area ###
+  # revenue unit: mio. USD
+  # biomass runit: mio. tDM
   for (o in c("biomass", "revenue")) {
     for (man in c("single:potential", "single:counterfactual",
                   "actMC:potential", "actMC:counterfactual",

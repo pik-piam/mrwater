@@ -236,7 +236,6 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     ci <- calcOutput("MulticroppingIntensity",
                      scenario = strsplit(m2, split = ":")[[1]][3],
                      selectyears = selectyears, sectoral = "kcr",
-                     lpjml = lpjml, climatetype = climatetype,
                      aggregate = FALSE)
     # reorder third dimension (switch irrigation and crop)
     ci <- dimOrder(ci, c(2, 1), dim = 3)
