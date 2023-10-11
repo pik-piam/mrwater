@@ -20,6 +20,9 @@
 #'                      if NULL: total potential land area is used;
 #'                      year specified here is the year of the initialization
 #'                      used for cropland area initialization in calcIrrigatedArea
+#' @param fossilGW      In this function, this argument is only relevant when comagyear !NULL
+#'                      If TRUE: non-renewable groundwater can be used.
+#'                      If FALSE: non-renewable groundwater cannot be used.
 #' @param efrMethod     if comagyear != NULL: EFR method used to calculate committed
 #'                      agricultural use (e.g., Smakhtin:good, VMF:fair)
 #' @param transDist     if comagyear != NULL: Water transport distance allowed to fulfill locally
@@ -58,7 +61,8 @@
 #' @importFrom stringr str_split
 
 calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
-                                               iniyear, comagyear, selectyears,
+                                               iniyear, selectyears,
+                                               comagyear, fossilGW,
                                                efrMethod, transDist,
                                                cropmix, landScen, irrigationsystem,
                                                yieldcalib, multicropping) {
@@ -118,8 +122,8 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
       # Note: one scenario selected for obtaining one cell ranking
       #       (only makes a difference if committed agricultural uses is activated)
       croparea <- collapseNames(calcOutput("CropAreaPotIrrig",
-                                          selectyears = selectyears, comagyear = comagyear,
-                                          iniyear = iniyear,
+                                          selectyears = selectyears, iniyear = iniyear,
+                                          comagyear = comagyear, fossilGW = fossilGW,
                                           cropmix = cropmix, landScen = landScen,
                                           lpjml = lpjml, climatetype = climatetype,
                                           efrMethod = efrMethod,

@@ -71,7 +71,7 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
       # When no committed agricultural areas are reserved
       # the total historical cropmix must be chosen
       cropmix <- "hist_total"
-      # Special treatment of committed agricutlural case
+      # Special treatment of committed agricultural case
       # takes place further down
     }
   } else {
@@ -85,9 +85,7 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
   ### Read in data ###
   # Land area that can potentially be used for irrigated agriculture
   # given assumptions set in the arguments including reservation
-  # (i.e. subtracting) already committed agriculture that is fulfilled with surface water
-  # availability [in Mha]
-  # Note: areas reserved with fossilGW are not considered as they are added in the end
+  # (i.e. subtracting) already committed agriculture [in Mha]
   land <- calcOutput("AreaPotIrrig",
                     selectyears = selectyears, iniyear = iniyear,
                     comagyear = comagyear, landScen = landScen,
