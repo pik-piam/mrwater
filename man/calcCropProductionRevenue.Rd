@@ -107,6 +107,7 @@ across cells of river basin ("optimization", "upstreamfirst", "equality")}
 \item{cropmix}{Selected cropmix (options:
 "hist_irrig" for historical cropmix on currently irrigated area,
 "hist_total" for historical cropmix on total cropland,
+"hist_rainf" for historical rainfed cropmix,
 or selection of proxycrops)}
 
 \item{comAg}{If TRUE: currently already irrigated areas in

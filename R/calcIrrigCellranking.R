@@ -26,6 +26,9 @@
 #'                      if NULL: total potential land area is used;
 #'                      year specified here is the year of the initialization
 #'                      used for cropland area initialization in calcIrrigatedArea
+#' @param fossilGW      In this function, this argument is only relevant when comagyear !NULL
+#'                      If TRUE: non-renewable groundwater can be used.
+#'                      If FALSE: non-renewable groundwater cannot be used.
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:
 #'                      "hist_irrig" for historical cropmix on currently irrigated area,
@@ -57,7 +60,8 @@
 #'
 calcIrrigCellranking <- function(lpjml, climatetype,
                                  cellrankyear, iniyear,
-                                 comagyear, irrigationsystem, landScen,
+                                 comagyear, fossilGW,
+                                 irrigationsystem, landScen,
                                  method, efrMethod, transDist,
                                  cropmix, yieldcalib,
                                  multicropping) {
@@ -76,7 +80,8 @@ calcIrrigCellranking <- function(lpjml, climatetype,
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
                           lpjml = lpjml, climatetype = climatetype,
                           selectyears = cellrankyear, iniyear = iniyear,
-                          comagyear = comagyear, efrMethod = efrMethod, transDist = transDist,
+                          comagyear = comagyear, fossilGW = fossilGW,
+                          efrMethod = efrMethod, transDist = transDist,
                           irrigationsystem = irrigationsystem, landScen = landScen,
                           cropmix = cropmix, yieldcalib = yieldcalib,
                           multicropping = multicropping, aggregate = FALSE)

@@ -69,6 +69,7 @@
 #' @param cropmix           Selected cropmix (options:
 #'                          "hist_irrig" for historical cropmix on currently irrigated area,
 #'                          "hist_total" for historical cropmix on total cropland,
+#'                          "hist_rainf" for historical rainfed cropmix,
 #'                          or selection of proxycrops)
 #' @param comAg             If TRUE: currently already irrigated areas in
 #'                                   initialization year are reserved for irrigation,
@@ -134,7 +135,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     if (comAg) {
       cmix      <- "hist_total"
     } else {
-      cmix      <- cmix
+      cmix      <- cropmix
     }
     if (grepl("currIrrig", landScen)) {
       cropmix <- cmix <- "hist_irrig"
@@ -144,7 +145,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                               cropmix = cmix,
                                               landScen = landScen,
                                               selectyears = selectyears, iniyear = iniyear,
-                                              comagyear = NULL,
+                                              comagyear = NULL, fossilGW = NULL,
                                               lpjml = NULL, climatetype = NULL,
                                               efrMethod = NULL,
                                               multicropping = as.logical(stringr::str_split(m2, ":")[[1]][1]),
@@ -184,7 +185,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                yieldcalib = yieldcalib,
                                multicropping = FALSE, aggregate = FALSE)
 
-    unit        <- "tDM"
+    unit        <- "mio. tDM"
     description <- paste0("Crop- and irrigation-specific ",
                           "biomass production on selected area ",
                           "under chosen management scenario.")
@@ -208,7 +209,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                multicropping = FALSE,
                                aggregate = FALSE)
 
-    unit        <- "USD"
+    unit        <- "mio. USD"
     description <- paste0("Crop- and irrigation-specific ",
                           "production revenue on selected area ",
                           "under chosen management scenario.")
@@ -235,7 +236,6 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     ci <- calcOutput("MulticroppingIntensity",
                      scenario = strsplit(m2, split = ":")[[1]][3],
                      selectyears = selectyears, sectoral = "kcr",
-                     lpjml = lpjml, climatetype = climatetype,
                      aggregate = FALSE)
     # reorder third dimension (switch irrigation and crop)
     ci <- dimOrder(ci, c(2, 1), dim = 3)
@@ -272,10 +272,18 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
 
   # Check for negative rainfed cropareas
   if (any(round(cropareaRainfed, digits = 6) < 0)) {
-    stop("In mrwater::calcCropProductionRevenue: rainfed croparea became negative.
+    warning(paste0("In mrwater::calcCropProductionRevenue: rainfed croparea became negative.
          This should not be the case and indicates a data mismatch
          between total cropland and irrigated croparea.
-         Please check!")
+         Please check for the following settings: ",
+         "outputtype: ", outputtype,
+         "management: ", management,
+         "area: ", area,
+         "allocationrule: ", allocationrule,
+         "cropmix: ", cropmix,
+         "comAg: ", comAg,
+         "transDist: ", transDist,
+         "fossilGW: ", fossilGW))
   }
   # remove negatives due to rounding imprecision
   cropareaRainfed[cropareaRainfed < 0] <- 0

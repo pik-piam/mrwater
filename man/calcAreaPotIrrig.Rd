@@ -12,6 +12,7 @@ calcAreaPotIrrig(
   lpjml,
   climatetype,
   efrMethod,
+  fossilGW,
   multicropping,
   transDist,
   scenarios = c("on.ISIMIP", "on.ssp1", "on.ssp2", "on.ssp3", "off.ISIMIP", "off.ssp1",
@@ -34,26 +35,32 @@ used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 201
 For case of no land protection select "NA"
 or do not specify second part of the argument}
 
-\item{lpjml}{if comagyear != NULL: LPJmL version used to calculate committed
+\item{lpjml}{If comagyear != NULL: LPJmL version used to calculate committed
 agricultural use}
 
-\item{climatetype}{if comagyear != NULL: climate scenario used to calculate committed
+\item{climatetype}{If comagyear != NULL: climate scenario used to calculate committed
 agricultural use
 or historical baseline "GSWP3-W5E5:historical"}
 
-\item{efrMethod}{if comagyear != NULL: EFR method used to calculate committed
+\item{efrMethod}{If comagyear != NULL: EFR method used to calculate committed
 agricultural use (e.g., Smakhtin:good, VMF:fair)}
+
+\item{fossilGW}{This argument is only relevant when comagyear != NULL
+as it determines the area that is set aside as it is already
+reserved by the committed agriculture iteration.
+If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{multicropping}{TRUE or FALSE (for committed agricultural area accounting)}
 
-\item{transDist}{if comagyear != NULL: Water transport distance allowed to fulfill locally
+\item{transDist}{If comagyear != NULL: Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability
 of committed agricultural uses}
 
 \item{scenarios}{Scenarios for object dimension consisting of "EFP.scenario".
 Default is c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
              "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")
-If scenarios change, they have to be adjusted in the default 
+If scenarios change, they have to be adjusted in the default
 setting of this function.}
 }
 \value{

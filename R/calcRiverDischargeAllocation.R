@@ -64,6 +64,10 @@
 #'                          "potential:exogenous": potentially multicropped areas given
 #'                                                 GAEZ suitability classification)
 #'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
+#' @param fossilGW      To determine full irrigation requirements based on the
+#'                      correct available area:
+#'                      If TRUE: non-renewable groundwater can be used.
+#'                      If FALSE: non-renewable groundwater cannot be used.
 #'
 #' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
@@ -81,7 +85,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                          selectyears, efrMethod,
                                          accessibilityrule, transDist,
                                          rankmethod, yieldcalib,
-                                         allocationrule,
+                                         allocationrule, fossilGW,
                                          gainthreshold, irrigationsystem, iniyear, landScen,
                                          cropmix, comAg, multicropping) {
   # Retrieve arguments
@@ -101,7 +105,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   inputData <- calcOutput("RiverRoutingInputs",
                           iteration = "potential_irrigation",
                           lpjml = lpjml, climatetype = climatetype,
-                          transDist = transDist, comAg = comAg,
+                          transDist = transDist, comAg = comAg, fossilGW = fossilGW,
                           selectyears = selectyears, iniyear = iniyear,
                           efrMethod = efrMethod, multicropping = multicropping,
                           accessibilityrule = accessibilityrule,
@@ -193,7 +197,8 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                        cellrankyear = selectyears,
                                        lpjml = lpjml, climatetype = climatetype, method = rankmethod,
                                        cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
-                                       comagyear = comagyear, irrigationsystem = irrigationsystem,
+                                       comagyear = comagyear, fossilGW = fossilGW,
+                                       irrigationsystem = irrigationsystem,
                                        landScen = landScen, efrMethod = efrMethod, transDist = transDist,
                                        multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
                                        aggregate = FALSE),
@@ -300,7 +305,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                       lpjml = lpjml, climatetype = climatetype,
                       efrMethod = efrMethod, multicropping = multicropping,
                       selectyears = selectyears, iniyear = iniyear,
-                      transDist = transDist, comAg = comAg,
+                      transDist = transDist, comAg = comAg, fossilGW = fossilGW,
                       accessibilityrule = accessibilityrule,
                       rankmethod = rankmethod, gainthreshold = gainthreshold,
                       cropmix = cropmix, yieldcalib = yieldcalib,
@@ -360,7 +365,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   # Check whether discharge inaccessibility constraint is violated
   if (any(round(dischargeMAG - inaccessibleDischarge - collapseNames(out[, , "currWWlocal"]),
                 digits = 6) < 0)) {
-    stop("In calcRiverDischargeAllocation: 
+    stop("In calcRiverDischargeAllocation:
           More than accessible water has been allocated locally.")
   }
 

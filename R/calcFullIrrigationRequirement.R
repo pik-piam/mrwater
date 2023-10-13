@@ -9,6 +9,9 @@
 #'                         if NULL: total potential land area is used;
 #'                         year specified here is the year of the initialization
 #'                         used for cropland area initialization in calcIrrigatedArea
+#' @param fossilGW         If comagyear != NULL: Define whether fossil groundwater is used.
+#'                         If TRUE: non-renewable groundwater can be used.
+#'                         If FALSE: non-renewable groundwater cannot be used.
 #' @param efrMethod        if comagyear != NULL: EFR method used to calculate committed
 #'                         agricultural use (e.g., Smakhtin:good, VMF:fair)
 #' @param transDist        if comagyear != NULL: Water transport distance allowed to fulfill locally
@@ -54,14 +57,14 @@
 
 calcFullIrrigationRequirement <- function(lpjml, climatetype,
                                           selectyears, iniyear, comagyear,
-                                          efrMethod, transDist,
+                                          efrMethod, transDist, fossilGW,
                                           irrigationsystem, landScen, cropmix,
                                           multicropping) {
 
   # cropland area per crop (in Mha)
   croparea <- calcOutput("CropAreaPotIrrig",
-                         selectyears = selectyears, comagyear = comagyear,
-                         iniyear = iniyear,
+                         selectyears = selectyears, iniyear = iniyear,
+                         comagyear = comagyear, fossilGW = fossilGW,
                          cropmix = cropmix, landScen = landScen,
                          lpjml = lpjml, climatetype = climatetype,
                          efrMethod = efrMethod,
@@ -123,7 +126,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
     stop("mrwater::calcFullIrrigationRequirements:
          produced NA full irrigation requirements")
   }
-  if (any(irrigWat < 0)) {
+  if (any(round(irrigWat, digits = 6) < 0)) {
     stop("mrwater::calcFullIrrigationRequirements:
          produced negative full irrigation requirements")
   }

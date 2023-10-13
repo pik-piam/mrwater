@@ -89,12 +89,12 @@ calcIrrigAreaPotential <- function(cropAggregation,
                                    multicropping, transDist) {
 
     # Check whether arguments are combined correctly.
-    if (comAg && cropmix != "hist_rainfed") {
+    if (comAg && cropmix != "hist_rainf") {
       warning("You activated the committed agricultural iteration
                (comAg = TRUE)
                to calculate the potentially irrigated areas.
                This setting usually has to be combined with 
-               cropmix = 'hist_rainfed'.
+               cropmix = 'hist_rainf'.
                Please double-check!")
     }
     if (!comAg && cropmix != "hist_total") {
@@ -176,7 +176,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
   if (any(round(avlWatWW, digits = 6) < 0) || any(round(avlWatWC, digits = 6) < 0)) {
     stop("In calcIrrigAreaPotential: available water for additional irrigation beyond
          committed agricultural use became negative. This should not be the case.
-         Please double check. A wild guess: this may be related to the non-renewabled
+         Please double check. A wild guess: this may be related to the non-renewable
          groundwater implementation.")
   }
   # Correct rounding imprecision
@@ -184,13 +184,14 @@ calcIrrigAreaPotential <- function(cropAggregation,
   avlWatWC[avlWatWC < 0] <- 0
 
   # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
-  # required for irrigation of additional irrigation (beyond committed agriculture)
+  # required for irrigation of additional irrigation (beyond committed agriculture (considering 
+  # non-renewable groundwater))
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
                          lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                          irrigationsystem = irrigationsystem, landScen = landScen,
                          cropmix = cropmix, multicropping = multicropping,
                          comagyear = comagyear, efrMethod = efrMethod,
-                         transDist = transDist,
+                         transDist = transDist, fossilGW = fossilGW,
                          aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getItems(avlWatWW, dim = 1),
                                      years = getItems(avlWatWW, dim = 2),
@@ -206,7 +207,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
                              selectyears = selectyears, iniyear = iniyear,
                              landScen = landScen, comagyear = comagyear,
                              lpjml = lpjml, climatetype = climatetype,
-                             efrMethod = efrMethod,
+                             efrMethod = efrMethod, fossilGW = fossilGW,
                              multicropping = multicropping, transDist = transDist,
                              aggregate = FALSE)
 
@@ -265,7 +266,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
       cropmix = ", as.character(cropmix), ", 
       comAg = ", as.character(comAg), ",
       fossilGW = ", as.character(fossilGW), ",
-      multicropping, ", as.character(multicropping), ", and 
+      multicropping = ", as.character(multicropping), ", and 
       transDist = ", as.character(transDist), ".
       Please look for the bug starting in calcIrrigAreaPotential")
     }
@@ -275,6 +276,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
   if (grepl("currIrrig", landScen) &&
         !(as.logical(stringr::str_split(multicropping, ":")[[1]][1])) &&
           fossilGW) {
+    warning("Please check calcIrrigAreaPotential. This should no longer be the case") # To Do: remove
     # In single cropping case, currently irrigated area can be over-fulfilled
     # when non-renewable groundwater use is activated because
     # groundwater is calculated based on actual multiple cropping patterns

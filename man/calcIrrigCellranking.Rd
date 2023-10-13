@@ -10,6 +10,7 @@ calcIrrigCellranking(
   cellrankyear,
   iniyear,
   comagyear,
+  fossilGW,
   irrigationsystem,
   landScen,
   method,
@@ -34,6 +35,10 @@ historical baseline "GSWP3-W5E5:historical" for yields}
 if NULL: total potential land area is used;
 year specified here is the year of the initialization
 used for cropland area initialization in calcIrrigatedArea}
+
+\item{fossilGW}{In this function, this argument is only relevant when comagyear !NULL
+If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}

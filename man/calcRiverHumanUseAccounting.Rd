@@ -14,6 +14,7 @@ calcRiverHumanUseAccounting(
   multicropping,
   transDist,
   comAg,
+  fossilGW,
   accessibilityrule,
   rankmethod,
   gainthreshold,
@@ -62,6 +63,11 @@ unfulfilled water demand by surrounding cell water availability}
          in initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential).
 Only relevant for iteration = potential}
+
+\item{fossilGW}{For case of iteration = potential_irrigation to determine full irrigation requirements based on the
+correct available area:
+If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
 
 \item{accessibilityrule}{(For case of iteration = "potential_irrigation" only:)
 Method used: Quantile method (Q) or Coefficient of Variation (CV)

@@ -98,7 +98,6 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
       ci <- collapseNames(calcOutput("MulticroppingIntensity",
                                      scenario = strsplit(areaMask, split = ":")[[1]][2],
                                      selectyears = selectyears,
-                                     lpjml = lpjml, climatetype = climatetype,
                                      aggregate = FALSE)[, , "irrigated"][, , crops])
       # Share of area that is multicropped
       shrMC <- (ci - 1)
@@ -156,6 +155,9 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
         coeff[, y, i] <- tmp
       }
     }
+
+    # leave negative in for fit;
+    # correct negative bwc in end (when for crop)
 
     # crop blue water consumption in off season
     bwc2nd   <- grassBWC2nd * coeff
