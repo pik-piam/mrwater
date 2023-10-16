@@ -176,7 +176,7 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
   if (any(is.na(out))) {
     stop("calcIrrigAreaActuallyCommitted produced NA irrigated areas")
   }
-  if (any(out < 0)) {
+  if (any(round(out, digits = 6) < 0)) {
     stop("calcIrrigAreaActuallyCommitted produced negative irrigated areas")
   }
 
