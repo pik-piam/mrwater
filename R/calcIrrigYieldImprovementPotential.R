@@ -171,8 +171,8 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
     }
   } else {
 
-    description <- "Yield improvement potential through irrigation
-                    for all different crop types"
+    description <- paste0("Yield improvement potential through irrigation ",
+                          "for all different crop types")
     u           <- "USD05 per hectare"
 
   }
