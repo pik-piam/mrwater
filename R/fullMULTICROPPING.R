@@ -11,7 +11,6 @@
 
 fullMULTICROPPING <- function() {
 
-
   # scenarios for paper: landScen <- "currCropland:NA", "currIrrig:NA"
 
   # Standard settings
@@ -304,8 +303,7 @@ fullMULTICROPPING <- function() {
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL, fossilGW = NULL,
-             efrMethod = efrMethod, transDist = 0,
+             comagyear = NULL,
              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
              cropmix = "hist_irrig", yieldcalib = yieldcalib,
              multicropping = FALSE, aggregate = FALSE,
@@ -315,8 +313,7 @@ fullMULTICROPPING <- function() {
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL, fossilGW = NULL,
-             efrMethod = efrMethod, transDist = 0,
+             comagyear = NULL,
              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
              cropmix = "hist_irrig", yieldcalib = yieldcalib,
              multicropping = TRUE, aggregate = FALSE,
@@ -382,7 +379,7 @@ fullMULTICROPPING <- function() {
       efrMethod = efrMethod,
       selectyears = selectyears, iniyear = iniyear,
       transDist = t, comAg = TRUE,
-      accessibilityrule = NULL, fossilGW = NULL,
+      accessibilityrule = NULL,
       rankmethod = NULL, gainthreshold = NULL,
       cropmix = NULL, yieldcalib = NULL,
       irrigationsystem = NULL, landScen = NULL,
@@ -396,7 +393,7 @@ fullMULTICROPPING <- function() {
       efrMethod = efrMethod,
       selectyears = selectyears, iniyear = iniyear,
       transDist = t, comAg = TRUE,
-      accessibilityrule = NULL, fossilGW = NULL,
+      accessibilityrule = NULL,
       rankmethod = NULL, gainthreshold = NULL,
       cropmix = NULL, yieldcalib = NULL,
       irrigationsystem = NULL, landScen = NULL,
@@ -410,7 +407,7 @@ fullMULTICROPPING <- function() {
       efrMethod = efrMethod,
       selectyears = selectyears, iniyear = iniyear,
       transDist = t, comAg = TRUE,
-      accessibilityrule = NULL, fossilGW = NULL,
+      accessibilityrule = NULL,
       rankmethod = NULL, gainthreshold = NULL,
       cropmix = NULL, yieldcalib = NULL,
       irrigationsystem = NULL, landScen = NULL,
@@ -526,7 +523,7 @@ fullMULTICROPPING <- function() {
 #   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
 #              lpjml = lpjml, climatetype = climatetype,
 #              selectyears = selectyears, iniyear = iniyear,
-#              comagyear = NULL,  fossilGW = NULL, efrMethod = efrMethod, transDist = transDist,
+#              comagyear = NULL,
 #              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
 #              cropmix = "hist_irrig", yieldcalib = yieldcalib,
 #              multicropping = FALSE, aggregate = FALSE,
@@ -536,7 +533,7 @@ fullMULTICROPPING <- function() {
 #   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
 #              lpjml = lpjml, climatetype = climatetype,
 #              selectyears = selectyears, iniyear = iniyear,
-#              comagyear = NULL,  fossilGW = NULL, efrMethod = efrMethod, transDist = transDist,
+#              comagyear = NULL,
 #              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
 #              cropmix = "hist_irrig", yieldcalib = yieldcalib,
 #              multicropping = TRUE, aggregate = FALSE,

@@ -64,10 +64,6 @@
 #'                          "potential:exogenous": potentially multicropped areas given
 #'                                                 GAEZ suitability classification)
 #'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
-#' @param fossilGW      To determine full irrigation requirements based on the
-#'                      correct available area:
-#'                      If TRUE: non-renewable groundwater can be used.
-#'                      If FALSE: non-renewable groundwater cannot be used.
 #'
 #' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
@@ -85,7 +81,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                          selectyears, efrMethod,
                                          accessibilityrule, transDist,
                                          rankmethod, yieldcalib,
-                                         allocationrule, fossilGW,
+                                         allocationrule,
                                          gainthreshold, irrigationsystem, iniyear, landScen,
                                          cropmix, comAg, multicropping) {
   # Retrieve arguments
@@ -105,7 +101,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   inputData <- calcOutput("RiverRoutingInputs",
                           iteration = "potential_irrigation",
                           lpjml = lpjml, climatetype = climatetype,
-                          transDist = transDist, comAg = comAg, fossilGW = fossilGW,
+                          transDist = transDist, comAg = comAg,
                           selectyears = selectyears, iniyear = iniyear,
                           efrMethod = efrMethod, multicropping = multicropping,
                           accessibilityrule = accessibilityrule,
@@ -153,7 +149,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                             names = dimnames)
   # Correct inaccessible discharge for available discharge after previous routings
   inaccessibleDischarge <- ifelse(dischargeMAG - inaccessibleDischarge > 0,
-                                    inaccessibleDischarge,
+                                  inaccessibleDischarge,
                                   dischargeMAG)
 
   # Inaccessible discharge is added to previously reserved withdrawal
@@ -165,7 +161,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   #######################################
   # Read in river structure
   rs0 <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
-                package = "mrwater"))
+                             package = "mrwater"))
   # Read in neighbor cells and transform to list
   neighborCells <- readSource("NeighborCells", convert = FALSE)
   neighborCells <- attr(neighborCells, "data")
@@ -197,9 +193,9 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                        cellrankyear = selectyears,
                                        lpjml = lpjml, climatetype = climatetype, method = rankmethod,
                                        cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
-                                       comagyear = comagyear, fossilGW = fossilGW,
+                                       comagyear = comagyear,
                                        irrigationsystem = irrigationsystem,
-                                       landScen = landScen, efrMethod = efrMethod, transDist = transDist,
+                                       landScen = landScen,
                                        multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
                                        aggregate = FALSE),
                             selectyears)
@@ -305,7 +301,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                       lpjml = lpjml, climatetype = climatetype,
                       efrMethod = efrMethod, multicropping = multicropping,
                       selectyears = selectyears, iniyear = iniyear,
-                      transDist = transDist, comAg = comAg, fossilGW = fossilGW,
+                      transDist = transDist, comAg = comAg,
                       accessibilityrule = accessibilityrule,
                       rankmethod = rankmethod, gainthreshold = gainthreshold,
                       cropmix = cropmix, yieldcalib = yieldcalib,

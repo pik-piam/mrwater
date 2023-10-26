@@ -14,7 +14,6 @@ calcRiverDischargeAllocation(
   rankmethod,
   yieldcalib,
   allocationrule,
-  fossilGW,
   gainthreshold,
   irrigationsystem,
   iniyear,
@@ -65,11 +64,6 @@ If FALSE: uncalibrated LPJmL yields are used}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 ("optimization" or "upstreamfirst")}
-
-\item{fossilGW}{To determine full irrigation requirements based on the
-correct available area:
-If TRUE: non-renewable groundwater can be used.
-If FALSE: non-renewable groundwater cannot be used.}
 
 \item{gainthreshold}{Threshold of yield improvement potential
 (in USD per hectare)}

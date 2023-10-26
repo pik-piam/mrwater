@@ -26,6 +26,11 @@
 #'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param transDist         Water transport distance allowed to fulfill locally
 #'                          unfulfilled water demand by surrounding cell water availability
+#' @param iteration         Default: "committed_agriculture",
+#'                          Special case: "committed_agriculture_fullPotential".
+#'                          Special case should only be used for calculation of
+#'                          full multicropping potential committed agricultural area
+#'                          for case of Current Irrigation.
 #'
 #' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
@@ -37,11 +42,24 @@
 #' \dontrun{
 #' calcOutput("WaterUseActuallyCommittedAg", aggregate = FALSE)
 #' }
-#'
-calcWaterUseActuallyCommittedAg <- function(lpjml, climatetype,
-                                    selectyears, iniyear,
-                                    multicropping, efrMethod,
-                                    fossilGW, transDist) {
+
+calcWaterUseActuallyCommittedAg <- function(iteration = "committed_agriculture",
+                                            lpjml, climatetype,
+                                            selectyears, iniyear,
+                                            multicropping, efrMethod,
+                                            fossilGW, transDist) {
+
+  # For currently committed agricultural uses, water requirements and areas
+  # should be based on current multiple cropping
+  if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
+    if (grepl(pattern = "fullPotential", x = iteration)) {
+      m <- multicropping
+    } else {
+      m <- "TRUE:actual:irrig_crop"
+    }
+  } else {
+    m <- FALSE
+  }
 
   # Irrigation water requirements per cell per crop given irrigation
   # system initialization (in m^3 per hectare per year)
@@ -49,13 +67,13 @@ calcWaterUseActuallyCommittedAg <- function(lpjml, climatetype,
                          irrigationsystem = "initialization",
                          selectyears = selectyears, iniyear = iniyear,
                          lpjml = lpjml, climatetype = climatetype,
-                         multicropping = multicropping, aggregate = FALSE)
+                         multicropping = m, aggregate = FALSE)
 
   # Read in cropland area (by crop) from crop area initialization (in mio. ha)
   grownCrops <- calcOutput("IrrigAreaActuallyCommitted", iteration = "committed_agriculture",
                            selectyears = selectyears, iniyear = iniyear,
                            lpjml = lpjml, climatetype = climatetype,
-                           efrMethod = efrMethod, multicropping = multicropping,
+                           efrMethod = efrMethod, multicropping = m,
                            transDist = transDist, fossilGW = fossilGW,
                            aggregate = FALSE)
 

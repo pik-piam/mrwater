@@ -72,18 +72,20 @@
 #' }
 
 calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
-                            accessibilityrule, rankmethod, yieldcalib, allocationrule,
-                            gainthreshold, irrigationsystem, iniyear,
-                            landScen, cropmix, comAg, fossilGW,
-                            multicropping, transDist) {
+                                  accessibilityrule, rankmethod, yieldcalib, allocationrule,
+                                  gainthreshold, irrigationsystem, iniyear,
+                                  landScen, cropmix, comAg, fossilGW,
+                                  multicropping, transDist) {
 
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
 
-  # Water potentially available for additional irrigation
-  # (accounting for previously committed agricultural uses:
-  #  if comAg: this water fraction is already reserved)
+  # Water potentially available for additional potential irrigation
+  # from renewable water sources (additionally to already reserved water
+  # for committed agricultural uses, i.e. 
+  # if comAg: this water fraction is already reserved)
+  # unit: mio. m^3
   watAvlAg  <- collapseNames(calcOutput("RiverDischargeAllocation",
                                         lpjml = lpjml, climatetype = climatetype,
                                         selectyears = selectyears, transDist = transDist,
@@ -92,11 +94,23 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                                         allocationrule = allocationrule,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
-                                        cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+                                        cropmix = cropmix, comAg = comAg,
                                         multicropping = multicropping, aggregate = FALSE))
   watAvlAgWW <- collapseNames(watAvlAg[, , "currWWtotal"])
   watAvlAgWC <- collapseNames(watAvlAg[, , "currWCtotal"])
 
+  # Object dimensionality
+  .transformObject <- function(x, gridcells, years, names) {
+    # empty magpie object structure
+    object0 <- new.magpie(cells_and_regions = gridcells,
+                          years = years,
+                          names = names,
+                          fill = 0,
+                          sets = c("x.y.iso", "year", "EFP.scen"))
+    # bring object x to dimension of object0
+    out <- object0 + x
+    return(out)
+  }
 
   watNonAgWW <- watNonAgWC <- watComAgWW <- watComAgWC <- new.magpie(cells_and_regions = getCells(watAvlAgWW),
                          years = getYears(watAvlAgWW),
@@ -104,13 +118,14 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                          fill = 0)
 
   # Water use for non-agricultural purposes
+  # unit: mio. m^3
   watNonAg <- calcOutput("RiverHumanUseAccounting",
                          iteration = "non_agriculture",
                          lpjml = lpjml, climatetype = climatetype,
                          transDist = transDist, comAg = NULL,
                          efrMethod = efrMethod, multicropping = multicropping,
                          selectyears = selectyears, iniyear = iniyear,
-                         accessibilityrule = NULL, fossilGW = NULL,
+                         accessibilityrule = NULL,
                          rankmethod = NULL, gainthreshold = NULL,
                          cropmix = NULL, yieldcalib = NULL,
                          irrigationsystem = NULL, landScen = NULL,
@@ -120,16 +135,51 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
 
   # Fossil groundwater use
   if (fossilGW) {
+
+    # fossil groundwater used in non-agricultural sector
     gw <- calcOutput("NonrenGroundwatUse", output = "nonAg",
                      multicropping = multicropping,
                      lpjml = lpjml, climatetype = climatetype,
                      selectyears = selectyears, iniyear = iniyear,
                      aggregate = FALSE)
-    watNonAgWW <- watNonAgWW + collapseNames(gw[, , "withdrawal"])
-    watNonAgWC <- watNonAgWC + collapseNames(gw[, , "consumption"])
+    gwWW <- .transformObject(x = collapseNames(gw[, , "withdrawal"]),
+                             gridcells = getItems(watAvlAgWW, dim = 1),
+                             years = getItems(watAvlAgWW, dim = 2),
+                             names = getItems(watAvlAgWW, dim = 3))
+    gwWC <- .transformObject(x = collapseNames(gw[, , "consumption"]),
+                             gridcells = getItems(watAvlAgWW, dim = 1),
+                             years = getItems(watAvlAgWW, dim = 2),
+                             names = getItems(watAvlAgWW, dim = 3))
+    # add fossil groundwater to renewable groundwater used in non-agricultural sector
+    watNonAgWW <- watNonAgWW + gwWW
+    watNonAgWC <- watNonAgWC + gwWC
+
+    # Fossil groundwater available in agricultural sector
+    # Note: if no areas are committed (previously reserved),
+    #       all of the fossil groundwater is available for 
+    #       additional irrigation (but capped at maximum area in calcIrrigAreaPotential)
+    gw <- calcOutput("NonrenGroundwatUse", output = "comAg",
+                     multicropping = multicropping,
+                     lpjml = lpjml, climatetype = climatetype,
+                     selectyears = selectyears, iniyear = iniyear,
+                     aggregate = FALSE)
+    gwWW <- .transformObject(x = collapseNames(gw[, , "withdrawal"]),
+                             gridcells = getItems(watAvlAgWW, dim = 1),
+                             years = getItems(watAvlAgWW, dim = 2),
+                             names = getItems(watAvlAgWW, dim = 3))
+    gwWC <- .transformObject(x = collapseNames(gw[, , "consumption"]),
+                             gridcells = getItems(watAvlAgWW, dim = 1),
+                             years = getItems(watAvlAgWW, dim = 2),
+                             names = getItems(watAvlAgWW, dim = 3))
+
+  } else {
+    gwWW <- gwWC <- .transformObject(x = 0,
+                             gridcells = getItems(watAvlAgWW, dim = 1),
+                             years = getItems(watAvlAgWW, dim = 2),
+                             names = getItems(watAvlAgWW, dim = 3))
   }
 
-  if (comAg == TRUE) {
+  if (comAg) {
 
     # (Renewable) water already committed to irrigation in algorithm
     currHuman <- calcOutput("RiverHumanUseAccounting",
@@ -138,22 +188,11 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
                              transDist = transDist, comAg = NULL,
                              efrMethod = efrMethod, multicropping = multicropping,
                              selectyears = selectyears, iniyear = iniyear,
-                             accessibilityrule = NULL, fossilGW = NULL,
+                             accessibilityrule = NULL,
                              rankmethod = NULL, gainthreshold = NULL,
                              cropmix = NULL, yieldcalib = NULL,
                              irrigationsystem = NULL, landScen = NULL,
                              aggregate = FALSE)
-
-    # Fossil groundwater use
-    if (fossilGW) {
-      gw <- calcOutput("NonrenGroundwatUse", output = "comAg",
-                       multicropping = multicropping,
-                       lpjml = lpjml, climatetype = climatetype,
-                       selectyears = selectyears, iniyear = iniyear,
-                       aggregate = FALSE)
-      currHuman[, , "currHumanWWtotal"] <- currHuman[, , "currHumanWWtotal"] + collapseNames(gw[, , "withdrawal"])
-      currHuman[, , "currHumanWCtotal"] <- currHuman[, , "currHumanWCtotal"] + collapseNames(gw[, , "consumption"])
-    }
 
   } else {
 
@@ -166,9 +205,14 @@ calcWaterUsePotential <- function(lpjml, selectyears, climatetype, efrMethod,
   watComAgWW <- collapseNames(currHuman[, , "currHumanWWtotal"])
   watComAgWC <- collapseNames(currHuman[, , "currHumanWCtotal"])
 
-  # Function outputs
-  watAgWW <- watAvlAgWW + watComAgWW
-  watAgWC <- watAvlAgWC + watComAgWC
+  #### Function outputs ### 
+  # Agricultural includes additional potential from renewable resources,
+  # committed from renewable resources
+  # and fossil groundwater
+  watAgWW <- watAvlAgWW + watComAgWW + gwWW
+  watAgWC <- watAvlAgWC + watComAgWC + gwWC
+  # Total includes non-agricultural and agricultural
+  # from both renewable (and fossil groundwater, if activated)
   watTotWW <- watNonAgWW + watAgWW
   watTotWC <- watNonAgWC + watAgWC
 

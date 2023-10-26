@@ -10,9 +10,6 @@ calcFullIrrigationRequirement(
   selectyears,
   iniyear,
   comagyear,
-  efrMethod,
-  transDist,
-  fossilGW,
   irrigationsystem,
   landScen,
   cropmix,
@@ -32,17 +29,6 @@ calcFullIrrigationRequirement(
 if NULL: total potential land area is used;
 year specified here is the year of the initialization
 used for cropland area initialization in calcIrrigatedArea}
-
-\item{efrMethod}{if comagyear != NULL: EFR method used to calculate committed
-agricultural use (e.g., Smakhtin:good, VMF:fair)}
-
-\item{transDist}{if comagyear != NULL: Water transport distance allowed to fulfill locally
-unfulfilled water demand by surrounding cell water availability
-of committed agricultural uses}
-
-\item{fossilGW}{If comagyear != NULL: Define whether fossil groundwater is used.
-If TRUE: non-renewable groundwater can be used.
-If FALSE: non-renewable groundwater cannot be used.}
 
 \item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}

@@ -20,14 +20,6 @@
 #'                      if NULL: total potential land area is used;
 #'                      year specified here is the year of the initialization
 #'                      used for cropland area initialization in calcIrrigatedArea
-#' @param fossilGW      In this function, this argument is only relevant when comagyear !NULL
-#'                      If TRUE: non-renewable groundwater can be used.
-#'                      If FALSE: non-renewable groundwater cannot be used.
-#' @param efrMethod     if comagyear != NULL: EFR method used to calculate committed
-#'                      agricultural use (e.g., Smakhtin:good, VMF:fair)
-#' @param transDist     if comagyear != NULL: Water transport distance allowed to fulfill locally
-#'                      unfulfilled water demand by surrounding cell water availability
-#'                      of committed agricultural uses
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:
 #'                      "hist_irrig" for historical cropmix on currently irrigated area,
@@ -62,8 +54,7 @@
 
 calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
                                                iniyear, selectyears,
-                                               comagyear, fossilGW,
-                                               efrMethod, transDist,
+                                               comagyear,
                                                cropmix, landScen, irrigationsystem,
                                                yieldcalib, multicropping) {
 
@@ -90,18 +81,21 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
   # also: under N-stress, irrigation may lead to lower yields,
   # (the latter is only relevant for limited-N-LPJmL version, default: unlimited N))
 
-  # share of crop area by crop type (same for all years)
-  cropareaShr <- setYears(calcOutput("CropAreaShare",
-                                     iniyear = iniyear, cropmix = cropmix,
-                                     aggregate = FALSE),
-                          NULL)
-
   # Selected crops
   if (!is.null(cropmix)) {
 
     # description of output
     description <- "Yield improvement potential through irrigation
                     given cropmix croparea share"
+
+    # share of crop area by crop type (same for all years)
+    cropareaShr <- setYears(calcOutput("CropAreaShare",
+                                       iniyear = iniyear, cropmix = cropmix,
+                                       aggregate = FALSE),
+                            NULL)
+    # extract crops and sort objects
+    croplist  <- getItems(cropareaShr, dim = "crop")
+    yieldGain <- yieldGain[, , croplist]
 
     # Unit of irrigation yield gain to be returned
     if (unit == "USD_ha") {
@@ -119,16 +113,11 @@ calcIrrigYieldImprovementPotential <- function(lpjml, climatetype, unit,
 
       # croparea per crop given chosen land scenario (in Mha)
       # (excluding already committed agricultural areas if comagyear != NULL)
-      # Note: one scenario selected for obtaining one cell ranking
-      #       (only makes a difference if committed agricultural uses is activated)
-      croparea <- collapseNames(calcOutput("CropAreaPotIrrig",
-                                          selectyears = selectyears, iniyear = iniyear,
-                                          comagyear = comagyear, fossilGW = fossilGW,
-                                          cropmix = cropmix, landScen = landScen,
-                                          lpjml = lpjml, climatetype = climatetype,
-                                          efrMethod = efrMethod,
-                                          multicropping = multicropping, transDist = transDist,
-                                          aggregate = FALSE)[, , "off.ISIMIP"])
+      croparea <- calcOutput("CropAreaPotIrrig",
+                              selectyears = selectyears, iniyear = iniyear,
+                              comagyear = comagyear,
+                              cropmix = cropmix, landScen = landScen,
+                              aggregate = FALSE)
 
       # absolute irrigation yield gain on available area
       yieldGain <- dimSums(yieldGain * croparea, dim = "crop")

@@ -9,9 +9,6 @@
 #' @param iteration         Water use to be allocated in this river routing iteration
 #'                          (non_agriculture, committed_agriculture, potential_irrigation,
 #'                          special case (for current irrigated area analysis): "committed_agriculture_fullPotential").
-#' @param fossilGW          For case of potential_irrigation:
-#'                          If TRUE: non-renewable groundwater can be used.
-#'                          If FALSE: non-renewable groundwater cannot be used.
 #' @param climatetype       Switch between different climate scenarios
 #'                          or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear           Initialization year of irrigation system
@@ -89,7 +86,7 @@
 
 calcRiverRoutingInputs <- function(lpjml, climatetype,
                                    selectyears, iniyear,
-                                   iteration, fossilGW,
+                                   iteration,
                                    transDist, efrMethod, accessibilityrule,
                                    multicropping, comAg, rankmethod, gainthreshold,
                                    cropmix, yieldcalib, irrigationsystem, landScen) {
@@ -158,7 +155,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                     lpjml = lpjml, climatetype = climatetype,
                                     efrMethod = efrMethod, multicropping = multicropping,
                                     selectyears = selectyears, iniyear = iniyear,
-                                    transDist = transDist, comAg = NULL, fossilGW = NULL,
+                                    transDist = transDist, comAg = NULL,
                                     accessibilityrule = accessibilityrule,
                                     rankmethod = NULL, gainthreshold = NULL,
                                     cropmix = NULL, yieldcalib = NULL,
@@ -189,11 +186,11 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                             multicropping = m, aggregate = FALSE)
     # Committed Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
     currRequestWWlocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "withdrawal"],
-                                                                 dim = "crop")),
+                                                                     dim = "crop")),
                                           cells = cells, years = selectyears, scenarios = scenarios)
     # Committed Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
     currRequestWClocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "consumption"],
-                                                                 dim = "crop")),
+                                                                     dim = "crop")),
                                           cells = cells, years = selectyears, scenarios = scenarios)
 
     ## Discharge from previous routing
@@ -220,8 +217,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
     irrigGain <- calcOutput("IrrigYieldImprovementPotential",
                             selectyears = selectyears, iniyear = iniyear,
-                            comagyear = comagyear, fossilGW = fossilGW,
-                            transDist = transDist, efrMethod = efrMethod,
+                            comagyear = comagyear,
                             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                             unit = thresholdtype, yieldcalib = yieldcalib,
                             irrigationsystem = irrigationsystem, landScen = landScen,
@@ -234,7 +230,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
     ## Previous Uses
     prevRouting <- calcOutput("RiverHumanUseAccounting",
-                              iteration = humanuse, fossilGW = fossilGW,
+                              iteration = humanuse,
                               lpjml = lpjml, climatetype = climatetype,
                               efrMethod = efrMethod, multicropping = multicropping,
                               selectyears = selectyears, iniyear = iniyear,
@@ -252,14 +248,15 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
     ## Current Uses
     # Required water for full irrigation per cell (in mio. m^3)
-    reqWatFullirrig <- calcOutput("FullIrrigationRequirement",
+    reqWatFullirrig <- calcOutput("FullIrrigationRequirement",                     #### Check: does dimensionality have to be transformed here?
                                   selectyears = selectyears, iniyear = iniyear,
-                                  comagyear = comagyear, fossilGW = fossilGW,
-                                  efrMethod = efrMethod, transDist = transDist,
+                                  comagyear = comagyear,
                                   lpjml = lpjml, climatetype = climatetype,
                                   irrigationsystem = irrigationsystem, landScen = landScen,
                                   cropmix = cropmix, multicropping = multicropping,
                                   aggregate = FALSE)
+    reqWatFullirrig <- .transformObject(x = reqWatFullirrig,
+                                        cells = cells, years = selectyears, scenarios = scenarios)
     currRequestWWlocal <- pmax(collapseNames(reqWatFullirrig[, , "withdrawal"]), 0)
     currRequestWClocal <- pmax(collapseNames(reqWatFullirrig[, , "consumption"]), 0)
     # Only request water where gain from irrigation exceeds chosen threshold

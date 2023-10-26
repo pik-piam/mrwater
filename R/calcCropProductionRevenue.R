@@ -141,30 +141,26 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
       cropmix <- cmix <- "hist_irrig"
     }
     # all of available croparea (in Mha)
-    cropareaTotal <- collapseNames(calcOutput("CropAreaPotIrrig",
-                                              cropmix = cmix,
-                                              landScen = landScen,
-                                              selectyears = selectyears, iniyear = iniyear,
-                                              comagyear = NULL, fossilGW = NULL,
-                                              lpjml = NULL, climatetype = NULL,
-                                              efrMethod = NULL,
-                                              multicropping = as.logical(stringr::str_split(m2, ":")[[1]][1]),
-                                              transDist = NULL,
-                                              aggregate = FALSE)[, , scenario])
+    cropareaTotal <- calcOutput("CropAreaPotIrrig",
+                                cropmix = cmix,
+                                landScen = landScen,
+                                selectyears = selectyears, iniyear = iniyear,
+                                comagyear = NULL,
+                                aggregate = FALSE)
 
     # Crop-specific (potentially) irrigated areas (in Mha)
     # depending on chosen land, management, and water limitation scenario
     cropareaIrrig <- collapseNames(calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
-                                cropmix = cropmix, landScen = landScen,
-                                transDist = transDist, fossilGW = fossilGW,
-                                multicropping = m2,
-                                lpjml = lpjml, climatetype = climatetype,
-                                selectyears = selectyears, iniyear = iniyear,
-                                efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                                rankmethod = rankmethod, yieldcalib = yieldcalib,
-                                allocationrule = allocationrule, gainthreshold = gainthreshold,
-                                irrigationsystem = irrigationsystem,
-                                comAg = comAg, aggregate = FALSE)[, , scenario])
+                                              cropmix = cropmix, landScen = landScen,
+                                              transDist = transDist, fossilGW = fossilGW,
+                                              multicropping = m2,
+                                              lpjml = lpjml, climatetype = climatetype,
+                                              selectyears = selectyears, iniyear = iniyear,
+                                              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                                              rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                              allocationrule = allocationrule, gainthreshold = gainthreshold,
+                                              irrigationsystem = irrigationsystem,
+                                              comAg = comAg, aggregate = FALSE)[, , scenario])
   }
 
   ### Yields ###

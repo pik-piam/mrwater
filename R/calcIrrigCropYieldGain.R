@@ -70,7 +70,7 @@ calcIrrigCropYieldGain <- function(lpjml, climatetype, priceAgg,
   return(list(x            = yieldGain,
               weight       = NULL,
               unit         = "USD per hectare",
-              description  = "Yield gain potential through irrigation
-                              per crop type",
+              description  = paste0("Yield gain potential through irrigation ",
+                                    "per crop type"),
               isocountries = FALSE))
 }

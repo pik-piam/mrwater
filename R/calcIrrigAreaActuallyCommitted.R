@@ -79,35 +79,35 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
 
   # Water already committed to irrigation (in mio. m^3)
   comWater <- calcOutput("RiverHumanUseAccounting",
-                          iteration = iteration, fossilGW = NULL,
-                          lpjml = lpjml, climatetype = climatetype,
-                          transDist = transDist, comAg = NULL,
-                          efrMethod = efrMethod, multicropping = m,
-                          selectyears = selectyears, iniyear = iniyear,
-                          accessibilityrule = NULL,
-                          rankmethod = NULL, gainthreshold = NULL,
-                          cropmix = NULL, yieldcalib = NULL,
-                          irrigationsystem = NULL, landScen = NULL,
-                          aggregate = FALSE)
-  comWatWW <- collapseNames(comWater[, , "currHumanWWtotal"])
-  comWatWC <- collapseNames(comWater[, , "currHumanWCtotal"])
+                         iteration = iteration,
+                         lpjml = lpjml, climatetype = climatetype,
+                         transDist = transDist, comAg = NULL,
+                         efrMethod = efrMethod, multicropping = m,
+                         selectyears = selectyears, iniyear = iniyear,
+                         accessibilityrule = NULL,
+                         rankmethod = NULL, gainthreshold = NULL,
+                         cropmix = NULL, yieldcalib = NULL,
+                         irrigationsystem = NULL, landScen = NULL,
+                         aggregate = FALSE)
+  comWatWWact <- collapseNames(comWater[, , "currHumanWWtotal"])
+  comWatWCact <- collapseNames(comWater[, , "currHumanWCtotal"])
 
   ####################
   ### Calculations ###
   ####################
   # Total irrigation requirements per cell (in mio. m^3)
   totalIrrigReqWW <- collapseNames(dimSums(cropIrrigReq[, , "withdrawal"] * comArea,
-                                  dim = "crop"))
+                                           dim = "crop"))
   totalIrrigReqWC <- collapseNames(dimSums(cropIrrigReq[, , "consumption"] * comArea,
-                                  dim = "crop"))
+                                           dim = "crop"))
 
   # Share of Area that is irrigated given limited renewable water availability
   # Note: Areas that are reported to be irrigated
   wwShr <- ifelse(totalIrrigReqWW > 0,
-                    comWatWW / totalIrrigReqWW,
+                  comWatWWact / totalIrrigReqWW,
                   1)
   wcShr <- ifelse(totalIrrigReqWC > 0,
-                    comWatWC / totalIrrigReqWC,
+                  comWatWCact / totalIrrigReqWC,
                   1)
 
   ### Checks ###
@@ -128,35 +128,49 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
 
   # Fossil groundwater use to fulfill committed agricultural water use
   if (fossilGW) {
-    gw <- calcOutput("NonrenGroundwatUse",
+
+    # Missing water for committed agriculture for all scenarios and future years
+    gw <- missW <- calcOutput("MissingWater",
+                              output = "comAg",
+                              lpjml = lpjml, climatetype = climatetype,
+                              multicropping = m, transDistGW = transDist, 
+                              selectyears = selectyears, iniyear = iniyear,
+                              aggregate = FALSE)
+    # object of correct dimensionality
+    gw[, , ] <- NA
+    # Fossil groundwater pool available for irrigation (based on iniyear and EFP off)
+    gw0 <- calcOutput("NonrenGroundwatUse",
                       output = "comAg", multicropping = m,
                       lpjml = lpjml, climatetype = climatetype,
                       selectyears = selectyears, iniyear = iniyear,
                       aggregate = FALSE)
-    comWatWW <- comWatWW + collapseNames(gw[, , "withdrawal"])
-    comWatWC <- comWatWC + collapseNames(gw[, , "consumption"])
+    gw[, , "withdrawal"]  <- gw0[, , "withdrawal"]
+    gw[, , "consumption"] <- gw0[, , "consumption"]
+    rm(gw0)
+
+    # Only up to pool of fossil groundwater can be used to serve missing water.
+    # Where less water required, only necessary amount is served. 
+    gw <- pmin(gw, missW)
+
+    # add groundwater to actually committed water
+    comWatWWact <- comWatWWact + collapseNames(gw[, , "withdrawal"])
+    comWatWCact <- comWatWCact + collapseNames(gw[, , "consumption"])
 
     # Share of Area that is irrigated given limited water availability
     # under consideration of fossil GW
     wwShr <- collapseNames(ifelse(totalIrrigReqWW > 0,
-                                    comWatWW / totalIrrigReqWW,
+                                  comWatWWact / totalIrrigReqWW,
                                   1))
     wcShr <- collapseNames(ifelse(totalIrrigReqWC > 0,
-                                    comWatWC / totalIrrigReqWC,
+                                  comWatWCact / totalIrrigReqWC,
                                   1))
 
-    # In future time steps (after initialization year) [because of depreciation of irrigated areas]
-    # and under an environmental flow policy scenario,
-    # and in the single-cropping scenario [because default is current multiple cropping],
-    # and for lower chosen transport distance than for determination of non-renewable groundwater,
-    # the irrigated area may be over-fulfilled by non-renewable groundwater.
-    # These values are capped to 1:
-    wcShr[wcShr > 1] <- 1
-    wwShr[wwShr > 1] <- 1
-
-    ### This could introduce a mismatch between wcShr and wwShr... where wcShr > 1 -> wwShr also needs to be > 1, right?
-
-    if (any(round(wwShr[, iniyear, "off"] - wcShr[, iniyear, "off"], digits = 4) != 0)) {
+    # Checks
+    if (any(round(max(wcShr), digits = 6) > 1)) {
+      stop("The actually irrigated area is over-fulfilled. This should not be the case.
+           It may be related to the fossilGW argument. Please check mrwater::calcIrrigAreaActuallyCommitted.")
+    }
+    if (any(round(wwShr - wcShr, digits = 4) != 0)) {
       stop("There seems to be a mismatch in consumption and withdrawal
           in calcIrrigAreaActuallyCommitted.
           Please make sure that the fulfilled ratio is the same
@@ -164,15 +178,10 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
     }
 
     # Area Actually Committed for Irrigation given available water (in Mha)
-    out[, , "off"] <- comArea * wcShr[, , "off"]
-    # Note: In an environmental flow scenario, non-renewable groundwater cannot be used
-
-    #### @JENS: Or should it be added to both EFR.on and off?
-    # --> Yes; for both "on" and "off" should be included
-
+    out <- comArea * wcShr
   }
 
-  # check for NAs and negative values
+  # Check for NAs and negative values
   if (any(is.na(out))) {
     stop("calcIrrigAreaActuallyCommitted produced NA irrigated areas")
   }

@@ -56,22 +56,16 @@ calcIrrigatableAreaUnlimited <- function(selectyears, iniyear, landScen, lpjml,
 
   # Area that can potentially be irrigated (including total potentially
   # irrigatable area; defined by comagyear=NULL)
-  # Note: selected one scenario because it only differs for committed agricultural run
-  #       (which is not activated here)
-  potArea <- collapseNames(calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
-                                      landScen = landScen, comagyear = NULL,
-                                      lpjml = NULL, climatetype = NULL,
-                                      efrMethod = NULL, fossilGW = NULL,
-                                      multicropping = NULL, transDist = NULL,
-                                      aggregate = FALSE)[, , "off.ISIMIP"])
+  potArea <- calcOutput("AreaPotIrrig", selectyears = selectyears, iniyear = iniyear,
+                        landScen = landScen, comagyear = NULL,
+                        aggregate = FALSE)
 
   # Yield gain potential through irrigation of proxy crops (in USD per ha)
   potGain <- calcOutput("IrrigYieldImprovementPotential",
                         unit = paste("USD_ha", unlist(strsplit(unit, split = ":"))[2], sep = ":"),
                         selectyears = selectyears, iniyear = iniyear,
                         lpjml = lpjml, climatetype = climatetype,
-                        comagyear = NULL, efrMethod = NULL,
-                        transDist = NULL, fossilGW = NULL,
+                        comagyear = NULL,
                         irrigationsystem = irrigationsystem,
                         landScen = landScen, cropmix = cropmix,
                         yieldcalib = yieldcalib,

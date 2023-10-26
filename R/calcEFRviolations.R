@@ -103,7 +103,7 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod, transD
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
                                         cropmix = cropmix, comAg = comAg,
-                                        multicropping = multicropping, fossilGW = FALSE,
+                                        multicropping = multicropping,
                                         aggregate = FALSE)[, , "discharge"][, , scenario])
 
   envFlow   <- collapseNames(calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
