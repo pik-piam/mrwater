@@ -11,7 +11,6 @@
 
 fullMULTICROPPING <- function() {
 
-
   # scenarios for paper: landScen <- "currCropland:NA", "currIrrig:NA"
 
   # Standard settings
@@ -88,20 +87,20 @@ fullMULTICROPPING <- function() {
 
   # croparea in Mha
   calcOutput("CropareaAdjusted", iniyear = iniyear,
-             dataset = "Toolbox", sectoral = "kcr",
-             aggregate = FALSE, file = "cropareaToolbox.mz")
+             dataset = "LandInG", sectoral = "kcr",
+             aggregate = FALSE, file = "cropareaLandInG.mz")
   calcOutput("CropareaAdjusted", iniyear = iniyear,
-             dataset = "Toolbox", sectoral = "lpj",
-             aggregate = FALSE, file = "cropareaToolbox_lpj.mz")
+             dataset = "LandInG", sectoral = "lpj",
+             aggregate = FALSE, file = "cropareaLandInG_lpj.mz")
 
-  calcOutput("CropareaToolbox", physical = TRUE, sectoral = "kcr",
+  calcOutput("CropareaLandInG", physical = TRUE, sectoral = "kcr",
              cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
-             file = "ToolboxPHYS.mz")
-  calcOutput("CropareaToolbox", physical = FALSE, sectoral = "kcr",
+             file = "LandingPHYS.mz")
+  calcOutput("CropareaLandInG", physical = FALSE, sectoral = "kcr",
              cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
-             file = "ToolboxHARV.mz")
+             file = "LandingHARV.mz")
 
   # fallow land (in Mha)
   calcOutput("FallowLand", years = selectyears, aggregate = FALSE,
@@ -111,11 +110,11 @@ fullMULTICROPPING <- function() {
   # WATER REQUIREMENTS #
   ######################
   calcOutput("ActualIrrigWatRequirements",
-              irrigationsystem = irrigationsystem,
-              selectyears = selectyears, iniyear = iniyear,
-              lpjml = lpjml, climatetype = climatetype,
-              multicropping = FALSE, aggregate = FALSE,
-              file = "watReq_single.mz")
+             irrigationsystem = irrigationsystem,
+             selectyears = selectyears, iniyear = iniyear,
+             lpjml = lpjml, climatetype = climatetype,
+             multicropping = FALSE, aggregate = FALSE,
+             file = "watReq_single.mz")
   calcOutput("ActualIrrigWatRequirements",
              irrigationsystem = irrigationsystem,
              selectyears = selectyears, iniyear = iniyear,
@@ -128,9 +127,9 @@ fullMULTICROPPING <- function() {
   ####################
   # current multiple cropping intensity
   calcOutput("MulticroppingIntensity",
-              scenario = "irrig_crop",
-              selectyears = selectyears, sectoral = "kcr",
-              file = "croppingIntensity.mz", aggregate = FALSE)
+             scenario = "irrig_crop",
+             selectyears = selectyears, sectoral = "kcr",
+             file = "croppingIntensity.mz", aggregate = FALSE)
   # potential multiple cropping suitability
   calcOutput("MulticroppingSuitability", selectyears = selectyears,
              lpjml = lpjml, climatetype = climatetype,
@@ -304,8 +303,7 @@ fullMULTICROPPING <- function() {
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL, fossilGW = NULL,
-             efrMethod = efrMethod, transDist = 0,
+             comagyear = NULL,
              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
              cropmix = "hist_irrig", yieldcalib = yieldcalib,
              multicropping = FALSE, aggregate = FALSE,
@@ -315,8 +313,7 @@ fullMULTICROPPING <- function() {
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL, fossilGW = NULL,
-             efrMethod = efrMethod, transDist = 0,
+             comagyear = NULL,
              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
              cropmix = "hist_irrig", yieldcalib = yieldcalib,
              multicropping = TRUE, aggregate = FALSE,
@@ -324,118 +321,118 @@ fullMULTICROPPING <- function() {
 
   # Agricultural Water Consumption (NOLIM) [in mio. m^3 per year]
   calcOutput("WaterUseCommittedAg",
-    lpjml = lpjml, climatetype = climatetype,
-    selectyears = selectyears, iniyear = iniyear,
-    multicropping = FALSE, aggregate = FALSE,
-    file = "comAgWat_single_NOLIM.mz"
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             multicropping = FALSE, aggregate = FALSE,
+             file = "comAgWat_single_NOLIM.mz"
   )
   calcOutput("WaterUseCommittedAg",
-    lpjml = lpjml, climatetype = climatetype,
-    selectyears = selectyears, iniyear = iniyear,
-    multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
-    file = "comAgWat_multipleACT_NOLIM.mz"
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
+             file = "comAgWat_multipleACT_NOLIM.mz"
   )
   calcOutput("WaterUseCommittedAg",
-    lpjml = lpjml, climatetype = climatetype,
-    selectyears = selectyears, iniyear = iniyear,
-    multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
-    file = "comAgWat_multiplePOT_NOLIM.mz"
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
+             file = "comAgWat_multiplePOT_NOLIM.mz"
   )
 
   for (t in c(0, 100, 200)) {
     # Committed agricultural area
     calcOutput("IrrigAreaActuallyCommitted",
-      fossilGW = FALSE,
-      lpjml = lpjml, climatetype = climatetype,
-      selectyears = selectyears, iniyear = iniyear,
-      efrMethod = efrMethod, transDist = t,
-      multicropping = FALSE, aggregate = FALSE,
-      file = paste0("comAgAreaACT_single_", t, ".mz")
+               fossilGW = FALSE,
+               lpjml = lpjml, climatetype = climatetype,
+               selectyears = selectyears, iniyear = iniyear,
+               efrMethod = efrMethod, transDist = t,
+               multicropping = FALSE, aggregate = FALSE,
+               file = paste0("comAgAreaACT_single_", t, ".mz")
     )
 
     calcOutput("IrrigAreaActuallyCommitted",
-      fossilGW = FALSE,
-      lpjml = lpjml, climatetype = climatetype,
-      selectyears = selectyears, iniyear = iniyear,
-      efrMethod = efrMethod, transDist = t,
-      multicropping = "TRUE:actual:irrig_crop",
-      aggregate = FALSE,
-      file = paste0("comAgAreaACT_multipleACT_", t, ".mz")
+               fossilGW = FALSE,
+               lpjml = lpjml, climatetype = climatetype,
+               selectyears = selectyears, iniyear = iniyear,
+               efrMethod = efrMethod, transDist = t,
+               multicropping = "TRUE:actual:irrig_crop",
+               aggregate = FALSE,
+               file = paste0("comAgAreaACT_multipleACT_", t, ".mz")
     )
 
     calcOutput("IrrigAreaActuallyCommitted",
-      fossilGW = FALSE,
-      lpjml = lpjml, climatetype = climatetype,
-      selectyears = selectyears, iniyear = iniyear,
-      efrMethod = efrMethod, transDist = t,
-      multicropping = "TRUE:potential:endogenous",
-      iteration = "committed_agriculture_fullPotential",
-      aggregate = FALSE,
-      file = paste0("comAgAreaACT_multiplePOT_", t, ".mz")
+               fossilGW = FALSE,
+               lpjml = lpjml, climatetype = climatetype,
+               selectyears = selectyears, iniyear = iniyear,
+               efrMethod = efrMethod, transDist = t,
+               multicropping = "TRUE:potential:endogenous",
+               iteration = "committed_agriculture_fullPotential",
+               aggregate = FALSE,
+               file = paste0("comAgAreaACT_multiplePOT_", t, ".mz")
     )
 
 
     # Committed Agricultural water uses
     calcOutput("RiverHumanUseAccounting",
-      iteration = "committed_agriculture",
-      lpjml = lpjml, climatetype = climatetype,
-      efrMethod = efrMethod,
-      selectyears = selectyears, iniyear = iniyear,
-      transDist = t, comAg = TRUE,
-      accessibilityrule = NULL, fossilGW = NULL,
-      rankmethod = NULL, gainthreshold = NULL,
-      cropmix = NULL, yieldcalib = NULL,
-      irrigationsystem = NULL, landScen = NULL,
-      multicropping = FALSE,
-      aggregate = FALSE,
-      file = paste0("comAgWatACT_single_", t, ".mz")
+               iteration = "committed_agriculture",
+               lpjml = lpjml, climatetype = climatetype,
+               efrMethod = efrMethod,
+               selectyears = selectyears, iniyear = iniyear,
+               transDist = t, comAg = TRUE,
+               accessibilityrule = NULL,
+               rankmethod = NULL, gainthreshold = NULL,
+               cropmix = NULL, yieldcalib = NULL,
+               irrigationsystem = NULL, landScen = NULL,
+               multicropping = FALSE,
+               aggregate = FALSE,
+               file = paste0("comAgWatACT_single_", t, ".mz")
     )
     calcOutput("RiverHumanUseAccounting",
-      iteration = "committed_agriculture",
-      lpjml = lpjml, climatetype = climatetype,
-      efrMethod = efrMethod,
-      selectyears = selectyears, iniyear = iniyear,
-      transDist = t, comAg = TRUE,
-      accessibilityrule = NULL, fossilGW = NULL,
-      rankmethod = NULL, gainthreshold = NULL,
-      cropmix = NULL, yieldcalib = NULL,
-      irrigationsystem = NULL, landScen = NULL,
-      multicropping = "TRUE:actual:irrig_crop",
-      aggregate = FALSE,
-      file = paste0("comAgWatACT_multipleACT_", t, ".mz")
+               iteration = "committed_agriculture",
+               lpjml = lpjml, climatetype = climatetype,
+               efrMethod = efrMethod,
+               selectyears = selectyears, iniyear = iniyear,
+               transDist = t, comAg = TRUE,
+               accessibilityrule = NULL,
+               rankmethod = NULL, gainthreshold = NULL,
+               cropmix = NULL, yieldcalib = NULL,
+               irrigationsystem = NULL, landScen = NULL,
+               multicropping = "TRUE:actual:irrig_crop",
+               aggregate = FALSE,
+               file = paste0("comAgWatACT_multipleACT_", t, ".mz")
     )
     calcOutput("RiverHumanUseAccounting",
-      iteration = "committed_agriculture_fullPotential",
-      lpjml = lpjml, climatetype = climatetype,
-      efrMethod = efrMethod,
-      selectyears = selectyears, iniyear = iniyear,
-      transDist = t, comAg = TRUE,
-      accessibilityrule = NULL, fossilGW = NULL,
-      rankmethod = NULL, gainthreshold = NULL,
-      cropmix = NULL, yieldcalib = NULL,
-      irrigationsystem = NULL, landScen = NULL,
-      multicropping = "TRUE:potential:endogenous",
-      aggregate = FALSE,
-      file = paste0("comAgWatACT_multiplePOT_", t, ".mz")
+               iteration = "committed_agriculture_fullPotential",
+               lpjml = lpjml, climatetype = climatetype,
+               efrMethod = efrMethod,
+               selectyears = selectyears, iniyear = iniyear,
+               transDist = t, comAg = TRUE,
+               accessibilityrule = NULL,
+               rankmethod = NULL, gainthreshold = NULL,
+               cropmix = NULL, yieldcalib = NULL,
+               irrigationsystem = NULL, landScen = NULL,
+               multicropping = "TRUE:potential:endogenous",
+               aggregate = FALSE,
+               file = paste0("comAgWatACT_multiplePOT_", t, ".mz")
     )
 
 
     # Share current irrigation water that can be fulfilled by available water resources
     calcOutput("ShrHumanUsesFulfilled",
-      transDist = t,
-      lpjml = lpjml, climatetype = climatetype,
-      selectyears = selectyears, iniyear = iniyear,
-      efrMethod = efrMethod, aggregate = FALSE,
-      multicropping = "TRUE:actual:irrig_crop",
-      file = paste0("shrHumanUsesFulfilledMultiple_", t, ".mz")
+               transDist = t,
+               lpjml = lpjml, climatetype = climatetype,
+               selectyears = selectyears, iniyear = iniyear,
+               efrMethod = efrMethod, aggregate = FALSE,
+               multicropping = "TRUE:actual:irrig_crop",
+               file = paste0("shrHumanUsesFulfilledMultiple_", t, ".mz")
     )
     calcOutput("ShrHumanUsesFulfilled",
-      transDist = t,
-      lpjml = lpjml, climatetype = climatetype,
-      selectyears = selectyears, iniyear = iniyear,
-      efrMethod = efrMethod, aggregate = FALSE,
-      multicropping = FALSE,
-      file = paste0("shrHumanUsesFulfilledSingle_", t, ".mz")
+               transDist = t,
+               lpjml = lpjml, climatetype = climatetype,
+               selectyears = selectyears, iniyear = iniyear,
+               efrMethod = efrMethod, aggregate = FALSE,
+               multicropping = FALSE,
+               file = paste0("shrHumanUsesFulfilledSingle_", t, ".mz")
     )
   }
 
@@ -445,15 +442,15 @@ fullMULTICROPPING <- function() {
   # Multiple cropping suitability per crop calculated based on crop and grass productivity
   # (for LPJmL crop types)
   calcOutput("MulticroppingSuitability",
-    lpjml = lpjml, climatetype = climatetype,
-    selectyears = selectyears, suitability = "endogenous",
-    aggregate = FALSE, file = "suitMC_LPJmL.mz"
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, suitability = "endogenous",
+             aggregate = FALSE, file = "suitMC_LPJmL.mz"
   )
 
   # Multiple cropping zones according to GAEZ
   calcOutput("MultipleCroppingZones",
-    layers = 8,
-    aggregate = FALSE, file = "suitMC_GAEZ.mz"
+             layers = 8,
+             aggregate = FALSE, file = "suitMC_GAEZ.mz"
   )
 
   # Inverted Growing Period Runs
@@ -518,15 +515,15 @@ fullMULTICROPPING <- function() {
 #   calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_irrig",
 #              aggregate = FALSE, file = "cropareaShr.mz")
 #
-#   calcOutput("CropareaAdjusted", iniyear = iniyear, dataset = "Toolbox",
-#              aggregate = FALSE, file = "cropareaToolbox.mz")
+#   calcOutput("CropareaAdjusted", iniyear = iniyear, dataset = "LandInG",
+#              aggregate = FALSE, file = "cropareaLandInG.mz")
 #
 #   ### Yield Gain ###
 #   # Single cropping yield gain
 #   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
 #              lpjml = lpjml, climatetype = climatetype,
 #              selectyears = selectyears, iniyear = iniyear,
-#              comagyear = NULL,  fossilGW = NULL, efrMethod = efrMethod, transDist = transDist,
+#              comagyear = NULL,
 #              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
 #              cropmix = "hist_irrig", yieldcalib = yieldcalib,
 #              multicropping = FALSE, aggregate = FALSE,
@@ -536,7 +533,7 @@ fullMULTICROPPING <- function() {
 #   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
 #              lpjml = lpjml, climatetype = climatetype,
 #              selectyears = selectyears, iniyear = iniyear,
-#              comagyear = NULL,  fossilGW = NULL, efrMethod = efrMethod, transDist = transDist,
+#              comagyear = NULL,
 #              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
 #              cropmix = "hist_irrig", yieldcalib = yieldcalib,
 #              multicropping = TRUE, aggregate = FALSE,
@@ -776,18 +773,18 @@ fullMULTICROPPING <- function() {
 #   calcOutput("MultipleCroppingZones", layers = 8,
 #              aggregate = FALSE, file = "suitMC_GAEZ8.mz")
 #
-#   # Toolbox
-#   calcOutput("CropareaToolbox", physical = TRUE, sectoral = "kcr",
+#   # LandInG
+#   calcOutput("CropareaLandInG", physical = TRUE, sectoral = "kcr",
 #              cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
 #              selectyears = selectyears, aggregate = FALSE,
-#              file = "ToolboxPHYS.mz")
-#   calcOutput("CropareaToolbox", physical = FALSE, sectoral = "kcr",
+#              file = "LandInGPHYS.mz")
+#   calcOutput("CropareaLandInG", physical = FALSE, sectoral = "kcr",
 #              cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
 #              selectyears = selectyears, aggregate = FALSE,
-#              file = "ToolboxHARV.mz")
+#              file = "LandInGHARV.mz")
 #
 #   calcOutput("MulticroppingCells", selectyears = selectyears,
 #              lpjml = lpjml, climatetype = climatetype, scenario = "actual:irrig_crop",
-#              aggregate = FALSE, file = "ToolboxMulticropping.mz")
+#              aggregate = FALSE, file = "LandInGMulticropping.mz")
 #
 # }

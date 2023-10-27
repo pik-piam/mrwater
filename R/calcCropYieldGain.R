@@ -26,7 +26,7 @@
 #'                      (mask can be:
 #'                      "none": no mask applied (only for development purposes)
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
+#'                                      and total physical areas per cell from readLandInG
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                      "potential:endogenous": potentially multicropped areas given
@@ -53,10 +53,10 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
 
   # reference yield (rainfed-single cropping)
   ref <- calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
-                     iniyear = iniyear, selectyears = selectyears,
-                     yieldcalib = yieldcalib, priceAgg = priceAgg,
-                     multicropping = FALSE,
-                     aggregate = FALSE)
+                    iniyear = iniyear, selectyears = selectyears,
+                    yieldcalib = yieldcalib, priceAgg = priceAgg,
+                    multicropping = FALSE,
+                    aggregate = FALSE)
 
   if (yieldgaintype == "irrigation_singlecropping") {
 
@@ -108,10 +108,10 @@ calcCropYieldGain <- function(lpjml, climatetype, yieldgaintype, priceAgg,
 
     # irrigated multicropped yields
     yields <- collapseNames(calcOutput("YieldsValued", lpjml = lpjml, climatetype = climatetype,
-                            iniyear = iniyear, selectyears = selectyears,
-                            yieldcalib = yieldcalib, priceAgg = priceAgg,
-                            multicropping = multicropping,
-                            aggregate = FALSE)[, , "irrigated"])
+                                       iniyear = iniyear, selectyears = selectyears,
+                                       yieldcalib = yieldcalib, priceAgg = priceAgg,
+                                       multicropping = multicropping,
+                                       aggregate = FALSE)[, , "irrigated"])
 
     # yield gain through irrigation & multiple cropping
     yieldGain <- yields - collapseNames(ref[, , "rainfed"])

@@ -4,14 +4,14 @@
 \alias{calcCropareaAdjusted}
 \title{calcCropareaAdjusted}
 \usage{
-calcCropareaAdjusted(iniyear, dataset = "Toolbox", sectoral = "kcr")
+calcCropareaAdjusted(iniyear, dataset = "LandInG", sectoral = "kcr")
 }
 \arguments{
 \item{iniyear}{initialization year}
 
-\item{dataset}{LUH or Toolbox.
+\item{dataset}{LUH or LandInG
 Note: once migration to Toolbox data is complete, this function
-can be replaced with calcCropareaToolbox}
+can be replaced with calcCropareaLandInG}
 
 \item{sectoral}{crops to be reported: "kcr" for MAgPIE items, and "lpj" for LPJmL items}
 }

@@ -38,20 +38,20 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
              aggregate = FALSE, file = "cropareaShr.mz")
 
   calcOutput("CropareaAdjusted", iniyear = iniyear,
-             dataset = "Toolbox", sectoral = "kcr",
-             aggregate = FALSE, file = "cropareaToolbox.mz")
+             dataset = "LandInG", sectoral = "kcr",
+             aggregate = FALSE, file = "cropareaLandInG.mz")
   calcOutput("CropareaAdjusted", iniyear = iniyear,
-             dataset = "Toolbox", sectoral = "lpj",
-             aggregate = FALSE, file = "cropareaToolbox_lpj.mz")
+             dataset = "LandInG", sectoral = "lpj",
+             aggregate = FALSE, file = "cropareaLandInG_lpj.mz")
 
-  calcOutput("CropareaToolbox", physical = TRUE, sectoral = "kcr",
+  calcOutput("CropareaLandInG", physical = TRUE, sectoral = "kcr",
              cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
-             file = "ToolboxPHYS.mz")
-  calcOutput("CropareaToolbox", physical = FALSE, sectoral = "kcr",
+             file = "LandingPHYS.mz")
+  calcOutput("CropareaLandInG", physical = FALSE, sectoral = "kcr",
              cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
-             file = "ToolboxHARV.mz")
+             file = "LandingHARV.mz")
 
   ### Crop Yields ###
   # single cropping yields (in USD/ha)
@@ -74,8 +74,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL, fossilGW = NULL,
-             efrMethod = efrMethod, transDist = 0,
+             comagyear = NULL,
              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
              cropmix = "hist_irrig", yieldcalib = yieldcalib,
              multicropping = FALSE, aggregate = FALSE,
@@ -85,8 +84,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL, fossilGW = NULL,
-             efrMethod = efrMethod, transDist = 0,
+             comagyear = NULL,
              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
              cropmix = "hist_irrig", yieldcalib = yieldcalib,
              multicropping = TRUE, aggregate = FALSE,
@@ -147,7 +145,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                efrMethod = efrMethod,
                selectyears = selectyears, iniyear = iniyear,
                transDist = t, comAg = TRUE,
-               accessibilityrule = NULL, fossilGW = NULL,
+               accessibilityrule = NULL,
                rankmethod = NULL, gainthreshold = NULL,
                cropmix = NULL, yieldcalib = NULL,
                irrigationsystem = NULL, landScen = NULL,
@@ -160,7 +158,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                efrMethod = efrMethod,
                selectyears = selectyears, iniyear = iniyear,
                transDist = t, comAg = TRUE,
-               accessibilityrule = NULL, fossilGW = NULL,
+               accessibilityrule = NULL,
                rankmethod = NULL, gainthreshold = NULL,
                cropmix = NULL, yieldcalib = NULL,
                irrigationsystem = NULL, landScen = NULL,
@@ -173,7 +171,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                efrMethod = efrMethod,
                selectyears = selectyears, iniyear = iniyear,
                transDist = t, comAg = TRUE,
-               accessibilityrule = NULL, fossilGW = NULL,
+               accessibilityrule = NULL,
                rankmethod = NULL, gainthreshold = NULL,
                cropmix = NULL, yieldcalib = NULL,
                irrigationsystem = NULL, landScen = NULL,

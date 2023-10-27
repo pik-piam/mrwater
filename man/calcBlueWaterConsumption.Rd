@@ -28,7 +28,7 @@ sowing of second (off) season}
 \item{areaMask}{Multicropping area mask to be used
 "none": no mask applied (only for development purposes)
 "actual:total": currently multicropped areas calculated from total harvested areas
-                and total physical areas per cell from readLanduseToolbox
+                and total physical areas per cell from readLandInG
 "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 "actual:irrig_crop" (crop- and irrigation-specific) "total"
 "potential:endogenous": potentially multicropped areas given

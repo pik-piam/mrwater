@@ -11,9 +11,6 @@ calcIrrigYieldImprovementPotential(
   iniyear,
   selectyears,
   comagyear,
-  fossilGW,
-  efrMethod,
-  transDist,
   cropmix,
   landScen,
   irrigationsystem,
@@ -45,17 +42,6 @@ Price aggregation:
 if NULL: total potential land area is used;
 year specified here is the year of the initialization
 used for cropland area initialization in calcIrrigatedArea}
-
-\item{fossilGW}{In this function, this argument is only relevant when comagyear !NULL
-If TRUE: non-renewable groundwater can be used.
-If FALSE: non-renewable groundwater cannot be used.}
-
-\item{efrMethod}{if comagyear != NULL: EFR method used to calculate committed
-agricultural use (e.g., Smakhtin:good, VMF:fair)}
-
-\item{transDist}{if comagyear != NULL: Water transport distance allowed to fulfill locally
-unfulfilled water demand by surrounding cell water availability
-of committed agricultural uses}
 
 \item{cropmix}{Selected cropmix for which yield improvement potential
 is calculated (options:

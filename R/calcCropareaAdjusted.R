@@ -3,9 +3,9 @@
 #'              initialization year and
 #'
 #' @param iniyear  initialization year
-#' @param dataset  LUH or Toolbox.
+#' @param dataset  LUH or LandInG
 #'                 Note: once migration to Toolbox data is complete, this function
-#'                 can be replaced with calcCropareaToolbox
+#'                 can be replaced with calcCropareaLandInG
 #' @param sectoral crops to be reported: "kcr" for MAgPIE items, and "lpj" for LPJmL items
 #'
 #' @return magpie object in cellular resolution
@@ -20,7 +20,7 @@
 #' @importFrom magclass getCells getNames add_dimension new.magpie
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox", sectoral = "kcr") {
+calcCropareaAdjusted <- function(iniyear, dataset = "LandInG", sectoral = "kcr") {
 
   # read in physical croparea per crop and management type (in Mha)
   if (dataset == "LUH") {
@@ -32,11 +32,11 @@ calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox", sectoral = "kcr")
     map             <- toolGetMappingCoord2Country()
     getCells(phys)  <- paste(map$coords, map$iso, sep = ".")
 
-  } else if (dataset == "Toolbox") {
+  } else if (dataset == "LandInG") {
 
-    phys <- calcOutput("CropareaToolbox", physical = TRUE, sectoral = sectoral,
-                         cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
-                         selectyears = iniyear, aggregate = FALSE)
+    phys <- calcOutput("CropareaLandInG", physical = TRUE, sectoral = sectoral,
+                       cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
+                       selectyears = iniyear, aggregate = FALSE)
 
   } else {
     stop("Please select Croparea data set to be used.")
@@ -51,11 +51,11 @@ calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox", sectoral = "kcr")
                                              dim = 3)),
                        NULL)
 
-  if (any(landarea - physTotal < 0)) {
-    # Note: Due to mismatches in the land masks used in the Toolbox (LandInG)
+  if (any(round(landarea - physTotal, digits = 6) < 0)) {
+    # Note: Due to mismatches in the land masks used in LandInG
     #       and LUH, croparea may exceed total landarea.
-    #       It is cut off here, but this issue should be addressed at the step
-    #       of the generation of the Toolbox data (FELI!)
+    stop("This should no longer be the case after the LandInG update.
+         Please check where mismatch is coming from starting from calcCropareaAdjusted.")
     vcat(verbosity = 0,
          paste0("In calcCropareaAdjusted: There is a mismatch in the landmask underlying
                 the ", dataset, " croparea dataset and LUH.
@@ -63,7 +63,7 @@ calcCropareaAdjusted <- function(iniyear, dataset = "Toolbox", sectoral = "kcr")
                 but a more generic solution should be found to make the data consistent!"))
 
     ratio <- ifelse(landarea - physTotal < 0,
-                      landarea / physTotal,
+                    landarea / physTotal,
                     1)
     # Scale down crop-specific croparea by mismatch area
     phys <- phys * ratio

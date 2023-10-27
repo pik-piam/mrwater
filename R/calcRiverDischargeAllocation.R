@@ -56,7 +56,7 @@
 #'                          (mask can be:
 #'                          "none": no mask applied (only for development purposes)
 #'                          "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                          and total physical areas per cell from readLanduseToolbox
+#'                                          and total physical areas per cell from LandInG
 #'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                          "potential:endogenous": potentially multicropped areas given
@@ -64,10 +64,6 @@
 #'                          "potential:exogenous": potentially multicropped areas given
 #'                                                 GAEZ suitability classification)
 #'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
-#' @param fossilGW      To determine full irrigation requirements based on the
-#'                      correct available area:
-#'                      If TRUE: non-renewable groundwater can be used.
-#'                      If FALSE: non-renewable groundwater cannot be used.
 #'
 #' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
@@ -85,7 +81,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                          selectyears, efrMethod,
                                          accessibilityrule, transDist,
                                          rankmethod, yieldcalib,
-                                         allocationrule, fossilGW,
+                                         allocationrule,
                                          gainthreshold, irrigationsystem, iniyear, landScen,
                                          cropmix, comAg, multicropping) {
   # Retrieve arguments
@@ -105,7 +101,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   inputData <- calcOutput("RiverRoutingInputs",
                           iteration = "potential_irrigation",
                           lpjml = lpjml, climatetype = climatetype,
-                          transDist = transDist, comAg = comAg, fossilGW = fossilGW,
+                          transDist = transDist, comAg = comAg,
                           selectyears = selectyears, iniyear = iniyear,
                           efrMethod = efrMethod, multicropping = multicropping,
                           accessibilityrule = accessibilityrule,
@@ -153,7 +149,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                             names = dimnames)
   # Correct inaccessible discharge for available discharge after previous routings
   inaccessibleDischarge <- ifelse(dischargeMAG - inaccessibleDischarge > 0,
-                                    inaccessibleDischarge,
+                                  inaccessibleDischarge,
                                   dischargeMAG)
 
   # Inaccessible discharge is added to previously reserved withdrawal
@@ -165,13 +161,13 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   #######################################
   # Read in river structure
   rs0 <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
-                package = "mrwater"))
+                             package = "mrwater"))
   # Read in neighbor cells and transform to list
   neighborCells <- readSource("NeighborCells", convert = FALSE)
   neighborCells <- attr(neighborCells, "data")
   # Calculate river structure including neighbor cells
   rs0 <- toolSelectNeighborCell(transDist = transDist, rs = rs0,
-                               neighborCells = neighborCells)
+                                neighborCells = neighborCells)
   # Add country information
   map          <- toolGetMappingCoord2Country(extended = FALSE, pretty = FALSE)
   rs0$isoCoord <- paste(rs0$coordinates, map$iso, sep = ".")
@@ -197,9 +193,9 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                                        cellrankyear = selectyears,
                                        lpjml = lpjml, climatetype = climatetype, method = rankmethod,
                                        cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
-                                       comagyear = comagyear, fossilGW = fossilGW,
+                                       comagyear = comagyear,
                                        irrigationsystem = irrigationsystem,
-                                       landScen = landScen, efrMethod = efrMethod, transDist = transDist,
+                                       landScen = landScen,
                                        multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
                                        aggregate = FALSE),
                             selectyears)
@@ -238,9 +234,9 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
           # Extract the cell number
           glocellrankName <- names(which(glocellrank[, y, ] == o))
           c <- rs$cells[rs$isoCoord == ifelse(grepl("B_", glocellrankName),
-                                               gsub("B_", "", glocellrankName),
+                                              gsub("B_", "", glocellrankName),
                                               ifelse(grepl("A_", glocellrankName),
-                                                      gsub("A_", "", glocellrankName),
+                                                     gsub("A_", "", glocellrankName),
                                                      glocellrankName))]
 
           # Only run for cells where water required
@@ -284,17 +280,17 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
       }
     }
 
-  # update water available for use in cell c including provision by surrounding cells
-  # (in case of transDist == 0: fromNeighbor would be 0)
-  currWWtotal <- currWWlocal + fromNeighborWW
-  currWCtotal <- currWClocal + fromNeighborWC
+    # update water available for use in cell c including provision by surrounding cells
+    # (in case of transDist == 0: fromNeighbor would be 0)
+    currWWtotal <- currWWlocal + fromNeighborWW
+    currWCtotal <- currWClocal + fromNeighborWC
 
-  # Return output in one object
-  out[, , "currWWlocal"] <- as.magpie(currWWlocal, spatial = 1, temporal = 2)
-  out[, , "currWClocal"] <- as.magpie(currWClocal, spatial = 1, temporal = 2)
-  out[, , "currWWtotal"] <- as.magpie(currWWtotal, spatial = 1, temporal = 2)
-  out[, , "currWCtotal"] <- as.magpie(currWCtotal, spatial = 1, temporal = 2)
-  out[, , "discharge"]   <- as.magpie(discharge, spatial = 1, temporal = 2)
+    # Return output in one object
+    out[, , "currWWlocal"] <- as.magpie(currWWlocal, spatial = 1, temporal = 2)
+    out[, , "currWClocal"] <- as.magpie(currWClocal, spatial = 1, temporal = 2)
+    out[, , "currWWtotal"] <- as.magpie(currWWtotal, spatial = 1, temporal = 2)
+    out[, , "currWCtotal"] <- as.magpie(currWCtotal, spatial = 1, temporal = 2)
+    out[, , "discharge"]   <- as.magpie(discharge, spatial = 1, temporal = 2)
 
   } else if (allocationrule == "upstreamfirst") {
     # The upstream-downstream surplus discharge allocation
@@ -305,7 +301,7 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
                       lpjml = lpjml, climatetype = climatetype,
                       efrMethod = efrMethod, multicropping = multicropping,
                       selectyears = selectyears, iniyear = iniyear,
-                      transDist = transDist, comAg = comAg, fossilGW = fossilGW,
+                      transDist = transDist, comAg = comAg,
                       accessibilityrule = accessibilityrule,
                       rankmethod = rankmethod, gainthreshold = gainthreshold,
                       cropmix = cropmix, yieldcalib = yieldcalib,
@@ -336,9 +332,9 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   basinDischarge[unique(rs0$endcell), , ] <- out[unique(rs0$endcell), , "discharge"]
   totalWat <- dimSums(basinDischarge,
                       dim = 1) + dimSums(out[, , "currWCtotal"],
-                                        dim = c("x", "y", "iso", "data")) +
-                                  dimSums(inputData[, , "prevReservedWC"],
-                                          dim = c("x", "y", "iso", "data"))
+                                         dim = c("x", "y", "iso", "data")) +
+    dimSums(inputData[, , "prevReservedWC"],
+            dim = c("x", "y", "iso", "data"))
 
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
@@ -373,6 +369,6 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
               weight       = NULL,
               unit         = "mio. m^3",
               description  = paste0("River routing outputs ",
-                                     "after Surplus Discharge Allocation"),
+                                    "after Surplus Discharge Allocation"),
               isocountries = FALSE))
 }

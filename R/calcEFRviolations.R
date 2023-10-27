@@ -51,7 +51,7 @@
 #'                          (mask can be:
 #'                          "none": no mask applied (only for development purposes)
 #'                          "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                          and total physical areas per cell from readLanduseToolbox
+#'                                          and total physical areas per cell from readLandInG
 #'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                          "potential:endogenous": potentially multicropped areas given
@@ -80,10 +80,10 @@
 #' }
 #'
 calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod, transDist,
-                            accessibilityrule, rankmethod, yieldcalib, allocationrule,
-                            gainthreshold, irrigationsystem, iniyear,
-                            landScen, cropmix, comAg, multicropping,
-                            scenario, cellular = TRUE) {
+                              accessibilityrule, rankmethod, yieldcalib, allocationrule,
+                              gainthreshold, irrigationsystem, iniyear,
+                              landScen, cropmix, comAg, multicropping,
+                              scenario, cellular = TRUE) {
   # Check
   if (!is.numeric(iniyear)) {
     iniyear <- as.numeric(gsub("y", "", iniyear))
@@ -103,7 +103,7 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod, transD
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
                                         cropmix = cropmix, comAg = comAg,
-                                        multicropping = multicropping, fossilGW = FALSE,
+                                        multicropping = multicropping,
                                         aggregate = FALSE)[, , "discharge"][, , scenario])
 
   envFlow   <- collapseNames(calcOutput("EnvmtlFlowRequirements", selectyears = selectyears,
@@ -120,7 +120,7 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod, transD
   getItems(violation, dim = "basin", maindim = 1) <- as.character(rs$endcell)
 
   if (!cellular) {
-  violation <- dimSums(violation, dim = c(1.1, 1.2, 1.3))
+    violation <- dimSums(violation, dim = c(1.1, 1.2, 1.3))
   }
 
   return(list(x            = violation,

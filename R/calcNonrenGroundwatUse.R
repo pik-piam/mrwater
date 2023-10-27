@@ -22,7 +22,7 @@
 #'                      (mask can be:
 #'                      "none": no mask applied (only for development purposes)
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
+#'                                      and total physical areas per cell from LandInG
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                      "potential:endogenous": potentially multicropped areas given
@@ -41,6 +41,7 @@
 #'
 #' @importFrom magclass collapseNames dimSums
 #' @importFrom magpiesets findset
+#' @importFrom stringr str_split
 #'
 #' @export
 
@@ -48,23 +49,18 @@ calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
                                    transDistGW = 100, multicropping = "TRUE:actual:irrig_crop",
                                    selectyears, iniyear) {
 
-  # multiple cropping as of current multiple cropping pattern
-  if (as.logical(str_split(multicropping, ":")[[1]][1])) {
-    m <- "TRUE:actual:irrig_crop"
-  } else {
-    m <- as.logical(str_split(multicropping, ":")[[1]][1])
-  }
-
-  # Only currently reported water use that cannot be fulfilled
-  # even under a chosen transport distance is counted as non-renewable groundwater
-  # Note: the transDistGW argument is separate from the transDist argument that can be
-  #       used to vary surface water transport distance
-  transDist <- transDistGW
+  # Non-renewable groundwater use is determined based on unfulfilled water demands of the past
+  missingWat <- calcOutput("MissingWater", output = output,
+                           lpjml = lpjml, climatetype = climatetype,
+                           transDistGW = transDistGW, multicropping = multicropping,
+                           selectyears = selectyears, iniyear = iniyear,
+                           aggregate = FALSE)
 
   # Groundwater is calculated based on full water use of the past given all available water (EFP off).
   # In the past, the non-agriculture scenarios are identical. Therefore, ISIMIP can be used as representative case.
-  scenNonAg <- "ISIMIP"
-  scenEFP   <- "off"
+  scenNonAg  <- "ISIMIP"
+  scenEFP    <- "off"
+  missingWat <- collapseNames(missingWat[, , paste(scenEFP, scenNonAg, sep = ".")])
 
   # Missing water of past time steps is attributed to non-renewable groundwater.
   # For the future, it is fixed to the missing water of the last time step.
@@ -74,13 +70,18 @@ calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
     selectyears <- as.numeric(gsub("y", "", selectyears))
   }
   if (is.character(iniyear)) {
-    iniyear     <- as.numeric(gsub("y", "", iniyear))
+    iniyear <- as.numeric(gsub("y", "", iniyear))
   }
   if (iniyear > selectyears[1]) {
     stop(paste0("Please align the initialization year ('iniyear') ",
                 "with the selected years ('selectyears'). ",
                 "The 'iniyear' has to be the first year of 'selectyears' ",
                 "or lie in the past of it."))
+  }
+  if (iniyear > lastYr) {
+    stop(paste0("Please align the initialization year ('iniyear') ",
+                "with the last year in the past (see magpiesets::findset('past')). ",
+                "The 'iniyear' has to be smaller or equal to the last year."))
   }
   # include iniyear in selectyears
   if (length(intersect(iniyear, selectyears)) < 1) {
@@ -93,92 +94,19 @@ calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
   # selectyears of the future
   ftrYrs <- cmbYrs[cmbYrs > lastYr]
 
-
-  ##############################
-  ### Results from Algorithm ###
-  ##############################
-  # (can be fulfilled with renewable water sources)
-  # Water for Non-Agricultural Use after Routing (in mio. m^3)
-  fulfilledNAU <- collapseNames(calcOutput("RiverHumanUseAccounting",
-                                iteration = "non_agriculture",
-                                lpjml = lpjml, climatetype = climatetype,
-                                efrMethod = "VMF:fair", transDist = transDist,
-                                selectyears = pstYrs, iniyear = iniyear,
-                                multicropping = m,
-                                accessibilityrule = NULL, fossilGW = NULL,
-                                rankmethod = NULL, gainthreshold = NULL,
-                                cropmix = NULL, yieldcalib = NULL,
-                                irrigationsystem = NULL, landScen = NULL,
-                                comAg = FALSE,
-                                aggregate = FALSE)[, , paste(scenEFP, scenNonAg, sep = ".")])
-  fulfilledNAU <- fulfilledNAU[, , c("currHumanWWtotal", "currHumanWCtotal")]
-  getItems(fulfilledNAU, dim = 3) <- c("withdrawal", "consumption")
-
-  # Water Committed to Agriculture after Routing (in mio. m^3)
-  fulfilledCAU   <- collapseNames(calcOutput("RiverHumanUseAccounting",
-                                  iteration = "committed_agriculture",
-                                  lpjml = lpjml, climatetype = climatetype,
-                                  efrMethod = "VMF:fair", transDist = transDist,
-                                  selectyears = pstYrs, iniyear = iniyear,
-                                  multicropping = m,
-                                  accessibilityrule = NULL, fossilGW = NULL,
-                                  rankmethod = NULL, gainthreshold = NULL,
-                                  cropmix = NULL, yieldcalib = NULL,
-                                  irrigationsystem = NULL, landScen = NULL,
-                                  comAg = FALSE,
-                                  aggregate = FALSE)[, , paste(scenEFP, scenNonAg, sep = ".")])
-  fulfilledCAU <- fulfilledCAU[, , c("currHumanWWtotal", "currHumanWCtotal")]
-  getItems(fulfilledCAU, dim = 3) <- c("withdrawal", "consumption")
-
-  ##############################
-  ### Exogenous Water Demand ###
-  ##############################
-  # (would be required according to reported current water uses)
-  # Committed Agricultural Water (in mio. m^3)
-  actCAU <- dimSums(calcOutput("WaterUseCommittedAg",
-                                lpjml = lpjml, climatetype = climatetype,
-                                selectyears = pstYrs, iniyear = iniyear,
-                                multicropping = m, aggregate = FALSE),
-                    dim = "crop")
-
-  # Non-Agricultural Water in the past (in mio. m^3 / yr)
-  actNAU <- collapseNames(calcOutput("WaterUseNonAg",
-                          selectyears = pstYrs, cells = "lpjcell",
-                          datasource = "WATERGAP_ISIMIP", usetype = "total",
-                          seasonality = "total", harmonType = "average",
-                          lpjml = NULL, climatetype = NULL,
-                          aggregate = FALSE)[, , scenNonAg])
-
-
-  ################################
-  ### Unfulfilled Water Demand ###
-  ################################
-  missingNAU <- actNAU - fulfilledNAU
-  missingCAU <- actCAU - fulfilledCAU
-  missingWat <- missingNAU + missingCAU
-
   ######################
   ### Prepare output ###
   ######################
   out <- new.magpie(fill = NA,
-                    cells_and_regions = getItems(missingCAU, dim = 1),
+                    cells_and_regions = getItems(missingWat, dim = 1),
                     years = selectyears,
                     names = c("withdrawal", "consumption"))
-  getSets(out) <- c("x", "y", "iso", "year", "data")
+  getSets(out) <- c("x", "y", "iso", "year", "type")
 
-  if (output == "total") {
-    out[, pstYrs, ] <- missingWat[, pstYrs, ]
-    out[, ftrYrs, ] <- missingWat[, lastYr, ]
-  } else if (output == "nonAg") {
-    out[, pstYrs, ] <- missingNAU[, pstYrs, ]
-    out[, ftrYrs, ] <- missingNAU[, lastYr, ]
-  } else if (output == "comAg") {
-    out[, pstYrs, ] <- missingCAU[, pstYrs, ]
-    out[, ftrYrs, ] <- missingCAU[, lastYr, ]
-  } else {
-    stop("Please select whether total groundwater use or sector-wise groundwater use
-         shall be reported by calcNonrenGroundwaterUse")
-  }
+  # In past time steps, missing water is accounted as fossil groundwater
+  out[, pstYrs, ] <- missingWat[, pstYrs, ]
+  # In future time steps, fossil groundwater is held constant
+  out[, ftrYrs, ] <- missingWat[, lastYr, ]
 
   ##############
   ### Checks ###

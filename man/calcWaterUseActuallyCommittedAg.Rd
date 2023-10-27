@@ -5,6 +5,7 @@
 \title{calcWaterUseActuallyCommittedAg}
 \usage{
 calcWaterUseActuallyCommittedAg(
+  iteration = "committed_agriculture",
   lpjml,
   climatetype,
   selectyears,
@@ -16,6 +17,12 @@ calcWaterUseActuallyCommittedAg(
 )
 }
 \arguments{
+\item{iteration}{Default: "committed_agriculture",
+Special case: "committed_agriculture_fullPotential".
+Special case should only be used for calculation of
+full multicropping potential committed agricultural area
+for case of Current Irrigation.}
+
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
 \item{climatetype}{Switch between different climate scenarios or
@@ -30,7 +37,7 @@ Multiple Cropping Suitability mask selected
 (mask can be:
 "none": no mask applied (only for development purposes)
 "actual:total": currently multicropped areas calculated from total harvested areas
-                and total physical areas per cell from readLanduseToolbox
+                and total physical areas per cell from LandInG
 "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 "actual:irrig_crop" (crop- and irrigation-specific) "total"
 "potential:endogenous": potentially multicropped areas given
@@ -59,7 +66,6 @@ This function calculates committed agricultural water uses that
 \dontrun{
 calcOutput("WaterUseActuallyCommittedAg", aggregate = FALSE)
 }
-
 }
 \author{
 Felicitas Beier

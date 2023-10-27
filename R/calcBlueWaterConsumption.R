@@ -17,7 +17,7 @@
 #' @param areaMask      Multicropping area mask to be used
 #'                      "none": no mask applied (only for development purposes)
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
+#'                                      and total physical areas per cell from readLandInG
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                      "potential:endogenous": potentially multicropped areas given
@@ -92,7 +92,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
                                        lpjml = lpjml, climatetype = climatetype,
                                        aggregate = FALSE)[, , "irrigated"][, , crops])
 
-    # Special case: current multicropping according to Toolbox
+    # Special case: current multicropping according to LandInG
     if (grepl(pattern = "actual", x = areaMask)) {
       # Cropping intensity
       ci <- collapseNames(calcOutput("MulticroppingIntensity",
@@ -113,13 +113,13 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # Delta ET (irrigated ET - rainfed ET) as proxy for blue water consumption (BWC)
     # of grass throughout the whole year
     annualBWCgrass <- collapseNames(grassETannual[, , "irrigated"]) -
-                        collapseNames(grassETannual[, , "rainfed"]) # transpiration statt ET
+      collapseNames(grassETannual[, , "rainfed"]) # transpiration statt ET
     annualBWCgrass[annualBWCgrass < 0] <- 0
 
     # Delta ET (irrigated ET - rainfed ET) as proxy for BWC
     # of grass in growing period
     grperBWCgrass <- collapseNames(grassETgrper[, , "irrigated"]) -
-                        collapseNames(grassETgrper[, , "rainfed"])
+      collapseNames(grassETgrper[, , "rainfed"])
     grperBWCgrass[grperBWCgrass < 0] <- 0
 
     # Off season grass BWC
@@ -151,7 +151,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
       for (i in crops) {
         tmp <- lm(y ~ x + 0, data = data.frame(y = as.vector(bwc1st[, y, i]),
                                                x = as.vector(grperBWCgrass[, y, i])
-                          ))$coefficients[1]
+        ))$coefficients[1]
         coeff[, y, i] <- tmp
       }
     }

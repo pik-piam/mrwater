@@ -4,19 +4,7 @@
 \alias{calcCropAreaPotIrrig}
 \title{calcCropAreaPotIrrig}
 \usage{
-calcCropAreaPotIrrig(
-  selectyears,
-  comagyear,
-  iniyear,
-  cropmix,
-  landScen,
-  fossilGW,
-  lpjml,
-  climatetype,
-  efrMethod,
-  multicropping,
-  transDist
-)
+calcCropAreaPotIrrig(selectyears, comagyear, iniyear, cropmix, landScen)
 }
 \arguments{
 \item{selectyears}{Years to be returned}
@@ -39,28 +27,6 @@ or selection of proxycrops as vector)}
 2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
 For case of no land protection select "NA"
 or do not specify second part of the argument}
-
-\item{fossilGW}{This argument is only relevant when comagyear != NULL
-as it determines the area that is set aside as it is already
-reserved by the committed agriculture iteration.
-If TRUE: non-renewable groundwater can be used.
-If FALSE: non-renewable groundwater cannot be used.}
-
-\item{lpjml}{if comagyear != NULL: LPJmL version used to calculate committed
-agricultural use}
-
-\item{climatetype}{if comagyear != NULL: climate scenario used to calculate committed
-agricultural use
-or historical baseline "GSWP3-W5E5:historical"}
-
-\item{efrMethod}{if comagyear != NULL: EFR method used to calculate committed
-agricultural use (e.g., Smakhtin:good, VMF:fair)}
-
-\item{multicropping}{TRUE or FALSE (for committed agricultural area accounting)}
-
-\item{transDist}{if comagyear != NULL: Water transport distance allowed to fulfill locally
-unfulfilled water demand by surrounding cell water availability
-of committed agricultural uses}
 }
 \value{
 magpie object in cellular resolution

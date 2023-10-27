@@ -13,27 +13,6 @@
 #'                      if !NULL: already irrigated area is subtracted;
 #'                      year specified here is the year of the initialization
 #'                      used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)
-#' @param fossilGW      This argument is only relevant when comagyear != NULL
-#'                      as it determines the area that is set aside as it is already
-#'                      reserved by the committed agriculture iteration.
-#'                      If TRUE: non-renewable groundwater can be used.
-#'                      If FALSE: non-renewable groundwater cannot be used.
-#' @param lpjml         If comagyear != NULL: LPJmL version used to calculate committed
-#'                      agricultural use
-#' @param climatetype   If comagyear != NULL: climate scenario used to calculate committed
-#'                      agricultural use
-#'                      or historical baseline "GSWP3-W5E5:historical"
-#' @param efrMethod     If comagyear != NULL: EFR method used to calculate committed
-#'                      agricultural use (e.g., Smakhtin:good, VMF:fair)
-#' @param multicropping TRUE or FALSE (for committed agricultural area accounting)
-#' @param transDist     If comagyear != NULL: Water transport distance allowed to fulfill locally
-#'                      unfulfilled water demand by surrounding cell water availability
-#'                      of committed agricultural uses
-#' @param scenarios     Scenarios for object dimension consisting of "EFP.scenario".
-#'                      Default is c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
-#'                                   "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")
-#'                      If scenarios change, they have to be adjusted in the default
-#'                      setting of this function.
 #'
 #'
 #' @return magpie object in cellular resolution
@@ -48,11 +27,7 @@
 #' @importFrom magclass collapseNames getCells getYears getNames dimSums
 #' @importFrom mrcommons toolGetMappingCoord2Country
 
-calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
-                             lpjml, climatetype, efrMethod, fossilGW,
-                             multicropping, transDist,
-                             scenarios = c("on.ISIMIP",  "on.ssp1", "on.ssp2", "on.ssp3",
-                                           "off.ISIMIP", "off.ssp1", "off.ssp2", "off.ssp3")) {
+calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
   # retrieve function arguments
   protectSCEN <- as.list(strsplit(landScen, split = ":"))[[1]][2]
@@ -66,9 +41,25 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   ######################
   ### Protected area ###
   ######################
+  # read in land area 
+  #### include this here already
   # read in protected area
   protectArea <- calcOutput("ProtectArea", cells = "lpjcell", aggregate = FALSE)
   # To Do (FELI): Switch to newest protected area function & double check which landarea is the base
+  ### make empty protectAreas object with x.y.iso cells
+  # with all years in selectyears
+  # and with all protection scenarios that should be included: wdpa and all in conservation priorities,
+
+  # # WDPA protection baseline
+  # wdpa <- calcOutput("ProtectedAreaBaseline", nclasses = "seven",
+  #                    cells = "lpjcell", magpie_input = TRUE,
+  #                    aggregate = FALSE)
+  ### use existing years where possible and hold constant after last year
+  # # Future protection scenarios
+  # conservationAreas <- calcOutput("ConservationPriorities",
+  #                                 nclasses = "seven", cells = "lpjcell",
+  #                                 aggregate = FALSE)
+  ### additive: wdpa + conservationPriorities
 
   # select protection scenario
   if (!is.na(protectSCEN)) {
@@ -92,12 +83,12 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
     # read in suitable land based on Zabel [in mio. ha]
     # excluding land that is marginal under irrigated conditions (< suitability index of 0.33)
     landEXCLmarginal <- collapseNames(calcOutput("AvlCropland", aggregate = FALSE,
-                       marginal_land = "no_marginal:irrigated",
-                       cells = "lpjcell"))
+                                                 marginal_land = "no_marginal:irrigated",
+                                                 cells = "lpjcell"))
     # including land that is marginal under irrigated conditions (< suitability index of 0.33)
     landINCLmarginal  <- collapseNames(calcOutput("AvlCropland", aggregate = FALSE,
-                       marginal_land = "all_marginal:irrigated",
-                       cells = "lpjcell"))
+                                                  marginal_land = "all_marginal:irrigated",
+                                                  cells = "lpjcell"))
     marginalLand <- landINCLmarginal - landEXCLmarginal
     # marginal lands are prioritized in protection
     # (subtract marginal areas to avoid double counting)
@@ -112,8 +103,8 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
 
       # Total current physical cropland per cell:
       landAVL <- dimSums(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                 aggregate = FALSE),
-                      dim = 3)
+                                    aggregate = FALSE),
+                         dim = 3)
 
     }
 
@@ -121,8 +112,8 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
 
       # Total irrigated physical cropland per cell:
       landAVL <- dimSums(collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                               aggregate = FALSE)[, , "irrigated"]),
-                      dim = 3)
+                                                  aggregate = FALSE)[, , "irrigated"]),
+                         dim = 3)
     }
 
   } else {
@@ -136,16 +127,25 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   ####################################
   ### Calculate non-protected area ###
   ####################################
-  # total land area (Note: constant over the years.)
+  # total land area (Note: constant over the years)
   landarea <- setYears(collapseNames(dimSums(readSource("LUH2v2", subtype = "states_1995to1996",
                                                         convert = "onlycorrect")[, "y1995", ],
                                              dim = 3)),
                        NULL)
 
+    # Land area (in Mha):                           #### Use this function once Clustering branches are merged! & subtract "urban area"
+    # iniLU <- calcOutput("LanduseInitialisation",
+    #   cellular = TRUE, cells = "lpjcell",
+    #   nclasses = "seven", input_magpie = TRUE,
+    #   years = "y1995", aggregate = FALSE
+    # )
+    # landArea <- dimSums(iniLU, dim = 3)
+    # getCells(landArea) <- getCells(landarea)
+
   # area that is not protected
   areaNOprotect <- landarea - protectArea
   # correct areas where more area is protected than land is available
-  if (any(areaNOprotect < 0)) {
+  if (any(areaNOprotect < 0)) {                                                      ### This should no longer be the case when using the LanduseIntialisation & ConservationPriorities.
     warning("The protected area seems to be calculated based on a different
             land availability than LUH. Negative values are set to 0 in calcAreaPotIrrig")
     areaNOprotect[areaNOprotect < 0] <- 0
@@ -157,45 +157,16 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen,
   # Combine land scenario and protection component
   out <- pmin(areaNOprotect, landAVL)
 
-  # Transform object dimensionality
-  .transformObject <- function(x, gridcells, years, names) {
-    # empty magpie object structure
-    object0 <- new.magpie(cells_and_regions = gridcells,
-                          years = years,
-                          names = names,
-                          fill = 0,
-                          sets = c("x.y.iso", "year", "EFP.scen"))
-    # bring object x to dimension of object0
-    out <- object0 + x
-    return(out)
-  }
-  out <- .transformObject(x = out,
-                          gridcells = getItems(out, dim = 1),
-                          years = selectyears,
-                          names = scenarios)
-
   # Areas that are already irrigated (by committed agricultural uses)
   if (!is.null(comagyear)) {
-
-    # Committed Agricultural Areas under multiple cropping
-    if (multicropping != FALSE) {
-      multicropping <- "TRUE:actual:irrig_crop"
-    }
 
     # subtract physical area already reserved for irrigation with renewable water resources
     # by committed agricultural uses in water allocation algorithm
     # (to avoid double accounting)
-    comIrrigArea <- collapseNames(calcOutput("IrrigAreaActuallyCommitted",
-                                             fossilGW = fossilGW,
+    comIrrigArea <- collapseNames(calcOutput("IrrigAreaCommitted",
                                              selectyears = selectyears, iniyear = comagyear,
-                                             lpjml = lpjml, climatetype = climatetype,
-                                             efrMethod = efrMethod,
-                                             multicropping = multicropping, transDist = transDist,
                                              aggregate = FALSE))
-    if (any(scenarios != unique(getItems(dimSums(comIrrigArea, dim = "crop"), dim = 3)))) {
-      stop("Apparently the number of scenarios or format has changed.
-           Please adjust default argument of mrwater::calcAreaPotIrrig accordingly.")
-    }
+
     comIrrigArea <- collapseNames(dimSums(comIrrigArea, dim = "crop"))
     out          <- out - comIrrigArea
   }

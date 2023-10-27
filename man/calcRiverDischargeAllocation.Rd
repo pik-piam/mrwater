@@ -14,7 +14,6 @@ calcRiverDischargeAllocation(
   rankmethod,
   yieldcalib,
   allocationrule,
-  fossilGW,
   gainthreshold,
   irrigationsystem,
   iniyear,
@@ -66,11 +65,6 @@ If FALSE: uncalibrated LPJmL yields are used}
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
 ("optimization" or "upstreamfirst")}
 
-\item{fossilGW}{To determine full irrigation requirements based on the
-correct available area:
-If TRUE: non-renewable groundwater can be used.
-If FALSE: non-renewable groundwater cannot be used.}
-
 \item{gainthreshold}{Threshold of yield improvement potential
 (in USD per hectare)}
 
@@ -99,7 +93,7 @@ Multiple Cropping Suitability mask selected
 (mask can be:
 "none": no mask applied (only for development purposes)
 "actual:total": currently multicropped areas calculated from total harvested areas
-                and total physical areas per cell from readLanduseToolbox
+                and total physical areas per cell from LandInG
 "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 "actual:irrig_crop" (crop- and irrigation-specific) "total"
 "potential:endogenous": potentially multicropped areas given

@@ -52,7 +52,7 @@
 #'                          (mask can be:
 #'                          "none": no mask applied (only for development purposes)
 #'                          "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                          and total physical areas per cell from readLanduseToolbox
+#'                                          and total physical areas per cell from LandInG
 #'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                          "potential:endogenous": potentially multicropped areas given
@@ -98,8 +98,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                           selectyears = selectyears, iniyear = iniyear,
                           lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
                           unit = thresholdtype, yieldcalib = yieldcalib,
-                          comagyear = NULL, fossilGW = NULL,
-                          efrMethod = NULL, transDist = NULL,
+                          comagyear = NULL,
                           irrigationsystem = irrigationsystem,
                           landScen = landScen,
                           multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
@@ -109,17 +108,15 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
   if (unlimited) {
 
     # Area that can potentially be irrigated without water limitation
-    area <- collapseNames(calcOutput("AreaPotIrrig",
-                                      selectyears = selectyears, iniyear = iniyear,
-                                      landScen = landScen, comagyear = NULL,
-                                      lpjml = NULL, climatetype = NULL,
-                                      efrMethod = NULL, fossilGW = NULL,
-                                      multicropping = NULL, transDist = NULL,
-                                      aggregate = FALSE)[, , scenario])
+    area <- calcOutput("AreaPotIrrig",
+                       selectyears = selectyears, iniyear = iniyear,
+                       landScen = landScen, comagyear = NULL,
+                       aggregate = FALSE)
 
     # share of crop area by crop type
     cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
                               aggregate = FALSE)
+    croplist    <- getItems(cropareaShr, dim = "crop")
     # Potential area by croptype (in Mha)
     area <- cropareaShr * area
 
@@ -138,12 +135,13 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                                      comAg = FALSE, multicropping = multicropping,
                                      transDist = transDist, fossilGW = fossilGW,
                                      aggregate = FALSE)[, , "irrigatable"][, , scenario])
+    croplist <- getItems(area, dim = "crop")
     d    <- "Potentially Irrigated Area considering land and water constraints"
 
   }
 
   # Potential yield gain per cell (in mio. USD)
-  x <- dimSums(yieldGain * area, dim = "crop")
+  x <- dimSums(yieldGain[, , croplist] * area, dim = "crop")
   u <- "mio. USD"
 
   out <- collapseNames(x)

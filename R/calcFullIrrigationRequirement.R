@@ -9,14 +9,6 @@
 #'                         if NULL: total potential land area is used;
 #'                         year specified here is the year of the initialization
 #'                         used for cropland area initialization in calcIrrigatedArea
-#' @param fossilGW         If comagyear != NULL: Define whether fossil groundwater is used.
-#'                         If TRUE: non-renewable groundwater can be used.
-#'                         If FALSE: non-renewable groundwater cannot be used.
-#' @param efrMethod        if comagyear != NULL: EFR method used to calculate committed
-#'                         agricultural use (e.g., Smakhtin:good, VMF:fair)
-#' @param transDist        if comagyear != NULL: Water transport distance allowed to fulfill locally
-#'                         unfulfilled water demand by surrounding cell water availability
-#'                         of committed agricultural uses
 #' @param iniyear          Croparea initialization year
 #' @param irrigationsystem Irrigation system used: system share as in initialization year,
 #'                         or drip, surface, sprinkler for full irrigation by selected system
@@ -34,7 +26,7 @@
 #'                         (mask can be:
 #'                         "none": no mask applied (only for development purposes)
 #'                         "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                         and total physical areas per cell from readLanduseToolbox
+#'                                         and total physical areas per cell from readLandInG
 #'                         "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                         "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                         "potential:endogenous": potentially multicropped areas given
@@ -57,20 +49,16 @@
 
 calcFullIrrigationRequirement <- function(lpjml, climatetype,
                                           selectyears, iniyear, comagyear,
-                                          efrMethod, transDist, fossilGW,
                                           irrigationsystem, landScen, cropmix,
                                           multicropping) {
 
   # cropland area per crop (in Mha)
   croparea <- calcOutput("CropAreaPotIrrig",
                          selectyears = selectyears, iniyear = iniyear,
-                         comagyear = comagyear, fossilGW = fossilGW,
+                         comagyear = comagyear,
                          cropmix = cropmix, landScen = landScen,
-                         lpjml = lpjml, climatetype = climatetype,
-                         efrMethod = efrMethod,
-                         multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
-                         transDist = transDist,
                          aggregate = FALSE)
+
   croplist <- getItems(croparea, dim = "crop")
 
   # read in irrigation water requirements for given irrigation system
@@ -80,25 +68,6 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                          lpjml = lpjml, climatetype = climatetype,
                          irrigationsystem = irrigationsystem, multicropping = multicropping,
                          aggregate = FALSE)[, , croplist]
-  # Transform object dimensionality
-  .transformObject <- function(x, gridcells, years, names) {
-    # empty magpie object structure
-    object0 <- new.magpie(
-      cells_and_regions = gridcells,
-      years = years,
-      names = names,
-      fill = 0,
-      sets = c("x.y.iso", "year", "EFP.scen.crop")
-    )
-    # bring object x to dimension of object0
-    out <- object0 + x
-    return(out)
-  }
-  irrigWat <- .transformObject(x = irrigWat,
-                               gridcells = getItems(irrigWat, dim = 1),
-                               years = getItems(irrigWat, dim = 2),
-                               names = getItems(croparea, dim = 3))
-
 
   # # correct irrigation water requirements where irrigation would lead to 0 yield gains
   # tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",

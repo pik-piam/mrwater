@@ -10,9 +10,6 @@ calcFullIrrigationRequirement(
   selectyears,
   iniyear,
   comagyear,
-  efrMethod,
-  transDist,
-  fossilGW,
   irrigationsystem,
   landScen,
   cropmix,
@@ -33,17 +30,6 @@ if NULL: total potential land area is used;
 year specified here is the year of the initialization
 used for cropland area initialization in calcIrrigatedArea}
 
-\item{efrMethod}{if comagyear != NULL: EFR method used to calculate committed
-agricultural use (e.g., Smakhtin:good, VMF:fair)}
-
-\item{transDist}{if comagyear != NULL: Water transport distance allowed to fulfill locally
-unfulfilled water demand by surrounding cell water availability
-of committed agricultural uses}
-
-\item{fossilGW}{If comagyear != NULL: Define whether fossil groundwater is used.
-If TRUE: non-renewable groundwater can be used.
-If FALSE: non-renewable groundwater cannot be used.}
-
 \item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}
 
@@ -63,7 +49,7 @@ Multiple Cropping Suitability mask selected
 (mask can be:
 "none": no mask applied (only for development purposes)
 "actual:total": currently multicropped areas calculated from total harvested areas
-                and total physical areas per cell from readLanduseToolbox
+                and total physical areas per cell from readLandInG
 "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 "actual:irrig_crop" (crop- and irrigation-specific) "total"
 "potential:endogenous": potentially multicropped areas given

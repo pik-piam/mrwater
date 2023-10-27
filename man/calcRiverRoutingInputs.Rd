@@ -10,7 +10,6 @@ calcRiverRoutingInputs(
   selectyears,
   iniyear,
   iteration,
-  fossilGW,
   transDist,
   efrMethod,
   accessibilityrule,
@@ -39,10 +38,6 @@ or historical baseline "GSWP3-W5E5:historical"}
 (non_agriculture, committed_agriculture, potential_irrigation,
 special case (for current irrigated area analysis): "committed_agriculture_fullPotential").}
 
-\item{fossilGW}{For case of potential_irrigation:
-If TRUE: non-renewable groundwater can be used.
-If FALSE: non-renewable groundwater cannot be used.}
-
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}
 
@@ -61,7 +56,7 @@ Multiple Cropping Suitability mask selected
 (mask can be:
 "none": no mask applied (only for development purposes)
 "actual:total": currently multicropped areas calculated from total harvested areas
-                 and total physical areas per cell from readLanduseToolbox
+                 and total physical areas per cell from LandInG
 "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 "actual:irrig_crop" (crop- and irrigation-specific) "total"
 "potential:endogenous": potentially multicropped areas given

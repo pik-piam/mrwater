@@ -14,7 +14,6 @@ calcRiverHumanUseAccounting(
   multicropping,
   transDist,
   comAg,
-  fossilGW,
   accessibilityrule,
   rankmethod,
   gainthreshold,
@@ -47,7 +46,7 @@ Multiple Cropping Suitability mask selected
 (mask can be:
 "none": no mask applied (only for development purposes)
 "actual:total": currently multicropped areas calculated from total harvested areas
-                and total physical areas per cell from readLanduseToolbox
+                and total physical areas per cell from LandInG
 "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 "actual:irrig_crop" (crop- and irrigation-specific) "total"
 "potential:endogenous": potentially multicropped areas given
@@ -63,11 +62,6 @@ unfulfilled water demand by surrounding cell water availability}
          in initialization year are reserved for irrigation,
 if FALSE: no irrigation areas reserved (irrigation potential).
 Only relevant for iteration = potential}
-
-\item{fossilGW}{For case of iteration = potential_irrigation to determine full irrigation requirements based on the
-correct available area:
-If TRUE: non-renewable groundwater can be used.
-If FALSE: non-renewable groundwater cannot be used.}
 
 \item{accessibilityrule}{(For case of iteration = "potential_irrigation" only:)
 Method used: Quantile method (Q) or Coefficient of Variation (CV)
