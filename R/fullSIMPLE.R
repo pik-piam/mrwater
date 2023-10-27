@@ -262,7 +262,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
 
   # Current cropland area
   calcOutput("CropareaAdjusted",
-             iniyear = iniyear, dataset = "Toolbox",
+             iniyear = iniyear, dataset = "LandInG",
              aggregate = FALSE,
              file = "croparea.mz")
 

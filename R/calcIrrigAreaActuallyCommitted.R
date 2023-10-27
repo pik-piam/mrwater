@@ -15,7 +15,7 @@
 #'                      (mask can be:
 #'                      "none": no mask applied (only for development purposes)
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
+#'                                      and total physical areas per cell from readLandInG
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                      "potential:endogenous": potentially multicropped areas given
@@ -133,7 +133,7 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
     gw <- missW <- calcOutput("MissingWater",
                               output = "comAg",
                               lpjml = lpjml, climatetype = climatetype,
-                              multicropping = m, transDistGW = transDist, 
+                              multicropping = m, transDistGW = transDist,
                               selectyears = selectyears, iniyear = iniyear,
                               aggregate = FALSE)
     # object of correct dimensionality
@@ -149,7 +149,7 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
     rm(gw0)
 
     # Only up to pool of fossil groundwater can be used to serve missing water.
-    # Where less water required, only necessary amount is served. 
+    # Where less water required, only necessary amount is served.
     gw <- pmin(gw, missW)
 
     # add groundwater to actually committed water

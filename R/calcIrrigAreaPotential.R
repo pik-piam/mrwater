@@ -56,7 +56,7 @@
 #'                          (mask can be:
 #'                          "none": no mask applied (only for development purposes)
 #'                          "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                          and total physical areas per cell from readLanduseToolbox
+#'                                          and total physical areas per cell from LandInG
 #'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                          "potential:endogenous": potentially multicropped areas given
@@ -93,13 +93,13 @@ calcIrrigAreaPotential <- function(cropAggregation,
     warning("You activated the committed agricultural iteration
               (comAg = TRUE)
               to calculate the potentially irrigated areas.
-              This setting usually has to be combined with 
+              This setting usually has to be combined with
               cropmix = 'hist_rainf'.
               Please double-check!")
   }
   if (!comAg && cropmix != "hist_total") {
     warning("You are calculating potentially irrigated areas
-              without considering previously reserved 
+              without considering previously reserved
               'committed agricultural uses' (comAg = FALSE).
               This setting usually has to be combined with
               cropmix = 'hist_total'.
@@ -208,13 +208,13 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
   # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
   irrigareaWW <- pmin(avlWatWW / watReqWW, 1) * areaPotIrrig
-   # cells with no water requirements also get no irrigated area assigned
+  # cells with no water requirements also get no irrigated area assigned
   irrigareaWW[watReqWW == 0] <- 0
   irrigareaWW <- add_dimension(irrigareaWW, dim = 3.4, add = "type",
                                nm = "irrigatable_ww")
 
   irrigareaWC <- pmin(avlWatWC / watReqWC, 1) * areaPotIrrig
-   # cells with no water requirements also get no irrigated area assigned
+  # cells with no water requirements also get no irrigated area assigned
   irrigareaWC[watReqWC == 0] <- 0
   irrigareaWC <- add_dimension(irrigareaWC, dim = 3.4, add = "type",
                                nm = "irrigatable_wc")

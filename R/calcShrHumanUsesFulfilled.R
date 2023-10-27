@@ -17,7 +17,7 @@
 #'                      (mask can be:
 #'                      "none": no mask applied (only for development purposes)
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
+#'                                      and total physical areas per cell from LandInG
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                      "potential:endogenous": potentially multicropped areas given
@@ -52,16 +52,16 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
   # (can be fulfilled)
   # Water for Non-Agricultural Use after Routing (in mio. m^3)
   fulfilledNAU <- calcOutput("RiverHumanUseAccounting",
-                            iteration = "non_agriculture",
-                            lpjml = lpjml, climatetype = climatetype,
-                            efrMethod = efrMethod, transDist = transDist,
-                            selectyears = selectyears, iniyear = iniyear,
-                            multicropping = multicropping,
-                            accessibilityrule = NULL,
-                            rankmethod = NULL, gainthreshold = NULL,
-                            cropmix = NULL, yieldcalib = NULL,
-                            irrigationsystem = NULL, landScen = NULL,
-                            comAg = FALSE, aggregate = FALSE)
+                             iteration = "non_agriculture",
+                             lpjml = lpjml, climatetype = climatetype,
+                             efrMethod = efrMethod, transDist = transDist,
+                             selectyears = selectyears, iniyear = iniyear,
+                             multicropping = multicropping,
+                             accessibilityrule = NULL,
+                             rankmethod = NULL, gainthreshold = NULL,
+                             cropmix = NULL, yieldcalib = NULL,
+                             irrigationsystem = NULL, landScen = NULL,
+                             comAg = FALSE, aggregate = FALSE)
   fulfilledNAUww <- collapseNames(fulfilledNAU[, , "currHumanWWtotal"])
   fulfilledNAUwc <- collapseNames(fulfilledNAU[, , "currHumanWCtotal"])
 
@@ -104,10 +104,10 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
 
   # Non-Agricultural Water (in mio. m^3 / yr)
   watNonAg <- calcOutput("WaterUseNonAg",
-                        selectyears = selectyears, cells = "lpjcell",
-                        datasource = "WATERGAP_ISIMIP", usetype = "total",
-                        seasonality = "total", harmonType = "average",
-                        lpjml = NULL, climatetype = NULL, aggregate = FALSE)
+                         selectyears = selectyears, cells = "lpjcell",
+                         datasource = "WATERGAP_ISIMIP", usetype = "total",
+                         seasonality = "total", harmonType = "average",
+                         lpjml = NULL, climatetype = NULL, aggregate = FALSE)
 
   actNAUww[, , ] <- collapseNames(watNonAg[, , "withdrawal"])
   actNAUwc[, , ] <- collapseNames(watNonAg[, , "consumption"])
@@ -141,13 +141,13 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
   ### Calculate Share Fulfilled ###
   #################################
   .calcShare <- function(fulfilledWW, actWW, fulfilledWC, actWC) {
-      wwShr <- fulfilledWW / actWW
-      wwShr[actWW == 0 & fulfilledWW == 0] <- NA
-      wwShr[actWW == 0] <- NA
-      wcShr <- fulfilledWC / actWC
-      wcShr[actWC == 0 & fulfilledWC == 0] <- NA
-      wcShr[actWC == 0] <- NA
-      return(pmin(wcShr, wwShr))
+    wwShr <- fulfilledWW / actWW
+    wwShr[actWW == 0 & fulfilledWW == 0] <- NA
+    wwShr[actWW == 0] <- NA
+    wcShr <- fulfilledWC / actWC
+    wcShr[actWC == 0 & fulfilledWC == 0] <- NA
+    wcShr[actWC == 0] <- NA
+    return(pmin(wcShr, wwShr))
   }
   out[, , "nonAg"] <- .calcShare(fulfilledWW = fulfilledNAUww,
                                  actWW = actNAUww,
@@ -158,9 +158,9 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
                                        fulfilledWC = fulfilledCAUwc,
                                        actWC = actCAUwc)
   out[, , "totalHuman"] <- .calcShare(fulfilledWW = fulfilledNAUww + fulfilledCAUww,
-                                 actWW = actNAUww + actCAUww,
-                                 fulfilledWC = fulfilledNAUwc + fulfilledCAUwc,
-                                 actWC = actNAUwc + actCAUwc)
+                                      actWW = actNAUww + actCAUww,
+                                      fulfilledWC = fulfilledNAUwc + fulfilledCAUwc,
+                                      actWC = actNAUwc + actCAUwc)
 
   ##############
   ### Checks ###

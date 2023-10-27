@@ -20,7 +20,7 @@
 #'                      (mask can be:
 #'                      "none": no mask applied (only for development purposes)
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
+#'                                      and total physical areas per cell from LandInG
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                      "potential:endogenous": potentially multicropped areas given
@@ -74,7 +74,7 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
                                              datasource = "FAO",
                                              aggregate = TRUE, regionmapping = "regionmappingH12.csv"))
     pricesRegional <- toolAggregate(pricesRegional, rel = toolGetMapping("regionmappingH12.csv",
-                                    where = "mappingfolder"),
+                                                                         where = "mappingfolder"),
                                     from = "RegionCode", to = "CountryCode")
     p[p == 0] <- pricesRegional[p == 0]
 
@@ -96,8 +96,8 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
           tmp <- tmp[, where(is.na(p[i, , c]))$true$years, invert = TRUE]
 
           p[i, , c] <- time_interpolate(tmp, where(is.na(p[i, , c]))$true$years,
-                                      integrate_interpolated_years = TRUE,
-                                      extrapolation_type = "constant")
+                                        integrate_interpolated_years = TRUE,
+                                        extrapolation_type = "constant")
         }
       }
     }
@@ -120,8 +120,8 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
                             years = NULL, year = "y2005", aggregate = FALSE)
   pNormalized <- pGLO / setYears(pGLO[, 2005, ], NULL)
   weight      <- dimSums(collapseDim(calcOutput("Production", products = "kcr", attributes = "dm",
-                                        aggregate = FALSE))[, getYears(pNormalized),
-                                                            intersect(croplist, getNames(p))],
+                                                aggregate = FALSE))[, getYears(pNormalized),
+                                                                    intersect(croplist, getNames(p))],
                          dim = 1)
   averagePriceDevelopment <- dimSums(pNormalized[, , intersect(croplist, getNames(p))] *
                                        (weight / dimSums(weight, dim = "ItemCodeItem")),

@@ -18,7 +18,7 @@
 #'                      (mask can be:
 #'                      "none": no mask applied (only for development purposes)
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
+#'                                      and total physical areas per cell from LandInG
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                      "potential:endogenous": potentially multicropped areas given
@@ -142,9 +142,9 @@ calcRiverHumanUseAccounting <- function(iteration,
   ### Water inputs
   # Natural flows
   natFlows <- calcOutput("RiverNaturalFlows",
-                          selectyears = selectyears,
-                          lpjml = lpjml, climatetype = climatetype,
-                          aggregate = FALSE)
+                         selectyears = selectyears,
+                         lpjml = lpjml, climatetype = climatetype,
+                         aggregate = FALSE)
   # Natural discharge (for checks)
   natDischarge <- .transformObject(x = collapseNames(natFlows[, , "discharge_nat"]),
                                    gridcells = gridcells,
@@ -153,9 +153,9 @@ calcRiverHumanUseAccounting <- function(iteration,
   lakeEvap <- collapseNames(natFlows[, , "lake_evap_nat"])
   # Runoff (on land and water)
   yearlyRunoff <- collapseNames(calcOutput("YearlyRunoff",
-                                          selectyears = selectyears,
-                                          lpjml = lpjml, climatetype = climatetype,
-                                          aggregate = FALSE))
+                                           selectyears = selectyears,
+                                           lpjml = lpjml, climatetype = climatetype,
+                                           aggregate = FALSE))
   # Reduce to one object (for performance reasons)
   runoffWOEvap <- yearlyRunoff - lakeEvap
 
@@ -168,8 +168,8 @@ calcRiverHumanUseAccounting <- function(iteration,
                                         efrMethod = efrMethod,
                                         aggregate = FALSE)
   } else {
-  # For all currently reserved human uses, we assume that hardly accessible
-  # discharge is made accessible, i.e. there is no inaccessible discharge
+    # For all currently reserved human uses, we assume that hardly accessible
+    # discharge is made accessible, i.e. there is no inaccessible discharge
     inaccessibleDischarge <- new.magpie(cells_and_regions = getItems(runoffWOEvap, dim = 1),
                                         years = getItems(runoffWOEvap, dim = 2),
                                         names = c("on", "off"),
@@ -222,8 +222,8 @@ calcRiverHumanUseAccounting <- function(iteration,
         #     Then: update of discharge required.
         if ((round(tmpRequestWWlocal[c], digits = 8) > 0) ||
             (round((tmpDischarge[c] + prevReservedWC[c, y, scen]) -
-                        prevReservedWW[c, y, scen],
-                    digits = 8) < 0)) {
+                   prevReservedWW[c, y, scen],
+                   digits = 8) < 0)) {
 
           cellsRequest <- cellsDischarge <- c
           if (length(rs$upstreamcells[[c]]) > 0) {
@@ -237,8 +237,8 @@ calcRiverHumanUseAccounting <- function(iteration,
                                                       prevWW = prevReservedWW[c, y, scen],
                                                       currWW = tmpRequestWWlocal[c],
                                                       inaccD = inaccessD[c, y, scen]),
-                                              inoutLIST = list(disc = tmpDischarge[cellsDischarge],
-                                                               currWC = tmpRequestWClocal[cellsRequest]))
+                                        inoutLIST = list(disc = tmpDischarge[cellsDischarge],
+                                                         currWC = tmpRequestWClocal[cellsRequest]))
 
           # Updated flows
           tmpDischarge[cellsDischarge]    <- tmp$disc
@@ -256,7 +256,7 @@ calcRiverHumanUseAccounting <- function(iteration,
   #       It is used to calculate the ratio to correct withdrawals
   #       that are not an output of the toolRiverUpDownBalance
   fracFulfilled <- ifelse(currRequestWCtotal > 0,
-                            currRequestWClocal / currRequestWCtotal,
+                          currRequestWClocal / currRequestWCtotal,
                           0)
   currRequestWWlocal <- fracFulfilled * currRequestWWtotal
 
@@ -283,13 +283,13 @@ calcRiverHumanUseAccounting <- function(iteration,
   if (transDist != 0) {
     tmp <- toolNeighborUpDownProvision(rs = rs, transDist = transDist,
                                        years = years, scenarios = scenarios,
-                       listNeighborIN = list(discharge = discharge,
-                                             inaccD = inaccessD,
-                                             prevReservedWC = prevReservedWC,
-                                             prevReservedWW = prevReservedWW,
-                                             missingWC = missingWC,
-                                             missingWW = missingWW,
-                                             runoffWOEvap = runoffWOEvap))
+                                       listNeighborIN = list(discharge = discharge,
+                                                             inaccD = inaccessD,
+                                                             prevReservedWC = prevReservedWC,
+                                                             prevReservedWW = prevReservedWW,
+                                                             missingWC = missingWC,
+                                                             missingWW = missingWW,
+                                                             runoffWOEvap = runoffWOEvap))
     # Update discharge
     discharge <- tmp$discharge
 
@@ -304,18 +304,18 @@ calcRiverHumanUseAccounting <- function(iteration,
     ### Checks ###
     # All reserved water needs to end up somewhere
     if (any(abs(round(apply(tmp$toNeighborWW, MARGIN = 3, FUN = sum) -
-                        apply(tmp$fromNeighborWW, MARGIN = 3, FUN = sum),
+                      apply(tmp$fromNeighborWW, MARGIN = 3, FUN = sum),
                       digits = 6)) > 1e-6)) {
       stop(paste0("After Neighbor Water Provision in
                    calcRiverHumanUseAccounting with iteration = ",
-                   iteration, " some water was not properly allocated."))
+                  iteration, " some water was not properly allocated."))
     }
     if (any(abs(round(apply(tmp$toNeighborWC, MARGIN = 3, FUN = sum) -
-                        apply(tmp$fromNeighborWC, MARGIN = 3, FUN = sum),
+                      apply(tmp$fromNeighborWC, MARGIN = 3, FUN = sum),
                       digits = 6)) > 1e-6)) {
       stop(paste0("After Neighbor Water Provision in
                    calcRiverHumanUseAccounting with iteration = ",
-                   iteration, " some water was not properly allocated."))
+                  iteration, " some water was not properly allocated."))
     }
     # The water volume assigned to/from a neighbor must not exceed the missing water requested
     if (any(apply(missingWC, MARGIN = 3, FUN = sum) - apply(tmp$fromNeighborWC, MARGIN = 3, FUN = sum) < 0) ||
@@ -338,16 +338,16 @@ calcRiverHumanUseAccounting <- function(iteration,
   out <- .transformObject(x = new.magpie(cells_and_regions = getItems(natDischarge, dim = 1),
                                          years = getItems(natDischarge, dim = 2),
                                          names = c("discharge",
-                          # water reserved in current cell (for either local or neighboring cell)
-                          # to be considered in following river water use accountings
+                                                   # water reserved in current cell (for either local or neighboring cell)
+                                                   # to be considered in following river water use accountings
                                                    "reservedWW",
                                                    "reservedWC",
-                          # water available for specified use from local sources and surrounding cells:
+                                                   # water available for specified use from local sources and surrounding cells:
                                                    "currHumanWWtotal", "currHumanWCtotal",
-                          # water available for specified use from local sources
+                                                   # water available for specified use from local sources
                                                    "currHumanWWlocal", "currHumanWClocal"),
-                                          sets = c("x.y.iso", "year", "data"),
-                                          fill = NA),
+                                         sets = c("x.y.iso", "year", "data"),
+                                         fill = NA),
                           gridcells = gridcells,
                           years = selectyears, names = dimnames)
   # river discharge flows
@@ -391,9 +391,9 @@ calcRiverHumanUseAccounting <- function(iteration,
                                      names = dimnames)
   basinDischarge[unique(rs$endcell), , ] <- out[unique(rs$endcell), , "discharge"]
   totalWat <- dimSums(basinDischarge, dim = 1) +
-                dimSums(out[, , "currHumanWCtotal"],
-                        dim = c("x", "y", "iso", "data")) +
-                  dimSums(inputData[, , "prevReservedWC"], dim = 1)
+    dimSums(out[, , "currHumanWCtotal"],
+            dim = c("x", "y", "iso", "data")) +
+    dimSums(inputData[, , "prevReservedWC"], dim = 1)
   # Total water (summed basin discharge + consumed)
   # must be identical across scenarios
   for (y in selectyears) {
@@ -406,8 +406,8 @@ calcRiverHumanUseAccounting <- function(iteration,
   # Total water (summed basin discharge + consumed)
   # must be same as natural summed basin discharge
   if (any(abs(round(dimSums(natDischarge[unique(rs$endcell), , ],
-                        dim = 1) - totalWat,
-                digits = 6)) > 1e-6)) {
+                            dim = 1) - totalWat,
+                    digits = 6)) > 1e-6)) {
     stop("In calcRiverHumanUseAccounting:
           Water has been lost during the Neighbor Water Provision Algorithm")
   }

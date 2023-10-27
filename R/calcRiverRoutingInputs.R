@@ -25,7 +25,7 @@
 #'                          (mask can be:
 #'                          "none": no mask applied (only for development purposes)
 #'                          "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                           and total physical areas per cell from readLanduseToolbox
+#'                                           and total physical areas per cell from LandInG
 #'                          "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                          "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                          "potential:endogenous": potentially multicropped areas given
@@ -124,9 +124,9 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     prevReservedWW <- .transformObject(x = 0,
                                        cells = cells, years = selectyears, scenarios = scenarios)
     prevReservedWW[, , "on"] <- calcOutput("EnvmtlFlowRequirements",
-                                          lpjml = lpjml, climatetype = climatetype,
-                                          selectyears = selectyears, efrMethod = efrMethod,
-                                          aggregate = FALSE)[, , "EFR"]
+                                           lpjml = lpjml, climatetype = climatetype,
+                                           selectyears = selectyears, efrMethod = efrMethod,
+                                           aggregate = FALSE)[, , "EFR"]
     # No previous consumption & no previous human uses yet
     prevReservedWC <- .transformObject(x = 0, cells = cells,
                                        years = selectyears, scenarios = scenarios)
@@ -134,10 +134,10 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Current Uses
     # Non-Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
     currRequestWWlocal <- .transformObject(x = nonAgWW,
-                                          cells = cells, years = selectyears, scenarios = scenarios)
+                                           cells = cells, years = selectyears, scenarios = scenarios)
     # Non-Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
     currRequestWClocal <- .transformObject(x = nonAgWC,
-                                          cells = cells, years = selectyears, scenarios = scenarios)
+                                           cells = cells, years = selectyears, scenarios = scenarios)
 
     ## Discharge from previous routing (natural discharge)
     discharge <- collapseNames(calcOutput("RiverNaturalFlows",
@@ -151,16 +151,16 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Previous Uses
     # Non-agricultural withdrawals and consumption
     previousHumanUse <- calcOutput("RiverHumanUseAccounting",
-                                    iteration = "non_agriculture",
-                                    lpjml = lpjml, climatetype = climatetype,
-                                    efrMethod = efrMethod, multicropping = multicropping,
-                                    selectyears = selectyears, iniyear = iniyear,
-                                    transDist = transDist, comAg = NULL,
-                                    accessibilityrule = accessibilityrule,
-                                    rankmethod = NULL, gainthreshold = NULL,
-                                    cropmix = NULL, yieldcalib = NULL,
-                                    irrigationsystem = NULL, landScen = NULL,
-                                    aggregate = FALSE)
+                                   iteration = "non_agriculture",
+                                   lpjml = lpjml, climatetype = climatetype,
+                                   efrMethod = efrMethod, multicropping = multicropping,
+                                   selectyears = selectyears, iniyear = iniyear,
+                                   transDist = transDist, comAg = NULL,
+                                   accessibilityrule = accessibilityrule,
+                                   rankmethod = NULL, gainthreshold = NULL,
+                                   cropmix = NULL, yieldcalib = NULL,
+                                   irrigationsystem = NULL, landScen = NULL,
+                                   aggregate = FALSE)
 
     # Minimum flow requirements determined by previous river routing:
     # Environmental Flow Requirements + Reserved for Non-Agricultural Uses (in mio. m^3 / yr)
@@ -181,17 +181,17 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
     # Committed agricultural uses per crop (in mio. m^3 / yr)
     watComAg <- calcOutput("WaterUseCommittedAg",
-                            lpjml = lpjml, climatetype = climatetype,
-                            selectyears = selectyears, iniyear = iniyear,
-                            multicropping = m, aggregate = FALSE)
+                           lpjml = lpjml, climatetype = climatetype,
+                           selectyears = selectyears, iniyear = iniyear,
+                           multicropping = m, aggregate = FALSE)
     # Committed Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
     currRequestWWlocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "withdrawal"],
                                                                      dim = "crop")),
-                                          cells = cells, years = selectyears, scenarios = scenarios)
+                                           cells = cells, years = selectyears, scenarios = scenarios)
     # Committed Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
     currRequestWClocal <- .transformObject(x = collapseNames(dimSums(watComAg[, , "consumption"],
                                                                      dim = "crop")),
-                                          cells = cells, years = selectyears, scenarios = scenarios)
+                                           cells = cells, years = selectyears, scenarios = scenarios)
 
     ## Discharge from previous routing
     discharge <- collapseNames(previousHumanUse[, , "discharge"])
@@ -277,12 +277,12 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
   ###############
   ### Final magpie object structure to be filled
   out <- .transformObject(x = new.magpie(cells_and_regions = getItems(watNonAg, dim = 1),
-                                        years = getItems(watNonAg, dim = 2),
-                                        names = c("discharge",
-                                                  "prevReservedWW", "prevReservedWC",
-                                                  "currRequestWWlocal", "currRequestWClocal"),
-                                        sets = c("x.y.iso", "year", "data"),
-                                        fill = NA),
+                                         years = getItems(watNonAg, dim = 2),
+                                         names = c("discharge",
+                                                   "prevReservedWW", "prevReservedWC",
+                                                   "currRequestWWlocal", "currRequestWClocal"),
+                                         sets = c("x.y.iso", "year", "data"),
+                                         fill = NA),
                           cells = cells, years = selectyears, scenarios = scenarios)
   out[, , "discharge"]          <- discharge
   out[, , "prevReservedWW"]     <- prevReservedWW

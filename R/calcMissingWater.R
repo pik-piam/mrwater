@@ -6,8 +6,8 @@
 #'              This information is used to derive
 #'              non-renewable groundwater use.
 #'
-#' @param output        sector to be reported: 
-#'                      non-agricultural sector water use ("nonAg"), 
+#' @param output        sector to be reported:
+#'                      non-agricultural sector water use ("nonAg"),
 #'                      (committed) agricultural water use ("comAg"),
 #'                      or both ("total")
 #' @param lpjml         LPJmL version used
@@ -23,7 +23,7 @@
 #'                      (mask can be:
 #'                      "none": no mask applied (only for development purposes)
 #'                      "actual:total": currently multicropped areas calculated from total harvested areas
-#'                                      and total physical areas per cell from readLanduseToolbox
+#'                                      and total physical areas per cell from LandInG
 #'                      "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                      "actual:irrig_crop" (crop- and irrigation-specific) "total"
 #'                      "potential:endogenous": potentially multicropped areas given
