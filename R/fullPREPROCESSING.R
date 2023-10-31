@@ -57,13 +57,32 @@ fullPREPROCESSING <- function(protectLand = "HalfEarth",
   allocationrule    <- "optimization"
   rankmethod        <- "USD_m3:GLO:TRUE"
 
-  # To DO: distinguish sustainable and unsustainable scenarios
-  fossilGW <- TRUE
-
   ################
   # MAIN RESULTS #
   ################
-  # Potentially irrigated area (PIA)
+  # Multiple cropping factor (spatially explicit) from LandInG
+  # does this have to be capped?
+
+  # Crop-specific irrigation water requirements
+  # (a) single cropping
+  # (b) multiple cropping
+
+  # Areas equipped for irrigation
+  # -> committed irrigated areas (from calcIrrigAreaCommitted!)
+
+  # Potentially irrigated areas (PIA)
+  # -> including groundwater
+  # for potCropland
+  # How to include protection scenarios? Additional scenario dimension or separate files?
+  # in MAgPIE: for past time steps: EFP off; scenarios start in 2020
+  # How to ensure fade-in of EFP? diff between (EFP-off and EFP-on) * fader?
+
+  # Water availability (PIWW, PIWC)
+  # From renewable sources
+  # From fossil groundwater
+
+
+  # Potentially irrigated area from renewable water sources (PIA)
   calcOutput("IrrigAreaPotential", cropAggregation = TRUE,
               lpjml = lpjml, climatetype = climatetype,
               selectyears = lpjYears, iniyear = iniyear,
@@ -74,10 +93,23 @@ fullPREPROCESSING <- function(protectLand = "HalfEarth",
               landScen = landScen,
               cropmix = cropmix, comAg = TRUE,
               multicropping = multicropping,
-              transDist = transDist, fossilGW = fossilGW,
+              transDist = transDist, fossilGW = FALSE,
               aggregate = FALSE, file = "potIrrigArea.mz")
+  calcOutput("IrrigAreaPotential", cropAggregation = TRUE,
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = lpjYears, iniyear = iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule,
+             gainthreshold = gt, irrigationsystem = irrigationsystem,
+             landScen = landScen,
+             cropmix = cropmix, comAg = TRUE,
+             multicropping = multicropping,
+             transDist = transDist, fossilGW = TRUE,
+             aggregate = FALSE, file = "potIrrigArea_fossilGW.mz")
   ## To Do
-  # Note: switch to aggregate = "cluster" (but need to switch to different clustering first)
+  # (1) return PIA, PIWC, PIWW for renewable water sources & PIA, PIWC, PIWW from fossil groundwater (i.e. diff between with GW and without GW) --> separate function!
+  # (1) switch to aggregate = "cluster" (but need to switch to different clustering first)
 
   # make function that combines all required scenarios:
   # GW on and off; EFP on and off; different SSPs

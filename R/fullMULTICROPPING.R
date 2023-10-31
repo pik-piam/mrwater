@@ -3,13 +3,22 @@
 #'              irrigation potentials on current cropland
 #'              at cellular resolution.
 #'
+#' @param allocationrule    Rule to be applied for river basin discharge allocation
+#'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
+#' @param fossilGW          If TRUE: non-renewable groundwater can be used.
+#'                          If FALSE: non-renewable groundwater cannot be used.
+#' @param transDist         Water transport distance allowed to fulfill locally
+#'                          unfulfilled water demand by surrounding cell water availability
+#'
 #' @author Felicitas Beier
 #'
 #' @importFrom stringr str_split
 #'
 #' @export
 
-fullMULTICROPPING <- function() {
+fullMULTICROPPING <- function(allocationrule = "optimization",
+                              fossilGW = TRUE,
+                              transDist = 100) {
 
   # scenarios for paper: landScen <- "currCropland:NA", "currIrrig:NA"
 
@@ -26,7 +35,6 @@ fullMULTICROPPING <- function() {
 
   # Settings for optimization algorithm
   accessibilityrule <- "CV:2"
-  allocationrule    <- "optimization" # JENS/BENNI: "optimization" #### or "upstreamfirst"?
   rankmethod        <- "USD_m3:GLO:TRUE"
   ssp               <- "ssp2"
   efp               <- "off"
@@ -34,10 +42,6 @@ fullMULTICROPPING <- function() {
   # Assumption in this study:
   # only technical potential is reported for the purpose of this analysis:
   gtrange <- gainthreshold <- 0
-  # default transport distance is 100 km (sensitivity is provided in SI)
-  transDist         <- 100
-  # fossil groundwater use is activated
-  fossilGW          <- TRUE
   # potential yields from LPJmL to derive multiple cropping potentials
   yieldcalib        <- "TRUE:TRUE:actual:irrig_crop" # FALSE
   # reserve already irrigated areas for irrigation
