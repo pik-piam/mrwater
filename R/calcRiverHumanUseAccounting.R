@@ -6,8 +6,8 @@
 #' @param selectyears   Years to be returned
 #'                      (Note: does not affect years of harmonization or smoothing)
 #' @param iteration     Water use to be allocated in this river routing iteration
-#'                      (non_agriculture, committed_agriculture, potential_irrigation,
-#'                      special case (for current irrigated area analysis): "committed_agriculture_fullPotential").
+#'                      (non_agriculture, committed_agriculture,
+#'                      committed_agriculture_fullMulticropping, potential_irrigation,
 #' @param climatetype   Switch between different climate scenarios
 #'                      or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear       Initialization year of irrigation system

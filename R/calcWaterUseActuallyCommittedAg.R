@@ -70,7 +70,7 @@ calcWaterUseActuallyCommittedAg <- function(iteration = "committed_agriculture",
                          multicropping = m, aggregate = FALSE)
 
   # Read in cropland area (by crop) from crop area initialization (in mio. ha)
-  grownCrops <- calcOutput("IrrigAreaActuallyCommitted", iteration = "committed_agriculture",
+  grownCrops <- calcOutput("IrrigAreaActuallyCommitted",
                            selectyears = selectyears, iniyear = iniyear,
                            lpjml = lpjml, climatetype = climatetype,
                            efrMethod = efrMethod, multicropping = m,

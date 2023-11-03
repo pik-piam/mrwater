@@ -106,6 +106,17 @@ calcIrrigAreaPotential <- function(cropAggregation,
               Please double-check!")
   }
 
+  # To Do: split areas:
+  # committed:
+  # -> irrigArea * shrMC
+  # additional (beyond committed):
+  # -> irrigArea * (1-shrMC) where enough water available from committed_agriculture_fullMulticropping run
+  # -> rainfedArea where enough water available for additonal irrigation
+
+  # Note: need to consider shrPotMC! (new function: calcPotentialMulticroppingArea)
+
+  # total avlWat (i.e. from all three runs and GW) / reqWat = shr fulfilled --> doesn't necessarily add up because of cropmix (therefore, split calculation as above)
+
   ## Read in (renewable and non-renewable) water available for irrigation (in mio. m^3)
   #  including committed agricultural water (if activated)
   avlWat <- calcOutput("WaterUsePotential", selectyears = selectyears,
@@ -156,6 +167,25 @@ calcIrrigAreaPotential <- function(cropAggregation,
     comWatWW <- collapseNames(dimSums(comWatAct, dim = "crop")[, , "withdrawal"])
     comWatWC <- collapseNames(dimSums(comWatAct, dim = "crop")[, , "consumption"])
 
+    # Water committed to intensify currently irrigated areas to full multiple
+    # cropping potential (in mio. m^3)
+    if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
+      # water required to expand multiple cropping in already irrigated areas and can
+      # be fulfilled by renewable water resources
+      currHumanAdd <- calcOutput("RiverHumanUseAccounting",
+                                 iteration = "committed_agriculture_fullMulticropping",
+                                 lpjml = lpjml, climatetype = climatetype,
+                                 transDist = transDist, comAg = NULL,
+                                 efrMethod = efrMethod, multicropping = multicropping,
+                                 selectyears = selectyears, iniyear = iniyear,
+                                 accessibilityrule = NULL,
+                                 rankmethod = NULL, gainthreshold = NULL,
+                                 cropmix = NULL, yieldcalib = NULL,
+                                 irrigationsystem = NULL, landScen = NULL,
+                                 aggregate = FALSE)
+      comWatWC <- comWatWC + collapseNames(currHumanAdd[, , "currHumanWCtotal"])
+      comWatWW <- comWatWW + collapseNames(currHumanAdd[, , "currHumanWWtotal"])
+    }
   } else {
     comagyear <- NULL
 

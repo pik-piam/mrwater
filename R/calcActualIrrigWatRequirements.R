@@ -91,9 +91,9 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
   return(list(x            = irrigReq,
               weight       = irrigArea,
               unit         = "m^3 per ha per yr",
-              description  = "Irrigation water requirements
-                             for different crop types
-                             under selected irrigation system share
-                             per cell and crop",
+              description  = paste0("Irrigation water requirements ",
+                                    "for different crop types ",
+                                    "under selected irrigation system share ",
+                                    "per cell and crop"),
               isocountries = FALSE))
 }

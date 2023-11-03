@@ -137,7 +137,7 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
   # potential multiple cropping suitability
   calcOutput("MulticroppingSuitability", selectyears = selectyears,
              lpjml = lpjml, climatetype = climatetype,
-             temperatureGCM = NULL, minThreshold = 100, suitability = "endogenous",
+             suitability = "endogenous", sectoral = "kcr",
              file = "multicroppingSuitability.mz", aggregate = FALSE)
 
   ###############
@@ -364,17 +364,6 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
                file = paste0("comAgAreaACT_multipleACT_", t, ".mz")
     )
 
-    calcOutput("IrrigAreaActuallyCommitted",
-               fossilGW = FALSE,
-               lpjml = lpjml, climatetype = climatetype,
-               selectyears = selectyears, iniyear = iniyear,
-               efrMethod = efrMethod, transDist = t,
-               multicropping = "TRUE:potential:endogenous",
-               iteration = "committed_agriculture_fullPotential",
-               aggregate = FALSE,
-               file = paste0("comAgAreaACT_multiplePOT_", t, ".mz")
-    )
-
 
     # Committed Agricultural water uses
     calcOutput("RiverHumanUseAccounting",
@@ -406,7 +395,7 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
                file = paste0("comAgWatACT_multipleACT_", t, ".mz")
     )
     calcOutput("RiverHumanUseAccounting",
-               iteration = "committed_agriculture_fullPotential",
+               iteration = "committed_agriculture_fullMulticropping",
                lpjml = lpjml, climatetype = climatetype,
                efrMethod = efrMethod,
                selectyears = selectyears, iniyear = iniyear,
@@ -445,7 +434,7 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
   ##############
   # Multiple cropping suitability per crop calculated based on crop and grass productivity
   # (for LPJmL crop types)
-  calcOutput("MulticroppingSuitability",
+  calcOutput("MulticroppingSuitability", sectoral = "lpj",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, suitability = "endogenous",
              aggregate = FALSE, file = "suitMC_LPJmL.mz"
