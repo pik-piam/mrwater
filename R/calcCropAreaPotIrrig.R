@@ -34,16 +34,11 @@
 calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
                                  cropmix, landScen) {
 
-  # Setting selection for historical period
-  if (grepl("hist", cropmix)) {
+  # Setting selection for cropmix
+  if (grepl("currIrrig", landScen)) {
+    cropmix <- "hist_irrig"
+  } else if (grepl("currCropland", landScen)) {
     cropmix <- "hist_total"
-  } else {
-    warning("Please note: when proxy crops are selected as cropmix,
-    there are most likely mismatches in the area accounting of the historical period.
-    For analyses focusing on historical periods: please choose the historical cropmix
-    and as long as there is still committed irrigation area left (not fully depreciated).
-    For future analysis that are supposed to meet the initialization year,
-    choose a wise setting (check: calcCropAreaPotIrrig)") # To Do
   }
 
   ### Read in data ###
@@ -80,8 +75,11 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
     stop("Function calcCropAreaPotIrrig produced NA values")
   }
 
-  if (any(round(out, digits = 3) < 0)) {
+  if (any(round(out, digits = 6) < 0)) {
     stop("Function calcCropAreaPotIrrig produced negative values")
+  } else {
+    # set negatives due to numerical reasons to 0
+    out[out < 0] <- 0
   }
 
   return(list(x            = out,
