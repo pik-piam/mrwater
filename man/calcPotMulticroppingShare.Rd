@@ -114,7 +114,7 @@ Calculates share of currently irrigated areas that is multiple cropped.
 }
 \examples{
 \dontrun{
-calcOutput("IrrigAreaPotential", aggregate = FALSE)
+calcOutput("PotMulticroppingShare", aggregate = FALSE)
 }
 
 }

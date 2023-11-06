@@ -35,10 +35,12 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
                                  cropmix, landScen) {
 
   # Setting selection for cropmix
-  if (grepl("currIrrig", landScen)) {
-    cropmix <- "hist_irrig"
-  } else if (grepl("currCropland", landScen)) {
-    cropmix <- "hist_total"
+  if (grepl("hist", cropmix)) {
+    if (grepl("currIrrig", landScen)) {
+      cropmix <- "hist_irrig"
+    } else if (grepl("currCropland", landScen)) {
+      cropmix <- "hist_total"
+    }
   }
 
   ### Read in data ###
@@ -51,8 +53,8 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
 
   # share of crop area by crop type
   cropareaShr <- setYears(calcOutput("CropAreaShare",
-                                    iniyear = iniyear, cropmix = cropmix,
-                                    aggregate = FALSE),
+                                     iniyear = iniyear, cropmix = cropmix,
+                                     aggregate = FALSE),
                           NULL)
 
   # crop-specific area available for potential irrigation

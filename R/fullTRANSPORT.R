@@ -164,7 +164,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                 file = paste0("comAgUses_", transDist, "km.mz"))
 
     # Current State (Committed Agricultural Area)
-    calcOutput("IrrigAreaPotential", cropAggregation = TRUE,
+    calcOutput("PotIrrigAreas", cropAggregation = TRUE,
                gainthreshold = gainthreshold,
                landScen = paste0("currIrrig:", "NULL"),
                transDist = transDist, fossilGW = FALSE,
@@ -178,7 +178,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                aggregate = FALSE,
                file = paste0("curpotIrrigArea_", transDist, "km.mz"))
 
-    calcOutput("WaterUsePotential", gainthreshold = gainthreshold,
+    calcOutput("PotWater", gainthreshold = gainthreshold,
                landScen = paste0("currIrrig:", "NULL"),
                transDist = transDist, fossilGW = FALSE,
                selectyears = selectyears, iniyear = iniyear,
@@ -192,7 +192,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                file = paste0("curpotIrrigWater_", transDist, "km.mz"))
 
     # Potentially Irrigated Area (with previously committed areas)
-    calcOutput("IrrigAreaPotential", cropAggregation = TRUE,
+    calcOutput("PotIrrigAreas", cropAggregation = TRUE,
                gainthreshold = gainthreshold,
                landScen = paste0("currCropland:", "NULL"),
                transDist = transDist, fossilGW = FALSE,
@@ -206,7 +206,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                aggregate = FALSE,
                file = paste0("potIrrigArea_", transDist, "km.mz"))
 
-    calcOutput("WaterUsePotential", gainthreshold = gainthreshold,
+    calcOutput("PotWater", gainthreshold = gainthreshold,
                landScen = paste0("currCropland:", "NULL"),
                transDist = transDist, fossilGW = FALSE,
                selectyears = selectyears, iniyear = iniyear,
@@ -220,7 +220,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                file = paste0("potIrrigWater_", transDist, "km.mz"))
 
     # Potentially Irrigated Area (without committed areas)
-    calcOutput("IrrigAreaPotential", cropAggregation = TRUE,
+    calcOutput("PotIrrigAreas", cropAggregation = TRUE,
                gainthreshold = gainthreshold,
                landScen = paste0("currCropland:", "NULL"),
                transDist = transDist, fossilGW = FALSE,
@@ -234,7 +234,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
                aggregate = FALSE,
                file = paste0("fullpotIrrigArea_", transDist, "km.mz"))
 
-    calcOutput("WaterUsePotential", gainthreshold = gainthreshold,
+    calcOutput("PotWater", gainthreshold = gainthreshold,
                landScen = paste0("currCropland:", "NULL"),
                transDist = transDist, fossilGW = FALSE,
                selectyears = selectyears, iniyear = iniyear,

@@ -71,7 +71,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("IrrigAreaPotential", aggregate = FALSE)
+#' calcOutput("PotMulticroppingShare", aggregate = FALSE)
 #' }
 #'
 #' @importFrom stringr str_split
@@ -107,7 +107,7 @@ calcPotMulticroppingShare <- function(lpjml, climatetype,
   # Potential irrigation water use (in mio. m^3 per year):
   # This includes committed agricultural water use, multiple cropping expansion on irrigated areas,
   # fossil groundwater and additional irrigation water potential
-  watPotAvl <- calcOutput("WaterUsePotential",
+  watPotAvl <- calcOutput("PotWater",
                           lpjml = lpjml, climatetype = climatetype,
                           selectyears = selectyears, iniyear = iniyear,
                           efrMethod = efrMethod, accessibilityrule = accessibilityrule,

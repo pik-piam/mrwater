@@ -83,7 +83,7 @@ fullPREPROCESSING <- function(protectLand = "HalfEarth",
 
 
   # Potentially irrigated area from renewable water sources (PIA)
-  calcOutput("IrrigAreaPotential", cropAggregation = TRUE,
+  calcOutput("PotIrrigAreas", cropAggregation = TRUE,
               lpjml = lpjml, climatetype = climatetype,
               selectyears = lpjYears, iniyear = iniyear,
               efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -95,7 +95,7 @@ fullPREPROCESSING <- function(protectLand = "HalfEarth",
               multicropping = multicropping,
               transDist = transDist, fossilGW = FALSE,
               aggregate = FALSE, file = "potIrrigArea.mz")
-  calcOutput("IrrigAreaPotential", cropAggregation = TRUE,
+  calcOutput("PotIrrigAreas", cropAggregation = TRUE,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = lpjYears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,

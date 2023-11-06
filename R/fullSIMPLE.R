@@ -82,7 +82,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   # unit: Mha
 
   # Potentially irrigated area
-  calcOutput("IrrigAreaPotential", gainthreshold = 0,
+  calcOutput("PotIrrigAreas", gainthreshold = 0,
               cropAggregation = TRUE,
               selectyears = selectyears, iniyear = iniyear,
               climatetype = climatetype, lpjml = lpjml,
@@ -95,7 +95,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
               transDist = transDist, fossilGW = TRUE,
               aggregate = FALSE,
               file = "PIA_CUR_wfGW.mz")
-  calcOutput("IrrigAreaPotential", gainthreshold = 0,
+  calcOutput("PotIrrigAreas", gainthreshold = 0,
              cropAggregation = TRUE,
              selectyears = selectyears, iniyear = iniyear,
              climatetype = climatetype, lpjml = lpjml,
@@ -110,7 +110,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              file = "PIA_CUR_wofGW.mz")
 
   ## This currently produces negative values. Please fix and then include again
-  # calcOutput("IrrigAreaPotential", gainthreshold = 0,
+  # calcOutput("PotIrrigAreas", gainthreshold = 0,
   #            cropAggregation = TRUE,
   #            selectyears = selectyears, iniyear = iniyear,
   #            climatetype = climatetype, lpjml = lpjml,
@@ -123,7 +123,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   #            transDist = transDist, fossilGW = TRUE,
   #            aggregate = FALSE,
   #            file = "PIA_POT_wfGW.mz")
-  # calcOutput("IrrigAreaPotential", gainthreshold = 0,
+  # calcOutput("PotIrrigAreas", gainthreshold = 0,
   #            cropAggregation = TRUE,
   #            selectyears = selectyears, iniyear = iniyear,
   #            climatetype = climatetype, lpjml = lpjml,
@@ -138,7 +138,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   #            file = "PIA_POT_wofGW.mz")
 
   # Currently irrigated area
-  calcOutput("IrrigAreaPotential", gainthreshold = 0,
+  calcOutput("PotIrrigAreas", gainthreshold = 0,
              cropAggregation = TRUE,
              selectyears = selectyears, iniyear = iniyear,
              climatetype = climatetype, lpjml = lpjml,
@@ -151,7 +151,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              transDist = transDist, fossilGW = TRUE,
              aggregate = FALSE,
              file = "PIA_IRR_wfGW.mz")
-  calcOutput("IrrigAreaPotential", gainthreshold = 0,
+  calcOutput("PotIrrigAreas", gainthreshold = 0,
              cropAggregation = TRUE,
              selectyears = selectyears, iniyear = iniyear,
              climatetype = climatetype, lpjml = lpjml,
@@ -181,7 +181,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   # unit: mio m^3
 
   # Potential irrigation water withdrawal
-  calcOutput("WaterUsePotential", gainthreshold = 0,
+  calcOutput("PotWater", gainthreshold = 0,
               selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
               accessibilityrule = accessibilityrule, efrMethod = efrMethod,
               rankmethod = rankmethod, yieldcalib = yieldcalib,
@@ -192,7 +192,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
               transDist = transDist, fossilGW = TRUE,
               aggregate = FALSE,
               file = "PIWW_CUR_wfGW.mz")
-  calcOutput("WaterUsePotential", gainthreshold = 0,
+  calcOutput("PotWater", gainthreshold = 0,
              selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
              accessibilityrule = accessibilityrule, efrMethod = efrMethod,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
@@ -205,7 +205,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              file = "PIWW_CUR_wofGW.mz")
 
   ### This currently produces negative values. Please fix and include again.
-  # calcOutput("WaterUsePotential", gainthreshold = 0,
+  # calcOutput("PotWater", gainthreshold = 0,
   #            selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
   #            accessibilityrule = accessibilityrule, efrMethod = efrMethod,
   #            rankmethod = rankmethod, yieldcalib = yieldcalib,
@@ -216,7 +216,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   #            transDist = transDist, fossilGW = TRUE,
   #            aggregate = FALSE,
   #            file = "PIWW_POT_wfGW.mz")
-  # calcOutput("WaterUsePotential", gainthreshold = 0,
+  # calcOutput("PotWater", gainthreshold = 0,
   #            selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
   #            accessibilityrule = accessibilityrule, efrMethod = efrMethod,
   #            rankmethod = rankmethod, yieldcalib = yieldcalib,
@@ -229,7 +229,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
   #            file = "PIWW_POT_wofGW.mz")
 
   # Current irrigation water withdrawal
-  calcOutput("WaterUsePotential", gainthreshold = 0,
+  calcOutput("PotWater", gainthreshold = 0,
              selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
              accessibilityrule = accessibilityrule, efrMethod = efrMethod,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
@@ -240,7 +240,7 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              transDist = transDist, fossilGW = TRUE,
              aggregate = FALSE,
              file = "PIWW_IRR_wfGW.mz")
-  calcOutput("WaterUsePotential", gainthreshold = 0,
+  calcOutput("PotWater", gainthreshold = 0,
              selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
              accessibilityrule = accessibilityrule, efrMethod = efrMethod,
              rankmethod = rankmethod, yieldcalib = yieldcalib,
