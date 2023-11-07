@@ -233,7 +233,7 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
 
   ### (B) Water Use ###
   # potentially irrigation water on current cropland (under single cropping conditions)
-  calcOutput("PotWater", cropAggregation = FALSE,
+  calcOutput("PotWater",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -245,7 +245,7 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
              aggregate = FALSE,
              file = "piwCUR_single.mz")
   # potentially irrigation water on current cropland (under current multiple cropping conditions)
-  calcOutput("PotWater", cropAggregation = FALSE,
+  calcOutput("PotWater",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -257,7 +257,7 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
              aggregate = FALSE,
              file = "piwCUR_multACT.mz")
   # potentially irrigation water on current cropland (under consideration of potential multiple cropping)
-  calcOutput("PotWater", cropAggregation = FALSE,
+  calcOutput("PotWater",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -269,7 +269,7 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
              aggregate = FALSE,
              file = "piwCUR_multPOT.mz")
   # potentially irrigation water on currently irrigated cropland (under consideration of potential multiple cropping)
-  calcOutput("PotWater", cropAggregation = FALSE,
+  calcOutput("PotWater",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
