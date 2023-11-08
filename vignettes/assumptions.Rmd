@@ -56,7 +56,7 @@ that is compared to the available water (see ``calcRiverDischargeAllocation``).
 For the case that crop-specific irrigation water requirements are reported to be 0 in the 
 input data, no irrigation area is assigned to these crops in the algorithm that derives PIA
 because the assumption is that irrigation is not required there and therefore rainfed production
-takes place (see ``calcIrrigAreaPotential``). 
+takes place (see ``calcPotIrrigAreas``). 
 ```{r RainfedLandMismatch,  include = TRUE, echo = TRUE}
 print(paste0("Total rainfed area is, ",
               round(sum(rfArea), digits = 2),

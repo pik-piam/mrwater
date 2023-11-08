@@ -80,7 +80,7 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
   # tmp[tmp < 0] <- 0
   #
   # irrigWat <- irrigWat * tmp
-  ### JENS: Should this be included or not? Would need to be addressed in calcIrrigAreaPotential
+  ### JENS: Should this be included or not? Would need to be addressed in calcPotIrrigAreas
   ###       accordingly. It has an effect on calcRevenue. MAgPIE only gets aggregated across crops.
 
   # water requirements for full irrigation in cell accounting for cropshare (in mio. m^3)

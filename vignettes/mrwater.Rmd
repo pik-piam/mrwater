@@ -329,7 +329,7 @@ landScen         <- "potCropland:HalfEarth"
 irrigationsystem <- "initialization"
 multicropping    <- FALSE
 
-iap <- calcOutput("IrrigAreaPotential", selectyears = selectyears, iniyear = iniyear,
+iap <- calcOutput("PotIrrigAreas", selectyears = selectyears, iniyear = iniyear,
                    lpjml = lpjml, climatetype = climatetype,
                    efrMethod = efrMethod, accessibilityrule = accessibilityrule,
                    rankmethod = rankmethod, yieldcalib = yieldcalib, allocationrule = allocationrule,

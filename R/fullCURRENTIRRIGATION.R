@@ -127,17 +127,6 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                aggregate = FALSE,
                file = paste0("comAgAreaACT_multipleACT_", t, ".mz"))
 
-    calcOutput("IrrigAreaActuallyCommitted",
-               fossilGW = FALSE,
-               lpjml = lpjml, climatetype = climatetype,
-               selectyears = selectyears, iniyear = iniyear,
-               efrMethod = efrMethod, transDist = t,
-               multicropping = "TRUE:potential:endogenous",
-               iteration = "committed_agriculture_fullPotential",
-               aggregate = FALSE,
-               file = paste0("comAgAreaACT_multiplePOT_", t, ".mz"))
-
-
     # Committed Agricultural water uses
     calcOutput("RiverHumanUseAccounting",
                iteration = "committed_agriculture",
@@ -165,19 +154,6 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                multicropping = "TRUE:actual:irrig_crop",
                aggregate = FALSE,
                file = paste0("comAgWatACT_multipleACT_", t, ".mz"))
-    calcOutput("RiverHumanUseAccounting",
-               iteration = "committed_agriculture_fullPotential",
-               lpjml = lpjml, climatetype = climatetype,
-               efrMethod = efrMethod,
-               selectyears = selectyears, iniyear = iniyear,
-               transDist = t, comAg = TRUE,
-               accessibilityrule = NULL,
-               rankmethod = NULL, gainthreshold = NULL,
-               cropmix = NULL, yieldcalib = NULL,
-               irrigationsystem = NULL, landScen = NULL,
-               multicropping = "TRUE:potential:endogenous",
-               aggregate = FALSE,
-               file = paste0("comAgWatACT_multiplePOT_", t, ".mz"))
 
 
     # Share current irrigation water that can be fulfilled by available water resources
@@ -203,7 +179,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
   ##############
   # Multiple cropping suitability per crop calculated based on crop and grass productivity
   # (for LPJmL crop types)
-  calcOutput("MulticroppingSuitability",
+  calcOutput("MulticroppingSuitability", sectoral = "lpj",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, suitability = "endogenous",
              aggregate = FALSE, file = "suitMC_LPJmL.mz")

@@ -133,9 +133,9 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     # For (rainfed) areas to match under committed ag. scenario, hist_total needs to be selected as cropmix
     # for total crop areas
     if (comAg) {
-      cmix      <- "hist_total"
+      cmix <- "hist_total"
     } else {
-      cmix      <- cropmix
+      cmix <- cropmix
     }
     if (grepl("currIrrig", landScen)) {
       cropmix <- cmix <- "hist_irrig"
@@ -150,7 +150,7 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
 
     # Crop-specific (potentially) irrigated areas (in Mha)
     # depending on chosen land, management, and water limitation scenario
-    cropareaIrrig <- collapseNames(calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+    cropareaIrrig <- collapseNames(calcOutput("PotIrrigAreas", cropAggregation = FALSE,
                                               cropmix = cropmix, landScen = landScen,
                                               transDist = transDist, fossilGW = fossilGW,
                                               multicropping = m2,

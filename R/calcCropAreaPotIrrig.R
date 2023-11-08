@@ -34,66 +34,60 @@
 calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
                                  cropmix, landScen) {
 
-  # Setting selection for historical period
+  # Setting selection for cropmix
   if (grepl("hist", cropmix)) {
-    # To ensure that the crop-specific areas match,
-    # the cropmix argument has to be adjusted
-    # depending on the chosen setting
     if (grepl("currIrrig", landScen)) {
-      # When only currently irrigated areas are considered
-      # the irrigated cropmix must be chosen
       cropmix <- "hist_irrig"
-    } else {
-      # When no committed agricultural areas are reserved
-      # the total historical cropmix must be chosen
+    } else if (grepl("currCropland", landScen)) {
       cropmix <- "hist_total"
-      # Special treatment of committed agricultural case
-      # takes place further down
     }
-  } else {
-    warning("Please note: when proxy crops are selected as cropmix,
-    there are most likely mismatches in the area accounting of the historical period.
-    For analyses focusing on historical periods: please choose the historical cropmix.
-    For future analysis that are supposed to meet the initialization year,
-    choose a wise setting (check: calcCropAreaPotIrrig)") # To Do
   }
 
   ### Read in data ###
   # Land area that can potentially be used for irrigated agriculture
-  # given assumptions set in the arguments including reservation
-  # (i.e. subtracting) already committed agriculture [in Mha]
+  # given assumptions set in the arguments [in Mha]
   land <- calcOutput("AreaPotIrrig",
                      selectyears = selectyears, iniyear = iniyear,
-                     comagyear = comagyear, landScen = landScen,
+                     comagyear = NULL, landScen = landScen,
                      aggregate = FALSE)
-
-  if (!is.null(comagyear)) {
-    # committed agricultural areas have already been subtracted
-    # remaining areas are rainfed (i.e. rainfed cropmix)
-    cropmix <- "hist_rainf"
-  }
 
   # share of crop area by crop type
   cropareaShr <- setYears(calcOutput("CropAreaShare",
-                                    iniyear = iniyear, cropmix = cropmix,
-                                    aggregate = FALSE),
+                                     iniyear = iniyear, cropmix = cropmix,
+                                     aggregate = FALSE),
                           NULL)
 
+  # crop-specific area available for potential irrigation
   out <- cropareaShr * land
+
+  # Areas that are already irrigated (by committed agricultural uses)
+  if (!is.null(comagyear)) {
+
+    # subtract physical area already reserved for irrigation with renewable water resources
+    # by committed agricultural uses in water allocation algorithm
+    # (to avoid double accounting)
+    comIrrigArea <- collapseNames(calcOutput("IrrigAreaCommitted",
+                                             selectyears = selectyears, iniyear = comagyear,
+                                             aggregate = FALSE))
+    out <- out - comIrrigArea
+  }
 
   # Checks
   if (any(is.na(out))) {
     stop("Function calcCropAreaPotIrrig produced NA values")
   }
 
-  if (any(round(out, digits = 3) < 0)) {
+  if (any(round(out, digits = 6) < 0)) {
     stop("Function calcCropAreaPotIrrig produced negative values")
+  } else {
+    # set negatives due to numerical reasons to 0
+    out[out < 0] <- 0
   }
 
   return(list(x            = out,
               weight       = NULL,
               unit         = "Mha",
-              description  = paste0("croparea potentially available for irrigated",
-                                    "agriculture per crop types"),
+              description  = paste0("Croparea potentially available for irrigated ",
+                                    "agriculture per crop type"),
               isocountries = FALSE))
 }

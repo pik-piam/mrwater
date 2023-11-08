@@ -86,7 +86,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
     # Water requirements for multiple cropping case are only calculated for areas
     # where multiple cropping is possible in case of irrigation
-    suitMC <- collapseNames(calcOutput("MulticroppingCells",
+    suitMC <- collapseNames(calcOutput("MulticroppingCells", sectoral = "lpj",
                                        scenario = "potential:endogenous",
                                        selectyears = selectyears,
                                        lpjml = lpjml, climatetype = climatetype,
@@ -95,7 +95,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # Special case: current multicropping according to LandInG
     if (grepl(pattern = "actual", x = areaMask)) {
       # Cropping intensity
-      ci <- collapseNames(calcOutput("MulticroppingIntensity",
+      ci <- collapseNames(calcOutput("MulticroppingIntensity", sectoral = "lpj",
                                      scenario = strsplit(areaMask, split = ":")[[1]][2],
                                      selectyears = selectyears,
                                      aggregate = FALSE)[, , "irrigated"][, , crops])
@@ -182,22 +182,22 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   if (output == "crops:main") {
     # main season BWC for crops (single cropping case)
     out         <- bwc1st[, , crops]
-    description <- paste0(description, " crops in LPJmL growing period")
+    description <- paste0(description, "crops in LPJmL growing period")
 
   } else if (output == "grass:main") {
 
     out         <- grperBWCgrass
-    description <- paste0(description, " grass in LPJmL growing period of crops")
+    description <- paste0(description, "grass in LPJmL growing period of crops")
 
   } else if (output == "crops:year") {
     # whole year BWC for crops (multiple cropping case)
     out         <- bwcTotal[, , crops]
-    description <- paste0(description, " crops throughout the entire year")
+    description <- paste0(description, "crops throughout the entire year")
 
   } else if (output == "grass:year") {
 
     out         <- annualBWCgrass
-    description <- paste0(description, " grass throughout the entire year")
+    description <- paste0(description, "grass throughout the entire year")
 
   } else {
     stop("Please select valid output type for calcBlueWaterConsumption:

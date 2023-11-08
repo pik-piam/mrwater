@@ -4,7 +4,21 @@
 \alias{fullMULTICROPPING}
 \title{fullMULTICROPPING}
 \usage{
-fullMULTICROPPING()
+fullMULTICROPPING(
+  allocationrule = "optimization",
+  fossilGW = TRUE,
+  transDist = 100
+)
+}
+\arguments{
+\item{allocationrule}{Rule to be applied for river basin discharge allocation
+across cells of river basin ("optimization", "upstreamfirst", "equality")}
+
+\item{fossilGW}{If TRUE: non-renewable groundwater can be used.
+If FALSE: non-renewable groundwater cannot be used.}
+
+\item{transDist}{Water transport distance allowed to fulfill locally
+unfulfilled water demand by surrounding cell water availability}
 }
 \description{
 Function that produces output for multiple cropping and

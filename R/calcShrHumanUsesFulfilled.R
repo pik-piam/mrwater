@@ -42,6 +42,9 @@ calcShrHumanUsesFulfilled <- function(lpjml, climatetype,
                                       transDist, multicropping,
                                       selectyears, iniyear, efrMethod) {
 
+  # Note: This function is kept for backwards compatibility,
+  # but is no longer needed because of fossilGW implementation.
+
   ### Reasons for not-fulfilled actually observed irrigation:
   # - fossil groundwater is used for irrigation (e.g. Northern India), but not accounted for in the river routing
   # - deficit irrigation is in place (e.g. Southern Spain), but not accounted for in the river routing

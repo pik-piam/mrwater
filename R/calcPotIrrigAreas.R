@@ -1,6 +1,6 @@
-#' @title       calcIrrigAreaPotential
-#' @description Calculates area that can potentially be irrigated per crop given
-#'              available water and land
+#' @title       calcPotIrrigAreas
+#' @description Calculates Potentially Irrigated Areas (PIAs) per crop
+#'              given available water and land
 #'
 #' @param cropAggregation   TRUE (aggregated Potentially Irrigated Areas (PIAs)),
 #'                          FALSE (crop-specific PIAs)
@@ -72,43 +72,45 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("IrrigAreaPotential", aggregate = FALSE)
+#' calcOutput("PotIrrigAreas", aggregate = FALSE)
 #' }
 #'
 #' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames add_dimension add_columns mbind
 
-calcIrrigAreaPotential <- function(cropAggregation,
-                                   lpjml, climatetype,
-                                   selectyears, iniyear,
-                                   efrMethod, accessibilityrule,
-                                   rankmethod, yieldcalib, allocationrule,
-                                   gainthreshold, irrigationsystem, landScen,
-                                   cropmix, comAg, fossilGW,
-                                   multicropping, transDist) {
+calcPotIrrigAreas <- function(cropAggregation,
+                              lpjml, climatetype,
+                              selectyears, iniyear,
+                              efrMethod, accessibilityrule,
+                              rankmethod, yieldcalib, allocationrule,
+                              gainthreshold, irrigationsystem, landScen,
+                              cropmix, comAg, fossilGW,
+                              multicropping, transDist) {
 
-  # Check whether arguments are combined correctly.
-  if (comAg && cropmix != "hist_rainf") {
-    warning("You activated the committed agricultural iteration
-              (comAg = TRUE)
-              to calculate the potentially irrigated areas.
-              This setting usually has to be combined with
-              cropmix = 'hist_rainf'.
-              Please double-check!")
+  # Ensure that cropmix argument is set correctly
+  if (grepl("hist", cropmix)) {
+    if (grepl("currIrrig", landScen)) {
+      cropmix <- "hist_irrig"
+    } else if (grepl("currCropland", landScen)) {
+      cropmix <- "hist_total"
+    }
   }
-  if (!comAg && cropmix != "hist_total") {
-    warning("You are calculating potentially irrigated areas
-              without considering previously reserved
-              'committed agricultural uses' (comAg = FALSE).
-              This setting usually has to be combined with
-              cropmix = 'hist_total'.
-              Please double-check!")
-  }
+
+  # To Do: split areas:
+  # committed:
+  # -> irrigArea * shrMC
+  # additional (beyond committed):
+  # -> irrigArea * (1-shrMC) where enough water available from committed_agriculture_fullMulticropping run
+  # -> rainfedArea where enough water available for additonal irrigation
+
+  # Note: need to consider shrPotMC! (new function: calcPotentialMulticroppingArea)
+
+  # total avlWat (i.e. from all three runs and GW) / reqWat = shr fulfilled --> doesn't necessarily add up because of cropmix (therefore, split calculation as above)
 
   ## Read in (renewable and non-renewable) water available for irrigation (in mio. m^3)
   #  including committed agricultural water (if activated)
-  avlWat <- calcOutput("WaterUsePotential", selectyears = selectyears,
+  avlWat <- calcOutput("PotWater", selectyears = selectyears,
                        lpjml = lpjml, climatetype = climatetype, efrMethod = efrMethod,
                        accessibilityrule = accessibilityrule, rankmethod = rankmethod,
                        yieldcalib = yieldcalib, allocationrule = allocationrule,
@@ -156,6 +158,25 @@ calcIrrigAreaPotential <- function(cropAggregation,
     comWatWW <- collapseNames(dimSums(comWatAct, dim = "crop")[, , "withdrawal"])
     comWatWC <- collapseNames(dimSums(comWatAct, dim = "crop")[, , "consumption"])
 
+    # Water committed to intensify currently irrigated areas to full multiple
+    # cropping potential (in mio. m^3)
+    if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
+      # water required to expand multiple cropping in already irrigated areas and can
+      # be fulfilled by renewable water resources
+      currHumanAdd <- calcOutput("RiverHumanUseAccounting",
+                                 iteration = "committed_agriculture_fullMulticropping",
+                                 lpjml = lpjml, climatetype = climatetype,
+                                 transDist = transDist, comAg = NULL,
+                                 efrMethod = efrMethod, multicropping = multicropping,
+                                 selectyears = selectyears, iniyear = iniyear,
+                                 accessibilityrule = NULL,
+                                 rankmethod = NULL, gainthreshold = NULL,
+                                 cropmix = NULL, yieldcalib = NULL,
+                                 irrigationsystem = NULL, landScen = NULL,
+                                 aggregate = FALSE)
+      comWatWC <- comWatWC + collapseNames(currHumanAdd[, , "currHumanWCtotal"])
+      comWatWW <- comWatWW + collapseNames(currHumanAdd[, , "currHumanWWtotal"])
+    }
   } else {
     comagyear <- NULL
 
@@ -174,7 +195,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
   # Check
   if (any(round(avlWatWW, digits = 6) < 0) || any(round(avlWatWC, digits = 6) < 0)) {
-    stop("In calcIrrigAreaPotential: available water for additional irrigation beyond
+    stop("In calcPotIrrigAreas: available water for additional irrigation beyond
          committed agricultural use became negative. This should not be the case.
          Please double check. A wild guess: this may be related to the non-renewable
          groundwater implementation.")
@@ -238,7 +259,7 @@ calcIrrigAreaPotential <- function(cropAggregation,
   # check
   if (any(cropIrrigReq[, , "consumption"] == 0 & cropIrrigReq[, , "withdrawal"] != 0)) {
     stop("Check what's wrong in irrigation water requirements of
-          mrwater::calcIrrigAreaPotential")
+          mrwater::calcPotIrrigAreas")
   }
   cropIrrigReq <- collapseNames(cropIrrigReq[, , "consumption"])
   # where no water is required for irrigation, no irrigation takes place
@@ -255,10 +276,10 @@ calcIrrigAreaPotential <- function(cropAggregation,
 
   # Checks
   if (any(is.na(out))) {
-    stop("mrwater::calcIrrigAreaPotential produced NA irrigatable area")
+    stop("mrwater::calcPotIrrigAreas produced NA irrigatable area")
   }
   if (any(round(out, digits = 6) < 0)) {
-    stop("mrwater::calcIrrigAreaPotential produced negative irrigatable area")
+    stop("mrwater::calcPotIrrigAreas produced negative irrigatable area")
   }
 
   if (cropAggregation) {

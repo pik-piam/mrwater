@@ -95,7 +95,7 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
 
   if (output == "IrrigArea") {
 
-    x <- collapseNames(calcOutput("IrrigAreaPotential", gainthreshold = 0,
+    x <- collapseNames(calcOutput("PotIrrigAreas", gainthreshold = 0,
                                   cropAggregation = TRUE,
                                   selectyears = selectyears, iniyear = iniyear,
                                   climatetype = climatetype, lpjml = lpjml,
@@ -113,7 +113,7 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
 
   } else {
 
-    x <- collapseNames(calcOutput("WaterUsePotential", gainthreshold = 0,
+    x <- collapseNames(calcOutput("PotWater", gainthreshold = 0,
                                   selectyears = selectyears, climatetype = climatetype, lpjml = lpjml,
                                   accessibilityrule = accessibilityrule, efrMethod = efrMethod,
                                   rankmethod = rankmethod, yieldcalib = yieldcalib,
@@ -142,7 +142,7 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
 
     if (output == "IrrigArea") {
 
-      tmp <- collapseNames(calcOutput("IrrigAreaPotential", gainthreshold = gainthreshold,
+      tmp <- collapseNames(calcOutput("PotIrrigAreas", gainthreshold = gainthreshold,
                                       cropAggregation = TRUE,
                                       selectyears = selectyears, iniyear = iniyear,
                                       lpjml = lpjml, climatetype = climatetype,
@@ -155,7 +155,7 @@ calcEconOfIrrig <- function(scenario, output, gtrange, selectyears, iniyear,
                                       aggregate = FALSE)[, , scenario])
     } else {
 
-      tmp <- collapseNames(calcOutput("WaterUsePotential", gainthreshold = gainthreshold,
+      tmp <- collapseNames(calcOutput("PotWater", gainthreshold = gainthreshold,
                                       climatetype = climatetype, lpjml = lpjml,
                                       selectyears = selectyears, iniyear = iniyear,
                                       accessibilityrule = accessibilityrule, efrMethod = efrMethod,

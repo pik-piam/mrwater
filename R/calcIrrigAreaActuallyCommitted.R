@@ -27,11 +27,6 @@
 #'                       unfulfilled water demand by surrounding cell water availability
 #' @param fossilGW       If TRUE: non-renewable groundwater can be used.
 #'                       If FALSE: non-renewable groundwater cannot be used.
-#' @param iteration      Default: "committed_agriculture",
-#'                       Special case: "committed_agriculture_fullPotential".
-#'                       Special case should only be used for calculation of
-#'                       full multicropping potential committed agricultural area
-#'                       for case of Current Irrigation.
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -44,19 +39,14 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames
 
-calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
-                                           lpjml, climatetype,
+calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype,
                                            selectyears, iniyear,
                                            efrMethod, fossilGW,
                                            multicropping, transDist) {
 
   ## Current Uses
   if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
-    if (grepl(pattern = "fullPotential", x = iteration)) {
-      m <- multicropping
-    } else {
-      m <- "TRUE:actual:irrig_crop"
-    }
+    m <- "TRUE:actual:irrig_crop"
   } else {
     m <- FALSE
   }
@@ -79,7 +69,7 @@ calcIrrigAreaActuallyCommitted <- function(iteration = "committed_agriculture",
 
   # Water already committed to irrigation (in mio. m^3)
   comWater <- calcOutput("RiverHumanUseAccounting",
-                         iteration = iteration,
+                         iteration = "committed_agriculture",
                          lpjml = lpjml, climatetype = climatetype,
                          transDist = transDist, comAg = NULL,
                          efrMethod = efrMethod, multicropping = m,

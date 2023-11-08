@@ -8,7 +8,7 @@
 #'                          (Note: does not affect years of harmonization or smoothing)
 #' @param iteration         Water use to be allocated in this river routing iteration
 #'                          (non_agriculture, committed_agriculture, potential_irrigation,
-#'                          special case (for current irrigated area analysis): "committed_agriculture_fullPotential").
+#'                          special case (for current irrigated area analysis): "committed_agriculture_fullMulticropping").
 #' @param climatetype       Switch between different climate scenarios
 #'                          or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear           Initialization year of irrigation system
@@ -170,11 +170,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
     ## Current Uses
     if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
-      if (grepl(pattern = "fullPotential", x = iteration)) {
-        m <- multicropping
-      } else {
-        m <- "TRUE:actual:irrig_crop"
-      }
+      m <- "TRUE:actual:irrig_crop"
     } else {
       m <- FALSE
     }
@@ -196,13 +192,82 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Discharge from previous routing
     discharge <- collapseNames(previousHumanUse[, , "discharge"])
 
+  } else if (grepl(pattern = "committed_agriculture_fullMulticropping", x = iteration)) {
+
+    # For case of multiple cropping, determine whether current multiple cropping can be
+    # expanded to full potential on committed agricultural areas
+    if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
+      ## Previous Uses
+      # Committed Agricultural withdrawals and consumption with actual multiple cropping
+      previousHumanUse <- calcOutput("RiverHumanUseAccounting",
+                                     iteration = "committed_agriculture",
+                                     lpjml = lpjml, climatetype = climatetype,
+                                     efrMethod = efrMethod, multicropping = multicropping,
+                                     selectyears = selectyears, iniyear = iniyear,
+                                     transDist = transDist, comAg = NULL,
+                                     accessibilityrule = accessibilityrule,
+                                     rankmethod = NULL, gainthreshold = NULL,
+                                     cropmix = NULL, yieldcalib = NULL,
+                                     irrigationsystem = NULL, landScen = NULL,
+                                     aggregate = FALSE)
+
+      # Minimum flow requirements determined by previous river routing:
+      # EFRs + non-ag + Reserved for committed Agricultural Uses (in mio. m^3 / yr)
+      prevReservedWW <- as.array(collapseNames(previousHumanUse[, , "reservedWW"]))
+      # Previous human uses (non-ag and com-ag river routing runs) (in mio. m^3 / yr):
+      prevReservedWC <- as.array(collapseNames(previousHumanUse[, , "reservedWC"]))
+
+      # Committed agricultural uses per crop (in mio. m^3 / yr)
+      watComAgACT <- calcOutput("WaterUseCommittedAg",
+                                lpjml = lpjml, climatetype = climatetype,
+                                selectyears = selectyears, iniyear = iniyear,
+                                multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE)
+      watComAgPOT <- calcOutput("WaterUseCommittedAg",
+                                lpjml = lpjml, climatetype = climatetype,
+                                selectyears = selectyears, iniyear = iniyear,
+                                multicropping = multicropping, aggregate = FALSE)
+      addReqfullMulticropping <- watComAgPOT - watComAgACT
+
+      # Committed Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
+      currRequestWWlocal <- .transformObject(x = collapseNames(dimSums(addReqfullMulticropping[, , "withdrawal"],
+                                                                       dim = "crop")),
+                                             cells = cells, years = selectyears, scenarios = scenarios)
+      # Committed Agricultural Water Consumption (in mio. m^3 / yr) [smoothed]
+      currRequestWClocal <- .transformObject(x = collapseNames(dimSums(addReqfullMulticropping[, , "consumption"],
+                                                                       dim = "crop")),
+                                             cells = cells, years = selectyears, scenarios = scenarios)
+
+      ## Discharge from previous routing
+      discharge <- collapseNames(previousHumanUse[, , "discharge"])
+
+    } else {
+      # For case of single cropping no special treatment required
+      # Normal "committed_agricultural" run is conducted where non-ag uses are reserved
+      # and committed agricultural uses for single cropping conditions are
+      # being currently requrested
+      tmp <- calcOutput("RiverRoutingInputs", lpjml = lpjml, climatetype = climatetype,
+                        selectyears = selectyears, iniyear = iniyear,
+                        iteration = "committed_agriculture",
+                        transDist = transDist, efrMethod = efrMethod,
+                        accessibilityrule = accessibilityrule, multicropping = multicropping,
+                        comAg = NULL, rankmethod = NULL, gainthreshold = NULL,
+                        cropmix = NULL, yieldcalib = NULL,
+                        irrigationsystem = NULL, landScen = NULL,
+                        aggregate = FALSE)
+      discharge <- tmp[, , "discharge"]
+      prevReservedWW <- tmp[, , "prevReservedWW"]
+      prevReservedWC <- tmp[, , "presReservedWC"]
+      currRequestWWlocal <- tmp[, , "currRequestWWlocal"]
+      currRequestWClocal <- tmp[, , "currRequestWClocal"]
+    }
+
   } else if (grepl(pattern = "potential_irrigation", x = iteration)) {
 
     if (comAg == TRUE) {
       # accounting in potentials
       comagyear <- iniyear
       # previous use
-      humanuse <- "committed_agriculture"
+      humanuse <- "committed_agriculture_fullMulticropping"
     } else if (comAg == FALSE) {
       # committed agriculture not accounted in potentials (full potential)
       comagyear <- NULL
@@ -269,7 +334,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
   } else {
     stop("Please specify iteration for which river routing inputs shall be calculated:
          non_agriculture, committed_agriculture, potential_irrigation,
-         or committed_agriculture_fullPotential")
+         or committed_agriculture_fullMulticropping")
   }
 
   ###############

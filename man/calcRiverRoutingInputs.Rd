@@ -36,7 +36,7 @@ or historical baseline "GSWP3-W5E5:historical"}
 
 \item{iteration}{Water use to be allocated in this river routing iteration
 (non_agriculture, committed_agriculture, potential_irrigation,
-special case (for current irrigated area analysis): "committed_agriculture_fullPotential").}
+special case (for current irrigated area analysis): "committed_agriculture_fullMulticropping").}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}

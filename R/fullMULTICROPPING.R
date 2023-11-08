@@ -3,13 +3,22 @@
 #'              irrigation potentials on current cropland
 #'              at cellular resolution.
 #'
+#' @param allocationrule    Rule to be applied for river basin discharge allocation
+#'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
+#' @param fossilGW          If TRUE: non-renewable groundwater can be used.
+#'                          If FALSE: non-renewable groundwater cannot be used.
+#' @param transDist         Water transport distance allowed to fulfill locally
+#'                          unfulfilled water demand by surrounding cell water availability
+#'
 #' @author Felicitas Beier
 #'
 #' @importFrom stringr str_split
 #'
 #' @export
 
-fullMULTICROPPING <- function() {
+fullMULTICROPPING <- function(allocationrule = "optimization",
+                              fossilGW = TRUE,
+                              transDist = 100) {
 
   # scenarios for paper: landScen <- "currCropland:NA", "currIrrig:NA"
 
@@ -26,7 +35,6 @@ fullMULTICROPPING <- function() {
 
   # Settings for optimization algorithm
   accessibilityrule <- "CV:2"
-  allocationrule    <- "optimization" # JENS/BENNI: "optimization" #### or "upstreamfirst"?
   rankmethod        <- "USD_m3:GLO:TRUE"
   ssp               <- "ssp2"
   efp               <- "off"
@@ -34,36 +42,12 @@ fullMULTICROPPING <- function() {
   # Assumption in this study:
   # only technical potential is reported for the purpose of this analysis:
   gtrange <- gainthreshold <- 0
-  # default transport distance is 100 km (sensitivity is provided in SI)
-  transDist         <- 100
-  # fossil groundwater use is activated
-  fossilGW          <- TRUE
   # potential yields from LPJmL to derive multiple cropping potentials
   yieldcalib        <- "TRUE:TRUE:actual:irrig_crop" # FALSE
   # reserve already irrigated areas for irrigation
   comAg             <- TRUE
-  # With comAg being activated, the cropmix for the remaining area should be hist_rainf
-  # such that total crop areas match
-  cropmix           <- "hist_rainf"
-
-
-  ################################
-  # Extract setting combinations #
-  ################################
-  if (comAg && grepl("hist", cropmix)) {
-    # If committed agricultural areas are reserved
-    # (based on the currently irrigated cropmix),
-    # the remaining (additional) irrigated areas
-    # have to be based on the rainfed cropmix
-    cropmix <- "hist_rainf"
-  }
-  if (!comAg && grepl("hist", cropmix)) {
-    # If committed agricultural areas are
-    # not considered in deriving potentially irrigated areas,
-    # the potentially irrigated areas
-    # have to be based on the total cropmix
-    cropmix <- "hist_total"
-  }
+  # Historical cropmix
+  cropmix           <- "hist_total"
 
   #########################
   # Groundwater component #
@@ -133,7 +117,7 @@ fullMULTICROPPING <- function() {
   # potential multiple cropping suitability
   calcOutput("MulticroppingSuitability", selectyears = selectyears,
              lpjml = lpjml, climatetype = climatetype,
-             temperatureGCM = NULL, minThreshold = 100, suitability = "endogenous",
+             suitability = "endogenous", sectoral = "kcr",
              file = "multicroppingSuitability.mz", aggregate = FALSE)
 
   ###############
@@ -199,7 +183,7 @@ fullMULTICROPPING <- function() {
   #########################
   ### (a) Areas ###
   # potentially irrigated area on current cropland (under single cropping conditions)
-  calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+  calcOutput("PotIrrigAreas", cropAggregation = FALSE,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -211,7 +195,7 @@ fullMULTICROPPING <- function() {
              aggregate = FALSE,
              file = "piaCUR_single.mz")
   # potentially irrigated area on current cropland (under current multiple cropping conditions)
-  calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+  calcOutput("PotIrrigAreas", cropAggregation = FALSE,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -223,7 +207,7 @@ fullMULTICROPPING <- function() {
              aggregate = FALSE,
              file = "piaCUR_multACT.mz")
   # potentially irrigated area on current cropland (under consideration of potential multiple cropping)
-  calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+  calcOutput("PotIrrigAreas", cropAggregation = FALSE,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -235,7 +219,7 @@ fullMULTICROPPING <- function() {
              aggregate = FALSE,
              file = "piaCUR_multPOT.mz")
   # potentially irrigated area on currently irrigated cropland (under consideration of potential multiple cropping)
-  calcOutput("IrrigAreaPotential", cropAggregation = FALSE,
+  calcOutput("PotIrrigAreas", cropAggregation = FALSE,
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -249,7 +233,7 @@ fullMULTICROPPING <- function() {
 
   ### (B) Water Use ###
   # potentially irrigation water on current cropland (under single cropping conditions)
-  calcOutput("WaterUsePotential", cropAggregation = FALSE,
+  calcOutput("PotWater",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -261,7 +245,7 @@ fullMULTICROPPING <- function() {
              aggregate = FALSE,
              file = "piwCUR_single.mz")
   # potentially irrigation water on current cropland (under current multiple cropping conditions)
-  calcOutput("WaterUsePotential", cropAggregation = FALSE,
+  calcOutput("PotWater",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -273,7 +257,7 @@ fullMULTICROPPING <- function() {
              aggregate = FALSE,
              file = "piwCUR_multACT.mz")
   # potentially irrigation water on current cropland (under consideration of potential multiple cropping)
-  calcOutput("WaterUsePotential", cropAggregation = FALSE,
+  calcOutput("PotWater",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -285,7 +269,7 @@ fullMULTICROPPING <- function() {
              aggregate = FALSE,
              file = "piwCUR_multPOT.mz")
   # potentially irrigation water on currently irrigated cropland (under consideration of potential multiple cropping)
-  calcOutput("WaterUsePotential", cropAggregation = FALSE,
+  calcOutput("PotWater",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,
@@ -360,17 +344,6 @@ fullMULTICROPPING <- function() {
                file = paste0("comAgAreaACT_multipleACT_", t, ".mz")
     )
 
-    calcOutput("IrrigAreaActuallyCommitted",
-               fossilGW = FALSE,
-               lpjml = lpjml, climatetype = climatetype,
-               selectyears = selectyears, iniyear = iniyear,
-               efrMethod = efrMethod, transDist = t,
-               multicropping = "TRUE:potential:endogenous",
-               iteration = "committed_agriculture_fullPotential",
-               aggregate = FALSE,
-               file = paste0("comAgAreaACT_multiplePOT_", t, ".mz")
-    )
-
 
     # Committed Agricultural water uses
     calcOutput("RiverHumanUseAccounting",
@@ -402,7 +375,7 @@ fullMULTICROPPING <- function() {
                file = paste0("comAgWatACT_multipleACT_", t, ".mz")
     )
     calcOutput("RiverHumanUseAccounting",
-               iteration = "committed_agriculture_fullPotential",
+               iteration = "committed_agriculture_fullMulticropping",
                lpjml = lpjml, climatetype = climatetype,
                efrMethod = efrMethod,
                selectyears = selectyears, iniyear = iniyear,
@@ -441,7 +414,7 @@ fullMULTICROPPING <- function() {
   ##############
   # Multiple cropping suitability per crop calculated based on crop and grass productivity
   # (for LPJmL crop types)
-  calcOutput("MulticroppingSuitability",
+  calcOutput("MulticroppingSuitability", sectoral = "lpj",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, suitability = "endogenous",
              aggregate = FALSE, file = "suitMC_LPJmL.mz"
