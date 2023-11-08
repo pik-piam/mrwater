@@ -37,7 +37,7 @@
 #' @importFrom mrcommons toolCell2isoCell toolCoord2Isocell toolGetMappingCoord2Country toolHarmonize2Baseline
 #' @importFrom magpiesets addLocation findset
 
-calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "magpiecell",
+calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lpjcell",
                               datasource = "WATCH_ISIMIP_WATERGAP", usetype = "all",
                               seasonality = "grper", harmonType = "average",
                               lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
@@ -297,18 +297,6 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
     # Correct mismatches of withdrawal and consumption (withdrawals > consumption)
     watdemNonAg[, , "withdrawal"]  <- pmax(watdemNonAg[, , "withdrawal"], watdemNonAg[, , "consumption"])
     watdemNonAg[, , "consumption"] <- pmax(watdemNonAg[, , "consumption"], 0.01 * watdemNonAg[, , "withdrawal"])
-
-    # Number of cells to be returned
-    if (cells == "magpiecell") {
-
-      watdemNonAg <- toolCoord2Isocell(watdemNonAg)
-
-    } else if (cells == "lpjcell") {
-      # Correct cell naming
-      getCells(watdemNonAg)                    <- paste(map$coords, map$iso, sep = ".")
-      getSets(watdemNonAg, fulldim = FALSE)[1] <- "x.y.iso"
-
-    }
   }
 
   ### Non-agricultural water demands in Growing Period
@@ -316,7 +304,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
     ### Note: Seasonality "grper" will be deleted when we switch to new mrwater preprocessing
 
     # Get growing days per month
-    growDays <- calcOutput("GrowingPeriod", aggregate = FALSE,
+    growDays <- calcOutput("GrowingPeriod", aggregate = FALSE, cells = "lpjcell",
                            lpjml = lpjml, climatetype = climatetype, yield_ratio = 0.1)
 
     # Growing days per year
@@ -354,6 +342,16 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "ma
   if (!is.na(abstractiontype) &&
       (grepl(abstractiontype, "consumption") || grepl(abstractiontype, "withdrawal"))) {
     out <- collapseNames(out[, , abstractiontype])
+  }
+
+  # Number of cells to be returned
+  if (cells == "magpiecell") {
+    out <- toolCoord2Isocell(out)
+  } else if (cells == "lpjcell") {
+    # Correct cell naming
+    out <- out[selectcells, , ]
+    getItems(out, dim = 1, raw = TRUE) <- paste(map$coords, map$iso, sep = ".")
+    getSets(out, fulldim = FALSE)[1] <- "x.y.iso"
   }
 
   # Check for NAs

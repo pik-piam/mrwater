@@ -6,7 +6,7 @@
 \usage{
 calcWaterUseNonAg(
   selectyears = seq(1995, 2100, by = 5),
-  cells = "magpiecell",
+  cells = "lpjcell",
   datasource = "WATCH_ISIMIP_WATERGAP",
   usetype = "all",
   seasonality = "grper",
