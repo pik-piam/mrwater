@@ -4,7 +4,10 @@
 #'              at cellular resolution.
 #'
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
-#'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
+#'                          across cells of river basin ("optimization", "upstreamfirst")
+#' @param comAg             if TRUE: the currently already irrigated areas
+#'                                   in initialization year are reserved for irrigation,
+#'                          if FALSE: no irrigation areas reserved (irrigation potential)
 #' @param fossilGW          If TRUE: non-renewable groundwater can be used.
 #'                          If FALSE: non-renewable groundwater cannot be used.
 #' @param transDist         Water transport distance allowed to fulfill locally
@@ -17,6 +20,7 @@
 #' @export
 
 fullMULTICROPPING <- function(allocationrule = "optimization",
+                              comAg = TRUE,
                               fossilGW = TRUE,
                               transDist = 100) {
 
@@ -44,8 +48,6 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
   gtrange <- gainthreshold <- 0
   # potential yields from LPJmL to derive multiple cropping potentials
   yieldcalib        <- "TRUE:TRUE:actual:irrig_crop" # FALSE
-  # reserve already irrigated areas for irrigation
-  comAg             <- TRUE
   # Historical cropmix
   cropmix           <- "hist_total"
 
@@ -280,6 +282,19 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
              multicropping = "TRUE:potential:endogenous", transDist = transDist,
              aggregate = FALSE,
              file = "piwIRR_multPOT.mz")
+
+  # Potential muliple cropping share
+  calcOutput("PotMulticroppingShare",
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, iniyear = iniyear,
+             efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+             rankmethod = rankmethod, yieldcalib = yieldcalib,
+             allocationrule = allocationrule, gainthreshold = gainthreshold,
+             irrigationsystem = irrigationsystem, landScen = "currCropland:NA",
+             cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+             multicropping = "TRUE:potential:endogenous", transDist = transDist,
+             aggregate = FALSE,
+             file = "potMCshare.mz")
 
 
   ### Yield Gain ###

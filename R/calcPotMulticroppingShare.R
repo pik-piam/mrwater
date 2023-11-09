@@ -117,16 +117,26 @@ calcPotMulticroppingShare <- function(lpjml, climatetype,
                           cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
                           multicropping = multicropping, transDist = transDist,
                           aggregate = FALSE)
+  watPotAvlWW <- collapseNames(watPotAvl[, , "wat_ag_ww"])
+  watPotAvlWC <- collapseNames(watPotAvl[, , "wat_ag_wc"])
+  rm(watPotAvl)
 
   # Multiple cropping suitability
-  suitMC <- collapseNames(calcOutput("MulticroppingCells",
-                                     sectoral = "kcr",
-                                     scenario = "potential:endogenous",
-                                     selectyears = selectyears,
-                                     lpjml = lpjml, climatetype = climatetype,
-                                     aggregate = FALSE)[, , crops])
+  suitMC <- calcOutput("MulticroppingCells",
+                       sectoral = "kcr",
+                       scenario = "potential:endogenous",
+                       selectyears = selectyears,
+                       lpjml = lpjml, climatetype = climatetype,
+                       aggregate = FALSE)[, , crops]
+  suitMCir <- collapseNames(suitMC[, , "irrigated"])
 
-  if (comAg) {
+  # Where multiple cropping is possible, full multiple cropping is assumed
+  # for both irrigated and rainfed areas for the potential multicropping share
+  out <- suitMC
+
+  # For case of committed agriculture, expansion of multiple cropping
+  # on irrigated areas is only possible if enough water is available
+  if (comAg && multicropping != FALSE) {
 
     # multiple cropping as of current multiple cropping pattern
     m <- as.logical(stringr::str_split(multicropping, ":")[[1]][1])
@@ -135,7 +145,6 @@ calcPotMulticroppingShare <- function(lpjml, climatetype,
     } else {
       m <- FALSE
     }
-    comagyear <- iniyear
 
     # Actually committed irrigated area (crop-specific) (in Mha)
     # including non-renewable groundwater (if activated)
@@ -150,42 +159,75 @@ calcPotMulticroppingShare <- function(lpjml, climatetype,
 
     # Water use for committed agricultural areas
     # in main season
-    comAgWatFirst  <- watReqFirst * comAgArea
+    comAgWatFirstWW  <- comAgArea * collapseNames(watReqFirst[, , "withdrawal"])
+    comAgWatFirstWC  <- comAgArea * collapseNames(watReqFirst[, , "consumption"])
     # in entire year
-    comAgWatYear   <- watReqYear * comAgArea
+    comAgWatYearWW  <- comAgArea * collapseNames(watReqYear[, , "withdrawal"])
+    comAgWatYearWC  <- comAgArea * collapseNames(watReqYear[, , "consumption"])
     # in off season
-    comAgWatSecond <- comAgWatYear - comAgWatFirst
+    comAgWatSecondWW <- comAgWatYearWW - comAgWatFirstWW
+    comAgWatSecondWC <- comAgWatYearWC - comAgWatFirstWC
 
     # Check: watPotAvl > comAgWatFirst for case of comAg=TRUE
-    if (any(round(watPotAvl - comAgWatFirst, digits = 6) < 0)) {
+    if (any(round(watPotAvlWW - comAgWatFirstWW, digits = 6) < 0)) {
       stop("When comAg is activated, there should be enough water for the irrigation of the
            main season of currently irrigated areas.
            Please check what's wrong in calcPotMulticroppingShare!")
     }
     # Check: comAgWatSecond should be 0 for perennials and where not suitable for MC under irrigated conditions
     perennials <- c("oilpalm", "sugr_cane") # what about "others" and "cottn_pro"?
-    if (any(round(comAgWatSecond[, , perennials], digits = 6) != 0)) {
-      stop("Committed water requirements in the off season should be zero for perennials.
-           Please check what's wrong in calcPotMulticroppingShare!")
+    if (any(round(comAgWatSecondWW[, , perennials], digits = 6) != 0)) {
+      # for sugarcane it works, but oilpalm proxied by
+      warning("Committed water requirements in the off season should be zero for perennials.
+           Please check what's wrong in calcPotMulticroppingShare!
+           This originates in the crop mapping issue from LPJmL to MAgPIE crops where
+           different crops are perennials")
+      # Fix in calcIrrigWatRequirements and calcBlueWaterConsumption
     }
-    if (any(comAgWatSecond[suitMC[, , "irrigated"] == 0] != 0)) {
-      stop("Committed water requirements in the off season should be zero where multiple
+    if (any(comAgWatSecondWW[suitMCir == 0] != 0)) {
+      warning("Committed water requirements in the off season should be zero where multiple
            cropping is not possible.
-           Please check what's wrong in calcPotMulticroppingShare!")
+           Please check what's wrong in calcPotMulticroppingShare!
+           This is related to the mapping of LPJmL annuals to MAgPIE perennials.
+           It's only the case for oilpalm, others and cottn_pro")
+      # Fix in calcIrrigWatRequirements and calcBlueWaterConsumption
+    }
+    rm(comAgArea, comAgWatYearWW, comAgWatYearWC)
+
+    # total required water in main and off-season respectively
+    comAgWatSecondWW <- dimSums(comAgWatSecondWW, dim = "crop")
+    comAgWatSecondWC <- dimSums(comAgWatSecondWC, dim = "crop")
+    comAgWatFirstWW  <- dimSums(comAgWatFirstWW, dim = "crop")
+    comAgWatFirstWC  <- dimSums(comAgWatFirstWC, dim = "crop")
+
+    # Share of water for second season that can be fulfilled
+    # with remaining water after first season irrigation.
+    outWW <- ifelse(comAgWatSecondWW > 0,
+                    (watPotAvlWW - comAgWatFirstWW) / comAgWatSecondWW,
+                    NA)
+    outWC <- ifelse(comAgWatSecondWC > 0,
+                    (watPotAvlWC - comAgWatFirstWC) / comAgWatSecondWC,
+                    NA)
+
+    outWW[outWW > 1] <- 1
+    outWC[outWC > 1] <- 1
+
+    # Where no committed agriculture:
+    # full multiple cropping is assumed where it is suitable
+    outWW[is.na(outWW)] <- suitMCir[is.na(outWW)]
+    outWC[is.na(outWC)] <- suitMCir[is.na(outWC)]
+
+    if (any(round(outWW - outWC, digits = 6) != 0)) {
+      warning("outWW and outWC should be the same. check what's wrong")
     }
 
-    # sum over crops
-    comAgWatSecond <- dimSums(comAgWatSecond, dim = "crop")
-    comAgWatFirst  <- dimSums(comAgWatFirst, dim = "crop")
+    out[, , "irrigated"] <- pmin(outWW, outWC)
 
-    out <- ifelse(comAgWatSecond > 0,
-                  (watPotAvl - comAgWatFirst) / comAgWatSecond,
-                  0)
+  }
 
-  } else {
-    stop("This share is only calculated for comAg because for the case of potential
-         irrigation and irrigation expansion, the area is assumed to be fully multiple cropped
-         and irrigated area as a whole is reduced if it cannot be fulfilled.")
+  # For single cropping case: no areas are suitable for multiple cropping
+  if (!(as.logical(stringr::str_split(multicropping, ":")[[1]][1]))) {
+    out[, , ] <- 0
   }
 
   # Checks
@@ -194,6 +236,9 @@ calcPotMulticroppingShare <- function(lpjml, climatetype,
   }
   if (any(round(out, digits = 6) < 0)) {
     stop("mrwater::calcPotMulticroppingShare produced negative values")
+  } else {
+    # correct negatives due to numerical reasons
+    out[out < 0] <- 0
   }
   if (any(out > 1)) {
     stop("Problem in mrwater::calcPotMulticroppingShare: Value should be between 0 or 1!")

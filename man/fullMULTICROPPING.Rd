@@ -6,13 +6,18 @@
 \usage{
 fullMULTICROPPING(
   allocationrule = "optimization",
+  comAg = TRUE,
   fossilGW = TRUE,
   transDist = 100
 )
 }
 \arguments{
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
-across cells of river basin ("optimization", "upstreamfirst", "equality")}
+across cells of river basin ("optimization", "upstreamfirst")}
+
+\item{comAg}{if TRUE: the currently already irrigated areas
+         in initialization year are reserved for irrigation,
+if FALSE: no irrigation areas reserved (irrigation potential)}
 
 \item{fossilGW}{If TRUE: non-renewable groundwater can be used.
 If FALSE: non-renewable groundwater cannot be used.}
