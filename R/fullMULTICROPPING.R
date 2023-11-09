@@ -284,7 +284,7 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
              file = "piwIRR_multPOT.mz")
 
   # Potential muliple cropping share
-  calcOutput("PotMulticroppingShare",
+  calcOutput("PotMulticroppingShare", scenario = paste(efp, ssp, sep = "."),
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              efrMethod = efrMethod, accessibilityrule = accessibilityrule,

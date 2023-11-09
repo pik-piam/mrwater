@@ -5,6 +5,7 @@
 \title{calcPotMulticroppingShare}
 \usage{
 calcPotMulticroppingShare(
+  scenario,
   lpjml,
   climatetype,
   selectyears,
@@ -25,6 +26,9 @@ calcPotMulticroppingShare(
 )
 }
 \arguments{
+\item{scenario}{EFP and non-agricultural water use scenario separated with a "."
+(e.g. "on.ssp2")}
+
 \item{lpjml}{LPJmL version used}
 
 \item{climatetype}{Switch between different climate scenarios or

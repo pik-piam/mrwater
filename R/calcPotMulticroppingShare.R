@@ -3,6 +3,8 @@
 #'              On areas where irrigation expansion takes place, full multiple cropping is
 #'              assumed.
 #'
+#' @param scenario          EFP and non-agricultural water use scenario separated with a "."
+#'                          (e.g. "on.ssp2")
 #' @param lpjml             LPJmL version used
 #' @param climatetype       Switch between different climate scenarios or
 #'                          historical baseline "GSWP3-W5E5:historical"
@@ -78,7 +80,7 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames add_dimension add_columns mbind
 
-calcPotMulticroppingShare <- function(lpjml, climatetype,
+calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                                       selectyears, iniyear,
                                       efrMethod, accessibilityrule,
                                       rankmethod, yieldcalib, allocationrule,
@@ -104,19 +106,25 @@ calcPotMulticroppingShare <- function(lpjml, climatetype,
                             aggregate = FALSE)
   crops <- getItems(watReqFirst, dim = "crop")
 
+  # Correction of single cropping water requirements for perennials that
+  # are proxied with an annual crop
+  specialCrops <- c("oilpalm", "others", "cottn_pro")
+  watReqFirst[, , specialCrops] <- watReqYear[, , specialCrops]
+  # To Do: check with JENS and KRISTINE
+
   # Potential irrigation water use (in mio. m^3 per year):
   # This includes committed agricultural water use, multiple cropping expansion on irrigated areas,
   # fossil groundwater and additional irrigation water potential
-  watPotAvl <- calcOutput("PotWater",
-                          lpjml = lpjml, climatetype = climatetype,
-                          selectyears = selectyears, iniyear = iniyear,
-                          efrMethod = efrMethod, accessibilityrule = accessibilityrule,
-                          rankmethod = rankmethod, yieldcalib = yieldcalib,
-                          allocationrule = allocationrule, gainthreshold = gainthreshold,
-                          irrigationsystem = irrigationsystem, landScen = landScen,
-                          cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
-                          multicropping = multicropping, transDist = transDist,
-                          aggregate = FALSE)
+  watPotAvl <- collapseNames(calcOutput("PotWater",
+                                        lpjml = lpjml, climatetype = climatetype,
+                                        selectyears = selectyears, iniyear = iniyear,
+                                        efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                                        rankmethod = rankmethod, yieldcalib = yieldcalib,
+                                        allocationrule = allocationrule, gainthreshold = gainthreshold,
+                                        irrigationsystem = irrigationsystem, landScen = landScen,
+                                        cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+                                        multicropping = multicropping, transDist = transDist,
+                                        aggregate = FALSE)[, , scenario])
   watPotAvlWW <- collapseNames(watPotAvl[, , "wat_ag_ww"])
   watPotAvlWC <- collapseNames(watPotAvl[, , "wat_ag_wc"])
   rm(watPotAvl)
@@ -148,14 +156,12 @@ calcPotMulticroppingShare <- function(lpjml, climatetype,
 
     # Actually committed irrigated area (crop-specific) (in Mha)
     # including non-renewable groundwater (if activated)
-    comAgArea <- calcOutput("IrrigAreaActuallyCommitted",
-                            fossilGW = fossilGW,
-                            lpjml = lpjml, climatetype = climatetype,
-                            selectyears = selectyears, iniyear = iniyear,
-                            efrMethod = efrMethod, multicropping = m,
-                            transDist = transDist, aggregate = FALSE)
-    getSets(comAgArea) <- c("x", "y", "iso", "year", "crop", "EFP", "scen")
-    comAgArea <- collapseNames(dimOrder(comAgArea, perm = c(2, 3, 1), dim = 3))
+    comAgArea <- collapseNames(calcOutput("IrrigAreaActuallyCommitted",
+                                          fossilGW = fossilGW,
+                                          lpjml = lpjml, climatetype = climatetype,
+                                          selectyears = selectyears, iniyear = iniyear,
+                                          efrMethod = efrMethod, multicropping = m,
+                                          transDist = transDist, aggregate = FALSE)[, , scenario])
 
     # Water use for committed agricultural areas
     # in main season
@@ -168,12 +174,6 @@ calcPotMulticroppingShare <- function(lpjml, climatetype,
     comAgWatSecondWW <- comAgWatYearWW - comAgWatFirstWW
     comAgWatSecondWC <- comAgWatYearWC - comAgWatFirstWC
 
-    # Check: watPotAvl > comAgWatFirst for case of comAg=TRUE
-    if (any(round(watPotAvlWW - comAgWatFirstWW, digits = 6) < 0)) {
-      stop("When comAg is activated, there should be enough water for the irrigation of the
-           main season of currently irrigated areas.
-           Please check what's wrong in calcPotMulticroppingShare!")
-    }
     # Check: comAgWatSecond should be 0 for perennials and where not suitable for MC under irrigated conditions
     perennials <- c("oilpalm", "sugr_cane") # what about "others" and "cottn_pro"?
     if (any(round(comAgWatSecondWW[, , perennials], digits = 6) != 0)) {
@@ -199,18 +199,52 @@ calcPotMulticroppingShare <- function(lpjml, climatetype,
     comAgWatSecondWC <- dimSums(comAgWatSecondWC, dim = "crop")
     comAgWatFirstWW  <- dimSums(comAgWatFirstWW, dim = "crop")
     comAgWatFirstWC  <- dimSums(comAgWatFirstWC, dim = "crop")
+    remainingWatWW   <- watPotAvlWW - comAgWatFirstWW
+    remainingWatWC   <- watPotAvlWC - comAgWatFirstWC
+
+    # Check: watPotAvl > comAgWatFirst for case of comAg=TRUE
+    if (any(round(remainingWatWW, digits = 6) < 0)) {
+      warning("When comAg is activated, there should be enough water for the irrigation of the
+           main season of currently irrigated areas.
+           Please fix the lpj-magpie-perennial mismatch!")
+      # Correction due to mismatch of lpj and magpie perennial crops
+      # (Note: remove once this inconsistency is solved)
+      remainingWatWW[remainingWatWW < 0] <- 0
+      remainingWatWC[remainingWatWC < 0] <- 0
+    }
 
     # Share of water for second season that can be fulfilled
     # with remaining water after first season irrigation.
     outWW <- ifelse(comAgWatSecondWW > 0,
-                    (watPotAvlWW - comAgWatFirstWW) / comAgWatSecondWW,
+                    remainingWatWW / comAgWatSecondWW,
                     NA)
     outWC <- ifelse(comAgWatSecondWC > 0,
-                    (watPotAvlWC - comAgWatFirstWC) / comAgWatSecondWC,
+                    remainingWatWC / comAgWatSecondWC,
                     NA)
 
     outWW[outWW > 1] <- 1
     outWC[outWC > 1] <- 1
+
+    # Object dimensions:
+    .transformObject <- function(x, gridcells, years, names) {
+      # empty magpie object structure
+      object0 <- new.magpie(cells_and_regions = gridcells,
+                            years = years,
+                            names = names,
+                            fill = 0,
+                            sets = c("x.y.iso", "year", "crop"))
+      # bring object x to dimension of object0
+      out <- object0 + x
+      return(out)
+    }
+    outWW <- .transformObject(x = outWW,
+                              gridcells = getItems(suitMCir, dim = 1),
+                              years = getItems(suitMCir, dim = 2),
+                              names = crops)
+    outWC <- .transformObject(x = outWC,
+                              gridcells = getItems(suitMCir, dim = 1),
+                              years = getItems(suitMCir, dim = 2),
+                              names = crops)
 
     # Where no committed agriculture:
     # full multiple cropping is assumed where it is suitable
