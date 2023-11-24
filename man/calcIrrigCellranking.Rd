@@ -38,8 +38,10 @@ or drip, surface, sprinkler for full irrigation by selected system}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
-2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
-For case of no land protection select "NA"
+2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+   e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+   or NA for no protection).
+For case of no land protection select "NA" in second part of argument
 or do not specify second part of the argument}
 
 \item{method}{Rank and optimization method consisting of
@@ -61,9 +63,9 @@ or selection of proxycrops)
 NULL returns all crops individually}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
-         Also needs specification of refYields, separated by ":".
-         Options: FALSE (for single cropping analyses) or
-                  "TRUE:actual:irrig_crop" (for multiple cropping analyses)
+Also needs specification of refYields, separated by ":".
+Options: FALSE (for single cropping analyses) or
+         "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE)}

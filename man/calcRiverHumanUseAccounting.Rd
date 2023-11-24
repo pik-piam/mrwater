@@ -105,11 +105,12 @@ If FALSE: uncalibrated LPJmL yields are used}
 Irrigation system to be used for river basin discharge
 allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
-\item{landScen}{(For case of iteration = "potential_irrigation" only:)
-Land availability scenario consisting of two parts separated by ":":
+\item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
-2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
-For case of no land protection select "NA"
+2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+   e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+   or NA for no protection).
+For case of no land protection select "NA" in second part of argument
 or do not specify second part of the argument}
 }
 \value{

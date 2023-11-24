@@ -29,7 +29,10 @@
 #' @param gainthreshold     Threshold of yield improvement potential required for
 #'                          water allocation in upstreamfirst algorithm
 #'                          (in same unit as in rankmethod)
-#' @param protectLand       Land protection scenario (e.g. HalfEarth, BH_IFL, NULL)
+#' @param protectLand       Land protection scenario (WDPA, 
+#'                          or one of the scenarios available in calcConservationPriorities,
+#'                          e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+#'                          or NA for no protection).
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
 #'                               Options: FALSE (for single cropping analyses) or

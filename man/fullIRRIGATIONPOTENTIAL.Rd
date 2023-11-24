@@ -60,7 +60,10 @@ separated by ":"}
 water allocation in upstreamfirst algorithm
 (in same unit as in rankmethod)}
 
-\item{protectLand}{Land protection scenario (e.g. HalfEarth, BH_IFL, NULL)}
+\item{protectLand}{Land protection scenario (WDPA, 
+or one of the scenarios available in calcConservationPriorities,
+e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+or NA for no protection).}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
      Also needs specification of refYields, separated by ":".

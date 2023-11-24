@@ -31,8 +31,11 @@
 #'                          or potentially irrigated areas following land availability
 #'                          defined in landScen scenario: consisting of two parts separated by ":":
 #'                          1. available land scenario (currCropland, currIrrig, potCropland)
-#'                          2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
-#'                          For case of no land protection select "NA"
+#'                          2. protection scenario (WDPA, or one of the scenarios available 
+#'                             in calcConservationPriorities,
+#'                             e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+#'                             or NA for no protection).
+#'                          For case of no land protection select "NA" in second part of argument
 #'                          or do not specify second part of the argument
 #' @param lpjml             LPJmL version used
 #' @param selectyears       Years for which irrigatable area is calculated
@@ -222,7 +225,13 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
 
   # difference between multiple cropped and single yields
   deltaYields <- yields - yieldsSingle
-  deltaYields[deltaYields < 0] <- 0
+  if (any(round(deltaYields, digits = 6) < 0)) {
+    stop("Multiple cropping yields are smaller than single cropping yields.
+    Please check whether this can be correct!")
+  } else {
+    # correct negatives that occur for numerical reasons
+    deltaYields[deltaYields < 0] <- 0
+  }
 
   ### Share Multicropped ###
   if (grepl(pattern = "actMC", x = management)) {
@@ -240,14 +249,27 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     # Share of area that is multicropped
     shrMC <- (ci - 1)
 
-  } else {
-    # for potMC: all where suitable multiple cropped
-    # for single: no multiplecropping (deltaYield will be 0)
+  } else if (grepl(pattern = "potMC", x = management)) {
+
+    # Share of irrigated area that can be multiple cropped
+    shrMC <- calcOutput("PotMulticroppingShare", scenario = scenario,
+                        lpjml = lpjml, climatetype = climatetype,
+                        selectyears = selectyears, iniyear = iniyear,
+                        efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+                        rankmethod = rankmethod, yieldcalib = yieldcalib,
+                        allocationrule = allocationrule, gainthreshold = gainthreshold,
+                        irrigationsystem = irrigationsystem, landScen = landScen,
+                        cropmix = cropmix, comAg = comAg, fossilGW = fossilGW,
+                        multicropping = m2, transDist = transDist,
+                        aggregate = FALSE)
+
+  } else if (grepl(pattern = "single", x = management)) {
+    # for single: no multiplecropping
     shrMC <- new.magpie(cells_and_regions = getItems(cropareaIrrig, dim = 1),
                         years = selectyears,
                         names = getItems(yields, dim = 3),
                         sets = c("x", "y", "iso", "year", "irrigation", "crop"),
-                        fill = 1)
+                        fill = 0)
   }
 
   ####################
@@ -269,17 +291,17 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
   # Check for negative rainfed cropareas
   if (any(round(cropareaRainfed, digits = 6) < 0)) {
     warning(paste0("In mrwater::calcCropProductionRevenue: rainfed croparea became negative.
-         This should not be the case and indicates a data mismatch
-         between total cropland and irrigated croparea.
-         Please check for the following settings: ",
-         "outputtype: ", outputtype,
-         "management: ", management,
-         "area: ", area,
-         "allocationrule: ", allocationrule,
-         "cropmix: ", cropmix,
-         "comAg: ", comAg,
-         "transDist: ", transDist,
-         "fossilGW: ", fossilGW))
+                   This should not be the case and indicates a data mismatch
+                   between total cropland and irrigated croparea.
+                   Please check for the following settings: ",
+                   "outputtype: ", outputtype,
+                   "management: ", management,
+                   "area: ", area,
+                   "allocationrule: ", allocationrule,
+                   "cropmix: ", cropmix,
+                   "comAg: ", comAg,
+                   "transDist: ", transDist,
+                   "fossilGW: ", fossilGW))
   }
   # remove negatives due to rounding imprecision
   cropareaRainfed[cropareaRainfed < 0] <- 0

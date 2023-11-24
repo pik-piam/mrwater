@@ -41,8 +41,10 @@
 #'                      (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #' @param landScen      Land availability scenario consisting of two parts separated by ":":
 #'                      1. available land scenario (currCropland, currIrrig, potCropland)
-#'                      2. protection scenario (WDPA, BH, FF, CPD, LW, HalfEarth, BH_IFL, NA).
-#'                      For case of no land protection select "NA"
+#'                      2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+#'                         e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+#'                         or NA for no protection).
+#'                      For case of no land protection select "NA" in second part of argument
 #'                      or do not specify second part of the argument
 #' @param rangeGT       Range of gainthreshold for calculation of potentially
 #'                      irrigated areas (in USD per hectare)

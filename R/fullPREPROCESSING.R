@@ -2,7 +2,10 @@
 #' @description Function that produces the objects for Technical and Economic
 #'              Irrigation Potentials within land and water boundaries
 #'
-#' @param protectLand       Land protection scenario (e.g. HalfEarth, BH_IFL, NULL)
+#' @param protectLand       Land protection scenario (WDPA,
+#'                          or one of the scenarios available in calcConservationPriorities,
+#'                          e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+#'                          or NA for no protection
 #' @param yieldcalib        If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
 #'                               Options: FALSE (for single cropping analyses) or
