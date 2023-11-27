@@ -31,7 +31,7 @@
 #'                          or potentially irrigated areas following land availability
 #'                          defined in landScen scenario: consisting of two parts separated by ":":
 #'                          1. available land scenario (currCropland, currIrrig, potCropland)
-#'                          2. protection scenario (WDPA, or one of the scenarios available 
+#'                          2. protection scenario (WDPA, or one of the scenarios available
 #'                             in calcConservationPriorities,
 #'                             e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
 #'                             or NA for no protection).
@@ -99,7 +99,6 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                                       rankmethod, yieldcalib, allocationrule, gainthreshold,
                                       irrigationsystem, cropmix, comAg,
                                       transDist, fossilGW) {
-
   #########################
   ### Extract Arguments ###
   #########################
@@ -113,6 +112,9 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
   if (grepl(pattern = "actMC", x = management)) {
     m2   <- "TRUE:actual:irrig_crop"
   }
+
+  # extract land scenario information
+  landScen <- area
 
   ####################
   ### Read in data ###
@@ -128,8 +130,6 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     cropareaIrrig <- collapseNames(tmp[, , "irrigated"])
 
   } else {
-    # extract land scenario information
-    landScen <- area
     # Crop-specific irrigated and rainfed cropareas (in Mha)
     # depending on chosen land and management scenario
     # Note: no committed agricultural areas subtracted because full area is needed here
@@ -170,7 +170,6 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
   # Crop-specific rainfed and irrigated yields
   # depending on chosen output type (biomass or revenue), they are given in tDM/ha or USD/ha
   if (outputtype == "biomass") {
-
     # Yields in tDM/ha
     yields <- calcOutput("YieldsAdjusted",
                          lpjml = lpjml, climatetype = climatetype,
@@ -190,7 +189,6 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
                           "under chosen management scenario.")
 
   } else if (outputtype == "revenue") {
-
     # Yields (in USD/ha)
     yields <- calcOutput("YieldsValued",
                          lpjml = lpjml, climatetype = climatetype,
@@ -235,7 +233,6 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
 
   ### Share Multicropped ###
   if (grepl(pattern = "actMC", x = management)) {
-
     # For actMC scenario (actual multiple cropping as reported by the LandInG data set)
     # Current Cropping intensity (CI) according to LandInG data set
     ci <- calcOutput("MulticroppingIntensity",
@@ -250,7 +247,6 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     shrMC <- (ci - 1)
 
   } else if (grepl(pattern = "potMC", x = management)) {
-
     # Share of irrigated area that can be multiple cropped
     shrMC <- calcOutput("PotMulticroppingShare", scenario = scenario,
                         lpjml = lpjml, climatetype = climatetype,
@@ -323,9 +319,9 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
   # Calculate production (quantity x yield) or revenue (quantity x yield x price)
   # Note: the price information is already part of "valued yields"
   production[, , "rainfed"] <- cropareaRainfed * rfYld +
-                                cropareaRainfed * shrMC[, , "rainfed"] * deltaYldrf
+    cropareaRainfed * shrMC[, , "rainfed"] * deltaYldrf
   production[, , "irrigated"] <- cropareaIrrig * irYld +
-                                  cropareaIrrig * shrMC[, , "irrigated"] * deltaYldir
+    cropareaIrrig * shrMC[, , "irrigated"] * deltaYldir
 
   # Check for NAs and negative values
   if (any(is.na(production))) {

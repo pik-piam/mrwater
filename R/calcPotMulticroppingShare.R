@@ -89,8 +89,6 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                                       gainthreshold, irrigationsystem, landScen,
                                       cropmix, comAg, fossilGW,
                                       multicropping, transDist) {
-
-
   ### Read in data ###
   # Irrigation water requirements in main season (in m^3 per ha per yr):
   watReqFirst <- calcOutput("ActualIrrigWatRequirements",
@@ -107,12 +105,6 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                             irrigationsystem = irrigationsystem,
                             aggregate = FALSE)
   crops <- getItems(watReqFirst, dim = "crop")
-
-  # Correction of single cropping water requirements for perennials that
-  # are proxied with an annual crop
-  specialCrops <- c("oilpalm", "others", "cottn_pro")
-  watReqFirst[, , specialCrops] <- watReqYear[, , specialCrops]
-  # To Do: check with JENS and KRISTINE
 
   # Potential irrigation water use (in mio. m^3 per year):
   # This includes committed agricultural water use, multiple cropping expansion on irrigated areas,
@@ -147,7 +139,6 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
   # For case of committed agriculture, expansion of multiple cropping
   # on irrigated areas is only possible if enough water is available
   if (comAg && multicropping != FALSE) {
-
     # multiple cropping as of current multiple cropping pattern
     m <- as.logical(stringr::str_split(multicropping, ":")[[1]][1])
     if (m) {
@@ -176,23 +167,18 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     comAgWatSecondWW <- comAgWatYearWW - comAgWatFirstWW
     comAgWatSecondWC <- comAgWatYearWC - comAgWatFirstWC
 
-    # Check: comAgWatSecond should be 0 for perennials and where not suitable for MC under irrigated conditions
-    perennials <- c("oilpalm", "sugr_cane") # what about "others" and "cottn_pro"?
-    if (any(round(comAgWatSecondWW[, , perennials], digits = 6) != 0)) {
-      # for sugarcane it works, but oilpalm proxied by
-      warning("Committed water requirements in the off season should be zero for perennials.
-           Please check what's wrong in calcPotMulticroppingShare!
-           This originates in the crop mapping issue from LPJmL to MAgPIE crops where
-           different crops are perennials")
-      # Fix in calcIrrigWatRequirements and calcBlueWaterConsumption
+    # Check: comAgWatSecond should be 0 for crops that are not multiple cropped and
+    #        where multiple cropping is not possible
+    nonMCcrops <- c("oilpalm", "sugr_cane", "betr", "begr")
+    if (any(round(comAgWatSecondWW[, , nonMCcrops], digits = 6) != 0)) {
+      warning("Committed water requirements in the off season should be zero for crops that
+              are not multiple cropped.
+              Please check what's wrong in calcPotMulticroppingShare!")
     }
     if (any(comAgWatSecondWW[suitMCir == 0] != 0)) {
       warning("Committed water requirements in the off season should be zero where multiple
-           cropping is not possible.
-           Please check what's wrong in calcPotMulticroppingShare!
-           This is related to the mapping of LPJmL annuals to MAgPIE perennials.
-           It's only the case for oilpalm, others and cottn_pro")
-      # Fix in calcIrrigWatRequirements and calcBlueWaterConsumption
+               cropping is not possible.
+               Please check what's wrong in calcPotMulticroppingShare!")
     }
     rm(comAgArea, comAgWatYearWW, comAgWatYearWC)
 

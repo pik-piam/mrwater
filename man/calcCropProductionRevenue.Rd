@@ -57,7 +57,7 @@ Irrigation assumption:
 or potentially irrigated areas following land availability
 defined in landScen scenario: consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
-2. protection scenario (WDPA, or one of the scenarios available 
+2. protection scenario (WDPA, or one of the scenarios available
    in calcConservationPriorities,
    e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
    or NA for no protection).
