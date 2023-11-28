@@ -24,8 +24,8 @@ calcIrrigSystemShr <- function(iniyear) {
   ####################
   # irrigated croparea per country
   irrigArea <- dimSums(collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                        aggregate = FALSE)[, , "irrigated"]),
-                      dim = c("x", "y"))
+                                                aggregate = FALSE)[, , "irrigated"]),
+                       dim = c("x", "y"))
   countrylist <- getItems(irrigArea, dim = 1)
   years       <- getYears(irrigArea)
 
@@ -42,7 +42,7 @@ calcIrrigSystemShr <- function(iniyear) {
   ######################
   # from LPJmL crops to MAgPIE crops
   map <- toolGetMapping("MAgPIE_LPJmL.csv",
-                          type = "sectoral", where = "mappingfolder")
+                        type = "sectoral", where = "mappingfolder")
   getItems(irrigSuit, dim = "crop") <- gsub("pastures", "mgrass", getItems(irrigSuit, dim = "crop"))
   # add betr and begr
   irrigSuit <- add_columns(irrigSuit, addnm = c("betr", "begr"),
@@ -52,7 +52,7 @@ calcIrrigSystemShr <- function(iniyear) {
   irrigSuit <- irrigSuit[, , "others", invert = TRUE]
 
   irrigSuit <- toolAggregate(irrigSuit, rel = map,
-                            from = "LPJmL", to = "MAgPIE", dim = "crop")
+                             from = "LPJmL", to = "MAgPIE", dim = "crop")
 
   # remove pasture (not irrigated in MAgPIE)
   irrigSuit <- irrigSuit[, , "pasture", invert = TRUE]
@@ -104,7 +104,7 @@ calcIrrigSystemShr <- function(iniyear) {
   dripArea <- systemArea[, , "drip"]
 
   shrDrip <- ifelse(dripSuitArea > 0 & dripSuitArea >= dripArea,
-                      dripArea / dripSuitArea,
+                    dripArea / dripSuitArea,
                     1)
   # assign drip irrigation area to drip-suitable crops
   out[, , "drip"][, , dripCrops] <- irrigArea[, , dripCrops] * shrDrip
@@ -123,7 +123,7 @@ calcIrrigSystemShr <- function(iniyear) {
   sprinklerArea <- systemArea[, , "sprinkler"]
 
   shrSprinkler <- ifelse(sprinklerSuitArea > 0 & sprinklerSuitArea >= sprinklerArea,
-                          sprinklerArea / sprinklerSuitArea,
+                         sprinklerArea / sprinklerSuitArea,
                          1)
   # assign sprinkler irrigation area to sprinkler-suitable crops
   out[, , "sprinkler"][, , sprinklerCrops] <- remainingIrrigArea[, , sprinklerCrops] * shrSprinkler
@@ -147,18 +147,18 @@ calcIrrigSystemShr <- function(iniyear) {
 
   # Check whether irrigation system shares add up to 1
   test <- ifelse(dimSums(irrigArea, dim = "crop") > 0,
-                  dimSums(out, dim = "crop") / dimSums(irrigArea, dim = "crop"),
+                 dimSums(out, dim = "crop") / dimSums(irrigArea, dim = "crop"),
                  0)
   test[dimSums(irrigArea, dim = "crop") == 0] <- irrigShr[dimSums(irrigArea, dim = "crop") == 0]
   getSets(test) <- getSets(irrigShr)
   if (any(round(dimSums(test, dim = 3), digits = 10) != 1)) {
-      stop("Problem in calcIrrigSystemShr: sum over shares not equal to 1")
+    stop("Problem in calcIrrigSystemShr: sum over shares not equal to 1")
   }
 
   ## Step 5 Calculate irrigation system share ##
   ##         per crop and country             ##
   out <- ifelse(out[, , croplist] * irrigArea[, , croplist] > 0,
-                  out[, , croplist] / irrigArea[, , croplist],
+                out[, , croplist] / irrigArea[, , croplist],
                 0)
 
   ## Step 6: Correct data inconsistencies:
@@ -176,9 +176,9 @@ calcIrrigSystemShr <- function(iniyear) {
     stop("Problem in calcIrrigSystemShr: produced NA irrigation system share")
   }
   if (any(round(dimSums(irrigArea, dim = "crop"),
-                        digits = 3) != round(dimSums(out * irrigArea,
-                                                    dim = 3),
-                digits = 3))) {
+                digits = 3) != round(dimSums(out * irrigArea,
+                                             dim = 3),
+                                     digits = 3))) {
     stop("Problem in calcIrrigSystemShr:
          The attributed irrigation system shares do not match the irrigated areas")
   }

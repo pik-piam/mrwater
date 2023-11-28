@@ -54,7 +54,7 @@ calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype,
   ######################
   ### Read in Inputs ###
   ######################
-  # Read in cropland area (by crop) from crop area initialization (in Mha)
+  # Read in physical cropland area (by crop) from crop area initialization (in Mha)
   comArea <- calcOutput("IrrigAreaCommitted",
                         selectyears = selectyears, iniyear = iniyear,
                         aggregate = FALSE)

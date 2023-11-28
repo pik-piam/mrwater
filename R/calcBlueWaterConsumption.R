@@ -139,8 +139,6 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # Transformation from lpj to kcr crops
     bwc2nd <- toolAggregate(bwc2nd, lpj2mag, from = "LPJmL",
                             to = "MAgPIE", dim = "crop", partrel = TRUE)[, , kcr]
-    bwc1st <- toolAggregate(bwc1st, lpj2mag, from = "LPJmL",
-                            to = "MAgPIE", dim = "crop", partrel = TRUE)[, , kcr]
 
     # Water requirements for multiple cropping case are only calculated for areas
     # where multiple cropping is possible in case of irrigation
@@ -151,7 +149,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
                                        aggregate = FALSE)[, , "irrigated"][, , kcr])
 
     # Special case: current multicropping according to LandInG
-    if (grepl(pattern = "actual", x = areaMask)) {              ##### Check: should this be done here? Or is this taken into account later with areas?
+    if (grepl(pattern = "actual", x = areaMask)) {
 
       # Cropping intensity
       ci <- collapseNames(calcOutput("MulticroppingIntensity", sectoral = "kcr",
@@ -167,17 +165,15 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
       shrMC[, , ] <- 1
     }
 
-    # The MAgPIE perennial crop "oilpalm" is grown throughout the whole year
-    # but proxied with an LPJmL crop with seasonaility ("groundnut").
-    # Therefore, both single and multiple cropping blue water consumption has be adjusted
-    if (lpj2mag$LPJmL[lpj2mag$MAgPIE == "oilpalm"] == "groundnut") {
-      bwc1st[, , "oilpalm"] <- bwc1st[, , "oilpalm"] + bwc2nd[, , "oilpalm"]
-    }
-
-    # Total blue water consumption considering multiple cropping suitability
-    # (and if applicable share that is multiple cropped)
-    bwcTotal <- bwc1st + bwc2nd * fallowFactor * shrMC * suitMC
-
+  }
+  # Transform from LPJmL to MAgPIE crops
+  bwc1st <- toolAggregate(bwc1st, lpj2mag, from = "LPJmL",
+                          to = "MAgPIE", dim = "crop", partrel = TRUE)[, , kcr]
+  # The MAgPIE perennial crop "oilpalm" is grown throughout the whole year
+  # but proxied with an LPJmL crop with seasonaility ("groundnut").
+  # Therefore, both single and multiple cropping blue water consumption has be adjusted
+  if (lpj2mag$LPJmL[lpj2mag$MAgPIE == "oilpalm"] == "groundnut") {
+    bwc1st[, , "oilpalm"] <- bwc1st[, , "oilpalm"] + bwc2nd[, , "oilpalm"]
   }
 
   ##############
@@ -197,6 +193,10 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     description <- paste0(description, "grass in LPJmL growing period of crops")
 
   } else if (output == "crops:year") {
+    # Total blue water consumption considering multiple cropping suitability
+    # (and if applicable share that is multiple cropped)
+    bwcTotal <- bwc1st + bwc2nd * fallowFactor * shrMC * suitMC
+
     # whole year BWC for crops (multiple cropping case)
     out         <- bwcTotal[, , kcr]
     description <- paste0(description, "crops throughout the entire year")

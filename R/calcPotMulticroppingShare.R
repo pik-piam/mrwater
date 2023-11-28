@@ -161,8 +161,8 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     comAgWatFirstWW  <- comAgArea * collapseNames(watReqFirst[, , "withdrawal"])
     comAgWatFirstWC  <- comAgArea * collapseNames(watReqFirst[, , "consumption"])
     # in entire year
-    comAgWatYearWW  <- comAgArea * collapseNames(watReqYear[, , "withdrawal"])
-    comAgWatYearWC  <- comAgArea * collapseNames(watReqYear[, , "consumption"])
+    comAgWatYearWW   <- comAgArea * collapseNames(watReqYear[, , "withdrawal"])
+    comAgWatYearWC   <- comAgArea * collapseNames(watReqYear[, , "consumption"])
     # in off season
     comAgWatSecondWW <- comAgWatYearWW - comAgWatFirstWW
     comAgWatSecondWC <- comAgWatYearWC - comAgWatFirstWC
@@ -194,7 +194,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     if (any(round(remainingWatWW, digits = 6) < 0)) {
       warning("When comAg is activated, there should be enough water for the irrigation of the
            main season of currently irrigated areas.
-           Please fix the lpj-magpie-perennial mismatch!")
+           Please check what's wrong starting from calcPotMulticroppingShare")
       # Correction due to mismatch of lpj and magpie perennial crops
       # (Note: remove once this inconsistency is solved)
       remainingWatWW[remainingWatWW < 0] <- 0
