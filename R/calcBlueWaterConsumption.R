@@ -127,6 +127,8 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
     # Crop blue water consumption in off season
     bwc2nd   <- grassBWC2nd * coeff
     # Add missing crops
+    # Note: betr and begr are perennials and do not have additional water requirements
+    #       outside the main growing season.
     missingCrops <- new.magpie(cells_and_regions = getItems(bwc2nd, dim = 1),
                                years = getItems(bwc2nd, dim = 2),
                                names = c("betr.irrigated", "betr.rainfed",
