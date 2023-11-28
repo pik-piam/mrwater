@@ -126,6 +126,14 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
 
     # Crop blue water consumption in off season
     bwc2nd   <- grassBWC2nd * coeff
+    # Add missing crops
+    missingCrops <- new.magpie(cells_and_regions = getItems(bwc2nd, dim = 1),
+                               years = getItems(bwc2nd, dim = 2),
+                               names = c("betr.irrigated", "betr.rainfed",
+                                         "begr.irrigated", "begr.rainfed"),
+                               fill = 0)
+    getSets(missingCrops) <- getSets(bwc2nd)
+    bwc2nd <- mbind(bwc2nd, missingCrops)
 
     # Transformation from lpj to kcr crops
     bwc2nd <- toolAggregate(bwc2nd, lpj2mag, from = "LPJmL",
