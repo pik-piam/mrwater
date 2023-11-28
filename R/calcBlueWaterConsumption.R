@@ -53,6 +53,7 @@ calcBlueWaterConsumption <- function(selectyears, lpjml, climatetype,
   lpj2mag <- toolGetMapping("MAgPIE_LPJmL.csv", type = "sectoral",
                             where = "mappingfolder")
   kcr     <- lpj2mag$MAgPIE
+  kcr     <- kcr[kcr != "pasture"]
 
   ####################
   ### Read in data ###
