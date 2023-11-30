@@ -107,14 +107,14 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
                              aggregate = FALSE)[, , "urban", invert = TRUE],
                   dim = 3)
   if (any(selectyears > as.integer(gsub("y", "", tail(getItems(wdpa, dim = 2), n = 1))))) {
-    wdpa <- mstools::toolHoldConstant(x = wdpa, years = selectyears)
+    wdpa <- toolHoldConstant(x = wdpa, years = selectyears)
   }
   if (!identical(numeric(0),
                  setdiff(selectyears, as.integer(gsub("y", "", getItems(wdpa, dim = 2)))))) {
-    wdpa <- magclass::time_interpolate(dataset = wdpa,
-                                       interpolated_year = selectyears,
-                                       integrate_interpolated_years = TRUE,
-                                       extrapolation_type = "linear")
+    wdpa <- time_interpolate(dataset = wdpa,
+                             interpolated_year = selectyears,
+                             integrate_interpolated_years = TRUE,
+                             extrapolation_type = "linear")
   }
   wdpa <- wdpa[, selectyears, ]
 
@@ -208,7 +208,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
   # correct areas where more area is protected than land is available
   if (any(areaNOprotect < 0)) {
-    stop("There are negative values for the areas that are not protected in 
+    stop("There are negative values for the areas that are not protected in
           mrwater::calcAreaPotIrrig. This should no longer be the case when
           using the LanduseIntialisation & ConservationPriorities.
           Please double-check!")
