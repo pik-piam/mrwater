@@ -129,6 +129,10 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     # Crop-specific irrigated areas (in Mha)
     cropareaIrrig <- collapseNames(tmp[, , "irrigated"])
 
+    # In "actual" scenario, only currently irrigated areas are available
+    # for irrigation
+    landScen <- "currIrrig:NA"
+
   } else {
     # Crop-specific irrigated and rainfed cropareas (in Mha)
     # depending on chosen land and management scenario

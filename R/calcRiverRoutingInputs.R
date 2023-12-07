@@ -230,6 +230,13 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                 multicropping = multicropping, aggregate = FALSE)
       addReqfullMulticropping <- watComAgPOT - watComAgACT
 
+      # Check
+      if (any(addReqfullMulticropping < 0)) {
+        stop("The additional water requirements for committed agricultural uses under potential
+             multiple cropping is smaller than the water use under the current multiple cropping
+             pattern. This should not be the case in calcRiverRoutingInputs")
+      }
+
       # Committed Agricultural Water Withdrawals (in mio. m^3 / yr) [smoothed]
       currRequestWWlocal <- .transformObject(x = collapseNames(dimSums(addReqfullMulticropping[, , "withdrawal"],
                                                                        dim = "crop")),
@@ -315,7 +322,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
     ## Current Uses
     # Required water for full irrigation per cell (in mio. m^3)
-    reqWatFullirrig <- calcOutput("FullIrrigationRequirement",                     #### Check: does dimensionality have to be transformed here?
+    reqWatFullirrig <- calcOutput("FullIrrigationRequirement",
                                   selectyears = selectyears, iniyear = iniyear,
                                   comagyear = comagyear,
                                   lpjml = lpjml, climatetype = climatetype,

@@ -118,8 +118,8 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   return(list(x            = out,
               weight       = NULL,
               unit         = "mio. m^3 per year",
-              description  = "total agricultural water use
-                              on yield gain areas
-                              for chosen cropmix",
+              description  = paste0("total agricultural water use ",
+                                    "on yield gain areas ",
+                                    "for chosen cropmix"),
               isocountries = FALSE))
 }

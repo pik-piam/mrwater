@@ -89,6 +89,9 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                                       gainthreshold, irrigationsystem, landScen,
                                       cropmix, comAg, fossilGW,
                                       multicropping, transDist) {
+
+  # To Do: remove scenario dimension and return for all scenarios.
+
   ### Read in data ###
   # Irrigation water requirements in main season (in m^3 per ha per yr):
   watReqFirst <- calcOutput("ActualIrrigWatRequirements",
@@ -192,13 +195,9 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
 
     # Check: watPotAvl > comAgWatFirst for case of comAg=TRUE
     if (any(round(remainingWatWW, digits = 6) < 0)) {
-      warning("When comAg is activated, there should be enough water for the irrigation of the
+      stop("When comAg is activated, there should be enough water for the irrigation of the
            main season of currently irrigated areas.
            Please check what's wrong starting from calcPotMulticroppingShare")
-      # Correction due to mismatch of lpj and magpie perennial crops
-      # (Note: remove once this inconsistency is solved)
-      remainingWatWW[remainingWatWW < 0] <- 0
-      remainingWatWC[remainingWatWC < 0] <- 0
     }
 
     # Share of water for second season that can be fulfilled

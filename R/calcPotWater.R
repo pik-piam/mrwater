@@ -225,7 +225,7 @@ calcPotWater <- function(lpjml, selectyears, climatetype, efrMethod,
   } else {
 
     # No water is previously committed
-    currHuman       <- watNonAg
+    currHuman <- watNonAg
     currHuman[, , "currHumanWWtotal"] <- currHuman[, , "currHumanWCtotal"] <- 0
 
   }

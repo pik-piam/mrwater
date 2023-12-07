@@ -71,20 +71,6 @@ calcFullIrrigationRequirement <- function(lpjml, climatetype,
                          irrigationsystem = irrigationsystem, multicropping = multicropping,
                          aggregate = FALSE)[, , croplist]
 
-  # # correct irrigation water requirements where irrigation would lead to 0 yield gains
-  # tmp <- calcOutput("IrrigCropYieldGain", priceAgg = "GLO",
-  #                   lpjml = lpjml, climatetype = climatetype,
-  #                   iniyear = iniyear, selectyears = selectyears,
-  #                   yieldcalib = yieldcalib,
-  #                   multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
-  #                   aggregate = FALSE)[, , croplist]
-  # tmp[tmp > 0] <- 1
-  # tmp[tmp < 0] <- 0
-  #
-  # irrigWat <- irrigWat * tmp
-  ### JENS: Should this be included or not? Would need to be addressed in calcPotIrrigAreas
-  ###       accordingly. It has an effect on calcRevenue. MAgPIE only gets aggregated across crops.
-
   # water requirements for full irrigation in cell accounting for cropshare (in mio. m^3)
   # Note on unit transformation:
   # croparea (mio ha -> ha): multiply with 1e6,

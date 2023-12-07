@@ -99,16 +99,28 @@ calcPotIrrigAreas <- function(cropAggregation,
     }
   }
 
+  # Share of currently irrigated areas that can be multiple cropped given water limitation
+  # shrMC <- calcOutput("PotMulticroppingShare", scenario = scenario,
+  #                     lpjml = lpjml, climatetype = climatetype,
+  #                     selectyears = selectyears, iniyear = iniyear,
+  #                     efrMethod = efrMethod, accessibilityrule = accessibilityrule,
+  #                     rankmethod = rankmethod, yieldcalib, allocationrule,
+  #                                       gainthreshold, irrigationsystem, landScen,
+  #                     cropmix, comAg, fossilGW,
+  #                     multicropping = multicropping, transDist = transDist,
+  #                     aggregate = FALSE)
+
   # To Do: split areas:
   # committed:
   # -> irrigArea * shrMC
   # additional (beyond committed):
   # -> irrigArea * (1-shrMC) where enough water available from committed_agriculture_fullMulticropping run
-  # -> rainfedArea where enough water available for additonal irrigation
+  # -> rainfedArea where enough water available for additional irrigation
 
-  # Note: need to consider shrPotMC! (new function: calcPotentialMulticroppingArea)
+  # Note: need to consider shrPotMC! (new function: calcPotMulticroppingShare)
 
   # total avlWat (i.e. from all three runs and GW) / reqWat = shr fulfilled --> doesn't necessarily add up because of cropmix (therefore, split calculation as above)
+  # Is this the case or not? Probably only for future time steps and with fossil GW?
 
   ## Read in (renewable and non-renewable) water available for irrigation (in mio. m^3)
   #  including committed agricultural water (if activated)
