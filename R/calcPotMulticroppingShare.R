@@ -183,7 +183,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                cropping is not possible.
                Please check what's wrong in calcPotMulticroppingShare!")
     }
-    rm(comAgArea, comAgWatYearWW, comAgWatYearWC)
+    rm(comAgWatYearWW, comAgWatYearWC)
 
     # total required water in main and off-season respectively
     comAgWatSecondWW <- dimSums(comAgWatSecondWW, dim = "crop")
@@ -204,10 +204,10 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     # with remaining water after first season irrigation.
     outWW <- ifelse(comAgWatSecondWW > 0,
                     remainingWatWW / comAgWatSecondWW,
-                    NA)
+                    0)
     outWC <- ifelse(comAgWatSecondWC > 0,
                     remainingWatWC / comAgWatSecondWC,
-                    NA)
+                    0)
 
     outWW[outWW > 1] <- 1
     outWC[outWC > 1] <- 1
@@ -235,8 +235,12 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
 
     # Where no committed agriculture:
     # full multiple cropping is assumed where it is suitable
-    outWW[is.na(outWW)] <- suitMCir[is.na(outWW)]
-    outWC[is.na(outWC)] <- suitMCir[is.na(outWC)]
+    outWW[comAgArea == 0] <- suitMCir[comAgArea == 0]
+    outWC[comAgArea == 0] <- suitMCir[comAgArea == 0]
+
+    # Crops that are not multiple cropped get value of 0
+    outWW[, , nonMCcrops] <- 0
+    outWC[, , nonMCcrops] <- 0
 
     if (any(round(outWW - outWC, digits = 6) != 0)) {
       warning("outWW and outWC should be the same. check what's wrong")
