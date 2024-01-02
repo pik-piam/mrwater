@@ -107,6 +107,10 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                             lpjml = lpjml, climatetype = climatetype,
                             irrigationsystem = irrigationsystem,
                             aggregate = FALSE)
+  # Irrigation water requirements in the second season (in m^3 per ha per year):
+  watReqSecond <- watReqYear - watReqFirst
+  noReqSecond  <- collapseNames(watReqSecond[, , "consumption"]) < 1e-6
+
   crops <- getItems(watReqFirst, dim = "crop")
 
   # Potential irrigation water use (in mio. m^3 per year):
@@ -163,12 +167,9 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     # in main season
     comAgWatFirstWW  <- comAgArea * collapseNames(watReqFirst[, , "withdrawal"])
     comAgWatFirstWC  <- comAgArea * collapseNames(watReqFirst[, , "consumption"])
-    # in entire year
-    comAgWatYearWW   <- comAgArea * collapseNames(watReqYear[, , "withdrawal"])
-    comAgWatYearWC   <- comAgArea * collapseNames(watReqYear[, , "consumption"])
     # in off season
-    comAgWatSecondWW <- comAgWatYearWW - comAgWatFirstWW
-    comAgWatSecondWC <- comAgWatYearWC - comAgWatFirstWC
+    comAgWatSecondWW <- comAgArea * collapseNames(watReqSecond[, , "withdrawal"])
+    comAgWatSecondWC <- comAgArea * collapseNames(watReqSecond[, , "consumption"])
 
     # Check: comAgWatSecond should be 0 for crops that are not multiple cropped and
     #        where multiple cropping is not possible
@@ -183,7 +184,6 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                cropping is not possible.
                Please check what's wrong in calcPotMulticroppingShare!")
     }
-    rm(comAgWatYearWW, comAgWatYearWC)
 
     # total required water in main and off-season respectively
     comAgWatSecondWW <- dimSums(comAgWatSecondWW, dim = "crop")
@@ -241,6 +241,11 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     # Crops that are not multiple cropped get value of 0
     outWW[, , nonMCcrops] <- 0
     outWC[, , nonMCcrops] <- 0
+
+    # Crops that have no irrigaton water requirements in second season
+    # are not multiple cropped under irrigated conditions
+    outWW[noReqSecond] <- 0
+    outWC[noReqSecond] <- 0
 
     if (any(round(outWW - outWC, digits = 6) != 0)) {
       warning("outWW and outWC should be the same. check what's wrong")
