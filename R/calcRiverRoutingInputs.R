@@ -8,7 +8,7 @@
 #'                          (Note: does not affect years of harmonization or smoothing)
 #' @param iteration         Water use to be allocated in this river routing iteration
 #'                          (non_agriculture, committed_agriculture, potential_irrigation,
-#'                          special case (for current irrigated area analysis): "committed_agriculture_fullMulticropping").
+#'                          committed_agriculture_fullMulticropping).
 #' @param climatetype       Switch between different climate scenarios
 #'                          or historical baseline "GSWP3-W5E5:historical"
 #' @param iniyear           Initialization year of irrigation system
@@ -67,7 +67,8 @@
 #'                          allocation algorithm ("surface", "sprinkler", "drip", "initialization")
 #' @param landScen          Land availability scenario consisting of two parts separated by ":":
 #'                          1. available land scenario (currCropland, currIrrig, potCropland)
-#'                          2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+#'                          2. protection scenario (WDPA, or one of the scenarios available
+#'                          in calcConservationPriorities,
 #'                             e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
 #'                             or NA for no protection).
 #'                          For case of no land protection select "NA" in second part of argument
@@ -92,7 +93,6 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
                                    transDist, efrMethod, accessibilityrule,
                                    multicropping, comAg, rankmethod, gainthreshold,
                                    cropmix, yieldcalib, irrigationsystem, landScen) {
-
   # Object dimensions
   watNonAg  <- calcOutput("WaterUseNonAg",
                           selectyears = selectyears, cells = "lpjcell",
@@ -119,7 +119,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
   }
 
   ## Routing-iteration-specific inputs
-  if (grepl(pattern = "non_agriculture", x = iteration)) {
+  if (iteration == "non_agriculture") {
     ## Previous Uses
     # Minimum flow requirements determined by natural flow river routing:
     # (full) Environmental Flow Requirements (in mio. m^3 / yr) [long-term average]
@@ -149,7 +149,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     discharge <- .transformObject(x = discharge,
                                   cells = cells, years = selectyears, scenarios = scenarios)
 
-  } else if (grepl(pattern = "committed_agriculture", x = iteration)) {
+  } else if (iteration == "committed_agriculture") {
     ## Previous Uses
     # Non-agricultural withdrawals and consumption
     previousHumanUse <- calcOutput("RiverHumanUseAccounting",
@@ -194,8 +194,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     ## Discharge from previous routing
     discharge <- collapseNames(previousHumanUse[, , "discharge"])
 
-  } else if (grepl(pattern = "committed_agriculture_fullMulticropping", x = iteration)) {
-
+  } else if (iteration == "committed_agriculture_fullMulticropping") {
     # For case of multiple cropping, determine whether current multiple cropping can be
     # expanded to full potential on committed agricultural areas
     if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
@@ -270,7 +269,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
       currRequestWClocal <- tmp[, , "currRequestWClocal"]
     }
 
-  } else if (grepl(pattern = "potential_irrigation", x = iteration)) {
+  } else if (iteration == "potential_irrigation") {
 
     if (comAg == TRUE) {
       # accounting in potentials
@@ -341,9 +340,10 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     discharge <- collapseNames(prevRouting[, , "discharge"])
 
   } else {
-    stop("Please specify iteration for which river routing inputs shall be calculated:
+    stop(paste0("Please specify iteration for which river routing inputs shall be calculated:
          non_agriculture, committed_agriculture, potential_irrigation,
-         or committed_agriculture_fullMulticropping")
+         or committed_agriculture_fullMulticropping.
+         The iteration that you selected is ", iteration, "."))
   }
 
   ###############

@@ -40,7 +40,8 @@
 #'                          ("surface", "sprinkler", "drip", "initialization")
 #' @param landScen          Land availability scenario consisting of two parts separated by ":":
 #'                          1. available land scenario (currCropland, currIrrig, potCropland)
-#'                          2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+#'                          2. protection scenario (WDPA, or one of the scenarios available
+#'                             in calcConservationPriorities,
 #'                             e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
 #'                             or NA for no protection).
 #'                          For case of no land protection select "NA" in second part of argument
@@ -89,7 +90,6 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                                       gainthreshold, irrigationsystem, landScen,
                                       cropmix, comAg, fossilGW,
                                       multicropping, transDist) {
-
   # To Do: remove scenario dimension and return for all scenarios.
 
   ### Read in data ###
@@ -242,11 +242,6 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     outWW[, , nonMCcrops] <- 0
     outWC[, , nonMCcrops] <- 0
 
-    # Crops that have no irrigaton water requirements in second season
-    # are not multiple cropped under irrigated conditions
-    outWW[noReqSecond] <- 0
-    outWC[noReqSecond] <- 0
-
     if (any(round(outWW - outWC, digits = 6) != 0)) {
       warning("outWW and outWC should be the same. check what's wrong")
     }
@@ -259,6 +254,10 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
   if (!(as.logical(stringr::str_split(multicropping, ":")[[1]][1]))) {
     out[, , ] <- 0
   }
+
+  # Crops that have no irrigaton water requirements in second season
+  # are not multiple cropped under irrigated conditions
+  out[noReqSecond, , "irrigated"] <- 0
 
   # Checks
   if (any(is.na(out))) {
