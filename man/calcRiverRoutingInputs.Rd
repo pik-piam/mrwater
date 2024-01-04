@@ -36,7 +36,7 @@ or historical baseline "GSWP3-W5E5:historical"}
 
 \item{iteration}{Water use to be allocated in this river routing iteration
 (non_agriculture, committed_agriculture, potential_irrigation,
-special case (for current irrigated area analysis): "committed_agriculture_fullMulticropping").}
+committed_agriculture_fullMulticropping).}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}
@@ -103,7 +103,8 @@ allocation algorithm ("surface", "sprinkler", "drip", "initialization")}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
-2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+2. protection scenario (WDPA, or one of the scenarios available
+in calcConservationPriorities,
    e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
    or NA for no protection).
 For case of no land protection select "NA" in second part of argument

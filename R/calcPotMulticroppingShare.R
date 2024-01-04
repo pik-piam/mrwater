@@ -257,7 +257,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
 
   # Crops that have no irrigaton water requirements in second season
   # are not multiple cropped under irrigated conditions
-  out[noReqSecond, , "irrigated"] <- 0
+  out[, , "irrigated"][noReqSecond] <- 0
 
   # Checks
   if (any(is.na(out))) {
