@@ -249,24 +249,8 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
       discharge <- collapseNames(previousHumanUse[, , "discharge"])
 
     } else {
-      # For case of single cropping no special treatment required
-      # Normal "committed_agricultural" run is conducted where non-ag uses are reserved
-      # and committed agricultural uses for single cropping conditions are
-      # being currently requrested
-      tmp <- calcOutput("RiverRoutingInputs", lpjml = lpjml, climatetype = climatetype,
-                        selectyears = selectyears, iniyear = iniyear,
-                        iteration = "committed_agriculture",
-                        transDist = transDist, efrMethod = efrMethod,
-                        accessibilityrule = accessibilityrule, multicropping = multicropping,
-                        comAg = NULL, rankmethod = NULL, gainthreshold = NULL,
-                        cropmix = NULL, yieldcalib = NULL,
-                        irrigationsystem = NULL, landScen = NULL,
-                        aggregate = FALSE)
-      discharge <- tmp[, , "discharge"]
-      prevReservedWW <- tmp[, , "prevReservedWW"]
-      prevReservedWC <- tmp[, , "presReservedWC"]
-      currRequestWWlocal <- tmp[, , "currRequestWWlocal"]
-      currRequestWClocal <- tmp[, , "currRequestWClocal"]
+      stop("Error in calcRiverRoutingInputs: Under single cropping, `commmitted_agriculture_fullMulticropping`
+           iteration should not be calculated. Please adjust the settings in the function call accordingly.")
     }
 
   } else if (iteration == "potential_irrigation") {
@@ -275,7 +259,11 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
       # accounting in potentials
       comagyear <- iniyear
       # previous use
-      humanuse <- "committed_agriculture_fullMulticropping"
+      if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
+        humanuse <- "committed_agriculture_fullMulticropping"
+      } else {
+        humanuse <- "committed_agriculture"
+      }
     } else if (comAg == FALSE) {
       # committed agriculture not accounted in potentials (full potential)
       comagyear <- NULL
