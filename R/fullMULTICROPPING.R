@@ -23,7 +23,6 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
                               comAg = TRUE,
                               fossilGW = TRUE,
                               transDist = 100) {
-
   # scenarios for paper: landScen <- "currCropland:NA", "currIrrig:NA"
 
   # Standard settings
@@ -116,6 +115,12 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
              scenario = "irrig_crop",
              selectyears = selectyears, sectoral = "kcr",
              file = "croppingIntensity.mz", aggregate = FALSE)
+
+  # cells where multiple cropping happens
+  calcOutput("MulticroppingCells", scenario = "actual:irrig_crop", sectoral = "kcr",
+             selectyears = selectyears, lpjml = lpjml, climatetype = climatetype,
+             aggregate = FALSE, file = "currMC.mz")
+
   # potential multiple cropping suitability
   calcOutput("MulticroppingSuitability", selectyears = selectyears,
              lpjml = lpjml, climatetype = climatetype,
@@ -283,7 +288,7 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
              aggregate = FALSE,
              file = "piwIRR_multPOT.mz")
 
-  # Potential muliple cropping share
+  # Potential multiple cropping share
   calcOutput("PotMulticroppingShare", scenario = paste(efp, ssp, sep = "."),
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
@@ -295,7 +300,6 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
              multicropping = "TRUE:potential:endogenous", transDist = transDist,
              aggregate = FALSE,
              file = "potMCshare.mz")
-
 
   ### Yield Gain ###
   # Single cropping yield gain
@@ -323,20 +327,17 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              multicropping = FALSE, aggregate = FALSE,
-             file = "comAgWat_single_NOLIM.mz"
-  )
+             file = "comAgWat_single_NOLIM.mz")
   calcOutput("WaterUseCommittedAg",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              multicropping = "TRUE:actual:irrig_crop", aggregate = FALSE,
-             file = "comAgWat_multipleACT_NOLIM.mz"
-  )
+             file = "comAgWat_multipleACT_NOLIM.mz")
   calcOutput("WaterUseCommittedAg",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
              multicropping = "TRUE:potential:endogenous", aggregate = FALSE,
-             file = "comAgWat_multiplePOT_NOLIM.mz"
-  )
+             file = "comAgWat_multiplePOT_NOLIM.mz")
 
   for (t in c(0, 100, 200)) {
     # Committed agricultural area

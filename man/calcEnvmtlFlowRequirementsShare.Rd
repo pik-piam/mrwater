@@ -13,7 +13,7 @@ calcEnvmtlFlowRequirementsShare(lpjml, climatetype, efrMethod)
 or historical baseline "GSWP3-W5E5:historical"}
 
 \item{efrMethod}{EFR method used including selected strictness of EFRs
-(e.g. Smakhtin:good, VMF:fair)}
+(e.g. Smakhtin:good, VMF:fair, PB:Rockstroem)}
 }
 \value{
 magpie object in cellular resolution representing share of discharge

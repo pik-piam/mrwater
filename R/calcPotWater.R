@@ -85,13 +85,6 @@ calcPotWater <- function(lpjml, selectyears, climatetype, efrMethod,
     iniyear <- as.numeric(gsub("y", "", iniyear))
   }
 
-  # Check whether cropmix argument is set correctly
-  if (comAg) {
-    cmix <- "hist_rainf"
-  } else {
-    cmix <- cropmix
-  }
-
   # Water potentially available for additional potential irrigation
   # from renewable water sources (additionally to already reserved water
   # for committed agricultural uses, i.e.
@@ -105,7 +98,7 @@ calcPotWater <- function(lpjml, selectyears, climatetype, efrMethod,
                                         allocationrule = allocationrule,
                                         gainthreshold = gainthreshold, irrigationsystem = irrigationsystem,
                                         iniyear = iniyear, landScen = landScen,
-                                        cropmix = cmix, comAg = comAg,
+                                        cropmix = cropmix, comAg = comAg,
                                         multicropping = multicropping, aggregate = FALSE))
   watAvlAgWW <- collapseNames(watAvlAg[, , "currWWtotal"])
   watAvlAgWC <- collapseNames(watAvlAg[, , "currWCtotal"])

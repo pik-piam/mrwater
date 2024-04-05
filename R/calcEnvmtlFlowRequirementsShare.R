@@ -6,7 +6,7 @@
 #' @param climatetype Switch between different climate scenarios
 #'                    or historical baseline "GSWP3-W5E5:historical"
 #' @param efrMethod   EFR method used including selected strictness of EFRs
-#'                    (e.g. Smakhtin:good, VMF:fair)
+#'                    (e.g. Smakhtin:good, VMF:fair, PB:Rockstroem)
 #'
 #' @importFrom magclass collapseNames new.magpie getYears setYears as.array as.magpie add_dimension mbind
 #' @importFrom madrat calcOutput
@@ -36,9 +36,9 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
 
   # Monthly Discharge from LPJmL based on historical baseline (raw: including variation)
   monthlyDischarge   <- setYears(calcOutput("LPJmL_new", version = cfg$readin_version,
-                                             subtype = "mdischarge", climatetype = cfg$baseline_hist,
-                                             stage = "raw", years = refYears, aggregate = FALSE),
-                                  refYears)
+                                            subtype = "mdischarge", climatetype = cfg$baseline_hist,
+                                            stage = "raw", years = refYears, aggregate = FALSE),
+                                 refYears)
 
   # Transform to array (faster calculation)
   monthlyDischarge    <- as.array(collapseNames(monthlyDischarge))
@@ -86,7 +86,7 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
     lfr       <- quantileLFR * 12
     # LFR-Share: LFR as fraction of mean annual discharge
     lfr       <- as.magpie(ifelse(meanAnnualDischarge > 0,
-                                    lfr / meanAnnualDischarge,
+                                  lfr / meanAnnualDischarge,
                                   0),
                            spatial = 1)
 
@@ -111,9 +111,17 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
     hfr[q90 >= 0.3 * meanAnnualDischarge] <- hfrQ90more30
     hfr[meanAnnualDischarge <= 0]         <- hfrQ90less10
 
+    # EFR Share
+    efr <- collapseNames(lfr) + collapseNames(hfr)
+
+    # Correction where EFRs exceed 1
+    hfr <- hfr - collapseNames(ifelse(efr > 1, efr - 1, 0))
+    efr <- collapseNames(lfr) + collapseNames(hfr)
+
     # Naming of dimensions
     lfr <- add_dimension(lfr, dim = 3.1, add = "EFR", nm = "LFR")
     hfr <- add_dimension(hfr, dim = 3.1, add = "EFR", nm = "HFR")
+    efr <- add_dimension(efr, dim = 3.1, add = "EFR", nm = "EFR")
 
   } else if (grepl("VMF", efrMethod)) {
 
@@ -147,25 +155,29 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
     hfr <- dimSums(hfr, dim = 3)
 
     # LFR and HFR as share of natural discharge
+    efr <- ifelse(meanAnnualDischarge > 0, (lfr + hfr) / meanAnnualDischarge, 0)
     lfr <- ifelse(meanAnnualDischarge > 0, lfr / meanAnnualDischarge, 0)
     hfr <- ifelse(meanAnnualDischarge > 0, hfr / meanAnnualDischarge, 0)
 
     # Naming of dimensions
     lfr <- add_dimension(lfr, dim = 3.1, add = "EFR", nm = "LFR")
     hfr <- add_dimension(hfr, dim = 3.1, add = "EFR", nm = "HFR")
+    efr <- add_dimension(efr, dim = 3.1, add = "EFR", nm = "EFR")
+
+  } else if (grepl("PB:Rockstroem", efrMethod)) {
+
+    # According to Rockström et al. 2023, less than 20% magnitude monthly surface flow
+    # alteration in all grid cells is allowed to stay within safe planetary boundary.
+    # For the context of EFRs, it is interpreted as only 20% of monthly water flow can be
+    # withdrawn, i.e. 80% need to stay in the river in each grid cell
+    lfr <- 0.8 # Note: No distinction between high- and low flows in this method.
+    hfr <- 0   #       Therefore, all assigned to low-flow requirements.
+    efr <- 0.8
 
   } else {
     stop("Please select EFR method (Smakhtin, VMF) and the respective strictness
          of EFRs (acquatic ecosystem status: fair, good, natural) separate by : separator")
   }
-
-  # EFR Share
-  efr <- collapseNames(lfr) + collapseNames(hfr)
-
-  # Correction where EFRs exceed 1
-  hfr <- hfr - collapseNames(ifelse(efr > 1, efr - 1, 0))
-  efr <- collapseNames(lfr) + collapseNames(hfr)
-  efr <- add_dimension(efr, dim = 3.1, add = "EFR", nm = "EFR")
 
   out <- collapseNames(mbind(efr, lfr, hfr))
 

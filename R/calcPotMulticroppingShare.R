@@ -107,9 +107,11 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                             lpjml = lpjml, climatetype = climatetype,
                             irrigationsystem = irrigationsystem,
                             aggregate = FALSE)
+
   # Irrigation water requirements in the second season (in m^3 per ha per year):
   watReqSecond <- watReqYear - watReqFirst
   noReqSecond  <- collapseNames(watReqSecond[, , "consumption"]) < 1e-6
+
 
   crops <- getItems(watReqFirst, dim = "crop")
 
@@ -161,15 +163,32 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                                           lpjml = lpjml, climatetype = climatetype,
                                           selectyears = selectyears, iniyear = iniyear,
                                           efrMethod = efrMethod, multicropping = m,
-                                          transDist = transDist, aggregate = FALSE)[, , scenario])
+                                          transDist = transDist,
+                                          aggregate = FALSE)[, , scenario])[, , crops]
+    # Cropping intensity
+    ci <- collapseNames(calcOutput("MulticroppingIntensity", sectoral = "kcr", scenario = "irrig_crop",
+                                   selectyears = selectyears, aggregate = FALSE)[, , "irrigated"][, , crops])
+    # Share of area that is multicropped
+    shrMC <- (ci - 1)
+    # Share that is missing to full expansion of multiple cropping on currently irrigated land
+    shrExp <- suitMCir - shrMC
+
+    if (any(shrExp + shrMC > 1)) {
+      stop("Problem in calcPotMulticroppingShare:
+      The current multiple cropping share and the multiple cropping expansion share
+      add up to more than 1.")
+    }
 
     # Water use for committed agricultural areas
     # in main season
-    comAgWatFirstWW  <- comAgArea * collapseNames(watReqFirst[, , "withdrawal"])
-    comAgWatFirstWC  <- comAgArea * collapseNames(watReqFirst[, , "consumption"])
-    # in off season
-    comAgWatSecondWW <- comAgArea * collapseNames(watReqSecond[, , "withdrawal"])
-    comAgWatSecondWC <- comAgArea * collapseNames(watReqSecond[, , "consumption"])
+    comAgWatFirstWW <- comAgArea[, , crops] * collapseNames(watReqFirst[, , "withdrawal"])[, , crops]
+    comAgWatFirstWC <- comAgArea[, , crops] * collapseNames(watReqFirst[, , "consumption"])[, , crops]
+    # in off season (if fully multiple cropped)
+    comAgWatSecondWW <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "withdrawal"])[, , crops]
+    comAgWatSecondWC <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "consumption"])[, , crops]
+    # in off season (if multiple cropped as of today)
+    comAgWatSecondWWAct <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "withdrawal"])[, , crops] * shrMC
+    comAgWatSecondWCAct <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "consumption"])[, , crops] * shrMC
 
     # Check: comAgWatSecond should be 0 for crops that are not multiple cropped and
     #        where multiple cropping is not possible
@@ -185,68 +204,63 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                Please check what's wrong in calcPotMulticroppingShare!")
     }
 
-    # total required water in main and off-season respectively
-    comAgWatSecondWW <- dimSums(comAgWatSecondWW, dim = "crop")
-    comAgWatSecondWC <- dimSums(comAgWatSecondWC, dim = "crop")
-    comAgWatFirstWW  <- dimSums(comAgWatFirstWW, dim = "crop")
-    comAgWatFirstWC  <- dimSums(comAgWatFirstWC, dim = "crop")
-    remainingWatWW   <- watPotAvlWW - comAgWatFirstWW
-    remainingWatWC   <- watPotAvlWC - comAgWatFirstWC
+    # total required water in off-season respectively to irrigate yet not multicropped areas
+    comAgWatSecondWWexp <- dimSums(comAgWatSecondWW[, , crops] * shrExp[, , crops], dim = "crop")
+    comAgWatSecondWCexp <- dimSums(comAgWatSecondWC[, , crops] * shrExp[, , crops], dim = "crop")
+    # water available after subtracting already committed for first season
+    # and for second season under current multiple cropping share
+    remainingWatWW <- watPotAvlWW - dimSums(comAgWatFirstWW + comAgWatSecondWWAct, dim = "crop")
+    remainingWatWC <- watPotAvlWC - dimSums(comAgWatFirstWC + comAgWatSecondWCAct, dim = "crop")
 
     # Check: watPotAvl > comAgWatFirst for case of comAg=TRUE
     if (any(round(remainingWatWW, digits = 6) < 0)) {
       stop("When comAg is activated, there should be enough water for the irrigation of the
-           main season of currently irrigated areas.
+           main season of currently irrigated areas and for irrigation of the share that is currently multiple cropped.
            Please check what's wrong starting from calcPotMulticroppingShare")
     }
 
     # Share of water for second season that can be fulfilled
-    # with remaining water after first season irrigation.
-    outWW <- ifelse(comAgWatSecondWW > 0,
-                    remainingWatWW / comAgWatSecondWW,
+    # with remaining water after first season
+    # and current multiple cropping second season irrigation.
+    shrWW <- ifelse(comAgWatSecondWWexp > 1e-8,
+                    remainingWatWW / comAgWatSecondWWexp,
                     0)
-    outWC <- ifelse(comAgWatSecondWC > 0,
-                    remainingWatWC / comAgWatSecondWC,
+    shrWC <- ifelse(comAgWatSecondWCexp > 1e-8,
+                    remainingWatWC / comAgWatSecondWCexp,
                     0)
 
-    outWW[outWW > 1] <- 1
-    outWC[outWC > 1] <- 1
+    shrWW[shrWW > 1] <- 1
+    shrWC[shrWC > 1] <- 1
 
-    # Object dimensions:
-    .transformObject <- function(x, gridcells, years, names) {
-      # empty magpie object structure
-      object0 <- new.magpie(cells_and_regions = gridcells,
-                            years = years,
-                            names = names,
-                            fill = 0,
-                            sets = c("x.y.iso", "year", "crop"))
-      # bring object x to dimension of object0
-      out <- object0 + x
-      return(out)
+    if (any(round(shrWW - shrWC, digits = 6) != 0)) {
+      warning("shrWW and shrWC should be the same. check what's wrong")
     }
-    outWW <- .transformObject(x = outWW,
-                              gridcells = getItems(suitMCir, dim = 1),
-                              years = getItems(suitMCir, dim = 2),
-                              names = crops)
-    outWC <- .transformObject(x = outWC,
-                              gridcells = getItems(suitMCir, dim = 1),
-                              years = getItems(suitMCir, dim = 2),
-                              names = crops)
+
+    potShr <- shrExp * pmin(shrWW, shrWC)
+
+    if (any(potShr + shrMC > 1)) {
+      stop("Problem in calcPotMulticroppingShare:
+            The current multiple cropping share and the multiple cropping expansion share
+            add up to more than 1.")
+    }
+    potShr <- potShr + shrMC
+
+    # Ensure that not too much water has been allocated
+    if ((remainingWatWW - dimSums(comAgWatSecondWW[, , crops] * potShr[, , crops], dim = "crop")) < 0) {
+      stop("There is a problem in calcPotMulticroppingShare:
+            Too much multiple cropping expansion on currently irrigated area.
+            Water is not sufficient.")
+    }
 
     # Where no committed agriculture:
     # full multiple cropping is assumed where it is suitable
-    outWW[comAgArea == 0] <- suitMCir[comAgArea == 0]
-    outWC[comAgArea == 0] <- suitMCir[comAgArea == 0]
+    potShr[comAgArea == 0] <- suitMCir[comAgArea == 0]
 
     # Crops that are not multiple cropped get value of 0
-    outWW[, , nonMCcrops] <- 0
-    outWC[, , nonMCcrops] <- 0
+    potShr[, , nonMCcrops] <- 0
 
-    if (any(round(outWW - outWC, digits = 6) != 0)) {
-      warning("outWW and outWC should be the same. check what's wrong")
-    }
-
-    out[, , "irrigated"] <- pmin(outWW, outWC)
+    # Assign the calculated value
+    out[, , "irrigated"] <- potShr
 
   }
 
@@ -255,7 +269,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     out[, , ] <- 0
   }
 
-  # Crops that have no irrigaton water requirements in second season
+  # Crops that have no irrigation water requirements in second season
   # are not multiple cropped under irrigated conditions
   out[, , "irrigated"][noReqSecond] <- 0
 
