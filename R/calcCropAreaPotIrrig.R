@@ -40,8 +40,6 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
   if (grepl("hist", cropmix)) {
     if (grepl("currIrrig", landScen)) {
       cropmix <- "hist_irrig"
-    } else if (grepl("currCropland", landScen)) {
-      cropmix <- "hist_total"
     }
   }
 

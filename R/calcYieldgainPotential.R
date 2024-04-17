@@ -112,15 +112,9 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
     # Area that can potentially be irrigated without water limitation
     area <- calcOutput("AreaPotIrrig",
                        selectyears = selectyears, iniyear = iniyear,
-                       landScen = landScen, comagyear = NULL,
+                       landScen = landScen, cropmix = cropmix, comagyear = NULL,
                        aggregate = FALSE)
-
-    # share of crop area by crop type
-    cropareaShr <- calcOutput("CropAreaShare", iniyear = iniyear, cropmix = cropmix,
-                              aggregate = FALSE)
-    croplist    <- getItems(cropareaShr, dim = "crop")
-    # Potential area by croptype (in Mha)
-    area <- cropareaShr * area
+    croplist    <- getItems(area, dim = "crop")
 
     d    <- "Potentially Irrigated Area only considering land constraint"
 

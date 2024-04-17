@@ -161,7 +161,7 @@ calcRiverHumanUseAccounting <- function(iteration,
   runoffWOEvap <- yearlyRunoff - lakeEvap
 
   # Inaccessible discharge
-  if (iteration == "potential_irrigation") {
+  if (iteration == "potential_irrigation" || iteration == "committed_agriculture_fullMulticropping") {
     inaccessibleDischarge <- calcOutput("DischargeInaccessibleAdd",
                                         selectyears = selectyears,
                                         lpjml = lpjml, climatetype = climatetype,

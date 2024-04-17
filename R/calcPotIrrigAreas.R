@@ -118,6 +118,13 @@ calcPotIrrigAreas <- function(cropAggregation,
 
   if (comAg) {
 
+    # Cropmix for non-committed areas
+    if (grepl("hist", cropmix)) {
+      cmix <- "hist_rainf"
+    } else {
+      cmix <- cropmix
+    }
+
     # multiple cropping as of current multiple cropping pattern
     m <- as.logical(stringr::str_split(multicropping, ":")[[1]][1])
     if (m) {
@@ -169,9 +176,11 @@ calcPotIrrigAreas <- function(cropAggregation,
       comWatWW <- comWatWW + collapseNames(currHumanAdd[, , "currHumanWWtotal"])
     }
   } else {
-    comagyear <- NULL
 
+    # Cropmix is not changed if there are no committed agricultural uses
+    cmix <- cropmix
     # No water or areas committed to current agricultural uses
+    comagyear <- NULL
     comAgArea <- 0
     comWatWW <- comWatWC <- avlWatWC
     comWatWW[, , ] <- 0
@@ -180,6 +189,7 @@ calcPotIrrigAreas <- function(cropAggregation,
 
   # Water available for potential additional irrigation
   # beyond committed ag. use considering (renewable and non-renewable)
+  # and beyond potential multiple cropping expansion on already irrigated areas
   # availability (in mio. m^3)
   avlWatWW <- avlWatWW - comWatWW
   avlWatWC <- avlWatWC - comWatWC
@@ -195,12 +205,13 @@ calcPotIrrigAreas <- function(cropAggregation,
   avlWatWW[avlWatWW < 0] <- 0
   avlWatWC[avlWatWC < 0] <- 0
 
-  # Irrigation water requirements for selected cropmix and irrigation system per cell (in mio. m^3)
-  # required for irrigation of additional irrigation (beyond committed agriculture)
+  # Irrigation water requirements (in mio. m^3)
+  # for expansion of irrigation in currently rainfed areas (i.e. beyond committed agricultural
+  # use and beyond expansion of multiple cropping on currently irrigated areas if activated)
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
                          lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                          irrigationsystem = irrigationsystem, landScen = landScen,
-                         cropmix = cropmix, multicropping = multicropping,
+                         cropmix = cmix, multicropping = multicropping,
                          comagyear = comagyear,
                          aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getItems(avlWatWW, dim = 1),
@@ -218,7 +229,7 @@ calcPotIrrigAreas <- function(cropAggregation,
                              landScen = landScen, comagyear = comagyear,
                              aggregate = FALSE)
 
-  # share of requirements that can be fulfilled given available water, when >1 whole area can be irrigated
+  # share of requirements that can be fulfilled given available water; if >1 whole area can be irrigated
   irrigareaWW <- pmin(avlWatWW / watReqWW, 1) * areaPotIrrig
   # cells with no water requirements also get no irrigated area assigned
   irrigareaWW[watReqWW == 0] <- 0
@@ -237,8 +248,9 @@ calcPotIrrigAreas <- function(cropAggregation,
 
   # share of crop area by crop type given chosen cropmix
   cropareaShr <- calcOutput("CropAreaShare",
-                            iniyear = iniyear, cropmix = cropmix,
+                            iniyear = iniyear, cropmix = cmix,
                             aggregate = FALSE)
+  cropOrder <- getItems(cropareaShr, dim = "crop")
   # Exclude areas where no water is required for irrigation
   # from additionally irrigated areas as it is not required there
   # and rainfed production is assumed.
@@ -246,7 +258,7 @@ calcPotIrrigAreas <- function(cropAggregation,
                              irrigationsystem = irrigationsystem,
                              selectyears = selectyears, iniyear = iniyear,
                              lpjml = lpjml, climatetype = climatetype,
-                             multicropping = multicropping, aggregate = FALSE)
+                             multicropping = multicropping, aggregate = FALSE)[, , cropOrder]
   # check
   if (any(cropIrrigReq[, , "consumption"] == 0 & cropIrrigReq[, , "withdrawal"] != 0)) {
     stop("Check what's wrong in irrigation water requirements of
@@ -254,10 +266,10 @@ calcPotIrrigAreas <- function(cropAggregation,
   }
   cropIrrigReq <- collapseNames(cropIrrigReq[, , "consumption"])
   # where no water is required for irrigation, no irrigation takes place
-  cropareaShr[cropIrrigReq == 0] <- 0
+  cropareaShr[cropIrrigReq < 1e-6] <- 0
 
   # crop-specific potentially irrigated area
-  out <- collapseNames(irrigatableArea * cropareaShr)
+  out <- collapseNames(cropareaShr * irrigatableArea)
 
   # Fix dimensions
   if (comAg) {
