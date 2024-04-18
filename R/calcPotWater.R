@@ -207,11 +207,12 @@ calcPotWater <- function(lpjml, selectyears, climatetype, efrMethod,
                                  transDist = transDist, comAg = NULL,
                                  efrMethod = efrMethod, multicropping = multicropping,
                                  selectyears = selectyears, iniyear = iniyear,
-                                 accessibilityrule = NULL,
-                                 rankmethod = NULL, gainthreshold = NULL,
-                                 cropmix = NULL, yieldcalib = NULL,
-                                 irrigationsystem = NULL, landScen = NULL,
+                                 accessibilityrule = accessibilityrule,
+                                 rankmethod = rankmethod, gainthreshold = gainthreshold,
+                                 cropmix = cropmix, yieldcalib = yieldcalib,
+                                 irrigationsystem = irrigationsystem, landScen = landScen,
                                  aggregate = FALSE)
+
       currHuman <- currHuman + currHumanAdd
     }
 
