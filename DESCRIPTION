@@ -22,7 +22,7 @@ Depends:
     mrland (>= 0.51.0)
 Imports:
     magpiesets,
-    mstools,
+    mstools (>= 0.5.1),
     raster,
     stats,
     stringr,
