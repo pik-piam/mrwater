@@ -18,7 +18,7 @@
 #'
 #' @importFrom madrat calcOutput
 #' @importFrom magclass getCells getNames add_dimension new.magpie
-#' @importFrom mrcommons toolGetMappingCoord2Country
+#' @importFrom mstools toolGetMappingCoord2Country
 
 calcCropareaAdjusted <- function(iniyear, dataset = "LandInG", sectoral = "kcr") {
 

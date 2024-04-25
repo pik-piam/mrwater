@@ -30,7 +30,7 @@
 #'
 #' @importFrom magclass getItems new.magpie add_dimension
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping
-#' @importFrom mrcommons toolCell2isoCell
+#' @importFrom mstools toolCell2isoCell
 #' @importFrom stringr str_split
 #' @importFrom withr local_options
 

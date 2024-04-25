@@ -11,7 +11,7 @@
 #' }
 #'
 #' @importFrom madrat toolConditionalReplace
-#' @importFrom mrcommons toolCell2isoCell
+#' @importFrom mstools toolCell2isoCell
 
 correctDams <- function(x) {
 

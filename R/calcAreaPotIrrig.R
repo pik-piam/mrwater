@@ -27,8 +27,7 @@
 #'
 #' @importFrom madrat calcOutput toolSplitSubtype
 #' @importFrom magclass collapseNames getCells getYears getNames dimSums time_interpolate
-#' @importFrom mrcommons toolGetMappingCoord2Country
-#' @importFrom mstools toolHoldConstant
+#' @importFrom mstools toolHoldConstant toolGetMappingCoord2Country
 
 calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
 
@@ -66,7 +65,7 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
   # urbanLand <- calcOutput("UrbanLandFuture", subtype = "LUH2v2",
   #                         timestep = "yearly", cells = "lpjcell",
   #                         aggregate = FALSE)[, selectyears, ]
-  # getItems(urbanLand, dim = 3) <- gsub("SSP", "ssp", getItems(urbanLand, dim = 3))
+  # getItems(urbanLand, dim = 3) <- gsub("SSP", "ssp", getItems(urbanLand, dim = 3)) # nolint: comment_code_linter
 
   # Read in suitable land for irrigation based on Zabel [in mio. ha]
   # excluding land that is marginal under irrigated conditions (< suitability index of 0.33)

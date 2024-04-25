@@ -15,11 +15,11 @@
 #'
 #' @importFrom madrat toolCountry2isocode toolCountryFill toolConditionalReplace
 #' @importFrom magclass getCells
-#' @importFrom mrcommons toolGetMappingCoord2Country
+#' @importFrom mstools toolGetMappingCoord2Country
 
 readIrrigationSystem <- function(subtype = "Jaegermeyr") {
 
-  ### ToDo: Can be delted soon. Will be replaced by readJaegermeyr2015
+  ### ToDo: Can be delted soon. Will be replaced by readJaegermeyr2015 # nolint: todo_comment_linter
 
   # Mapping
   map <- toolGetMappingCoord2Country()

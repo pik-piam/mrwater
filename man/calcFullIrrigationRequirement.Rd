@@ -35,8 +35,8 @@ or drip, surface, sprinkler for full irrigation by selected system}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
-2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
-   e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+2. protection scenario (WDPA, or one of the scenarios available in
+   calcConservationPriorities, e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
    or NA for no protection).
 For case of no land protection select "NA" in second part of argument
 or do not specify second part of the argument}

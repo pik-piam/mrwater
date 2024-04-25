@@ -31,7 +31,7 @@
 #'
 #' @importFrom madrat calcOutput toolSplitSubtype
 #' @importFrom magclass collapseNames getCells getYears getNames dimSums
-#' @importFrom mrcommons toolGetMappingCoord2Country
+#' @importFrom mstools toolGetMappingCoord2Country
 
 calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
                                  cropmix, landScen) {

@@ -34,10 +34,10 @@
 #'
 #' @importFrom madrat calcOutput readSource toolTimeAverage toolTimeSpline toolFillYears
 #' @importFrom magclass new.magpie getYears getCells getSets setYears dimOrder
-#' @importFrom mrcommons toolCell2isoCell toolCoord2Isocell toolGetMappingCoord2Country toolHarmonize2Baseline
+#' @importFrom mstools toolCell2isoCell toolCoord2Isocell toolGetMappingCoord2Country toolHarmonize2Baseline
 #' @importFrom magpiesets addLocation findset
 
-calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lpjcell",
+calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lpjcell", # nolint: cyclocomp_linter
                               datasource = "WATCH_ISIMIP_WATERGAP", usetype = "all",
                               seasonality = "grper", harmonType = "average",
                               lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
@@ -147,7 +147,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
     # Note: ISIMIP industry data = manufacturing + electricity
     # Store WATERGAP share of manufacturing and electricity of industry
     watdemIndustry   <- collapseNames(watdemWATERGAP[, , "manufacturing"]) +
-                        collapseNames(watdemWATERGAP[, , "electricity"])
+      collapseNames(watdemWATERGAP[, , "electricity"])
     shrManufacturing <- ifelse(watdemIndustry > 0,
                                watdemWATERGAP[, , "manufacturing"] / watdemIndustry,
                                0)
@@ -181,9 +181,9 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
       tmp <- vector(mode = "list", length = 3)
       tmp[[1]] <- harmonizedWATERGAP[, yearsWATERGAP, "domestic"]
       tmp[[2]] <- shrManufacturing[, yearsWATERGAP, scenario] *
-                    collapseNames(harmonizedWATERGAP[, yearsWATERGAP, "industry"])
+        collapseNames(harmonizedWATERGAP[, yearsWATERGAP, "industry"])
       tmp[[3]] <- shrElectricity[, yearsWATERGAP, scenario] *
-                    collapseNames(harmonizedWATERGAP[, yearsWATERGAP, "industry"])
+        collapseNames(harmonizedWATERGAP[, yearsWATERGAP, "industry"])
 
       # Store MAgPIE objects in list
       i <- i + 1
@@ -244,10 +244,10 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
     tmp                <- vector(mode = "list", length = 3)
     tmp[[1]]           <- watdemISIMIP[, yearsHist, "domestic"]
     tmp[[2]]           <- collapseNames(watdemISIMIP[, yearsHist, "industry"]) *
-                            collapseNames(setYears(shrManufacturing[, baseyear, "ssp2"], NULL))
+      collapseNames(setYears(shrManufacturing[, baseyear, "ssp2"], NULL))
     getNames(tmp[[2]]) <- paste("manufacturing", getNames(tmp[[2]]), sep = ".")
     tmp[[3]]           <- collapseNames(watdemISIMIP[, yearsHist, "industry"]) *
-                            collapseNames(setYears(shrElectricity[, baseyear, "ssp2"], NULL))
+      collapseNames(setYears(shrElectricity[, baseyear, "ssp2"], NULL))
     getNames(tmp[[3]]) <- paste("electricity", getNames(tmp[[3]]), sep = ".")
 
     watdemNonAg <- mbind(tmp)
@@ -257,10 +257,10 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
     tmp                <- vector(mode = "list", length = 3)
     tmp[[1]]           <- watdemISIMIP[, yearsWATERGAP, "domestic"]
     tmp[[2]]           <- collapseNames(watdemISIMIP[, yearsWATERGAP, "industry"]) *
-                           collapseNames(shrManufacturing[, yearsWATERGAP, "ssp2"])
+      collapseNames(shrManufacturing[, yearsWATERGAP, "ssp2"])
     getNames(tmp[[2]]) <- paste("manufacturing", getNames(tmp[[2]]), sep = ".")
     tmp[[3]]           <- collapseNames(watdemISIMIP[, yearsWATERGAP, "industry"]) *
-                           collapseNames(shrElectricity[, yearsWATERGAP, "ssp2"])
+      collapseNames(shrElectricity[, yearsWATERGAP, "ssp2"])
     getNames(tmp[[3]]) <- paste("electricity", getNames(tmp[[3]]), sep = ".")
 
     tmp         <- mbind(tmp)
@@ -340,7 +340,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
 
   # Report withdrawal or consumption only
   if (!is.na(abstractiontype) &&
-      (grepl(abstractiontype, "consumption") || grepl(abstractiontype, "withdrawal"))) {
+        (grepl(abstractiontype, "consumption") || grepl(abstractiontype, "withdrawal"))) {
     out <- collapseNames(out[, , abstractiontype])
   }
 

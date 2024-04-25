@@ -12,7 +12,8 @@
 #'
 #' @import magclass
 #' @import madrat
-#' @importFrom mrcommons toolHarmonize2Baseline toolLPJmLVersion
+#' @importFrom mstools toolHarmonize2Baseline
+#' @importFrom mrlandcore toolLPJmLVersion
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier, Kristine Karstens, Abhijeet Mishra
@@ -43,27 +44,27 @@ calcAvlWater <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop =
   if (stage %in% c("raw", "smoothed")) {
     ### Monthly Discharge (unit (after calcLPJmL): mio. m^3/month)
     monthDischargeMAG <- calcOutput("LPJmL_new", subtype = "mdischarge",
-                                                      stage = "raw",
-                                                      version = lpjmlReadin["natveg"],
-                                                      climatetype = climatetype,
-                                                      aggregate = FALSE)
+                                    stage = "raw",
+                                    version = lpjmlReadin["natveg"],
+                                    climatetype = climatetype,
+                                    aggregate = FALSE)
 
     ### Monthly Runoff (unit (after calcLPJmL): mio. m^3/month)
     monthRunoffMAG    <- calcOutput("LPJmL_new", subtype = "mrunoff",
-                                                      stage = "raw",
-                                                      version = lpjmlReadin["natveg"],
-                                                      climatetype = climatetype,
-                                                      aggregate = FALSE)
+                                    stage = "raw",
+                                    version = lpjmlReadin["natveg"],
+                                    climatetype = climatetype,
+                                    aggregate = FALSE)
 
     ## River basin water allocation algorithm:
     # Read in river structure
     rs <- readRDS(system.file("extdata/riverstructure_stn_coord.rds",
-                  package = "mrwater"))
+                              package = "mrwater"))
     basinCode <- rs$endcell
 
     if (any(paste(getItems(monthRunoffMAG, dim = "x", full = TRUE),
-              getItems(monthRunoffMAG, dim = "y", full = TRUE),
-              sep = ".") != rs$coordinates)) {
+                  getItems(monthRunoffMAG, dim = "y", full = TRUE),
+                  sep = ".") != rs$coordinates)) {
       stop("Wrong cell ordering of basin in calcAvlWater.R")
     }
 
@@ -133,8 +134,8 @@ calcAvlWater <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop =
 
       # Growing days per month
       growDAYS <- calcOutput("GrowingPeriod", cells = "lpjcell",
-                              lpjml = lpjmlReadin, climatetype = climatetype,
-                              stage = stage, yield_ratio = 0.1, aggregate = FALSE)
+                             lpjml = lpjmlReadin, climatetype = climatetype,
+                             stage = stage, yield_ratio = 0.1, aggregate = FALSE)
 
       # Adjust years
       yearsWAT <- getYears(dailyAvlWat)
