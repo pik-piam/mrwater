@@ -164,13 +164,13 @@ calcPotIrrigAreas <- function(cropAggregation,
       currHumanAdd <- calcOutput("RiverHumanUseAccounting",
                                  iteration = "committed_agriculture_fullMulticropping",
                                  lpjml = lpjml, climatetype = climatetype,
-                                 transDist = transDist, comAg = NULL,
+                                 transDist = transDist, comAg = comAg,
                                  efrMethod = efrMethod, multicropping = multicropping,
                                  selectyears = selectyears, iniyear = iniyear,
-                                 accessibilityrule = NULL,
-                                 rankmethod = NULL, gainthreshold = NULL,
-                                 cropmix = NULL, yieldcalib = NULL,
-                                 irrigationsystem = NULL, landScen = NULL,
+                                 accessibilityrule = accessibilityrule,
+                                 rankmethod = rankmethod, gainthreshold = gainthreshold,
+                                 cropmix = cropmix, yieldcalib = yieldcalib,
+                                 irrigationsystem = irrigationsystem, landScen = landScen,
                                  aggregate = FALSE)
       comWatWC <- comWatWC + collapseNames(currHumanAdd[, , "currHumanWCtotal"])
       comWatWW <- comWatWW + collapseNames(currHumanAdd[, , "currHumanWWtotal"])
