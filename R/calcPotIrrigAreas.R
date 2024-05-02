@@ -268,7 +268,7 @@ calcPotIrrigAreas <- function(cropAggregation,
   cropareaShr[cropIrrigReq < 1e-6] <- 0
 
   # crop-specific potentially irrigated area
-  out <- collapseNames(cropareaShr * irrigatableArea)
+  out <- collapseNames(irrigatableArea * cropareaShr)
 
   # Fix dimensions
   if (comAg) {
