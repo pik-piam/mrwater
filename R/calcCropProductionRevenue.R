@@ -141,6 +141,9 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
     # for total crop areas
     if (comAg) {
       cmix <- "hist_total"
+      warning("In calcCropProductionRevenue: Combination of `comAg = TRUE` and `cropmix = hist_rainf`
+              would lead to spurious results. Argument `cropmix` is overwritten with `hist_total`.
+              Please double-check your function settings and check what you wanted to calculate.")
     } else {
       cmix <- cropmix
     }

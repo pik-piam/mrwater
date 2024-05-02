@@ -63,6 +63,11 @@ calcCropAreaPotIrrig <- function(selectyears, comagyear, iniyear,
   # Areas that are already irrigated (by committed agricultural uses)
   if (!is.null(comagyear)) {
 
+    if (cropmix == "hist_rainf") {
+      warning("Is the combination of arguments `cropmix = hist_rainf` and `comAg = TRUE` intended?
+              It likely leads to mismatches in areas and potentially to negative CropAreaPotIrrig values.")
+    }
+
     # subtract physical area already reserved for irrigation with renewable water resources
     # by committed agricultural uses in water allocation algorithm
     # (to avoid double accounting)
