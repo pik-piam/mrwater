@@ -1,6 +1,10 @@
 # madrat based MAgPIE water Input Data Library
 
+<<<<<<< HEAD
 R package **mrwater**, version **1.12.0**
+=======
+R package **mrwater**, version **1.11.22**
+>>>>>>> 3d8beb7cb438c1ee16f8889b2c619db1bb068b8c
 
 [![CRAN status](https://www.r-pkg.org/badges/version/mrwater)](https://cran.r-project.org/package=mrwater)  [![R build status](https://github.com/pik-piam/mrwater/workflows/check/badge.svg)](https://github.com/pik-piam/mrwater/actions) [![codecov](https://codecov.io/gh/pik-piam/mrwater/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/mrwater) [![r-universe](https://pik-piam.r-universe.dev/badges/mrwater)](https://pik-piam.r-universe.dev/builds)
 
@@ -50,7 +54,11 @@ In case of questions / problems please contact Felicitas Beier <beier@pik-potsda
 
 To cite package **mrwater** in publications use:
 
+<<<<<<< HEAD
 Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2024). _mrwater: madrat based MAgPIE water Input Data Library_. R package version 1.12.0, <URL: https://github.com/pik-piam/mrwater>.
+=======
+Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2024). _mrwater: madrat based MAgPIE water Input Data Library_. R package version 1.11.22, <https://github.com/pik-piam/mrwater>.
+>>>>>>> 3d8beb7cb438c1ee16f8889b2c619db1bb068b8c
 
 A BibTeX entry for LaTeX users is
 
@@ -59,7 +67,11 @@ A BibTeX entry for LaTeX users is
   title = {mrwater: madrat based MAgPIE water Input Data Library},
   author = {Felicitas Beier and Jens Heinke and Kristine Karstens and Benjamin Leon Bodirsky and Jan Philipp Dietrich},
   year = {2024},
+<<<<<<< HEAD
   note = {R package version 1.12.0},
+=======
+  note = {R package version 1.11.22},
+>>>>>>> 3d8beb7cb438c1ee16f8889b2c619db1bb068b8c
   url = {https://github.com/pik-piam/mrwater},
 }
 ```

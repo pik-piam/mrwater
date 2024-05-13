@@ -2,8 +2,13 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'mrwater: madrat based MAgPIE water Input Data Library'
+<<<<<<< HEAD
 version: 1.12.0
 date-released: '2024-04-25'
+=======
+version: 1.11.22
+date-released: '2024-05-02'
+>>>>>>> 3d8beb7cb438c1ee16f8889b2c619db1bb068b8c
 abstract: Provides functions for MAgPIE cellular input data generation and stand-alone
   water calculations.
 authors:

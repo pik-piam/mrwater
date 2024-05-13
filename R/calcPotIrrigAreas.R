@@ -94,8 +94,6 @@ calcPotIrrigAreas <- function(cropAggregation,
   if (grepl("hist", cropmix)) {
     if (grepl("currIrrig", landScen)) {
       cropmix <- "hist_irrig"
-    } else if (grepl("currCropland", landScen)) {
-      cropmix <- "hist_total"
     }
   }
 
@@ -164,13 +162,13 @@ calcPotIrrigAreas <- function(cropAggregation,
       currHumanAdd <- calcOutput("RiverHumanUseAccounting",
                                  iteration = "committed_agriculture_fullMulticropping",
                                  lpjml = lpjml, climatetype = climatetype,
-                                 transDist = transDist, comAg = NULL,
+                                 transDist = transDist, comAg = comAg,
                                  efrMethod = efrMethod, multicropping = multicropping,
                                  selectyears = selectyears, iniyear = iniyear,
-                                 accessibilityrule = NULL,
-                                 rankmethod = NULL, gainthreshold = NULL,
-                                 cropmix = NULL, yieldcalib = NULL,
-                                 irrigationsystem = NULL, landScen = NULL,
+                                 accessibilityrule = accessibilityrule,
+                                 rankmethod = rankmethod, gainthreshold = gainthreshold,
+                                 cropmix = cropmix, yieldcalib = yieldcalib,
+                                 irrigationsystem = irrigationsystem, landScen = landScen,
                                  aggregate = FALSE)
       comWatWC <- comWatWC + collapseNames(currHumanAdd[, , "currHumanWCtotal"])
       comWatWW <- comWatWW + collapseNames(currHumanAdd[, , "currHumanWWtotal"])
@@ -182,7 +180,7 @@ calcPotIrrigAreas <- function(cropAggregation,
     # No water or areas committed to current agricultural uses
     comagyear <- NULL
     comAgArea <- 0
-    comWatWW <- comWatWC <- avlWatWC
+    comWatWW  <- comWatWC <- avlWatWC
     comWatWW[, , ] <- 0
     comWatWC[, , ] <- 0
   }
@@ -206,12 +204,13 @@ calcPotIrrigAreas <- function(cropAggregation,
   avlWatWC[avlWatWC < 0] <- 0
 
   # Irrigation water requirements (in mio. m^3)
-  # for expansion of irrigation in currently rainfed areas (i.e. beyond committed agricultural
-  # use and beyond expansion of multiple cropping on currently irrigated areas if activated)
+  # for expansion of irrigation into currently rainfed areas (i.e. beyond committed agricultural
+  # use and beyond expansion of multiple cropping on currently irrigated areas if activated.
+  # Note: These are already accounted (subtracted) when comagyear is not NULL)
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
                          lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                          irrigationsystem = irrigationsystem, landScen = landScen,
-                         cropmix = cmix, multicropping = multicropping,
+                         cropmix = cropmix, multicropping = multicropping,
                          comagyear = comagyear,
                          aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getItems(avlWatWW, dim = 1),
@@ -269,7 +268,7 @@ calcPotIrrigAreas <- function(cropAggregation,
   cropareaShr[cropIrrigReq < 1e-6] <- 0
 
   # crop-specific potentially irrigated area
-  out <- collapseNames(cropareaShr * irrigatableArea)
+  out <- collapseNames(irrigatableArea * cropareaShr)
 
   # Fix dimensions
   if (comAg) {
