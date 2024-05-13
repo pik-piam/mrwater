@@ -19,13 +19,13 @@
 #'
 #' @importFrom madrat calcOutput toolGetMapping
 #' @importFrom magclass collapseNames getCells getSets getYears getNames new.magpie dimSums
-#' @importFrom mrcommons toolCell2isoCell toolGetMappingCoord2Country
+#' @importFrom mstools toolCell2isoCell toolGetMappingCoord2Country
 
 calcCropAreaShare <- function(iniyear, cropmix) {
 
   # read physical croparea
   croparea <- calcOutput("CropareaAdjusted", iniyear = iniyear,
-                          aggregate = FALSE)
+                         aggregate = FALSE)
 
   # total croparea (irrigated + rainfed)
   totCroparea  <- dimSums(croparea, dim = "irrigation")

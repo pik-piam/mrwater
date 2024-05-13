@@ -40,8 +40,8 @@
 #'                          ("surface", "sprinkler", "drip", "initialization")
 #' @param landScen          Land availability scenario consisting of two parts separated by ":":
 #'                          1. available land scenario (currCropland, currIrrig, potCropland)
-#'                          2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
-#'                             e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+#'                          2. protection scenario (WDPA, or one of the scenarios available in
+#'                             calcConservationPriorities, e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
 #'                             or NA for no protection).
 #'                          For case of no land protection select "NA" in second part of argument
 #'                          or do not specify second part of the argument
@@ -80,7 +80,7 @@
 #' @importFrom stringr str_split
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames getCells getNames setYears dimSums new.magpie
-#' @importFrom mrcommons toolGetMappingCoord2Country
+#' @importFrom mstools toolGetMappingCoord2Country
 #'
 #' @export
 

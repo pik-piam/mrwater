@@ -10,7 +10,7 @@
 #'
 #' @importFrom magclass collapseNames new.magpie getYears setYears as.array as.magpie add_dimension mbind
 #' @importFrom madrat calcOutput
-#' @importFrom mrcommons toolLPJmLVersion
+#' @importFrom mrlandcore toolLPJmLVersion
 #' @importFrom stats quantile
 #'
 #' @return magpie object in cellular resolution representing share of discharge
