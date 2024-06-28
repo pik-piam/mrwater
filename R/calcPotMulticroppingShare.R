@@ -246,7 +246,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     potShr <- potShr + shrMC
 
     # Ensure that not too much water has been allocated
-    if ((remainingWatWW - dimSums(comAgWatSecondWW[, , crops] * potShr[, , crops], dim = "crop")) < 0) {
+    if (any(remainingWatWW - dimSums(comAgWatSecondWW[, , crops] * potShr[, , crops], dim = "crop") < 0)) {
       stop("There is a problem in calcPotMulticroppingShare:
             Too much multiple cropping expansion on currently irrigated area.
             Water is not sufficient.")

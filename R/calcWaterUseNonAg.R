@@ -161,7 +161,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
     tmpWATERGAP <- new.magpie(cells_and_regions = getCells(watdemWATERGAP),
                               years = yearsWATERGAP,
                               names = getNames(watdemISIMIP))
-    getSets(tmpWATERGAP) <- c("x", "y", "iso", "year", "use", "type")
+    getSets(tmpWATERGAP) <- c("x", "y", "iso", "year", "use", "wtype")
 
     scenarios  <- getNames(watdemWATERGAP, dim = "scenario")
     listMAgPIE <- vector(mode = "list", length = length(scenarios))
@@ -175,7 +175,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
       harmonizedWATERGAP <- toolHarmonize2Baseline(x = tmpWATERGAP, base = watdemISIMIP,
                                                    ref_year = baseyear, method = "additive", hard_cut = FALSE)
       harmonizedWATERGAP <- setNames(harmonizedWATERGAP, nm = paste(scenario, getNames(harmonizedWATERGAP), sep = "."))
-      getSets(harmonizedWATERGAP) <- c("x", "y", "iso", "year", "scenario", "use", "type")
+      getSets(harmonizedWATERGAP) <- c("x", "y", "iso", "year", "scenario", "use", "wtype")
 
       # Store harmonized data in final object
       tmp <- vector(mode = "list", length = 3)
@@ -211,7 +211,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
                                          method = "additive",
                                          hard_cut = FALSE)
       getNames(tmp[[i]]) <- paste(scenario, getNames(tmp[[i]]), sep = ".")
-      getSets(tmp[[i]])  <- c("x", "y", "iso", "year", "scenario", "use", "type")
+      getSets(tmp[[i]])  <- c("x", "y", "iso", "year", "scenario", "use", "wtype")
 
     }
     watFUTURE <- mbind(tmp)

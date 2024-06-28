@@ -79,7 +79,7 @@ readWATERGAP <- function(subtype = "WATCH_ISIMIP_WATERGAP") {
     getNames(x) <- gsub("Domestic water ", "domestic.", getNames(x))
     getSets(x)["d3.1"] <- "scenario"
     getSets(x)["d3.2"] <- "use"
-    getSets(x)["d3.3"] <- "type"
+    getSets(x)["d3.3"] <- "wtype"
 
   }
 

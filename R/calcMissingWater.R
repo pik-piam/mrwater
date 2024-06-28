@@ -125,7 +125,7 @@ calcMissingWater <- function(output, lpjml, climatetype,
                           years = years,
                           names = names,
                           fill = 0,
-                          sets = c("x.y.iso", "year", "EFP.scen.type"))
+                          sets = c("x.y.iso", "year", "EFP.scen.wtype"))
     # bring object x to dimension of object0
     out <- object0 + x
     return(out)

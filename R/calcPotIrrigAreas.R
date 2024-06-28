@@ -232,17 +232,17 @@ calcPotIrrigAreas <- function(cropAggregation,
   irrigareaWW <- pmin(avlWatWW / watReqWW, 1) * areaPotIrrig
   # cells with no water requirements also get no irrigated area assigned
   irrigareaWW[watReqWW == 0] <- 0
-  irrigareaWW <- add_dimension(irrigareaWW, dim = 3.4, add = "type",
+  irrigareaWW <- add_dimension(irrigareaWW, dim = 3.4, add = "wtype",
                                nm = "irrigatable_ww")
 
   irrigareaWC <- pmin(avlWatWC / watReqWC, 1) * areaPotIrrig
   # cells with no water requirements also get no irrigated area assigned
   irrigareaWC[watReqWC == 0] <- 0
-  irrigareaWC <- add_dimension(irrigareaWC, dim = 3.4, add = "type",
+  irrigareaWC <- add_dimension(irrigareaWC, dim = 3.4, add = "wtype",
                                nm = "irrigatable_wc")
 
   irrigatableArea <- pmin(collapseNames(irrigareaWW), collapseNames(irrigareaWC))
-  irrigatableArea <- add_dimension(irrigatableArea, dim = 3.4, add = "type",
+  irrigatableArea <- add_dimension(irrigatableArea, dim = 3.4, add = "wtype",
                                    nm = "irrigatable")
 
   # share of crop area by crop type given chosen cropmix

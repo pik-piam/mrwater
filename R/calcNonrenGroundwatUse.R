@@ -101,7 +101,7 @@ calcNonrenGroundwatUse <- function(output, lpjml, climatetype,
                     cells_and_regions = getItems(missingWat, dim = 1),
                     years = selectyears,
                     names = c("withdrawal", "consumption"))
-  getSets(out) <- c("x", "y", "iso", "year", "type")
+  getSets(out) <- c("x", "y", "iso", "year", "wtype")
 
   # In past time steps, missing water is accounted as fossil groundwater
   out[, pstYrs, ] <- missingWat[, pstYrs, ]

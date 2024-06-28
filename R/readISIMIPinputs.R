@@ -68,7 +68,7 @@ readISIMIPinputs <- function(subtype = "ISIMIP3b:water:histsoc.waterabstraction"
     getNames(x) <- gsub("industrial water ", "industry.", getNames(x))
     getNames(x) <- gsub("domestic water ", "domestic.", getNames(x))
     getSets(x)["d3.1"] <- "use"
-    getSets(x)["d3.2"] <- "type"
+    getSets(x)["d3.2"] <- "wtype"
 
   }
 
