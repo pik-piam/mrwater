@@ -426,6 +426,23 @@ fullMULTICROPPING <- function(allocationrule = "optimization",
   }
 
   ##############
+  # CORRECTION #
+  ##############
+  watReqFirst <- calcOutput("ActualIrrigWatRequirements",
+                            multicropping = FALSE,
+                            selectyears = selectyears, iniyear = iniyear,
+                            lpjml = lpjml, climatetype = climatetype,
+                            irrigationsystem = irrigationsystem,
+                            aggregate = FALSE, file = "watReqFirst.mz")
+  # Irrigation water requirements in the entire year under multiple cropping (in m^3 per ha per yr):
+  watReqYear  <- calcOutput("ActualIrrigWatRequirements",
+                            multicropping = "TRUE:potential:endogenous",
+                            selectyears = selectyears, iniyear = iniyear,
+                            lpjml = lpjml, climatetype = climatetype,
+                            irrigationsystem = irrigationsystem,
+                            aggregate = FALSE, file = "watReqYear.mz")
+
+  ##############
   # VALIDATION #
   ##############
   # Multiple cropping suitability per crop calculated based on crop and grass productivity
