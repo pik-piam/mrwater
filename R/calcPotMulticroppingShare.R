@@ -243,14 +243,14 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
             The current multiple cropping share and the multiple cropping expansion share
             add up to more than 1.")
     }
-    potShr <- potShr + shrMC
-
     # Ensure that not too much water has been allocated
-    if (any(remainingWatWW - dimSums(comAgWatSecondWW[, , crops] * potShr[, , crops], dim = "crop") < 0)) {
+    if (any(round(remainingWatWW - dimSums(comAgWatSecondWW[, , crops] * potShr[, , crops], dim = "crop"), digits = 6) < 0)) {
       stop("There is a problem in calcPotMulticroppingShare:
             Too much multiple cropping expansion on currently irrigated area.
             Water is not sufficient.")
     }
+
+    potShr <- potShr + shrMC
 
     # Where no committed agriculture:
     # full multiple cropping is assumed where it is suitable
