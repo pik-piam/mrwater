@@ -18,7 +18,8 @@ calcBlueWaterConsumption(
 
 \item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
 
-\item{climatetype}{Climate model or historical baseline "GSWP3-W5E5:historical"}
+\item{climatetype}{Climate model (e.g., "MRI-ESM2-0:ssp370")
+or historical baseline (e.g., "GSWP3-W5E5:historical")}
 
 \item{fallowFactor}{Factor determining water requirement reduction in off season due to
 fallow period between harvest of first (main) season and

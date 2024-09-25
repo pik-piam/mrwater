@@ -5,7 +5,8 @@
 #'
 #' @param selectyears   Years to be returned
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
-#' @param climatetype   Climate model or historical baseline "GSWP3-W5E5:historical"
+#' @param climatetype   Climate model (e.g., "MRI-ESM2-0:ssp370")
+#'                      or historical baseline (e.g., "GSWP3-W5E5:historical")
 #' @param fallowFactor  Factor determining water requirement reduction in off season due to
 #'                      fallow period between harvest of first (main) season and
 #'                      sowing of second (off) season

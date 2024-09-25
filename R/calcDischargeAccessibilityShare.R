@@ -38,8 +38,8 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
 
   # Monthly Discharge from LPJmL (raw: including variation)
   monthlyDischargeLPJmL <- calcOutput("LPJmL_new", subtype = "mdischarge",
-                                        version = lpjml[["natveg"]], climatetype = climatetype,
-                                        stage = "raw", aggregate = FALSE)
+                                      version = lpjml[["natveg"]], climatetype = climatetype,
+                                      stage = "raw", aggregate = FALSE)
 
   # Extract years
   years         <- getYears(monthlyDischargeLPJmL, as.integer = TRUE)
