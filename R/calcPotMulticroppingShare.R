@@ -262,6 +262,9 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     # Assign the calculated value
     out[, , "irrigated"] <- potShr
 
+  } else {
+    shrMC       <- noReqSecond
+    shrMC[, , ] <- 0
   }
 
   # For single cropping case: no areas are suitable for multiple cropping
@@ -271,7 +274,9 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
 
   # Crops that have no irrigation water requirements in second season
   # are not multiple cropped under irrigated conditions
-  out[, , "irrigated"][noReqSecond] <- 0
+  # unless they are reported to be under irrigated multiple cropping
+  # and committed agriculture is activated
+  out[, , "irrigated"][noReqSecond] <- shrMC[noReqSecond]
 
   # Checks
   if (any(is.na(out))) {
