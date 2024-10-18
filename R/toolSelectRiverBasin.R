@@ -12,7 +12,7 @@ toolSelectRiverBasin <- function(basinname) {
 
   # River structure attributes
   rs     <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
-  rs$iso <- readRDS(system.file("extdata/mapCoords2Country.rds", package = "mrcommons"))$iso
+  rs$iso <- toolGetMappingCoord2Country()$iso
 
   # Read in basin name - endcell mapping
   basinMap <- read.csv(system.file("extdata/RiverBasinMapping.csv", package = "mrwater"))

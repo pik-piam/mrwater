@@ -93,8 +93,7 @@ calcEFRviolations <- function(lpjml, selectyears, climatetype, efrMethod, transD
 
   # River structure attributes
   rs     <- readRDS(system.file("extdata/riverstructure_stn_coord.rds", package = "mrwater"))
-  rs$iso <- readRDS(system.file("extdata/mapCoords2Country.rds", package = "mrcommons"))$iso
-
+  rs$iso <- toolGetMappingCoord2Country()$iso
 
   discharge <- collapseNames(calcOutput("RiverDischargeAllocation",
                                         lpjml = lpjml, climatetype = climatetype,

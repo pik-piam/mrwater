@@ -110,7 +110,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
 
   # Irrigation water requirements in the second season (in m^3 per ha per year):
   watReqSecond <- watReqYear - watReqFirst
-  noReqSecond  <- collapseNames(watReqSecond[, , "consumption"]) < 1e-6
+  noReqSecond  <- collapseNames(watReqSecond[, , "consumption"]) < 1e-6  # Jens: double-check
 
 
   crops <- getItems(watReqFirst, dim = "crop")
@@ -251,6 +251,13 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     }
 
     potShr <- potShr + shrMC
+
+    # Check whether out is >= shrMC
+    if (potShr < shrMC) {
+      stop("The potential multiple cropping share should at least be as high as the
+           currently actually multiple cropped share.
+           Please check what's wrong in calcPotMulticroppingShare")
+    }
 
     # Where no committed agriculture:
     # full multiple cropping is assumed where it is suitable
