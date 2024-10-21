@@ -41,6 +41,9 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
                                       version = lpjml[["natveg"]], climatetype = climatetype,
                                       stage = "raw", aggregate = FALSE)
 
+  # To Do: calculate it back to daily
+  # double-check with Jens
+
   # Extract years
   years         <- getYears(monthlyDischargeLPJmL, as.integer = TRUE)
   if (!is.numeric(selectyears)) {

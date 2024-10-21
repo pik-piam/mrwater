@@ -253,7 +253,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     potShr <- potShr + shrMC
 
     # Check whether out is >= shrMC
-    if (potShr < shrMC) {
+    if (any(potShr < shrMC)) {
       stop("The potential multiple cropping share should at least be as high as the
            currently actually multiple cropped share.
            Please check what's wrong in calcPotMulticroppingShare")
