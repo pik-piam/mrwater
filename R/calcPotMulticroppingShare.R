@@ -166,8 +166,10 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
                                           transDist = transDist,
                                           aggregate = FALSE)[, , scenario])[, , crops]
     # Cropping intensity
-    ci <- collapseNames(calcOutput("MulticroppingIntensity", sectoral = "kcr", scenario = "irrig_crop",
-                                   selectyears = selectyears, aggregate = FALSE)[, , "irrigated"][, , crops])
+    ci <- collapseNames(calcOutput("MulticroppingIntensity", sectoral = "kcr",
+                                   scenario = "irrig_crop",
+                                   selectyears = selectyears,
+                                   aggregate = FALSE)[, , "irrigated"][, , crops])
     # Share of area that is multicropped
     shrMC <- (ci - 1)
     # Share that is missing to full expansion of multiple cropping on currently irrigated land
@@ -252,13 +254,6 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
 
     potShr <- potShr + shrMC
 
-    # Check whether out is >= shrMC
-    if (any(potShr < shrMC)) {
-      stop("The potential multiple cropping share should at least be as high as the
-           currently actually multiple cropped share.
-           Please check what's wrong in calcPotMulticroppingShare")
-    }
-
     # Where no committed agriculture:
     # full multiple cropping is assumed where it is suitable
     potShr[comAgArea == 0] <- suitMCir[comAgArea == 0]
@@ -297,6 +292,13 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
   }
   if (any(out > 1)) {
     stop("Problem in mrwater::calcPotMulticroppingShare: Value should be between 0 or 1!")
+  }
+
+  # Check whether out is >= shrMC
+  if (any(collapseNames(out[, , "irrigated"]) - shrMC < - 1e-10)) {
+    stop("The potential multiple cropping share should at least be as high as the
+           currently actually multiple cropped share.
+           Please check what's wrong in calcPotMulticroppingShare")
   }
 
   return(list(x            = out,
