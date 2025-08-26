@@ -295,8 +295,10 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
 
   if (datasource != "WATCH_ISIMIP_WATERGAP") {
     # Correct mismatches of withdrawal and consumption (withdrawals > consumption)
-    watdemNonAg[, , "withdrawal"]  <- pmax(watdemNonAg[, , "withdrawal"], watdemNonAg[, , "consumption"])
-    watdemNonAg[, , "consumption"] <- pmax(watdemNonAg[, , "consumption"], 0.01 * watdemNonAg[, , "withdrawal"])
+    watdemNonAg[, , "withdrawal"]  <- pmax(collapseDim(watdemNonAg[, , "withdrawal"]), 
+                                           collapseDim(watdemNonAg[, , "consumption"]))
+    watdemNonAg[, , "consumption"] <- pmax(collapseDim(watdemNonAg[, , "consumption"]), 
+                                           0.01 * collapseDim(watdemNonAg[, , "withdrawal"]))
   }
 
   ### Non-agricultural water demands in Growing Period
