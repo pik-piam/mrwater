@@ -57,11 +57,12 @@ calcAreaPotIrrig <- function(selectyears, comagyear, iniyear, landScen) {
                                      iniyear),
                             selectyears)
 
-  # To Do: include urban land expansion (for differnet scenarios)
+  # To Do: include urban land expansion (for different scenarios)
   # and make output of calcAreaPotIrrig scenario-specific
   # Note: then urban area must be left in above!
   # Note: follow-up functions must be adjusted
   # exclude urban area
+  # double check if LUH3 UrbanLandFuture is available, if not: set reminder to switch to LUH3 UrbanLandFuture late 2025
   # urbanLand <- calcOutput("UrbanLandFuture", subtype = "LUH2v2",
   #                         timestep = "yearly", cells = "lpjcell",
   #                         aggregate = FALSE)[, selectyears, ]

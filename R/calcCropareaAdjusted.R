@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' calcOutput("CropareaAdjusted", aggregate = FALSE)
+#' calcOutput("CropareaAdjusted", iniyear = 1995, aggregate = FALSE)
 #' }
 #'
 #' @importFrom madrat calcOutput
@@ -46,10 +46,8 @@ calcCropareaAdjusted <- function(iniyear, dataset = "LandInG", sectoral = "kcr")
   # Total physical croparea
   physTotal <- dimSums(phys, dim = 3)
   # Total land area according to LUH
-  landarea <- setYears(collapseNames(dimSums(readSource("LUH2v2", subtype = "states_1995to1996",
-                                                        convert = "onlycorrect")[, "y1995", ],
-                                             dim = 3)),
-                       NULL)
+  luh3 <- calcOutput("LUH3", cellular = TRUE, yrs = 1995, aggregate = FALSE)
+  landarea <- collapseDim(dimSums(luh3, 3))
 
   if (any(round(landarea - physTotal, digits = 6) < 0)) {
     # Note: Due to mismatches in the land masks used in LandInG

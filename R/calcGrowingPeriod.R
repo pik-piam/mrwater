@@ -118,9 +118,8 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
     #        (total cell area as aggregation weight)
     ####################################################################################
 
-    area   <- dimSums(calcOutput("LUH2v2", cellular = TRUE, cells = "lpjcell",
-                                 aggregate = FALSE, years = "y1995"),
-                      dim = 3)
+    luh3 <- calcOutput("LUH3", cellular = TRUE, yrs = 1995, aggregate = FALSE)
+    area   <- collapseDim(dimSums(luh3, 3))
     yields <- collapseNames(yields[, , goodCrops])
 
     cell2GLO    <- array(c(getItems(yields, dim = 1),
