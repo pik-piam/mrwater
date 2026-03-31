@@ -1,0 +1,42 @@
+# fullMULTICROPPING
+
+Function that produces output for multiple cropping and irrigation
+potentials on current cropland at cellular resolution.
+
+## Usage
+
+``` r
+fullMULTICROPPING(
+  allocationrule = "optimization",
+  comAg = TRUE,
+  fossilGW = TRUE,
+  transDist = 100
+)
+```
+
+## Arguments
+
+- allocationrule:
+
+  Rule to be applied for river basin discharge allocation across cells
+  of river basin ("optimization", "upstreamfirst")
+
+- comAg:
+
+  if TRUE: the currently already irrigated areas in initialization year
+  are reserved for irrigation, if FALSE: no irrigation areas reserved
+  (irrigation potential)
+
+- fossilGW:
+
+  If TRUE: non-renewable groundwater can be used. If FALSE:
+  non-renewable groundwater cannot be used.
+
+- transDist:
+
+  Water transport distance allowed to fulfill locally unfulfilled water
+  demand by surrounding cell water availability
+
+## Author
+
+Felicitas Beier

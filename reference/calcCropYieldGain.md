@@ -1,0 +1,88 @@
+# calcCropYieldGain
+
+This function calculates the yield gains per crop through irrigation or
+multiple cropping relative to rainfed-single system production
+(including negatives)
+
+## Usage
+
+``` r
+calcCropYieldGain(
+  lpjml,
+  climatetype,
+  yieldgaintype,
+  priceAgg,
+  iniyear,
+  selectyears,
+  yieldcalib,
+  multicropping
+)
+```
+
+## Arguments
+
+- lpjml:
+
+  LPJmL version used for yields
+
+- climatetype:
+
+  Climate scenarios or historical baseline "GSWP3-W5E5:historical"
+
+- yieldgaintype:
+
+  Crop yield gain through multiple cropping under rainfed conditions
+  "multicropping_rf", multiple cropping under irrigated conditions
+  "multicropping_ir", irrigation under single cropping conditions
+  "irrigation_singlecropping" irrigation and multiple cropping
+  "irrigation_multicropping"
+
+- priceAgg:
+
+  Price aggregation: "GLO" for global average prices, or "ISO" for
+  country-level prices, or "CONST" for same price for all crops
+
+- iniyear:
+
+  initialization year for food price and cropmix area
+
+- selectyears:
+
+  Years to be returned by the function
+
+- yieldcalib:
+
+  If TRUE: LPJmL yields calibrated to FAO country yield in iniyear Also
+  needs specification of refYields, separated by ":". Options: FALSE
+  (for single cropping analyses) or "TRUE:actual:irrig_crop" (for
+  multiple cropping analyses) If FALSE: uncalibrated LPJmL yields are
+  used
+
+- multicropping:
+
+  Multicropping activated (TRUE) or not (FALSE) and Multiple Cropping
+  Suitability mask selected (mask can be: "none": no mask applied (only
+  for development purposes) "actual:total": currently multicropped areas
+  calculated from total harvested areas and total physical areas per
+  cell from readLandInG "actual:crop" (crop-specific),
+  "actual:irrigation" (irrigation-specific), "actual:irrig_crop" (crop-
+  and irrigation-specific) "total" "potential:endogenous": potentially
+  multicropped areas given temperature and productivity limits
+  "potential:exogenous": potentially multicropped areas given GAEZ
+  suitability classification) (e.g. TRUE:actual:total; TRUE:none; FALSE)
+
+## Value
+
+magpie object in cellular resolution
+
+## Author
+
+Felicitas Beier
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+calcOutput("CropYieldGain", aggregate = FALSE)
+} # }
+```
