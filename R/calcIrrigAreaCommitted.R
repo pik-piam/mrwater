@@ -22,10 +22,14 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   # Set depreciation parameter
   depreciation <- 0.1
 
-  # Read in data: crop- and water supply type specific croparea
+  # Read in data: crop- and water supply type specific physical crop area
   # (in Mha) in initialization year:
-  tmp <- collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                   aggregate = FALSE)[, , "irrigated"])
+  tmp <- collapseNames(calcOutput("Croparea",
+                                  physical = TRUE, fallow = FALSE,
+                                  sectoral = "kcr", cellular = TRUE,
+                                  irrigation = TRUE,
+                                  aggregate = FALSE)[, iniyear, "irrigated"])
+
 
   # Prepare year arguments for further usage
   if (is.character(selectyears)) {

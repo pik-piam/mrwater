@@ -37,19 +37,22 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
   calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_irrig",
              aggregate = FALSE, file = "cropareaShr.mz")
 
-  calcOutput("CropareaAdjusted", iniyear = iniyear,
-             dataset = "LandInG", sectoral = "kcr",
+  calcOutput("Croparea", physical = TRUE, fallow = FALSE,
+             sectoral = "kcr", cellular = TRUE,
+             irrigation = TRUE, years = iniyear,
              aggregate = FALSE, file = "cropareaLandInG.mz")
-  calcOutput("CropareaAdjusted", iniyear = iniyear,
-             dataset = "LandInG", sectoral = "lpj",
+
+  calcOutput("Croparea", physical = TRUE, fallow = FALSE,
+             sectoral = "lpj", cellular = TRUE,
+             irrigation = TRUE, years = iniyear,
              aggregate = FALSE, file = "cropareaLandInG_lpj.mz")
 
   calcOutput("CropareaLandInG", physical = TRUE, sectoral = "kcr",
-             cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
+             cellular = TRUE, irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
              file = "LandingPHYS.mz")
   calcOutput("CropareaLandInG", physical = FALSE, sectoral = "kcr",
-             cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
+             cellular = TRUE, irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
              file = "LandingHARV.mz")
 

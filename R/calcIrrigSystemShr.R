@@ -22,9 +22,12 @@ calcIrrigSystemShr <- function(iniyear) {
   ####################
   ### READ IN DATA ###
   ####################
-  # irrigated croparea per country
-  irrigArea <- dimSums(collapseNames(calcOutput("CropareaAdjusted", iniyear = iniyear,
-                                                aggregate = FALSE)[, , "irrigated"]),
+  # irrigated physical croparea per country
+  irrigArea <- dimSums(collapseNames(calcOutput("Croparea",
+                                                physical = TRUE, fallow = FALSE,
+                                                sectoral = "kcr", cellular = TRUE,
+                                                irrigation = TRUE,
+                                                aggregate = FALSE)[, iniyear, "irrigated"]),
                        dim = c("x", "y"))
   countrylist <- getItems(irrigArea, dim = 1)
   years       <- getYears(irrigArea)

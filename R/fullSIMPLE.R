@@ -261,10 +261,10 @@ fullSIMPLE <- function(transDist = 100, fossilGW = TRUE,
              file = "comAgWat.mz")
 
   # Current cropland area
-  calcOutput("CropareaAdjusted",
-             iniyear = iniyear, dataset = "LandInG",
-             aggregate = FALSE,
-             file = "croparea.mz")
+  calcOutput("Croparea", physical = TRUE, fallow = FALSE,
+             sectoral = "kcr", cellular = TRUE,
+             irrigation = TRUE, years = iniyear,
+             aggregate = FALSE, file = "croparea.mz")
 
   calcOutput("CropAreaShare", iniyear = iniyear, cropmix = "hist_rainf",
              aggregate = FALSE, file = "cropmix_rf.mz")

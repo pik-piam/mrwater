@@ -3,7 +3,7 @@ message: If you use this software, please cite it using the metadata from this f
 type: software
 title: 'mrwater: madrat based MAgPIE water Input Data Library'
 version: 1.15.0
-date-released: '2026-03-31'
+date-released: '2026-08-07'
 abstract: Provides functions for MAgPIE cellular input data generation and stand-alone
   water calculations.
 authors:

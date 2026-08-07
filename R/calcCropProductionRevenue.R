@@ -122,8 +122,11 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
   ### Area ###
   if (area == "actual") {
     # Current cropland
-    tmp <- calcOutput("CropareaAdjusted", iniyear = iniyear,
-                      aggregate = FALSE)
+    tmp <- calcOutput("Croparea", physical = TRUE, fallow = FALSE,
+                       sectoral = "kcr", cellular = TRUE,
+                       irrigation = TRUE,
+                       aggregate = FALSE)[, iniyear, ]
+
     # Crop-specific total (rainfed + irrigated) cropareas (in Mha)
     cropareaTotal <- dimSums(tmp, dim = "irrigation")
     # Crop-specific irrigated areas (in Mha)

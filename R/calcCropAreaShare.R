@@ -23,9 +23,11 @@
 
 calcCropAreaShare <- function(iniyear, cropmix) {
 
-  # read physical croparea
-  croparea <- calcOutput("CropareaAdjusted", iniyear = iniyear,
-                         aggregate = FALSE)
+  # read in crop- and irrigation-specific physical croparea in initialization year
+  croparea <- calcOutput("Croparea", physical = TRUE, fallow = FALSE,
+                          sectoral = "kcr", cellular = TRUE,
+                          irrigation = TRUE,
+                          aggregate = FALSE)[, iniyear, ]
 
   # total croparea (irrigated + rainfed)
   totCroparea  <- dimSums(croparea, dim = "irrigation")

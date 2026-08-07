@@ -61,12 +61,12 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
   ##################################
   ###      Current Croparea      ###
   ##################################
-  # LandInG Croparea
+  # LandInG Croparea, corrected to fit to Landuseinitalisatio cropland total
   # Unit: Mha
-  calcOutput("CropareaAdjusted",
-             iniyear = iniyear, dataset = "LandInG",
-             aggregate = FALSE,
-             file = "cropareaLandInG.mz")
+  calcOutput("Croparea", physical = TRUE, fallow = FALSE,
+             sectoral = "kcr", cellular = TRUE,
+             irrigation = TRUE, years = iniyear,
+             aggregate = FALSE, file = "cropareaLandInG.mz")
 
   # Cropmix that was basis for calculations
   calcOutput("CropAreaShare",

@@ -29,7 +29,7 @@
 #' @param gainthreshold     Threshold of yield improvement potential required for
 #'                          water allocation in upstreamfirst algorithm
 #'                          (in same unit as in rankmethod)
-#' @param protectLand       Land protection scenario (WDPA, 
+#' @param protectLand       Land protection scenario (WDPA,
 #'                          or one of the scenarios available in calcConservationPriorities,
 #'                          e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
 #'                          or NA for no protection).
@@ -390,11 +390,12 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
              efrMethod = efrMethod, aggregate = FALSE,
              file = "shrHumanUsesFulfilled.mz")
 
-  # LUH croparea
-  calcOutput("CropareaAdjusted", iniyear = iniyear,
-             aggregate = FALSE,
-             file = "cropareaLUH.mz")
-  # Cropmix of LUH
+  # LandInG croparea
+  calcOutput("Croparea", physical = TRUE, fallow = FALSE,
+             sectoral = "kcr", cellular = TRUE,
+             irrigation = TRUE, years = iniyear,
+             aggregate = FALSE, file = "cropareaLandInG.mz")
+  # Cropmix of LandInG
   calcOutput("CropAreaShare", iniyear = iniyear,
              cropmix = cropmix, aggregate = FALSE,
              file = "cropareaShr.mz")
