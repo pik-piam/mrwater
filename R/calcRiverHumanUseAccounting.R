@@ -153,7 +153,7 @@ calcRiverHumanUseAccounting <- function(iteration,
   # Lake evaporation as calculated by natural flow river routing
   lakeEvap <- collapseNames(natFlows[, , "lake_evap_nat"])
   # Runoff (on land and water)
-  yearlyRunoff <- collapseNames(calcOutput("YearlyRunoff",
+  yearlyRunoff <- collapseNames(calcOutput("RunoffYearly",
                                            selectyears = selectyears,
                                            lpjml = lpjml, climatetype = climatetype,
                                            aggregate = FALSE))
@@ -203,17 +203,39 @@ calcRiverHumanUseAccounting <- function(iteration,
   ##################################################
   ###### Upstream-Downstream River Routing  ########
   ##################################################
+  # Pre-compute upstream-/downstream-cell subsets per cell.
+  # River topology is invariant across years and scenarios, so these
+  # subsets are built once here before the year x scenario loop.
+  cellsRequestList   <- lapply(seq_along(rs$upstreamcells),
+                               function(cell) as.integer(c(cell,
+                                                           rs$upstreamcells[[cell]])))
+  cellsDischargeList <- lapply(seq_along(rs$downstreamcells),
+                               function(cell) as.integer(c(cell,
+                                                           rs$downstreamcells[[cell]])))
+  dischargeUpdateCells <- seq_along(rs$calcorder)
+  dischargeUpdateCells <- dischargeUpdateCells[order(rs$calcorder[dischargeUpdateCells],
+                                                     decreasing = FALSE)]
+
+
   for (y in years) {
     for (scen in scenarios) {
       # Select scenario and reduce object size (for performance)
       tmpRequestWWlocal <- currRequestWWlocal[, y, scen]
       tmpRequestWClocal <- currRequestWClocal[, y, scen]
       tmpDischarge      <- discharge[, y, scen]
+      tmpPrevWW         <- prevReservedWW[, y, scen]
+      tmpPrevWC         <- prevReservedWC[, y, scen]
+      tmpInaccD         <- inaccessD[, y, scen]
+
+      # Cells of THIS year and scenario that request water withdrawal.
+      # Recomputed for every (year, scenario); constant only with respect to
+      # the cell loop below, in which tmpRequestWWlocal is never updated.
+      tmpRequestsWW     <- round(tmpRequestWWlocal, digits = 8) > 0
 
       # Cells to be calculated
-      cellsCalc <- unique(c(which(round(tmpRequestWWlocal, digits = 8) > 0),
-                            which(round(tmpDischarge + prevReservedWC[, y, scen] -
-                                          prevReservedWW[, y, scen], digits = 8) < 0)))
+      cellsCalc <- unique(c(which(tmpRequestsWW),
+                            which(round(tmpDischarge + tmpPrevWC - tmpPrevWW,
+                                        digits = 8) < 0)))
       cellsCalc <- unique(c(cellsCalc, unlist(rs$downstreamcells[cellsCalc])))
       cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
 
@@ -221,23 +243,18 @@ calcRiverHumanUseAccounting <- function(iteration,
         # Does the respective cell request water withdrawal?
         # Or: Is available water smaller than previously reserved withdrawal?
         #     Then: update of discharge required.
-        if ((round(tmpRequestWWlocal[c], digits = 8) > 0) ||
-            (round((tmpDischarge[c] + prevReservedWC[c, y, scen]) -
-                   prevReservedWW[c, y, scen],
+        if (tmpRequestsWW[c] ||
+            (round((tmpDischarge[c] + tmpPrevWC[c]) - tmpPrevWW[c],
                    digits = 8) < 0)) {
 
-          cellsRequest <- cellsDischarge <- c
-          if (length(rs$upstreamcells[[c]]) > 0) {
-            cellsRequest <- c(cellsRequest, unlist(rs$upstreamcells[[c]]))
-          }
-          if (length(rs$downstreamcells[[c]]) > 0) {
-            cellsDischarge <- c(cellsDischarge, unlist(rs$downstreamcells[[c]]))
-          }
+          # Look up pre-computed upstream-/downstream-cell subsets
+          cellsRequest   <- cellsRequestList[[c]]
+          cellsDischarge <- cellsDischargeList[[c]]
 
-          tmp <- toolRiverUpDownBalance(inLIST = list(prevWC = prevReservedWC[c, y, scen],
-                                                      prevWW = prevReservedWW[c, y, scen],
+          tmp <- toolRiverUpDownBalance(inLIST = list(prevWC = tmpPrevWC[c],
+                                                      prevWW = tmpPrevWW[c],
                                                       currWW = tmpRequestWWlocal[c],
-                                                      inaccD = inaccessD[c, y, scen]),
+                                                      inaccD = tmpInaccD[c]),
                                         inoutLIST = list(disc = tmpDischarge[cellsDischarge],
                                                          currWC = tmpRequestWClocal[cellsRequest]))
 
@@ -270,7 +287,8 @@ calcRiverHumanUseAccounting <- function(iteration,
     for (scen in scenarios) {
       tmp <- toolRiverDischargeUpdate(rs = rs,
                                       runoffWOEvap = runoffWOEvap[, y, scen],
-                                      watCons = prevReservedWC[, y, scen])
+                                      watCons = prevReservedWC[, y, scen],
+                                      cellsCalc = dischargeUpdateCells)
       discharge[, y, scen] <- tmp
     }
   }
@@ -406,11 +424,19 @@ calcRiverHumanUseAccounting <- function(iteration,
   }
   # Total water (summed basin discharge + consumed)
   # must be same as natural summed basin discharge
-  if (any(abs(round(dimSums(natDischarge[unique(rs$endcell), , ],
-                            dim = 1) - totalWat,
-                    digits = 6)) > 1e-6)) {
-    stop("In calcRiverHumanUseAccounting:
-          Water has been lost during the Neighbor Water Provision Algorithm")
+  waterBalanceResidual <- dimSums(natDischarge[unique(rs$endcell), , ],
+                                  dim = 1) - totalWat
+  # tolerance for check (unit is mio. m^3), so: 1 m^3
+  tolerance <- 1e-06
+  maxResidual <- max(abs(waterBalanceResidual), na.rm = TRUE)
+
+  if (maxResidual >= tolerance) {
+    stop(paste0(
+      "In calcRiverHumanUseAccounting:\n",
+      "          Water has been lost during the Neighbor Water Provision Algorithm. ",
+      "Water balance residual exceeds tolerance. ",
+      "max abs residual = ", signif(maxResidual, 6), " mio. m^3"
+    ))
   }
 
   # Description

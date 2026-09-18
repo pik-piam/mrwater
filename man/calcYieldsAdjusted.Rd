@@ -10,6 +10,7 @@ calcYieldsAdjusted(
   iniyear,
   selectyears,
   yieldcalib,
+  calibDetails = "country:5",
   multicropping
 )
 }
@@ -29,6 +30,11 @@ historical baseline "GSWP3-W5E5:historical" for yields}
                   "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
 
+\item{calibDetails}{Determines FAO yield calibration with two arguments separated by ":":
+aggregation: country, continent, GLO
+average: in number of years or NULL
+(e.g. country:5)}
+
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
 Multiple Cropping Suitability mask selected
 (mask can be:
@@ -47,7 +53,8 @@ Multiple Cropping Suitability mask selected
 magpie object in cellular resolution
 }
 \description{
-This function returns irrigated and rainfed yields for MAgPIE crops.
+This function returns irrigated and rainfed yields for MAgPIE crops
+             in the format required by mrwater.
 }
 \examples{
 \dontrun{

@@ -4,6 +4,8 @@
 #'              considering irrigation efficiencies
 #'
 #' @param selectyears   Years to be returned
+#' @param iniyear       Initialization year for filtering rules of data for regression
+#'                      that determines second season yield
 #' @param lpjml         LPJmL version required for respective inputs: natveg or crop
 #' @param climatetype   Climate model or historical baseline "GSWP3-W5E5:historical"
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
@@ -32,12 +34,10 @@
 #' @importFrom madrat calcOutput toolAggregate toolGetMapping
 #' @importFrom mstools toolCell2isoCell
 #' @importFrom stringr str_split
-#' @importFrom withr local_options
 
-calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
+calcIrrigWatRequirements <- function(selectyears, iniyear,
+                                     lpjml, climatetype,
                                      multicropping) {
-  # Set size limit
-  local_options(magclass_sizeLimit = 1e+12)
 
   # Extract multiple cropping suitability mask
   areaMask  <- paste(str_split(multicropping, ":")[[1]][2],
@@ -48,33 +48,30 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
   # Read in blue water consumption (in m^3 per ha per yr):
   if (mcBoolean) {
     # For multiple cropping case: whole year where suitable
-    bwc <- calcOutput("BlueWaterConsumption", output = "crops:year",
+    bwc <- calcOutput("BlueWaterConsumption", season = "year",
                       areaMask = areaMask,
                       lpjml = lpjml, climatetype = climatetype,
-                      selectyears = selectyears, aggregate = FALSE)
+                      selectyears = selectyears, iniyear = iniyear,
+                      aggregate = FALSE)
 
   } else {
     # For single cropping case: main season blue water consumption
     # (Note: areaMask argument not relevant here, but needs to be set)
     # To Do: as soon as code review complete, set default in calcBlueWaterConsumption
-    bwc <- calcOutput("BlueWaterConsumption", output = "crops:main",
+    bwc <- calcOutput("BlueWaterConsumption", season = "main",
                       areaMask = "potential:endogenous",
                       lpjml = lpjml, climatetype = climatetype,
-                      selectyears = selectyears, aggregate = FALSE)
+                      selectyears = selectyears, iniyear = iniyear,
+                      aggregate = FALSE)
   }
-
-  years       <- getItems(bwc, dim = "year")
-  cropnames   <- getItems(bwc, dim = "crop")
-  systemnames <- c("drip", "sprinkler", "surface")
 
   ### Field efficiencies from Jägermeyr et al. (global values) [placeholder!]
   #### Use field efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
   ### Alternatively: use regional efficiencies from Sauer et al. (2010), Table 5,
-  fieldEff <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
-                                       years = years,
-                                       names = cropnames,
-                                       sets = c("x.y.iso", "year", "crop")),
-                            dim = 3.1, add = "system", nm = systemnames)
+  fieldEff <- convEff <- irrigReq <- new.magpie(cells_and_regions = getItems(bwc, dim = 1),
+                                                years = getItems(bwc, dim = "year"),
+                                                names = getItems(bwc, dim = 3),
+                                                sets = getSets(bwc))
   fieldEff[, , "drip"]      <- 0.88 # Sauer: 0.8-0.93
   fieldEff[, , "sprinkler"] <- 0.78 # Sauer: 0.6-0.86
   fieldEff[, , "surface"]   <- 0.52 # Sauer: 0.25-0.5
@@ -82,13 +79,8 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
 
   ### Conveyance efficiency proxy [placeholder]
   #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
-  convEff <- add_dimension(new.magpie(cells_and_regions =  getCells(bwc),
-                                      years = years,
-                                      names = cropnames,
-                                      sets = c("x.y.iso", "year", "crop")),
-                           dim = 3.1, add = "system", nm = systemnames)
-  convEff[, , "drip"]      <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
-  convEff[, , "sprinkler"] <- 0.95 # Note: same as in LPJmL (see Schaphoff 2018 p. 1395)
+  convEff[, , "drip"]      <- 0.95 # Note: same as in LPJmL (see Schaphoff et al. 2018 p. 1395)
+  convEff[, , "sprinkler"] <- 0.95 # Note: same as in LPJmL (see Schaphoff et al. 2018 p. 1395)
   convEff[, , "surface"]   <- 0.7
   #### Use conveyance efficiency from LPJmL here (by system, by crop, on 0.5 degree) [Does it vary by year?] ####
 
@@ -112,21 +104,21 @@ calcIrrigWatRequirements <- function(selectyears, lpjml, climatetype,
   watWC <- bwc + 0.5 * convLoss
 
   # Output: irrigation water requirements (consumption and withdrawals)
-  irrigReq <- new.magpie(cells_and_regions = getCells(watWC),
-                         years = years,
-                         names = getItems(watWC, dim = 3),
-                         sets = c("x.y.iso", "year", "crop.system"))
-  irrigReq <- add_dimension(irrigReq, dim = 3.4, add = "irrig_type",
+  irrigReq <- add_dimension(irrigReq, dim = 3.3, add = "irrig_type",
                             nm = c("consumption", "withdrawal"))
   irrigReq[, , "consumption"] <- watWC
   irrigReq[, , "withdrawal"]  <- watWW
 
-  # Check for NAs and negative values
+  # Checks
+  if (any(irrigReq[, , "consumption"] > irrigReq[, , "withdrawal"])) {
+    stop("Something went wrong in calcIrrigWatRequirements:
+          Withdrawal should always be bigger than consumption")
+  }
   if (any(is.na(irrigReq))) {
-    stop("produced NA irrigation water requirements")
+    stop("calcIrrigWatRequirements produced NA values")
   }
   if (any(irrigReq < 0)) {
-    stop("produced negative irrigation water requirements")
+    stop("calcIrrigWatRequirements produced negative values")
   }
 
   return(list(x            = irrigReq,

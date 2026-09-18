@@ -99,7 +99,7 @@ fullTRANSPORT <- function(multicropping, rankmethod = "USD_ha:GLO:TRUE") {
             selectyears = selectyears, iniyear = iniyear,
             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
             unit = "USD_ha:GLO", yieldcalib = yieldcalib,
-            comagyear = NULL,
+            comAg = FALSE,
             irrigationsystem = irrigationsystem,
             landScen = paste0("potCropland:", "NULL"),
             multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),

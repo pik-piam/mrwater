@@ -10,7 +10,8 @@ calcActualIrrigWatRequirements(
   lpjml,
   climatetype,
   irrigationsystem,
-  multicropping
+  multicropping,
+  usagetype = "all"
 )
 }
 \arguments{
@@ -38,6 +39,11 @@ Multiple Cropping Suitability mask selected
 "potential:exogenous": potentially multicropped areas given
                        GAEZ suitability classification)
 (e.g. TRUE:actual:total; TRUE:none; FALSE)}
+
+\item{usagetype}{Water usage type to be returned.
+Options: "all" (both withdrawal and consumption),
+"consumption" (only consumptive irrigation water requirements are returned),
+"withdrawal" (only irrigation water withdrawal requirements are returned)}
 }
 \value{
 magpie object in cellular resolution
@@ -53,7 +59,7 @@ calcOutput("ActualIrrigWatRequirements", aggregate = FALSE)
 
 }
 \seealso{
-\code{\link{calcIrrigationSystem}}, \code{\link{calcIrrigWatRequirements}}
+\code{\link{calcIrrigWatRequirements}}
 }
 \author{
 Felicitas Beier

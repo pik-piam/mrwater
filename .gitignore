@@ -5,3 +5,5 @@
 .Rprofile
 renv.lock
 /renv/
+.positai
+.md

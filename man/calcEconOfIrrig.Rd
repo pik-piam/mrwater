@@ -71,14 +71,15 @@ separated by ":"}
 If FALSE: uncalibrated LPJmL yields are used}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
-across cells of river basin ("optimization", "upstreamfirst", "equality")}
+across cells of river basin ("optimization", "upstreamfirst")}
 
 \item{irrigationsystem}{Irrigation system used
 ("surface", "sprinkler", "drip", "initialization")}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
-2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+2. protection scenario (WDPA, or one of the scenarios
+available in calcConservationPriorities,
    e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
    or NA for no protection).
 For case of no land protection select "NA" in second part of argument

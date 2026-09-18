@@ -72,7 +72,7 @@ separated by ":"}
 (in USD per hectare)}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
-across cells of river basin ("optimization", "upstreamfirst", "equality")}
+across cells of river basin ("optimization", "upstreamfirst")}
 
 \item{transDist}{Water transport distance allowed to fulfill locally
 unfulfilled water demand by surrounding cell water availability}

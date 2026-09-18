@@ -5,10 +5,8 @@
 \title{calcAvlWater}
 \usage{
 calcAvlWater(
-  lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop =
-    "ggcmi_phase3_nchecks_9ca735cb"),
-  climatetype = "GSWP3-W5E5:historical",
-  cells = "lpjcell",
+  lpjml = "lpjml5.9.16-m1",
+  climatetype = "MRI-ESM2-0:ssp370",
   stage = "harmonized2020",
   seasonality = "grper"
 )
@@ -17,9 +15,6 @@ calcAvlWater(
 \item{lpjml}{Defines LPJmL version for crop/grass and natveg specific inputs}
 
 \item{climatetype}{Switch between different climate scenarios}
-
-\item{cells}{Number of cells to be returned
-(select "magpiecell" for 59199 cells or "lpjcell" for 67420 cells)}
 
 \item{stage}{Degree of processing: raw, smoothed, harmonized, harmonized2020}
 
@@ -32,6 +27,10 @@ magpie object in cellular resolution
 }
 \description{
 This function calculates water availability for MAgPIE retrieved from LPJmL
+             using the old water aggregation logic from Bonsch et al.
+             This function will be replaced by the mrwater logic.
+             It can be deleted when module 25_irrigation in MAgPIE is default
+             and modules 41,42,43 are retired.
 }
 \examples{
 \dontrun{

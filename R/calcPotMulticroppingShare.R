@@ -33,7 +33,7 @@
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
-#'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
+#'                          across cells of river basin ("optimization", "upstreamfirst")
 #' @param gainthreshold     Threshold of yield improvement potential required
 #'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system used
@@ -110,10 +110,34 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
 
   # Irrigation water requirements in the second season (in m^3 per ha per year):
   watReqSecond <- watReqYear - watReqFirst
-  noReqSecond  <- collapseNames(watReqSecond[, , "consumption"]) < 1e-6  # Jens: double-check
+  noReqSecond  <- collapseNames(watReqSecond[, , "consumption"]) <= 1e-6
+  # To Do (discuss with Jens): double-check (should this be 0 or very small?)
 
+  # Crop yield in main season (in tDM/ha per year):
+  crpYldFirst <- calcOutput("YieldsMAgPIEcrops", multicropping = FALSE,
+                            selectyears = selectyears,
+                            lpjml = lpjml,
+                            climatetype = climatetype,
+                            calibration = NULL,
+                            aggregate = FALSE)
+  # Crop yield in the entire year under multiple cropping (in tDM/ha per year):
+  crpYldYear <- calcOutput("YieldsMAgPIEcrops", multicropping = multicropping,
+                           selectyears = selectyears,
+                           lpjml = lpjml,
+                           climatetype = climatetype,
+                           calibration = NULL,
+                           aggregate = FALSE)
+  # Crop yield in the second season (in tDM/ha per year):
+  # Note: very low second season yields are already capped in calcYieldsLPJmL
+  crpYldSecond <- crpYldYear - crpYldFirst
+  noCropYld    <- crpYldSecond <= 0
 
+  ### To Do (check): theoretically not necessary because already covered by the
+  ### no irrig wat req condition above
+
+  # ensure correct crop ordering in all objects
   crops <- getItems(watReqFirst, dim = "crop")
+  noCropYld <- noCropYld[, , crops]
 
   # Potential irrigation water use (in mio. m^3 per year):
   # This includes committed agricultural water use, multiple cropping expansion on irrigated areas,
@@ -169,13 +193,14 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     ci <- collapseNames(calcOutput("MulticroppingIntensity", sectoral = "kcr",
                                    scenario = "irrig_crop",
                                    selectyears = selectyears,
-                                   aggregate = FALSE)[, , "irrigated"][, , crops])
+                                   aggregate = FALSE)[, , crops])
     # Share of area that is multicropped
     shrMC <- (ci - 1)
+    shrMCir <- shrMC[, , "irrigated"]
     # Share that is missing to full expansion of multiple cropping on currently irrigated land
-    shrExp <- suitMCir - shrMC
+    shrExp <- suitMCir - shrMCir
 
-    if (any(shrExp + shrMC > 1)) {
+    if (any(shrExp + shrMCir > 1)) {
       stop("Problem in calcPotMulticroppingShare:
       The current multiple cropping share and the multiple cropping expansion share
       add up to more than 1.")
@@ -189,8 +214,8 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     comAgWatSecondWW <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "withdrawal"])[, , crops]
     comAgWatSecondWC <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "consumption"])[, , crops]
     # in off season (if multiple cropped as of today)
-    comAgWatSecondWWAct <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "withdrawal"])[, , crops] * shrMC
-    comAgWatSecondWCAct <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "consumption"])[, , crops] * shrMC
+    comAgWatSecondWWAct <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "withdrawal"])[, , crops] * shrMCir
+    comAgWatSecondWCAct <- comAgArea[, , crops] * collapseNames(watReqSecond[, , "consumption"])[, , crops] * shrMCir
 
     # Check: comAgWatSecond should be 0 for crops that are not multiple cropped and
     #        where multiple cropping is not possible
@@ -240,19 +265,21 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
 
     potShr <- shrExp * pmin(shrWW, shrWC)
 
-    if (any(potShr + shrMC > 1)) {
+    if (any(potShr + shrMCir > 1)) {
       stop("Problem in calcPotMulticroppingShare:
             The current multiple cropping share and the multiple cropping expansion share
             add up to more than 1.")
     }
     # Ensure that not too much water has been allocated
-    if (any(round(remainingWatWW - dimSums(comAgWatSecondWW[, , crops] * potShr[, , crops], dim = "crop"), digits = 6) < 0)) {
+    if (any(round(remainingWatWW - dimSums(comAgWatSecondWW[, , crops] * potShr[, , crops],
+                                           dim = "crop"),
+                  digits = 6) < 0)) {
       stop("There is a problem in calcPotMulticroppingShare:
             Too much multiple cropping expansion on currently irrigated area.
             Water is not sufficient.")
     }
 
-    potShr <- potShr + shrMC
+    potShr <- potShr + shrMCir
 
     # Where no committed agriculture:
     # full multiple cropping is assumed where it is suitable
@@ -265,7 +292,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
     out[, , "irrigated"] <- potShr
 
   } else {
-    shrMC       <- noReqSecond
+    shrMC <- noCropYld
     shrMC[, , ] <- 0
   }
 
@@ -278,7 +305,13 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
   # are not multiple cropped under irrigated conditions
   # unless they are reported to be under irrigated multiple cropping
   # and committed agriculture is activated
-  out[, , "irrigated"][noReqSecond] <- shrMC[noReqSecond]
+  out[, , "irrigated"][noReqSecond] <- shrMC[, , "irrigated"][noReqSecond]
+
+  # Crops that have no multiple cropping yield gain
+  # are not multiple cropped
+  # unless they are reported to be under multiple cropping
+  # and committed agriculture is activated
+  out[noCropYld] <- shrMC[noCropYld]               #### To Do: double check whether same ordering of objects
 
   # Checks
   if (any(is.na(out))) {
@@ -295,7 +328,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
   }
 
   # Check whether out is >= shrMC
-  if (any(collapseNames(out[, , "irrigated"]) - shrMC < - 1e-10)) {
+  if (any(collapseNames(out[, , "irrigated"]) - shrMC[, , "irrigated"] < -1e-10)) {
     stop("The potential multiple cropping share should at least be as high as the
            currently actually multiple cropped share.
            Please check what's wrong in calcPotMulticroppingShare")
@@ -303,7 +336,7 @@ calcPotMulticroppingShare <- function(scenario, lpjml, climatetype,
 
   return(list(x            = out,
               weight       = NULL,
-              unit         = "share",
+              unit         = NULL,
               description  = paste0("share of irrigated area that can be multiple cropped ",
                                     "given water limitation"),
               isocountries = FALSE))

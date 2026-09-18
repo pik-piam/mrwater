@@ -17,10 +17,8 @@
 #'                      "GLO" for global average prices, or
 #'                      "ISO" for country-level prices;
 #'                      and boolean indicating fullpotential (TRUE) or reduced potential (FALSE)
-#' @param comagyear     if !NULL: already irrigated area is subtracted;
-#'                      if NULL: total potential land area is used;
-#'                      year specified here is the year of the initialization
-#'                      used for cropland area initialization in calcIrrigatedArea
+#' @param comAg         If TRUE: committed irrigated areas are subtracted,
+#'                      if FALSE: total potential croparea is used
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:
 #'                      "hist_irrig" for historical cropmix on currently irrigated area,
@@ -54,7 +52,7 @@
 #'
 calcIrrigCellranking <- function(lpjml, climatetype,
                                  cellrankyear, iniyear,
-                                 comagyear,
+                                 comAg,
                                  irrigationsystem, landScen,
                                  method,
                                  cropmix, yieldcalib,
@@ -74,7 +72,7 @@ calcIrrigCellranking <- function(lpjml, climatetype,
   yieldGain <- calcOutput("IrrigYieldImprovementPotential", unit = unit,
                           lpjml = lpjml, climatetype = climatetype,
                           selectyears = cellrankyear, iniyear = iniyear,
-                          comagyear = comagyear,
+                          comAg = comAg,
                           irrigationsystem = irrigationsystem, landScen = landScen,
                           cropmix = cropmix, yieldcalib = yieldcalib,
                           multicropping = multicropping, aggregate = FALSE)

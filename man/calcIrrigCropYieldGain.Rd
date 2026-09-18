@@ -21,8 +21,7 @@ calcIrrigCropYieldGain(
 
 \item{priceAgg}{Price aggregation:
 "GLO" for global average prices, or
-"ISO" for country-level prices, or
-"CONST" for same price for all crops}
+"ISO" for country-level prices}
 
 \item{iniyear}{initialization year for food price and cropmix area}
 

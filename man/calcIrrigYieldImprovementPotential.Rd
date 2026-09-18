@@ -10,7 +10,7 @@ calcIrrigYieldImprovementPotential(
   unit,
   iniyear,
   selectyears,
-  comagyear,
+  comAg,
   cropmix,
   landScen,
   irrigationsystem,
@@ -38,10 +38,8 @@ Price aggregation:
 
 \item{selectyears}{Years to be returned by the function}
 
-\item{comagyear}{if !NULL: already irrigated area is subtracted;
-if NULL: total potential land area is used;
-year specified here is the year of the initialization
-used for cropland area initialization in calcIrrigatedArea}
+\item{comAg}{If TRUE: committed irrigated areas are subtracted,
+if FALSE: total potential croparea is used}
 
 \item{cropmix}{Selected cropmix for which yield improvement potential
 is calculated (options:
@@ -52,7 +50,8 @@ NULL returns all crops individually}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
-2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+2. protection scenario (WDPA, or one of the scenarios
+available in calcConservationPriorities,
    e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
    or NA for no protection).
 For case of no land protection select "NA" in second part of argument

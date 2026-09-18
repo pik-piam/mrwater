@@ -2,8 +2,10 @@
 #' @description calculates area reserved for irrigation based on area irrigated
 #'              in initialization year and depreciation parameter (set to 0.1)
 #'
-#' @param iniyear      initialization year
-#' @param selectyears  select years
+#' @param iniyear        initialization year
+#' @param selectyears    select years
+#' @param aggregateCrops Logical. If FALSE (default), result is returned per crop.
+#'                       If TRUE, values are aggregated over the crop dimension.
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
@@ -14,10 +16,10 @@
 #' }
 #'
 #' @importFrom madrat calcOutput
-#' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames
+#' @importFrom magclass collapseNames collapseDim new.magpie getCells getNames dimSums
 #' @importFrom utils tail
 
-calcIrrigAreaCommitted <- function(selectyears, iniyear) {
+calcIrrigAreaCommitted <- function(selectyears, iniyear, aggregateCrops = FALSE) {
 
   # Set depreciation parameter
   depreciation <- 0.1
@@ -59,6 +61,15 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   # select years to be returned
   irrigArea <- irrigArea[, selectyears, ]
 
+  # optionally, aggregate crop dimension for total committed irrigated area
+  if (aggregateCrops) {
+    irrigArea <- dimSums(irrigArea, dim = "crop")
+    description <- "Total cropland area reserved for irrigation"
+  }
+  else {
+    description <- "Cropland area reserved for irrigation per crop"
+  }
+
   # check for NAs and negative values
   if (any(is.na(irrigArea))) {
     stop("produced NA irrigation water requirements")
@@ -70,6 +81,6 @@ calcIrrigAreaCommitted <- function(selectyears, iniyear) {
   return(list(x            = irrigArea,
               weight       = NULL,
               unit         = "Mha",
-              description  = "Cropland area reserved for irrigation per crop",
+              description  = description,
               isocountries = FALSE))
 }

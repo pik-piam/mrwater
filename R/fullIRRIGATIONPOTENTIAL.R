@@ -29,7 +29,7 @@
 #' @param gainthreshold     Threshold of yield improvement potential required for
 #'                          water allocation in upstreamfirst algorithm
 #'                          (in same unit as in rankmethod)
-#' @param protectLand       Land protection scenario (WDPA, 
+#' @param protectLand       Land protection scenario (WDPA,
 #'                          or one of the scenarios available in calcConservationPriorities,
 #'                          e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
 #'                          or NA for no protection).
@@ -371,15 +371,17 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
              file = "protectedAreas.mz")
 
   # Area that is potentially available for irrigated agriculture
-  calcOutput("AreaPotIrrig", selectyears = plotyear, comagyear = NULL,
+  calcOutput("AreaPotIrrig", selectyears = plotyear, comAg = FALSE,
+             cropAggregation = TRUE, cropmix = cropmix,
              landScen = paste0("potCropland:", protectLand),
              aggregate = FALSE,
              file = "avlIrrigarea_pot.mz")
 
   # Accessibility graph
-  calcOutput("LPJmL_new", subtype = "mdischarge",
-             version = lpjml[["natveg"]], climatetype = climatetype,
+  calcOutput("LPJmLTransform", subtype = "mdischarge",
+             lpjmlversion = lpjml, climatetype = climatetype,
              stage = "raw", aggregate = FALSE,
+             monthly = TRUE,
              file = "LPJmL_monthlyDischarge.mz")
 
   # Share current irrigation water that can be fulfilled by available water resources
@@ -445,7 +447,7 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
-             comagyear = NULL,
+             comAg = FALSE,
              irrigationsystem = irrigationsystem,
              landScen = paste0("potCropland:", "NULL"),
              multicropping = multicropping, aggregate = FALSE,
@@ -455,21 +457,11 @@ fullIRRIGATIONPOTENTIAL <- function(efrMethod = "VMF:fair", accessibilityrule = 
              lpjml = lpjml, climatetype = climatetype,
              iniyear = iniyear, selectyears = plotyear,
              cropmix = cropmix, yieldcalib = yieldcalib,
-             comagyear = NULL,
+             comAg = FALSE,
              irrigationsystem = irrigationsystem,
              landScen = paste0("potCropland:", "NULL"),
              multicropping = multicropping, aggregate = FALSE,
              file = paste0("yieldgain_USDha_ISO", ".mz"))
-  # with one price for all crops
-  calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:CONST",
-             lpjml = lpjml, climatetype = climatetype,
-             iniyear = iniyear, selectyears = plotyear,
-             cropmix = cropmix, yieldcalib = yieldcalib,
-             comagyear = NULL,
-             irrigationsystem = irrigationsystem,
-             landScen = paste0("potCropland:", "NULL"),
-             multicropping = multicropping, aggregate = FALSE,
-             file = paste0("yieldgain_USDha_constant", ".mz"))
 
   # Rainfed and irrigated crop yield valued at crop-specific prices [in USD/ha]
   calcOutput("YieldsValued",

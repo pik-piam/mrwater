@@ -42,17 +42,17 @@ calcIrrigSystemShr <- function(iniyear) {
   ######################
   # from LPJmL crops to MAgPIE crops
   map <- toolGetMapping("MAgPIE_LPJmL.csv",
-                        type = "sectoral", where = "mappingfolder")
-  getItems(irrigSuit, dim = "crop") <- gsub("pastures", "mgrass", getItems(irrigSuit, dim = "crop"))
+                        type = "sectoral", where = "mrlandcore")
+  getItems(irrigSuit, dim = "crop") <- gsub("pastures", "grassland", getItems(irrigSuit, dim = "crop"))
   # add betr and begr
-  irrigSuit <- add_columns(irrigSuit, addnm = c("betr", "begr"),
+  irrigSuit <- add_columns(irrigSuit, addnm = c("biomass tree", "biomass grass"),
                            dim = "crop", fill = 1)
-  irrigSuit[, , "begr"] <- irrigSuit[, , "mgrass"]
+  irrigSuit[, , "biomass grass"] <- irrigSuit[, , "grassland"]
   # remove LPJmL "others" category
   irrigSuit <- irrigSuit[, , "others", invert = TRUE]
 
   irrigSuit <- toolAggregate(irrigSuit, rel = map,
-                             from = "LPJmL", to = "MAgPIE", dim = "crop")
+                             from = "LPJmL5", to = "MAgPIE", dim = "crop")
 
   # remove pasture (not irrigated in MAgPIE)
   irrigSuit <- irrigSuit[, , "pasture", invert = TRUE]
@@ -72,7 +72,6 @@ calcIrrigSystemShr <- function(iniyear) {
   # Bananas; Plantains that are reported to be irrigated in some place,
   # we assume that all irrigation systems are suitable for this category.
   irrigSuit[, , "cassav_sp"] <- 1
-  ### ToDo: use FAO country-share of cassava in cassav_sp category and assign irrigSystem share accordingly?
 
   # empty MAgPIE object with correct dimensionality
   out <- irrigShr * irrigSuit
@@ -166,9 +165,6 @@ calcIrrigSystemShr <- function(iniyear) {
   ##         insert irrigShr equally for all crops               ##
   out[dimSums(irrigArea, dim = "crop") == 0, , ] <- irrigShr[dimSums(irrigArea, dim = "crop") == 0, , ]
 
-  # Dimension ordering and naming
-  out <- dimOrder(out, perm = c(2, 1), dim = 3)
-
   ##############
   ### Checks ###
   ##############
@@ -186,6 +182,6 @@ calcIrrigSystemShr <- function(iniyear) {
   return(list(x            = out,
               weight       = NULL,
               unit         = "share",
-              description  = "irrigation system share (share of irrigated area) per crop",
+              description  = "irrigation system share (of irrigated area) per crop",
               isocountries = FALSE))
 }

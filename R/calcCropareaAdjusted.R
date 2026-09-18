@@ -27,7 +27,7 @@ calcCropareaAdjusted <- function(iniyear, dataset = "LandInG", sectoral = "kcr")
 
     phys <- calcOutput("Croparea", years = iniyear, physical = TRUE,
                        sectoral = sectoral, irrigation = TRUE,
-                       cells = "lpjcell", cellular = TRUE,
+                       cellular = TRUE,
                        aggregate = FALSE)
     map             <- toolGetMappingCoord2Country()
     getCells(phys)  <- paste(map$coords, map$iso, sep = ".")
@@ -35,20 +35,21 @@ calcCropareaAdjusted <- function(iniyear, dataset = "LandInG", sectoral = "kcr")
   } else if (dataset == "LandInG") {
 
     phys <- calcOutput("CropareaLandInG", physical = TRUE, sectoral = sectoral,
-                       cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
+                       cellular = TRUE, irrigation = TRUE,
                        selectyears = iniyear, aggregate = FALSE)
 
   } else {
     stop("Please select Croparea data set to be used.")
   }
 
-  # Check for landmass mismatch: Total physical croparea should be < landmass
+  # Check for landmass mismatch: Total physical croparea should be smaller than landmass
   # Total physical croparea
   physTotal <- dimSums(phys, dim = 3)
-  # Total land area according to LUH
-  landarea <- setYears(collapseNames(dimSums(readSource("LUH2v2", subtype = "states_1995to1996",
-                                                        convert = "onlycorrect")[, "y1995", ],
-                                             dim = 3)),
+  # Total land area according to LUH3 in iniyear (constant over time)
+  landarea <- setYears(dimSums(calcOutput("LUH3", yrs = iniyear,
+                                          landuseTypes = "LUH3", irrigation = FALSE,
+                                          cellular = TRUE,  aggregate = FALSE),
+                               dim = 3),
                        NULL)
 
   if (any(round(landarea - physTotal, digits = 6) < 0)) {
@@ -85,7 +86,7 @@ calcCropareaAdjusted <- function(iniyear, dataset = "LandInG", sectoral = "kcr")
 
   return(list(x            = croparea,
               weight       = NULL,
-              unit         = "million ha",
+              unit         = "Mha",
               description  = "cellular croparea per crop",
               isocountries = FALSE))
 }

@@ -6,6 +6,8 @@
 #' @param runoffWOEvap  Array that contains (runoff - lake evap)
 #' @param watCons       Array that contains water reserved
 #'                      for consumptive use
+#' @param cellsCalc     Optional integer vector defining the upstream-to-downstream
+#'                      cell calculation order
 #'
 #' @return array in cellular resolution and all year and scenario dimensions
 #' @author Felicitas Beier, Jens Heinke
@@ -15,7 +17,8 @@
 #' calcOutput("RiverHumanUseAccounting", aggregate = FALSE)
 #' }
 
-toolRiverDischargeUpdate <- function(rs, runoffWOEvap, watCons) {
+toolRiverDischargeUpdate <- function(rs, runoffWOEvap, watCons,
+                                     cellsCalc = NULL) {
 
   # helper variables in correct dimension
   # (initialized to zero)
@@ -24,23 +27,24 @@ toolRiverDischargeUpdate <- function(rs, runoffWOEvap, watCons) {
   ###########################################
   ###### River Discharge Calculation ########
   ###########################################
-  # All grid cells in the river network
-  cellsCalc <- seq_along(runoffWOEvap)
-  # Ordering grid cells from upstream to downstream
-  cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
-
+  if (is.null(cellsCalc)) {
+    # All grid cells in the river network
+    cellsCalc <- seq_along(runoffWOEvap)
+    # Ordering grid cells from upstream to downstream
+    cellsCalc <- cellsCalc[order(rs$calcorder[cellsCalc], decreasing = FALSE)]
+  }
   for (c in cellsCalc) {
 
-      # available water in cell
-      avlWat[c] <- inflow[c] + runoffWOEvap[c]
+    # available water in cell
+    avlWat[c] <- inflow[c] + runoffWOEvap[c]
 
-      # discharge out of cell
-      discharge[c] <- avlWat[c] - watCons[c]
+    # discharge out of cell
+    discharge[c] <- avlWat[c] - watCons[c]
 
-        # inflow into nextcell
-        if (rs$nextcell[c] > 0) {
-          inflow[rs$nextcell[c]] <- inflow[rs$nextcell[c]] + discharge[c]
-      }
+    # inflow into nextcell
+    if (rs$nextcell[c] > 0) {
+      inflow[rs$nextcell[c]] <- inflow[rs$nextcell[c]] + discharge[c]
+    }
   }
 
   # Check for NAs

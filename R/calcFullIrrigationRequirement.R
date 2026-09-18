@@ -5,10 +5,8 @@
 #' @param lpjml            LPJmL version used
 #' @param selectyears      Years to be returned
 #' @param climatetype      Climate model or historical baseline "GSWP3-W5E5:historical"
-#' @param comagyear        if !NULL: already irrigated area is subtracted;
-#'                         if NULL: total potential land area is used;
-#'                         year specified here is the year of the initialization
-#'                         used for cropland area initialization in calcIrrigatedArea
+#' @param comAg            If TRUE: committed irrigated areas are subtracted,
+#'                         if FALSE: total potential croparea is used
 #' @param iniyear          Croparea initialization year
 #' @param irrigationsystem Irrigation system used: system share as in initialization year,
 #'                         or drip, surface, sprinkler for full irrigation by selected system
@@ -27,13 +25,13 @@
 #'                         Multiple Cropping Suitability mask selected
 #'                         (mask can be:
 #'                         "none": no mask applied (only for development purposes)
-#'                         "actual:total": currently multicropped areas calculated from total harvested areas
+#'                         "actual:total": currently multiple cropped areas calculated from total harvested areas
 #'                                         and total physical areas per cell from readLandInG
 #'                         "actual:crop" (crop-specific), "actual:irrigation" (irrigation-specific),
 #'                         "actual:irrig_crop" (crop- and irrigation-specific) "total"
-#'                         "potential:endogenous": potentially multicropped areas given
+#'                         "potential:endogenous": potentially multiple cropped areas given
 #'                                                 temperature and productivity limits
-#'                         "potential:exogenous": potentially multicropped areas given
+#'                         "potential:exogenous": potentially multiple cropped areas given
 #'                                                GAEZ suitability classification)
 #'                         (e.g. TRUE:actual:total; TRUE:none; FALSE)
 #'
@@ -50,15 +48,15 @@
 #' @importFrom mstools toolCell2isoCell toolGetMappingCoord2Country
 
 calcFullIrrigationRequirement <- function(lpjml, climatetype,
-                                          selectyears, iniyear, comagyear,
+                                          selectyears, iniyear, comAg,
                                           irrigationsystem, landScen, cropmix,
                                           multicropping) {
 
   # cropland area per crop (in Mha)
-  croparea <- calcOutput("CropAreaPotIrrig",
+  croparea <- calcOutput("AreaPotIrrig", comAg = comAg,
                          selectyears = selectyears, iniyear = iniyear,
-                         comagyear = comagyear,
-                         cropmix = cropmix, landScen = landScen,
+                         cropAggregation = FALSE, cropmix = cropmix,
+                         landScen = landScen,
                          aggregate = FALSE)
 
   croplist <- getItems(croparea, dim = "crop")

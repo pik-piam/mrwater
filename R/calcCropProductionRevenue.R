@@ -64,7 +64,7 @@
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
-#'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
+#'                          across cells of river basin ("optimization", "upstreamfirst")
 #' @param gainthreshold     Threshold of yield improvement potential required
 #'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system used
@@ -151,11 +151,10 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
       cropmix <- cmix <- "hist_irrig"
     }
     # all of available croparea (in Mha)
-    cropareaTotal <- calcOutput("CropAreaPotIrrig",
-                                cropmix = cmix,
-                                landScen = landScen,
+    cropareaTotal <- calcOutput("AreaPotIrrig", comAg = FALSE,
                                 selectyears = selectyears, iniyear = iniyear,
-                                comagyear = NULL,
+                                cropAggregation = FALSE, cropmix = cmix,
+                                landScen = landScen,
                                 aggregate = FALSE)
 
     # Crop-specific (potentially) irrigated areas (in Mha)
@@ -223,10 +222,6 @@ calcCropProductionRevenue <- function(outputtype, scenario, management, area,
          `'biomass'` for biomass production quantity in tDM or
          `'revenue'` for associated revenue with production quantity in USD.")
   }
-
-  # reorder third dimension (switch irrigation and crop)
-  yields       <- dimOrder(yields, c(2, 1), dim = 3)
-  yieldsSingle <- dimOrder(yieldsSingle, c(2, 1), dim = 3)
 
   # difference between multiple cropped and single yields
   deltaYields <- yields - yieldsSingle

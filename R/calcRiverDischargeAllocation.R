@@ -41,7 +41,8 @@
 #' @param iniyear           Initialization year of irrigation system
 #' @param landScen          Land availability scenario consisting of two parts separated by ":":
 #'                          1. available land scenario (currCropland, currIrrig, potCropland)
-#'                          2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+#'                          2. protection scenario (WDPA, or one of the scenarios
+#'                          available in calcConservationPriorities,
 #'                             e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
 #'                             or NA for no protection).
 #'                          For case of no land protection select "NA" in second part of argument
@@ -181,21 +182,13 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   rs$neighborcell    <- rs0$neighborcell
 
   if (allocationrule == "optimization") {
-
-    if (comAg == TRUE) {
-      # accounting in potentials
-      comagyear <- iniyear
-    } else if (comAg == FALSE) {
-      # committed agriculture not accounted in potentials (full potential)
-      comagyear <- NULL
-    }
     # Global cell rank based on yield gain potential by irrigation
     # of chosen crop mix
     glocellrank <- setYears(calcOutput("IrrigCellranking",
                                        cellrankyear = selectyears,
                                        lpjml = lpjml, climatetype = climatetype, method = rankmethod,
                                        cropmix = cropmix, iniyear = iniyear, yieldcalib = yieldcalib,
-                                       comagyear = comagyear,
+                                       comAg = comAg,
                                        irrigationsystem = irrigationsystem,
                                        landScen = landScen,
                                        multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
@@ -225,60 +218,109 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
     currReqWW <- currReqWW * allocationshare
     currReqWC <- currReqWC * allocationshare
 
-    # numeric cell number
+    # Extract numeric cell number
     rs$cells <- as.numeric(gsub("(.*)(\\.)", "", rs$cells))
+    isoCoordToCell <- setNames(rs$cells, rs$isoCoord)
+
+    # Pre-compute downstream and allocation subsets per cell
+    allocationDownCells <- allocationSelectCells <- vector("list", length(rs$cells))
+    allocationCells <- vector("list", length(rs$cells))
+    for (cell in rs$cells) {
+      neighborCells <- if (transDist != 0) rs$neighborcell[[cell]] else NULL
+      neighborDownCells <- NULL
+      if (length(rs$downstreamcells[neighborCells]) > 0) {
+        neighborDownCells <- unlist(rs$downstreamcells[neighborCells])
+      }
+
+      downCells <- NULL
+      if (length(rs$downstreamcells[[cell]]) > 0) {
+        downCells <- c(downCells, unlist(rs$downstreamcells[[cell]]))
+      }
+
+      # list of downstream cells of relevant cell in c-loop
+      allocationDownCells[[cell]] <- downCells
+      # list of all relevant cells of relevant cell in c-loop
+      selectCells <- unique(c(cell, downCells, neighborCells, neighborDownCells))
+      allocationSelectCells[[cell]] <- selectCells
+      localCell <- match(cell, selectCells)
+      localDownCells <- match(downCells, selectCells)
+      invalidLocalCells <- is.na(localCell) ||
+        anyNA(localDownCells)
+      if (invalidLocalCells) {
+        stop("Could not precompute local allocation cells")
+      }
+      allocationCells[[cell]] <- list(cells = selectCells,
+                                      localCell = localCell,
+                                      localDownCells = localDownCells)
+      if (length(neighborCells) > 0) {
+        allocationCells[[cell]]$neighborCells <- neighborCells
+        allocationCells[[cell]]$neighborCell <- match(neighborCells, selectCells)
+        allocationCells[[cell]]$neighborSelectedCells <- lapply(neighborCells, function(n) {
+          match(c(n, rs$downstreamcells[[n]]), selectCells)
+        })
+        invalidNeighborCells <- anyNA(allocationCells[[cell]]$neighborCell) ||
+          any(vapply(allocationCells[[cell]]$neighborSelectedCells, anyNA, logical(1)))
+        if (invalidNeighborCells) {
+          stop("Could not precompute local neighbor allocation cells")
+        }
+      }
+    }
 
     # In case of optimization, glocellrank differs in each year:
     for (y in selectyears) {
+      # determine cell ranking for current year
+      gcr <- glocellrank[, y, ]
+      rankedNames <- names(gcr)[order(gcr, na.last = NA)]
+      rankedNames <- sub("^[AB]_", "", rankedNames)
+      rankedCells <- unname(isoCoordToCell[rankedNames])
+      if (anyNA(rankedCells)) {
+        stop("Could not map all ranked cells to river structure cells")
+      }
+
       for (scen in scenarios) {
+        # Select scenario and reduce object size (for performance)
+        tmpDischarge      <- discharge[, y, scen]
+        tmpPrevReservedWW <- prevReservedWW[, y, scen]
+        tmpCurrReqWW      <- currReqWW[, y, scen]
+        tmpCurrReqWC      <- currReqWC[, y, scen]
+        tmpFromNeighborWC <- fromNeighborWC[, y, scen]
+        tmpFromNeighborWW <- fromNeighborWW[, y, scen]
+        tmpCurrWWlocal    <- currWWlocal[, y, scen]
+        tmpCurrWClocal    <- currWClocal[, y, scen]
+        activeRankedCells <- rankedCells[tmpCurrReqWW[rankedCells] > 1e-4]
+
         # Loop in ranked cell order
-        for (o in (1:max(glocellrank[, y, ], na.rm = TRUE))) {
-          # Extract the cell number
-          glocellrankName <- names(which(glocellrank[, y, ] == o))
-          c <- rs$cells[rs$isoCoord == ifelse(grepl("B_", glocellrankName),
-                                              gsub("B_", "", glocellrankName),
-                                              ifelse(grepl("A_", glocellrankName),
-                                                     gsub("A_", "", glocellrankName),
-                                                     glocellrankName))]
+        for (c in activeRankedCells) {
+          # Select relevant cells from pre-computed list
+          downCells   <- allocationDownCells[[c]]
+          selectCells <- allocationSelectCells[[c]]
+          inLIST <- list(currReqWW = tmpCurrReqWW[c],
+                         currReqWC = tmpCurrReqWC[c],
+                         allocationCells = allocationCells[[c]])
+          inoutLIST <- list(discharge = tmpDischarge[selectCells],
+                            prevReservedWW = tmpPrevReservedWW[selectCells])
+          tmp <- toolRiverDischargeAllocation(c = c, rs = rs,
+                                              downCells = downCells,
+                                              transDist = transDist,
+                                              iteration = "main",
+                                              inLIST = inLIST,
+                                              inoutLIST = inoutLIST)
 
-          # Only run for cells where water required
-          if (currReqWW[c, y, scen] > 1e-4) {
-            # Select relevant cells (for performance reasons)
-            if (transDist > 0) {
-              nCells <- rs$neighborcell[[c]]
-            } else {
-              nCells <- NULL
-            }
-            if (length(rs$downstreamcells[nCells]) > 0) {
-              nCells <- c(nCells, unlist(rs$downstreamcells[nCells]))
-            }
-            downCells <- NULL
-            if (length(rs$downstreamcells[[c]]) > 0) {
-              downCells <- c(downCells, unlist(rs$downstreamcells[[c]]))
-
-            }
-            selectCells <- unique(c(c, downCells, nCells))
-            # Function inputs
-            inLIST    <- list(currReqWW = currReqWW[c, y, scen],
-                              currReqWC = currReqWC[c, y, scen])
-            inoutLIST <- list(discharge = discharge[selectCells, y, scen],
-                              prevReservedWW = prevReservedWW[selectCells, y, scen])
-
-            tmp <- toolRiverDischargeAllocation(c = c, rs = rs,
-                                                downCells = downCells,
-                                                transDist = transDist,
-                                                iteration = "main",
-                                                inoutLIST = inoutLIST,
-                                                inLIST = inLIST)
-
-            discharge[selectCells, y, scen]      <- tmp$discharge
-            prevReservedWW[selectCells, y, scen] <- tmp$prevReservedWW
-            fromNeighborWC[c, y, scen] <- fromNeighborWC[c, y, scen] + tmp$fromNeighborWC
-            fromNeighborWW[c, y, scen] <- fromNeighborWW[c, y, scen] + tmp$fromNeighborWW
-            currWWlocal[c, y, scen]    <- currWWlocal[c, y, scen] + tmp$currWWlocal
-            currWClocal[c, y, scen]    <- currWClocal[c, y, scen] + tmp$currWClocal
-          }
+          tmpDischarge[selectCells]      <- tmp$discharge
+          tmpPrevReservedWW[selectCells] <- tmp$prevReservedWW
+          tmpFromNeighborWC[c] <- tmpFromNeighborWC[c] + tmp$fromNeighborWC
+          tmpFromNeighborWW[c] <- tmpFromNeighborWW[c] + tmp$fromNeighborWW
+          tmpCurrWWlocal[c]    <- tmpCurrWWlocal[c] + tmp$currWWlocal
+          tmpCurrWClocal[c]    <- tmpCurrWClocal[c] + tmp$currWClocal
         }
+
+        # Save result for respective scenario
+        discharge[, y, scen]      <- tmpDischarge
+        prevReservedWW[, y, scen] <- tmpPrevReservedWW
+        fromNeighborWC[, y, scen] <- tmpFromNeighborWC
+        fromNeighborWW[, y, scen] <- tmpFromNeighborWW
+        currWWlocal[, y, scen]    <- tmpCurrWWlocal
+        currWClocal[, y, scen]    <- tmpCurrWClocal
       }
     }
 
@@ -353,11 +395,19 @@ calcRiverDischargeAllocation <- function(lpjml, climatetype,
   natDischarge <- .transformObject(x = collapseNames(natDischarge[, , "discharge_nat"]),
                                    gridcells = gridcells,
                                    years = selectyears, names = dimnames)
-  if (any(round(dimSums(natDischarge[unique(rs0$endcell), , ],
-                        dim = 1) - totalWat[, , 1],
-                digits = 6) != 0)) {
-    stop("In calcRiverDischargeAllocation:
-          Water has been lost during the Neighbor Water Provision Algorithm")
+  waterBalanceResidual <- dimSums(natDischarge[unique(rs0$endcell), , ],
+                                  dim = 1) - totalWat[, , 1]
+  # tolerance for check (unit is mio. m^3), so: 1 m^3
+  tolerance <- 1e-06
+  maxResidual <- max(abs(waterBalanceResidual), na.rm = TRUE)
+
+  if (maxResidual >= tolerance) {
+    stop(paste0(
+      "In calcRiverDischargeAllocation:\n",
+      "          Water has been lost during the Neighbor Water Provision Algorithm. ",
+      "Water balance residual exceeds tolerance. ",
+      "max abs residual = ", signif(maxResidual, 6), " mio. m^3"
+    ))
   }
 
   # Check whether discharge inaccessibility constraint is violated

@@ -4,7 +4,7 @@
 \alias{toolRiverDischargeUpdate}
 \title{toolRiverDischargeUpdate}
 \usage{
-toolRiverDischargeUpdate(rs, runoffWOEvap, watCons)
+toolRiverDischargeUpdate(rs, runoffWOEvap, watCons, cellsCalc = NULL)
 }
 \arguments{
 \item{rs}{River structure}
@@ -13,6 +13,9 @@ toolRiverDischargeUpdate(rs, runoffWOEvap, watCons)
 
 \item{watCons}{Array that contains water reserved
 for consumptive use}
+
+\item{cellsCalc}{Optional integer vector defining the upstream-to-downstream
+cell calculation order}
 }
 \value{
 array in cellular resolution and all year and scenario dimensions

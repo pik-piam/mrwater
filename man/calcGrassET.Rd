@@ -9,12 +9,12 @@ calcGrassET(selectyears, lpjml, climatetype, season)
 \arguments{
 \item{selectyears}{Years to be returned}
 
-\item{lpjml}{LPJmL version required for respective inputs: natveg or crop}
+\item{lpjml}{LPJmL version}
 
 \item{climatetype}{Switch between different climate scenarios or historical baseline "GSWP3-W5E5:historical"}
 
-\item{season}{"wholeYear":  grass et in the entire year (main + off season)
-"mainSeason": grass etP in the crop-specific growing
+\item{season}{"wholeYear":  grass ET in the entire year (main + off season)
+"mainSeason": grass ET in the crop-specific growing
               period of LPJmL (main season)}
 }
 \value{
@@ -31,5 +31,5 @@ calcOutput("GrassET", aggregate = FALSE)
 
 }
 \author{
-Felicitas Beier
+Felicitas Beier, Jens Heinke
 }

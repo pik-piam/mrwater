@@ -256,8 +256,6 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
   } else if (iteration == "potential_irrigation") {
 
     if (comAg == TRUE) {
-      # accounting in potentials
-      comagyear <- iniyear
       # previous use
       if (as.logical(stringr::str_split(multicropping, ":")[[1]][1])) {
         humanuse <- "committed_agriculture_fullMulticropping"
@@ -265,8 +263,6 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
         humanuse <- "committed_agriculture"
       }
     } else if (comAg == FALSE) {
-      # committed agriculture not accounted in potentials (full potential)
-      comagyear <- NULL
       # previous use
       humanuse <- "non_agriculture"
     }
@@ -278,7 +274,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
 
     irrigGain <- calcOutput("IrrigYieldImprovementPotential",
                             selectyears = selectyears, iniyear = iniyear,
-                            comagyear = comagyear,
+                            comAg = comAg,
                             lpjml = lpjml, climatetype = climatetype, cropmix = cropmix,
                             unit = thresholdtype, yieldcalib = yieldcalib,
                             irrigationsystem = irrigationsystem, landScen = landScen,
@@ -311,7 +307,7 @@ calcRiverRoutingInputs <- function(lpjml, climatetype,
     # Required water for full irrigation per cell (in mio. m^3)
     reqWatFullirrig <- calcOutput("FullIrrigationRequirement",
                                   selectyears = selectyears, iniyear = iniyear,
-                                  comagyear = comagyear,
+                                  comAg = comAg,
                                   lpjml = lpjml, climatetype = climatetype,
                                   irrigationsystem = irrigationsystem, landScen = landScen,
                                   cropmix = cropmix, multicropping = multicropping,

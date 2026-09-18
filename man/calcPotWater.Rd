@@ -58,7 +58,7 @@ separated by ":"}
 If FALSE: uncalibrated LPJmL yields are used}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
-across cells of river basin ("optimization", "upstreamfirst", "equality")}
+across cells of river basin ("optimization", "upstreamfirst")}
 
 \item{gainthreshold}{Threshold of yield improvement potential required
 (in USD per hectare)}
@@ -106,7 +106,7 @@ magpie object in cellular resolution
 }
 \description{
 This function returns the potential water quantity
-             (separted into withdrawal and consumption)
+             (separated into withdrawal and consumption)
              available for different uses
 }
 \examples{

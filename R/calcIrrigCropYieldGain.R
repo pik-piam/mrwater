@@ -7,8 +7,7 @@
 #' @param selectyears   Years to be returned by the function
 #' @param priceAgg      Price aggregation:
 #'                      "GLO" for global average prices, or
-#'                      "ISO" for country-level prices, or
-#'                      "CONST" for same price for all crops
+#'                      "ISO" for country-level prices
 #' @param iniyear       initialization year for food price and cropmix area
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
 #'                               Also needs specification of refYields, separated by ":".
@@ -45,12 +44,12 @@ calcIrrigCropYieldGain <- function(lpjml, climatetype, priceAgg,
 
   # read in cellular lpjml yields
   yields   <- calcOutput("YieldsValued",
-                          lpjml = lpjml, climatetype = climatetype,
-                          iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib,
-                          priceAgg = priceAgg,
-                          multicropping = multicropping,
-                          aggregate = FALSE)
+                         lpjml = lpjml, climatetype = climatetype,
+                         iniyear = iniyear, selectyears = selectyears,
+                         yieldcalib = yieldcalib,
+                         priceAgg = priceAgg,
+                         multicropping = multicropping,
+                         aggregate = FALSE)
 
   # calculate yield gain per crop
   yieldGain <- (collapseNames(yields[, , "irrigated"]) -
@@ -62,7 +61,8 @@ calcIrrigCropYieldGain <- function(lpjml, climatetype, priceAgg,
   }
 
   if (any(yieldGain < 0)) {
-    warning("There are negative yield gains for certain crops. These are set to 0.
+    message("There are negative yield gains through irrigation for certain crops.
+            These are set to 0.
             Under single cropping, this is possible when the growing period is shifted
             together with irrigation.")
   }

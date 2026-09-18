@@ -1,7 +1,7 @@
 #' @title       toolRiverDischargeAllocation
-#' @description This tool function allocates discharge
-#'              for grid cells respecting upstream-downstream relationships
-#'              and various water constraints
+#' @description This tool function allocates discharge for a prepared
+#'              selected-cell subset respecting upstream-downstream
+#'              relationships and various water constraints.
 #'
 #' @param iteration      Currently active iteration of river discharge allocation.
 #'                       Arguments:
@@ -10,39 +10,71 @@
 #' @param transDist      Water transport distance allowed to fulfill locally
 #'                       unfulfilled water demand by surrounding cell water availability
 #' @param c              Current cell for which water shall be allocated
-#' @param downCells      Downstream cells of c
+#' @param downCells      Downstream cells of c, as global cell IDs unless
+#'                       localDownCells is provided
 #' @param rs             River structure with information on upstreamcells,
 #'                       downstreamcells and neighboring cells and distances
-#' @param inLIST         List of objects that are inputs to the function
-#'                       irrigGain, gainthreshold,
-#' @param inoutLIST      List of objects that are inputs to the function and
-#'                       are updated by the function
+#' @param inLIST         List of read-only inputs, including current water
+#'                       requests and precomputed selected-cell positions
+#' @param inoutLIST      List of vectors that are read by this tool and returned
+#'                       after updates
 #'
-#' @return magpie object in cellular resolution
+#' @return list of updated discharge, updated previous withdrawal reservation,
+#'         and fulfilled local and neighbor water withdrawals and consumption
 #' @author Felicitas Beier, Jens Heinke, Jan Philipp Dietrich
 #'
 
 toolRiverDischargeAllocation <- function(rs, c,
-                                        downCells,
-                                        iteration, transDist,
-                                        inLIST, inoutLIST) {
+                                         downCells,
+                                         iteration, transDist,
+                                         inLIST, inoutLIST) {
   # Inputs
   currReqWW <- inLIST$currReqWW
   currReqWC <- inLIST$currReqWC
 
-  # Inputs that are also outputs
-  # i.e. objects that are updated by this function)
+  # Inputs that are also outputs, i.e. object that are updated by this function
   discharge      <- inoutLIST$discharge[drop = FALSE]
   prevReservedWW <- inoutLIST$prevReservedWW[drop = FALSE]
 
-  # Selected cells
-  if (length(discharge) == 1) {
-    cell <- 1
-  } else {
-    cell <- rs$isoCoord[c]
+  # Precomputed selected-cell positions
+  allocationCells <- inLIST$allocationCells
+  cells           <- allocationCells$cells
+  localCell       <- allocationCells$localCell
+  localDownCells  <- allocationCells$localDownCells
+  neighborCells   <- allocationCells$neighborCells
+  neighborCell    <- allocationCells$neighborCell
+  neighborSelectedCells <- allocationCells$neighborSelectedCells
+
+  # Global cell IDs represented by the local discharge vector. Keeping this
+  # mapping allows position-based indexing below instead of repeated name lookup.
+  if (is.null(cells)) {
+    # Fallback for direct calls that do not pass the cell mapping.
+    if (length(discharge) == 1) {
+      cells <- c
+    } else {
+      cells <- match(names(discharge), rs$isoCoord)
+      if (anyNA(cells)) {
+        stop("Could not map discharge names to river structure cells")
+      }
+    }
   }
-  if (length(downCells) > 0) {
-    downCells <- rs$isoCoord[downCells]
+
+  # Selected cells
+  # Convert global cell IDs to local vector positions in discharge/prevReservedWW.
+  cell <- localCell
+  if (is.null(cell)) {
+    cell <- match(c, cells)
+  }
+  if (is.na(cell)) {
+    stop("Current cell is not part of selected discharge cells")
+  }
+  if (!is.null(localDownCells)) {
+    downCells <- localDownCells
+  } else if (length(downCells) > 0) {
+    downCells <- match(downCells, cells)
+    if (anyNA(downCells)) {
+      stop("Downstream cells are not part of selected discharge cells")
+    }
   }
   allCells <- c(cell, downCells)
 
@@ -97,49 +129,70 @@ toolRiverDischargeAllocation <- function(rs, c,
     missingWW <- currReqWW - currWWlocal
     missingWC <- currReqWC - currWClocal
 
-    neighborsOfC <- rs$neighborcell[[c]]
-    # Neighbor Irrigation (under "optimization" scenario)
+    neighborsOfC <- neighborCells
+    if (is.null(neighborsOfC)) {
+      neighborsOfC <- rs$neighborcell[[c]]
+    }
+    # Neighbor Water Provision
     if ((transDist != 0) &&
-        !is.null(neighborsOfC) &&
-        (missingWW > 1e-4 || missingWC > 1e-4)) {
-
-      # Water Allocation in neighboring cells of c
+          !is.null(neighborsOfC) &&
+          length(neighborsOfC) > 0 &&
+          (missingWW > 1e-4 || missingWC > 1e-4)) {
       # Loop over neighbor cells (by distance) until water requirements fulfilled
-      for (n in neighborsOfC) {
+      for (neighborIndex in seq_along(neighborsOfC)) {
+        n <- neighborsOfC[neighborIndex]
 
-        names(n) <- rs$isoCoord[n]
         # If withdrawal constraint not fulfilled in neighbor cell:
         # jump directly to next neighbor
-        if (discharge[names(n)] - prevReservedWW[names(n)] <= 0) {
-          break
+        if (!is.null(neighborCell)) {
+          neighborPosition <- neighborCell[neighborIndex]
+        } else {
+          neighborPosition <- match(n, cells)
+        }
+        if (is.na(neighborPosition)) {
+          stop("Neighbor cell is not part of selected discharge cells")
+        }
+        avlWatWWNeighbor <- discharge[neighborPosition] - prevReservedWW[neighborPosition]
+        if (avlWatWWNeighbor <= 0) {
+          next
         }
         # Select relevant cells
-        selectCells        <- c(n, rs$downstreamcells[[n]])
-        names(selectCells) <- rs$isoCoord[selectCells]
+        if (!is.null(neighborSelectedCells)) {
+          selectedCells <- neighborSelectedCells[[neighborIndex]]
+        } else {
+          selectCells <- c(n, rs$downstreamcells[[n]])
+          selectedCells <- match(selectCells, cells)
+        }
+        if (anyNA(selectedCells)) {
+          stop("Neighbor downstream cells are not part of selected discharge cells")
+        }
+        # Allocation from selected neighbor cell
+        if (missingWW > 0 && avlWatWWNeighbor > 0) {
+          fracNeighbor <- min(avlWatWWNeighbor / missingWW, 1)
 
-        # Function inputs
-        inLISTneighbor    <- list(currReqWW = missingWW,
-                                  currReqWC = missingWC)
-        inoutLISTneighbor <- list(discharge = discharge[names(selectCells)],
-                                  prevReservedWW = prevReservedWW[names(selectCells)])
+          if (missingWC > 0 && length(selectedCells) > 1) {
+            downstreamNeighborCells <- selectedCells[-1]
+            avlWatWC <- max(min(discharge[downstreamNeighborCells] -
+                                  prevReservedWW[downstreamNeighborCells]), 0)
+            fracNeighbor <- min(avlWatWC / missingWC, fracNeighbor)
+          }
+        } else {
+          fracNeighbor <- 0
+        }
 
-        # Neighbor Water Provision
-        tmp <- toolRiverDischargeAllocation(c = n, rs = rs,
-                                            downCells = selectCells[-1],
-                                            transDist = 0,
-                                            iteration = "neighbor",
-                                            inLIST = inLISTneighbor,
-                                            inoutLIST = inoutLISTneighbor)
-        discharge[names(selectCells)]       <- tmp$discharge
-        prevReservedWW[names(selectCells)]  <- tmp$prevReservedWW
+        neighborWClocal <- missingWC * fracNeighbor
+        neighborWWlocal <- missingWW * fracNeighbor
+
+        discharge[selectedCells] <- discharge[selectedCells] - neighborWClocal
+        prevReservedWW[neighborPosition] <- prevReservedWW[neighborPosition] + neighborWWlocal
 
         # update reserved water in respective neighboring cell (current cell)
-        fromNeighborWW <- fromNeighborWW + tmp$currWWlocal
-        fromNeighborWC <- fromNeighborWC + tmp$currWClocal
+        fromNeighborWW <- fromNeighborWW + neighborWWlocal
+        fromNeighborWC <- fromNeighborWC + neighborWClocal
 
         # Update locally missing water in c
-        missingWW <- missingWW - tmp$currWWlocal
-        missingWC <- missingWC - tmp$currWClocal
+        missingWW <- missingWW - neighborWWlocal
+        missingWC <- missingWC - neighborWClocal
 
         # Checks
         if (round(missingWW, digits = 4) < 0) {

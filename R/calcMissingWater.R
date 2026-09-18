@@ -166,6 +166,9 @@ calcMissingWater <- function(output, lpjml, climatetype,
   if (any(round(out, digits = 4) < 0, na.rm = TRUE)) {
     stop("mrwater::calcMissingWater produced negative values")
   }
+  # correct negatives below rounding imprecision
+  out[out < 0] <- 0
+
   if (any(is.na(out))) {
     stop("mrwater::calcMissingWater produced NAs")
   }

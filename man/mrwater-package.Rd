@@ -11,7 +11,7 @@ Provides functions for MAgPIE cellular input data generation and stand-alone wat
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/pik-piam/mrwater,}
+  \item \url{https://github.com/pik-piam/mrwater},
 }
 
 }
@@ -20,6 +20,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Felicitas Beier \email{beier@pik-potsdam.de}
   \item Jens Heinke \email{heinke@pik-potsdam.de}
   \item Kristine Karstens \email{karstens@pik-potsdam.de}
   \item Benjamin Leon Bodirsky \email{bodirsky@pik-potsdam.de}

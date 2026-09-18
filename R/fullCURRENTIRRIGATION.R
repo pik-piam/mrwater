@@ -16,17 +16,57 @@
 
 fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
 
+  # Newest LPJmL runs
+  lpjml       <- "lpjml5.9.16-m1"
+  climatetype <- "MRI-ESM2-0:ssp370"
+
   # Standard settings
   iniyear           <- "y2010"
   selectyears       <- "y2010"
 
-  # Newest LPJmL runs
-  lpjml             <- c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                         crop = "ggcmi_phase3_nchecks_bft_e511ac58")
-  climatetype       <- "MRI-ESM2-0:ssp370"
-
   irrigationsystem  <- "initialization"
   efrMethod         <- "VMF:fair"
+
+  ##########################
+  # SUPPLEMENTARY MATERIAL #
+  ##########################
+  # Blue water consumption regression plot
+  calcOutput("BlueWaterConsumptionOff",
+             selectyears = selectyears,
+             iniyear = iniyear,
+             lpjml = lpjml,
+             climatetype = climatetype,
+             interim = "TRUE:bconsGrass",
+             aggregate = FALSE, warnNA = FALSE,
+             file = "bconsGrass.mz")
+  calcOutput("BlueWaterConsumptionOff",
+             selectyears = selectyears,
+             iniyear = iniyear,
+             lpjml = lpjml,
+             climatetype = climatetype,
+             interim = "TRUE:bconsCrop",
+             aggregate = FALSE, warnNA = FALSE,
+             file = "bconsCrop.mz")
+
+  ##############
+  # VALIDATION #
+  ##############
+  # Multiple cropping suitability per crop calculated based on crop and grass productivity ##### double check criteria!
+  # (for LPJmL crop types)
+  calcOutput("MulticroppingSuitability", sectoral = "lpj",
+             lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, suitability = "endogenous",
+             aggregate = FALSE, file = "suitMC_LPJmL.mz")
+
+  # Multiple cropping zones according to GAEZ
+  calcOutput("MultipleCroppingZones", layers = 8,
+             aggregate = FALSE, file = "suitMC_GAEZ.mz")
+
+  # Single cropping yield (to determine where no cropping takes place)
+  calcOutput("YieldsLPJmL", lpjml = lpjml, climatetype = climatetype,
+             selectyears = selectyears, multicropping = FALSE,
+             aggregate = FALSE, file = "lpjml_yields_single.mz")
+
 
   ################
   # MAIN RESULTS #
@@ -45,11 +85,11 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
              aggregate = FALSE, file = "cropareaLandInG_lpj.mz")
 
   calcOutput("CropareaLandInG", physical = TRUE, sectoral = "kcr",
-             cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
+             cellular = TRUE, irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
              file = "LandingPHYS.mz")
   calcOutput("CropareaLandInG", physical = FALSE, sectoral = "kcr",
-             cellular = TRUE, cells = "lpjcell", irrigation = TRUE,
+             cellular = TRUE, irrigation = TRUE,
              selectyears = selectyears, aggregate = FALSE,
              file = "LandingHARV.mz")
 
@@ -74,7 +114,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL,
+             comAg = FALSE,
              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
              cropmix = "hist_irrig", yieldcalib = yieldcalib,
              multicropping = FALSE, aggregate = FALSE,
@@ -84,7 +124,7 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
   calcOutput("IrrigYieldImprovementPotential", unit = "USD_ha:GLO",
              lpjml = lpjml, climatetype = climatetype,
              selectyears = selectyears, iniyear = iniyear,
-             comagyear = NULL,
+             comAg = FALSE,
              irrigationsystem = irrigationsystem, landScen = paste0("potCropland:", "NULL"),
              cropmix = "hist_irrig", yieldcalib = yieldcalib,
              multicropping = TRUE, aggregate = FALSE,
@@ -173,22 +213,4 @@ fullCURRENTIRRIGATION <- function(yieldcalib = "TRUE:TRUE:actual:irrig_crop") {
                file = paste0("shrHumanUsesFulfilledSingle_", t, ".mz"))
 
   }
-
-  ##############
-  # VALIDATION #
-  ##############
-  # Multiple cropping suitability per crop calculated based on crop and grass productivity
-  # (for LPJmL crop types)
-  calcOutput("MulticroppingSuitability", sectoral = "lpj",
-             lpjml = lpjml, climatetype = climatetype,
-             selectyears = selectyears, suitability = "endogenous",
-             aggregate = FALSE, file = "suitMC_LPJmL.mz")
-
-  # Multiple cropping zones according to GAEZ
-  calcOutput("MultipleCroppingZones", layers = 8,
-             aggregate = FALSE, file = "suitMC_GAEZ.mz")
-
-  # Inverted Growing Period Runs
-  # crop yields
-
 }

@@ -11,7 +11,6 @@
 #'
 #' @import madrat
 #' @import magclass
-#' @importFrom raster brick
 
 readWATERGAP <- function(subtype = "WATCH_ISIMIP_WATERGAP") {
 
@@ -37,14 +36,7 @@ readWATERGAP <- function(subtype = "WATCH_ISIMIP_WATERGAP") {
     input[["ssp3"]][["ww"]] <- gsub("ssp1_rcp4p5", "ssp3_rcp6p0", input[["ssp1"]][["ww"]])
 
     ### Reading in files and combining to one magpie object:
-    # read in raster brick
-    brick        <- suppressWarnings(brick(paste0(subtype, "/", input[[1]][["wc"]][1])))
-    # start year (with name X0) is 2005:
-    names(brick) <- paste0("y", as.numeric(gsub("X", "", names(brick))) + 2005)
-    # transform to magpie object with coordinate data
-    x            <- as.magpie(brick)
-    getNames(x)  <- brick@title
-    getNames(x)  <- paste0("sspX.", getNames(x))
+    xList <- list()
 
     # Different SSPs:
     for (i in seq_along(input)) {
@@ -55,20 +47,19 @@ readWATERGAP <- function(subtype = "WATCH_ISIMIP_WATERGAP") {
         # Different industries (manufacturing, electricity, domestic)
         for (k in seq_along(input[["ssp1"]][["wc"]])) {
 
-          brick        <- suppressWarnings(brick(paste0(subtype, "/", input[[i]][[j]][k])))
+          r <- suppressWarnings(terra::rast(paste0(subtype, "/", input[[i]][[j]][k])))
           # start year (with name X0) is 2005:
-          names(brick) <- paste0("y", as.numeric(gsub("X", "", names(brick))) + 2005)
+          names(r) <- paste0("y", seq_len(terra::nlyr(r)) - 1 + 2005)
           # transform to magpie object with coordinate data
-          tmp            <- as.magpie(brick)
-          getNames(tmp)  <- brick@title
+          tmp           <- as.magpie(r)
+          getNames(tmp) <- terra::longnames(r)
 
           getNames(tmp) <- paste0("ssp", i, ".", getNames(tmp))
-          x <- mbind(x, tmp)
+          xList[[length(xList) + 1]] <- tmp
         }
       }
     }
-    # Remove redundant scenario (was for temporary use in loop only)
-    x <- x[, , "sspX", invert = TRUE]
+    x <- mbind(xList)
 
     # Unit transformation (from m3/yr to mio. m3/yr):
     x <- x / 1000000

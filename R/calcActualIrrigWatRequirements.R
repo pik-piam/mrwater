@@ -21,12 +21,16 @@
 #'                          "potential:exogenous": potentially multicropped areas given
 #'                                                 GAEZ suitability classification)
 #'                          (e.g. TRUE:actual:total; TRUE:none; FALSE)
+#' @param usagetype         Water usage type to be returned.
+#'                          Options: "all" (both withdrawal and consumption),
+#'                          "consumption" (only consumptive irrigation water requirements are returned),
+#'                          "withdrawal" (only irrigation water withdrawal requirements are returned)
 #'
 #' @return magpie object in cellular resolution
 #' @author Felicitas Beier
 #'
 #' @seealso
-#' \code{\link{calcIrrigationSystem}}, \code{\link{calcIrrigWatRequirements}}
+#' \code{\link{calcIrrigWatRequirements}}
 #'
 #' @examples
 #' \dontrun{
@@ -38,14 +42,16 @@
 
 calcActualIrrigWatRequirements <- function(selectyears, iniyear,
                                            lpjml, climatetype,
-                                           irrigationsystem, multicropping) {
+                                           irrigationsystem, multicropping,
+                                           usagetype = "all") {
 
   # irrigation water requirement per crop per system (in m^3 per ha per yr)
-  irrigReq   <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
+  irrigReq   <- calcOutput("IrrigWatRequirements",
+                           selectyears = selectyears, iniyear = iniyear,
                            lpjml = lpjml,  climatetype = climatetype,
                            multicropping = multicropping,
                            aggregate = FALSE)
-  cellorder  <- getCells(irrigReq)
+  cellorder  <- getItems(irrigReq, dim = 1)
 
   # calculate irrigation water requirements per crop [in mio. m^3 per year] given irrigation system share in use
   if (irrigationsystem == "initialization") {
@@ -78,6 +84,11 @@ calcActualIrrigWatRequirements <- function(selectyears, iniyear,
   if (any(irrigReq < 0)) {
     stop("Problem in calcActualIrrigWatRequirements:
          produced negative irrigation water requirements")
+  }
+
+  if (usagetype != "all") {
+    # return only selected usage type
+    irrigReq <- collapseNames(irrigReq[, , usagetype])
   }
 
   # Weight: irrigated area (only used for aggregation)

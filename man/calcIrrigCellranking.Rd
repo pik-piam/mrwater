@@ -9,7 +9,7 @@ calcIrrigCellranking(
   climatetype,
   cellrankyear,
   iniyear,
-  comagyear,
+  comAg,
   irrigationsystem,
   landScen,
   method,
@@ -28,10 +28,8 @@ historical baseline "GSWP3-W5E5:historical" for yields}
 
 \item{iniyear}{Initialization year for price}
 
-\item{comagyear}{if !NULL: already irrigated area is subtracted;
-if NULL: total potential land area is used;
-year specified here is the year of the initialization
-used for cropland area initialization in calcIrrigatedArea}
+\item{comAg}{If TRUE: committed irrigated areas are subtracted,
+if FALSE: total potential croparea is used}
 
 \item{irrigationsystem}{Irrigation system used: system share as in initialization year,
 or drip, surface, sprinkler for full irrigation by selected system}

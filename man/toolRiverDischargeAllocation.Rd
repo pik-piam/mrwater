@@ -8,6 +8,7 @@ toolRiverDischargeAllocation(
   rs,
   c,
   downCells,
+  neighborSelectCells = NULL,
   iteration,
   transDist,
   inLIST,
@@ -21,6 +22,10 @@ downstreamcells and neighboring cells and distances}
 \item{c}{Current cell for which water shall be allocated}
 
 \item{downCells}{Downstream cells of c}
+
+\item{neighborSelectCells}{Optionally: precomputed named list of neighbor-cell
+downstream cells (only required for main allocation
+with transDist != 0)}
 
 \item{iteration}{Currently active iteration of river discharge allocation.
 Arguments:

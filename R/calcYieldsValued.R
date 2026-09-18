@@ -7,14 +7,17 @@
 #' @param selectyears   Years to be returned by the function
 #' @param priceAgg      Price aggregation:
 #'                      "GLO" for global average prices, or
-#'                      "ISO" for country-level prices, or
-#'                      "CONST" for same price for all crops
+#'                      "ISO" for country-level prices
 #' @param iniyear       initialization year for food price and cropmix area
 #' @param yieldcalib    If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
-#'                               Also needs specification of refYields, separated by ":".
-#'                               Options: FALSE (for single cropping analyses) or
-#'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
+#'                      Also needs specification of refYields, separated by ":".
+#'                      Options: FALSE (for single cropping analyses) or
+#'                               "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                      If FALSE: uncalibrated LPJmL yields are used
+#' @param calibDetails  Determines FAO yield calibration with two arguments separated by ":":
+#'                      aggregation: country, continent, GLO
+#'                      average: in number of years or NULL
+#'                      (e.g. country:5)
 #' @param multicropping Multicropping activated (TRUE) or not (FALSE) and
 #'                      Multiple Cropping Suitability mask selected
 #'                      (mask can be:
@@ -42,7 +45,8 @@
 
 calcYieldsValued <- function(lpjml, climatetype, priceAgg,
                              iniyear, selectyears,
-                             yieldcalib, multicropping) {
+                             yieldcalib, calibDetails = "country:5",
+                             multicropping) {
 
   # prices are reported in current US$MER
   priceUnit <- "current US$MER"
@@ -50,7 +54,7 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
   # read in cellular lpjml yields [in tDM/ha]
   yields    <- calcOutput("YieldsAdjusted", lpjml = lpjml, climatetype = climatetype,
                           iniyear = iniyear, selectyears = selectyears,
-                          yieldcalib = yieldcalib,
+                          yieldcalib = yieldcalib, calibDetails = calibDetails,
                           multicropping = multicropping, aggregate = FALSE)
   # extract magpie crops
   croplist  <- getNames(collapseNames(yields[, , "irrigated"]))
@@ -80,9 +84,9 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
 
     # fill countries that have zeros over whole time period with GLO values
     for (i in getItems(p, dim = 1)) {
-      p[i, , where(dimSums(p[i, , ],
-                           dim = 2) == 0)$true$data] <- pGLO[, , where(dimSums(p[i, , ],
-                                                                               dim = 2) == 0)$true$data]
+      # crops with zeros over the whole time period
+      zeroCrops <- where(dimSums(p[i, , ], dim = 2) == 0)$true$data
+      p[i, , zeroCrops] <- pGLO[, , zeroCrops]
     }
 
     # fill missing time gaps
@@ -90,12 +94,15 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
 
     for (c in getItems(p, dim = 3)) {
       for (i in getItems(p, dim = 1)) {
-        if (length(where(is.na(p[i, , c]))$true$years) > 0) {
+        # years with missing values
+        naYears <- where(is.na(p[i, , c]))$true$years
+
+        if (length(naYears) > 0) {
 
           tmp <- p[i, , c]
-          tmp <- tmp[, where(is.na(p[i, , c]))$true$years, invert = TRUE]
+          tmp <- tmp[, naYears, invert = TRUE]
 
-          p[i, , c] <- time_interpolate(tmp, where(is.na(p[i, , c]))$true$years,
+          p[i, , c] <- time_interpolate(tmp, naYears,
                                         integrate_interpolated_years = TRUE,
                                         extrapolation_type = "constant")
         }
@@ -104,15 +111,10 @@ calcYieldsValued <- function(lpjml, climatetype, priceAgg,
 
     p <- p[getItems(yields, dim = "iso"), , ]
 
-  } else if (priceAgg == "CONST") {
-
-    p       <- pGLO
-    p[, , ] <- 571.5455 # 691.9 (median price) # 571.5455 (mean yield value gain) # 117.93 (mean yield value gain)
-
   } else {
     stop("Problem in calcYieldsValued:
-       Please select price aggregation level to GLO or ISO or CONST via
-       the unit argument.")
+          Please select price aggregation level to GLO or ISO via
+          the unit argument.")
   }
 
   # missing crop types get proxy values of 2005 and average price development over time
