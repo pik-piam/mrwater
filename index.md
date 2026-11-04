@@ -1,9 +1,7 @@
 # madrat based MAgPIE water Input Data Library
 
-R package **mrwater**, version **1.15.0**
+R package **mrwater**, version **1.15.1**
 
-[![CRAN
-status](https://www.r-pkg.org/badges/version/mrwater)](https://cran.r-project.org/package=mrwater)
 [![R build
 status](https://github.com/pik-piam/mrwater/workflows/check/badge.svg)](https://github.com/pik-piam/mrwater/actions)
 [![codecov](https://codecov.io/gh/pik-piam/mrwater/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/mrwater)
@@ -64,7 +62,7 @@ In case of questions / problems please contact Felicitas Beier
 To cite package **mrwater** in publications use:
 
 Beier F, Heinke J, Karstens K, Bodirsky B, Dietrich J (2026). “mrwater:
-madrat based MAgPIE water Input Data Library.” Version: 1.15.0,
+madrat based MAgPIE water Input Data Library.” Version: 1.15.1,
 <https://github.com/pik-piam/mrwater>.
 
 A BibTeX entry for LaTeX users is
@@ -73,9 +71,9 @@ A BibTeX entry for LaTeX users is
 @Misc{,
  title = {mrwater: madrat based MAgPIE water Input Data Library},
  author = {Felicitas Beier and Jens Heinke and Kristine Karstens and Benjamin Leon Bodirsky and Jan Philipp Dietrich},
- date = {2026-03-31},
+ date = {2026-10-29},
  year = {2026},
  url = {https://github.com/pik-piam/mrwater},
- note = {Version: 1.15.0},
+ note = {Version: 1.15.1},
 }
 ```

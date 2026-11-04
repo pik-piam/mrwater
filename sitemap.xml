@@ -1,5 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
+<url><loc>/CODE_STYLE.html</loc></url>
+<url><loc>/CONTRIBUTING.html</loc></url>
 <url><loc>/LICENSE-text.html</loc></url>
 <url><loc>/articles/assumptions.html</loc></url>
 <url><loc>/articles/available_settings.html</loc></url>
@@ -16,7 +18,6 @@
 <url><loc>/reference/calcCropAreaShare.html</loc></url>
 <url><loc>/reference/calcCropProductionRevenue.html</loc></url>
 <url><loc>/reference/calcCropYieldGain.html</loc></url>
-<url><loc>/reference/calcCropareaAdjusted.html</loc></url>
 <url><loc>/reference/calcDischargeAccessibilityShare.html</loc></url>
 <url><loc>/reference/calcDischargeInaccessible.html</loc></url>
 <url><loc>/reference/calcDischargeInaccessibleAdd.html</loc></url>

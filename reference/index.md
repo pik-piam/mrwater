@@ -14,8 +14,6 @@
 - [`calcCropProductionRevenue()`](calcCropProductionRevenue.md) :
   calcCropProductionRevenue
 - [`calcCropYieldGain()`](calcCropYieldGain.md) : calcCropYieldGain
-- [`calcCropareaAdjusted()`](calcCropareaAdjusted.md) :
-  calcCropareaAdjusted
 - [`calcDischargeAccessibilityShare()`](calcDischargeAccessibilityShare.md)
   : calcDischargeAccessibilityShare
 - [`calcDischargeInaccessible()`](calcDischargeInaccessible.md) :

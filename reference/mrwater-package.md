@@ -7,13 +7,15 @@ stand-alone water calculations.
 
 Useful links:
 
-- <https://github.com/pik-piam/mrwater,>
+- <https://github.com/pik-piam/mrwater>,
 
 ## Author
 
 **Maintainer**: Felicitas Beier <beier@pik-potsdam.de>
 
 Authors:
+
+- Felicitas Beier <beier@pik-potsdam.de>
 
 - Jens Heinke <heinke@pik-potsdam.de>
 
