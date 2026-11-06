@@ -108,9 +108,9 @@ calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype,
          for consumption and withdrawal")
   }
   if (any(round(wcShr, digits = 4) > 1)) {
-    stop("In calcAreaActuallyCommitted: Water requirements are over-fulfilled.
-          This should not be the case in the initialization year. Please double-check!
-          A wild guess: it might be related to the fossil groundwater calculation.")
+    stop("In calcAreaActuallyCommitted: Water requirements are over-fulfilled. ",
+         "This should not be the case in the initialization year. Please double-check! ",
+         "A wild guess: it might be related to the fossil groundwater calculation.")
   }
 
   # Area Actually Committed for Irrigation given available renewable water resource (in Mha)
@@ -142,33 +142,33 @@ calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype,
     # Where less water required, only necessary amount is served.
     gw <- pmin(gw, missW)
 
-    # add groundwater to actually committed water
-    comWatWWact <- comWatWWact + collapseNames(gw[, , "withdrawal"])
-    comWatWCact <- comWatWCact + collapseNames(gw[, , "consumption"])
-
     # Share of Area that is irrigated given limited water availability
     # under consideration of fossil GW
     wwShr <- collapseNames(ifelse(totalIrrigReqWW > 0,
-                                  comWatWWact / totalIrrigReqWW,
+                                  (comWatWWact + collapseNames(gw[, , "withdrawal"])) / totalIrrigReqWW,
                                   1))
     wcShr <- collapseNames(ifelse(totalIrrigReqWC > 0,
-                                  comWatWCact / totalIrrigReqWC,
+                                  (comWatWCact + collapseNames(gw[, , "consumption"])) / totalIrrigReqWC,
                                   1))
 
     # Checks
+    # The two shares can differ by more than rounding, probably because the fossil groundwater
+    # cap above (pmin) is applied to withdrawal and consumption separately and can bind for one only.
+    # The smaller share sets the area below.
+    mstools::toolExpectTrue(all(abs(wwShr - wcShr) <= 1e-3),
+                            paste0("Fulfilled ratios of consumption and withdrawal agree to 1e-3 ",
+                                   "in calcIrrigAreaActuallyCommitted (largest difference: ",
+                                   signif(max(abs(wwShr - wcShr)), 2), ")"),
+                            falseStatus = "note")
     if (any(round(max(wcShr), digits = 6) > 1)) {
       stop("The actually irrigated area is over-fulfilled. This should not be the case.
            It may be related to the fossilGW argument. Please check mrwater::calcIrrigAreaActuallyCommitted.")
     }
-    if (any(round(wwShr - wcShr, digits = 4) != 0)) {
-      stop("There seems to be a mismatch in consumption and withdrawal
-          in calcIrrigAreaActuallyCommitted.
-          Please make sure that the fulfilled ratio is the same
-          for consumption and withdrawal")
-    }
+    # Correct rounding imprecision
+    wcShr[wcShr > 1] <- 1
 
     # Area Actually Committed for Irrigation given available water (in Mha)
-    out <- comArea * wcShr
+    out <- comArea * pmin(wcShr, wwShr)
   }
 
   # Check for NAs and negative values
@@ -178,6 +178,8 @@ calcIrrigAreaActuallyCommitted <- function(lpjml, climatetype,
   if (any(round(out, digits = 6) < 0)) {
     stop("calcIrrigAreaActuallyCommitted produced negative irrigated areas")
   }
+  # correct negatives below rounding imprecision
+  out[out < 0] <- 0
 
   return(list(x            = out,
               weight       = NULL,

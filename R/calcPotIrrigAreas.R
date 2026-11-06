@@ -4,6 +4,8 @@
 #'
 #' @param cropAggregation   TRUE (aggregated Potentially Irrigated Areas (PIAs)),
 #'                          FALSE (crop-specific PIAs)
+#' @param countryAggregation TRUE (grid cell data is aggregated to country-level),
+#'                          FALSE (grid cell data is returned)
 #' @param lpjml             LPJmL version used
 #' @param climatetype       Switch between different climate scenarios or
 #'                          historical baseline "GSWP3-W5E5:historical"
@@ -32,14 +34,15 @@
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
-#'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
+#'                          across cells of river basin ("optimization", "upstreamfirst")
 #' @param gainthreshold     Threshold of yield improvement potential required
 #'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system used
 #'                          ("surface", "sprinkler", "drip", "initialization")
 #' @param landScen          Land availability scenario consisting of two parts separated by ":":
 #'                          1. available land scenario (currCropland, currIrrig, potCropland)
-#'                          2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+#'                          2. protection scenario (WDPA, or one of the scenarios
+#'                          available in calcConservationPriorities,
 #'                             e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
 #'                             or NA for no protection).
 #'                          For case of no land protection select "NA" in second part of argument
@@ -81,7 +84,7 @@
 #' @importFrom madrat calcOutput
 #' @importFrom magclass collapseNames add_dimension add_columns mbind
 
-calcPotIrrigAreas <- function(cropAggregation,
+calcPotIrrigAreas <- function(cropAggregation, countryAggregation = FALSE,
                               lpjml, climatetype,
                               selectyears, iniyear,
                               efrMethod, accessibilityrule,
@@ -89,9 +92,8 @@ calcPotIrrigAreas <- function(cropAggregation,
                               gainthreshold, irrigationsystem, landScen,
                               cropmix, comAg, fossilGW,
                               multicropping, transDist) {
-
   # Ensure that cropmix argument is set correctly
-  if (grepl("hist", cropmix)) {
+  if (any(grepl("hist", cropmix))) {
     if (grepl("currIrrig", landScen)) {
       cropmix <- "hist_irrig"
     }
@@ -115,9 +117,8 @@ calcPotIrrigAreas <- function(cropAggregation,
   scenarios <- getItems(avlWatWW, dim = 3)
 
   if (comAg) {
-
     # Cropmix for non-committed areas
-    if (grepl("hist", cropmix)) {
+    if (any(grepl("hist", cropmix))) {
       cmix <- "hist_rainf"
     } else {
       cmix <- cropmix
@@ -130,7 +131,6 @@ calcPotIrrigAreas <- function(cropAggregation,
     } else {
       m <- FALSE
     }
-    comagyear <- iniyear
 
     # Actually committed irrigated area (crop-specific) (in Mha)
     # including non-renewable groundwater (if activated)
@@ -174,11 +174,9 @@ calcPotIrrigAreas <- function(cropAggregation,
       comWatWW <- comWatWW + collapseNames(currHumanAdd[, , "currHumanWWtotal"])
     }
   } else {
-
     # Cropmix is not changed if there are no committed agricultural uses
     cmix <- cropmix
     # No water or areas committed to current agricultural uses
-    comagyear <- NULL
     comAgArea <- 0
     comWatWW  <- comWatWC <- avlWatWC
     comWatWW[, , ] <- 0
@@ -206,12 +204,12 @@ calcPotIrrigAreas <- function(cropAggregation,
   # Irrigation water requirements (in mio. m^3)
   # for expansion of irrigation into currently rainfed areas (i.e. beyond committed agricultural
   # use and beyond expansion of multiple cropping on currently irrigated areas if activated.
-  # Note: These are already accounted (subtracted) when comagyear is not NULL)
+  # Note: These are already accounted (subtracted) when comAg is TRUE)
   watReq   <- calcOutput("FullIrrigationRequirement", selectyears = selectyears,
                          lpjml = lpjml, climatetype = climatetype, iniyear = iniyear,
                          irrigationsystem = irrigationsystem, landScen = landScen,
                          cropmix = cropmix, multicropping = multicropping,
-                         comagyear = comagyear,
+                         comAg = comAg,
                          aggregate = FALSE)
   watReqWW <- watReqWC <- new.magpie(cells_and_regions = getItems(avlWatWW, dim = 1),
                                      years = getItems(avlWatWW, dim = 2),
@@ -225,10 +223,11 @@ calcPotIrrigAreas <- function(cropAggregation,
   # (excluding already committed areas if comAg is activated)
   areaPotIrrig <- calcOutput("AreaPotIrrig",
                              selectyears = selectyears, iniyear = iniyear,
-                             landScen = landScen, comagyear = comagyear,
+                             cropAggregation = TRUE, cropmix = cropmix,
+                             landScen = landScen, comAg = comAg,
                              aggregate = FALSE)
 
-  # share of requirements that can be fulfilled given available water; if >1 whole area can be irrigated
+  # share of requirements that can be fulfilled given available water; if >1: whole area can be irrigated
   irrigareaWW <- pmin(avlWatWW / watReqWW, 1) * areaPotIrrig
   # cells with no water requirements also get no irrigated area assigned
   irrigareaWW[watReqWW == 0] <- 0
@@ -249,6 +248,7 @@ calcPotIrrigAreas <- function(cropAggregation,
   cropareaShr <- calcOutput("CropAreaShare",
                             iniyear = iniyear, cropmix = cmix,
                             aggregate = FALSE)
+  cropareaShr <- toolFillYears(cropareaShr, years = getItems(irrigatableArea, dim = "year"))
   cropOrder <- getItems(cropareaShr, dim = "crop")
   # Exclude areas where no water is required for irrigation
   # from additionally irrigated areas as it is not required there
@@ -291,6 +291,11 @@ calcPotIrrigAreas <- function(cropAggregation,
   } else {
     description <- paste0("Crop-specific area that can be irrigated ",
                           "given land and water constraints")
+  }
+
+  if (countryAggregation) {
+    out <- dimSums(out, dim = c("x", "y"))
+    description <- paste0(description, " at country level resolution")
   }
 
   return(list(x            = out,

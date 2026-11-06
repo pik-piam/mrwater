@@ -11,6 +11,7 @@ calcYieldsValued(
   iniyear,
   selectyears,
   yieldcalib,
+  calibDetails = "country:5",
   multicropping
 )
 }
@@ -21,18 +22,22 @@ calcYieldsValued(
 
 \item{priceAgg}{Price aggregation:
 "GLO" for global average prices, or
-"ISO" for country-level prices, or
-"CONST" for same price for all crops}
+"ISO" for country-level prices}
 
 \item{iniyear}{initialization year for food price and cropmix area}
 
 \item{selectyears}{Years to be returned by the function}
 
 \item{yieldcalib}{If TRUE: LPJmL yields calibrated to FAO country yield in iniyear
-         Also needs specification of refYields, separated by ":".
-         Options: FALSE (for single cropping analyses) or
-                  "TRUE:actual:irrig_crop" (for multiple cropping analyses)
+Also needs specification of refYields, separated by ":".
+Options: FALSE (for single cropping analyses) or
+         "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 If FALSE: uncalibrated LPJmL yields are used}
+
+\item{calibDetails}{Determines FAO yield calibration with two arguments separated by ":":
+aggregation: country, continent, GLO
+average: in number of years or NULL
+(e.g. country:5)}
 
 \item{multicropping}{Multicropping activated (TRUE) or not (FALSE) and
 Multiple Cropping Suitability mask selected

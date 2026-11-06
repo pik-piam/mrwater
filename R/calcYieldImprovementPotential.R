@@ -13,8 +13,7 @@
 #' @param selectyears   Years to be returned by the function
 #' @param priceAgg      Price aggregation:
 #'                      "GLO" for global average prices, or
-#'                      "ISO" for country-level prices, or
-#'                      "CONST" for same price for all crops
+#'                      "ISO" for country-level prices
 #' @param iniyear       initialization year for food price and cropmix area
 #' @param cropmix       Selected cropmix for which yield improvement potential
 #'                      is calculated (options:

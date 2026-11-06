@@ -23,9 +23,9 @@ Depends:
 Imports:
     magpiesets,
     mstools (>= 0.6.0),
-    raster,
     stats,
     stringr,
+    terra,
     utils,
     withr
 Suggests: 

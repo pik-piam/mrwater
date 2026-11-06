@@ -37,12 +37,13 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
   method <- as.list(strsplit(accessibilityrule, split = ":"))[[1]][1]
 
   # Monthly Discharge from LPJmL (raw: including variation)
-  monthlyDischargeLPJmL <- calcOutput("LPJmL_new", subtype = "mdischarge",
-                                      version = lpjml[["natveg"]], climatetype = climatetype,
-                                      stage = "raw", aggregate = FALSE)
+  monthlyDischargeLPJmL <- calcOutput("LPJmLTransform", subtype = "pnv:discharge",
+                                      lpjmlversion = lpjml, climatetype = climatetype,
+                                      monthly = TRUE,
+                                      stage = "raw:cut", aggregate = FALSE)
 
   # To Do: calculate it back to daily
-  # double-check with Jens
+  # double-check with Jens!
 
   # Extract years
   years         <- getYears(monthlyDischargeLPJmL, as.integer = TRUE)
@@ -69,19 +70,22 @@ calcDischargeAccessibilityShare <- function(lpjml, selectyears, climatetype,
 
       ### Quantile Variability Threshold ###
       # Get the variability discharge quantile (across selected long-term reference time period) with selected threshold
-      dischargeQuant   <- apply(monthlyDischarge, MARGIN = c(1), quantile, probs = coeff)
+      dischargeQuant   <- apply(monthlyDischarge, MARGIN = c(1), quantile,
+                                probs = coeff, names = FALSE)
+
+      # Total discharge per cell (computed once and reused below)
+      totalDischarge   <- rowSums(monthlyDischarge)
 
       # Share of monthly discharge that is accessible for human use
-      x <- apply(pmin(monthlyDischarge, dischargeQuant), MARGIN = 1, sum) /
-           apply(monthlyDischarge, MARGIN = 1, sum)
+      x <- rowSums(pmin(monthlyDischarge, dischargeQuant)) / totalDischarge
       # Where no discharge (in entire year): all accessible (is 0 if no natural discharge)
-      x[apply(monthlyDischarge, MARGIN = 1, sum) == 0] <- 1
+      x[totalDischarge == 0] <- 1
 
     } else if (method == "CV") {
 
       ### Variation Coefficient Method ###
       # Mean and standard deviation of discharge
-      meanDischarge <- apply(monthlyDischarge, MARGIN = 1, mean)
+      meanDischarge <- rowMeans(monthlyDischarge)
       stdDischarge  <- apply(monthlyDischarge, MARGIN = 1, sd)
 
       # Coefficient of Variation

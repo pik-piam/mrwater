@@ -4,25 +4,39 @@
 \alias{calcAreaPotIrrig}
 \title{calcAreaPotIrrig}
 \usage{
-calcAreaPotIrrig(selectyears, comagyear, iniyear, landScen)
+calcAreaPotIrrig(
+  selectyears,
+  comAg,
+  cropAggregation,
+  cropmix,
+  iniyear,
+  landScen
+)
 }
 \arguments{
 \item{selectyears}{Years to be returned}
 
-\item{comagyear}{If NULL: total potential croparea is used;
-if !NULL: already irrigated area is subtracted;
-year specified here is the year of the initialization
-used for cropland area initialization in calcIrrigatedArea (e.g. NULL, 1995, 2010)}
+\item{comAg}{If TRUE: committed irrigated areas are subtracted,
+if FALSE: total potential croparea is used}
+
+\item{cropAggregation}{TRUE (aggregate over crop types), FALSE (returns area per crop type)}
+
+\item{cropmix}{Cropmix for which potential areas are calculated
+(options:
+"hist_irrig" for historical cropmix on currently irrigated area,
+"hist_rainf" for historical cropmix on currently irrigated area,
+"hist_total" for historical cropmix on total cropland,
+or selection of proxycrops)}
 
 \item{iniyear}{Initialization year for current cropland area}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
 2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
-   e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
+   e.g., 30by30, BH, BH_IFL, PBL_HalfEarth,
    or NA for no protection).
 For case of no land protection select "NA" in second part of argument
-or do not specify second part of the argument}
+or do not specify second part of the argument.}
 }
 \value{
 magpie object in cellular resolution

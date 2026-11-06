@@ -42,9 +42,9 @@ cropIrrigReq <- calcOutput("ActualIrrigWatRequirements",
 cropIrrigReq <- collapseNames(cropIrrigReq[, , "consumption"])
 
 # physical croparea
-croparea <- calcOutput("CropareaAdjusted",
-  iniyear = iniyear,
-  aggregate = FALSE)
+croparea <- calcOutput("Croparea", physical = TRUE, fallow = FALSE,
+  cellular = TRUE, irrigation = TRUE,
+  aggregate = FALSE)[, "y2010", ]
 
 irArea <- collapseNames(croparea[, , "irrigated"])
 rfArea <- collapseNames(croparea[, , "rainfed"])

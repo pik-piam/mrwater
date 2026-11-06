@@ -6,6 +6,7 @@
 \usage{
 calcPotIrrigAreas(
   cropAggregation,
+  countryAggregation = FALSE,
   lpjml,
   climatetype,
   selectyears,
@@ -28,6 +29,9 @@ calcPotIrrigAreas(
 \arguments{
 \item{cropAggregation}{TRUE (aggregated Potentially Irrigated Areas (PIAs)),
 FALSE (crop-specific PIAs)}
+
+\item{countryAggregation}{TRUE (grid cell data is aggregated to country-level),
+FALSE (grid cell data is returned)}
 
 \item{lpjml}{LPJmL version used}
 
@@ -65,7 +69,7 @@ separated by ":"}
 If FALSE: uncalibrated LPJmL yields are used}
 
 \item{allocationrule}{Rule to be applied for river basin discharge allocation
-across cells of river basin ("optimization", "upstreamfirst", "equality")}
+across cells of river basin ("optimization", "upstreamfirst")}
 
 \item{gainthreshold}{Threshold of yield improvement potential required
 (in USD per hectare)}
@@ -75,7 +79,8 @@ across cells of river basin ("optimization", "upstreamfirst", "equality")}
 
 \item{landScen}{Land availability scenario consisting of two parts separated by ":":
 1. available land scenario (currCropland, currIrrig, potCropland)
-2. protection scenario (WDPA, or one of the scenarios available in calcConservationPriorities,
+2. protection scenario (WDPA, or one of the scenarios
+available in calcConservationPriorities,
    e.g., 30by20, BH, BH_IFL, PBL_HalfEarth,
    or NA for no protection).
 For case of no land protection select "NA" in second part of argument

@@ -4,12 +4,15 @@
 \alias{calcIrrigAreaCommitted}
 \title{calcIrrigAreaCommitted}
 \usage{
-calcIrrigAreaCommitted(selectyears, iniyear)
+calcIrrigAreaCommitted(selectyears, iniyear, aggregateCrops = FALSE)
 }
 \arguments{
 \item{selectyears}{select years}
 
 \item{iniyear}{initialization year}
+
+\item{aggregateCrops}{Logical. If FALSE (default), result is returned per crop.
+If TRUE, values are aggregated over the crop dimension.}
 }
 \value{
 magpie object in cellular resolution

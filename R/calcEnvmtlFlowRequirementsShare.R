@@ -10,7 +10,7 @@
 #'
 #' @importFrom magclass collapseNames new.magpie getYears setYears as.array as.magpie add_dimension mbind
 #' @importFrom madrat calcOutput
-#' @importFrom mrlandcore toolLPJmLVersion
+#' @importFrom mrlandcore toolLPJmLHarmonize
 #' @importFrom stats quantile
 #'
 #' @return magpie object in cellular resolution representing share of discharge
@@ -26,26 +26,27 @@ calcEnvmtlFlowRequirementsShare <- function(lpjml,
                                             climatetype, efrMethod) {
 
   # Long-term reference time frame for EFR calculation:
-  refYears <- c(1985:2015)
+  refYears <- c(1985:2014)
 
-  cfg <- toolLPJmLVersion(version = lpjml[["natveg"]],
-                          climatetype = climatetype)
+  # extract LPJmL version information
+  cfg <- mrlandcore::toolLPJmLHarmonize(lpjmlversion = lpjml,
+                                        climatetype = climatetype)
 
   # retrieve ecosystem preservation status:
   preservationstatus <- strsplit(efrMethod, ":")[[1]][2]
 
   # Monthly Discharge from LPJmL based on historical baseline (raw: including variation)
-  monthlyDischarge   <- setYears(calcOutput("LPJmL_new", version = cfg$readin_version,
-                                            subtype = "mdischarge", climatetype = cfg$baseline_hist,
-                                            stage = "raw", years = refYears, aggregate = FALSE),
-                                 refYears)
+  monthlyDischarge <- calcOutput("LPJmLTransform", subtype = "pnv:discharge",
+                                 lpjmlversion = cfg$readinVersion, climatetype = cfg$baselineHist,
+                                 monthly = TRUE,
+                                 stage = "raw:cut", years = refYears, aggregate = FALSE)
 
   # Transform to array (faster calculation)
   monthlyDischarge    <- as.array(collapseNames(monthlyDischarge))
 
   # Mean annual discharge
   meanAnnualDischarge <- apply(monthlyDischarge,
-                               MARGIN = c(1), sum) / length(refYears)
+                               MARGIN = c(1), sum) / length(getItems(monthlyDischarge, dim = 2))
 
   # Mean monthly flow
   meanMonthlyFlow     <- as.magpie(apply(monthlyDischarge,

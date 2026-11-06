@@ -5,12 +5,10 @@
 \title{calcGrowingPeriod}
 \usage{
 calcGrowingPeriod(
-  lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de", crop =
-    "ggcmi_phase3_nchecks_9ca735cb"),
-  climatetype = "GSWP3-W5E5:historical",
+  lpjml = "lpjml5.10.0-m4",
+  climatetype = "MRI-ESM2-0:ssp370",
   stage = "harmonized2020",
-  yield_ratio = 0.1,
-  cells = "lpjcell"
+  yield_ratio = 0.1
 )
 }
 \arguments{
@@ -21,9 +19,6 @@ calcGrowingPeriod(
 \item{stage}{Degree of processing: raw, smoothed, harmonized, harmonized2020}
 
 \item{yield_ratio}{threshold for cell yield over global average. crops in cells below threshold will be ignored}
-
-\item{cells}{Number of cells to be returned
-(select "magpiecell" for 59199 cells or "lpjcell" for 67420 cells)}
 }
 \value{
 magpie object in cellular resolution

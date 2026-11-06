@@ -33,7 +33,7 @@
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
-#'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
+#'                          across cells of river basin ("optimization", "upstreamfirst")
 #' @param gainthreshold     Threshold of yield improvement potential required
 #'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system used
@@ -100,7 +100,7 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
                           selectyears = selectyears, iniyear = iniyear,
                           lpjml = lpjml, climatetype = climatetype, cropmix = NULL,
                           unit = thresholdtype, yieldcalib = yieldcalib,
-                          comagyear = NULL,
+                          comAg = FALSE,
                           irrigationsystem = irrigationsystem,
                           landScen = landScen,
                           multicropping = as.logical(stringr::str_split(multicropping, ":")[[1]][1]),
@@ -112,7 +112,9 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
     # Area that can potentially be irrigated without water limitation
     area <- calcOutput("AreaPotIrrig",
                        selectyears = selectyears, iniyear = iniyear,
-                       landScen = landScen, cropmix = cropmix, comagyear = NULL,
+                       landScen = landScen,
+                       cropmix = cropmix, cropAggregation = FALSE,
+                       comAg = FALSE,
                        aggregate = FALSE)
     croplist    <- getItems(area, dim = "crop")
 
@@ -121,7 +123,8 @@ calcYieldgainPotential <- function(scenario, selectyears, iniyear, lpjml, climat
   } else {
 
     # Area that can potentially be irrigated given land and water constraints
-    area <- collapseNames(calcOutput("PotIrrigAreas", gainthreshold = gainthreshold,
+    area <- collapseNames(calcOutput("PotIrrigAreas", cropAggregation = FALSE,
+                                     gainthreshold = gainthreshold,
                                      selectyears = selectyears, iniyear = iniyear,
                                      climatetype = climatetype, lpjml = lpjml,
                                      accessibilityrule = accessibilityrule, efrMethod = efrMethod,

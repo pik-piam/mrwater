@@ -94,9 +94,11 @@ toolRiverUpDownBalance <- function(inLIST, inoutLIST) {
       # Fraction that needs to be released by upstream cells
       # (Note: avlWat is strictly < prevWW because of if-condition above
       #        therefore upstreamWC is strictly positive)
-      frac <- ifelse(upstreamWC > (prevWW - avlWat),
-                      (prevWW - avlWat) / upstreamWC,
-                    1)
+      if (upstreamWC > (prevWW - avlWat)) {
+        frac <- (prevWW - avlWat) / upstreamWC
+      } else {
+        frac <- 1
+      }
       # Update discharge of current cell and its downstream cells
       disc <- disc + frac * upstreamWC
       # Reduce current human uses in upstreamcells

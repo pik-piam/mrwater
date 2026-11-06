@@ -18,32 +18,33 @@ toolSelectNeighborCell <- function(transDist,  rs = rs,
   rs$neighborcell <- vector("list", length(rs$cells))
   rs$neighbordist <- vector("list", length(rs$cells))
 
-  ##Try with apply: lapply(lapply(neighborCells, "[[", "dist"), FUN = sort)
-
   # append neighbor cells to river structure
   for (i in seq_along(rs$cells)) {
 
     if (!is.null(neighborCells[[i]])) {
 
-      # Sort by distance
-      neighborCells[[i]]   <- neighborCells[[i]][order(neighborCells[[i]]$dist), ]
+      # Select neighbors to respective cell i.
+      # Note that neighbor cells are sorted by distance in
+      # the given object provided by readNeighborCells().
+      neighbors <- neighborCells[[i]]
 
       # Exclude cells above chosen distance
-      rs$neighborcell[[i]] <- neighborCells[[i]]$cellid[neighborCells[[i]]$dist < transDist]
+      neighbors     <- neighbors[neighbors$dist < transDist, ]
+      selectedCells <- neighbors$cellid
 
       # Exclude upstreamcells from neighbors
       if (!identical(rs$upstreamcells[[i]], numeric(0))) {
-        rs$neighborcell[[i]] <- setdiff(rs$neighborcell[[i]], rs$upstreamcells[[i]])
+        selectedCells <- setdiff(selectedCells, rs$upstreamcells[[i]])
       }
       # Exclude downstreamcells from neighbors
       if (!identical(rs$downstreamcells[[i]], numeric(0))) {
-        rs$neighborcell[[i]] <- setdiff(rs$neighborcell[[i]], rs$downstreamcells[[i]])
+        selectedCells <- setdiff(selectedCells, rs$downstreamcells[[i]])
       }
 
-      # Assign distance to selected neighborcells
-      for (k in rs$neighborcell[[i]]) { #@Jan: Can this be done without a loop?
-        tmp <- neighborCells[[i]]$dist[neighborCells[[i]]$cellid == k]
-        rs$neighbordist[[i]] <- c(rs$neighbordist[[i]], tmp)
+      # Assign selected neighbor cells and corresponding distances
+      rs$neighborcell[[i]] <- selectedCells
+      if (length(selectedCells) > 0) {
+        rs$neighbordist[[i]] <- neighbors$dist[match(selectedCells, neighbors$cellid)]
       }
     }
   }

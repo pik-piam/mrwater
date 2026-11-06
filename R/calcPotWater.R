@@ -1,6 +1,6 @@
 #' @title       calcPotWater
 #' @description This function returns the potential water quantity
-#'              (separted into withdrawal and consumption)
+#'              (separated into withdrawal and consumption)
 #'              available for different uses
 #'
 #' @param lpjml             LPJmL version used
@@ -29,7 +29,7 @@
 #'                                        "TRUE:actual:irrig_crop" (for multiple cropping analyses)
 #'                          If FALSE: uncalibrated LPJmL yields are used
 #' @param allocationrule    Rule to be applied for river basin discharge allocation
-#'                          across cells of river basin ("optimization", "upstreamfirst", "equality")
+#'                          across cells of river basin ("optimization", "upstreamfirst")
 #' @param gainthreshold     Threshold of yield improvement potential required
 #'                          (in USD per hectare)
 #' @param irrigationsystem  Irrigation system used
@@ -238,12 +238,17 @@ calcPotWater <- function(lpjml, selectyears, climatetype, efrMethod,
   watTotWW <- watNonAgWW + watAgWW
   watTotWC <- watNonAgWC + watAgWC
 
+  # Potential agricultural water withdrawals/consumption (including non-renewable groundwater)
   watAgWW  <- add_dimension(watAgWW, dim = 3.4, add = "wtype", nm = "wat_ag_ww")
   watAgWC  <- add_dimension(watAgWC, dim = 3.4, add = "wtype", nm = "wat_ag_wc")
+  # Groundwater withdrawals/consumption
+  watGWW   <- add_dimension(gwWW, dim = 3.4, add = "wtype", nm = "wat_gw_ww")
+  watGWC   <- add_dimension(gwWC, dim = 3.4, add = "wtype", nm = "wat_gw_wc")
+  # Total potential water usage (including agricultural and non-agricultural)
   watTotWW <- add_dimension(watTotWW, dim = 3.4, add = "wtype", nm = "wat_tot_ww")
   watTotWC <- add_dimension(watTotWC, dim = 3.4, add = "wtype", nm = "wat_tot_wc")
 
-  out          <- mbind(watAgWW, watAgWC, watTotWW, watTotWC)
+  out          <- mbind(watAgWW, watAgWC, watTotWW, watTotWC, watGWW, watGWC)
   getSets(out) <- c("x", "y", "iso", "year", "EFP", "scen", "wtype")
 
   return(list(x            = out,

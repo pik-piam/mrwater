@@ -36,6 +36,7 @@
 #' @importFrom magclass new.magpie getYears getCells getSets setYears dimOrder
 #' @importFrom mstools toolCell2isoCell toolCoord2Isocell toolGetMappingCoord2Country toolHarmonize2Baseline
 #' @importFrom magpiesets addLocation findset
+#' @importFrom withr local_options
 
 calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lpjcell", # nolint: cyclocomp_linter
                               datasource = "WATCH_ISIMIP_WATERGAP", usetype = "all",
@@ -44,7 +45,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
                                         crop = "ggcmi_phase3_nchecks_9ca735cb"),
                               climatetype = "GSWP3-W5E5:historical") {
   # Set up size limit
-  local_options(magclass_sizeLimit = 1e+12)
+  withr::local_options(magclass_sizeLimit = 1e+12)
 
   # Extract arguments
   waterusetype    <- strsplit(usetype, split = ":")[[1]][1]
@@ -137,6 +138,11 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
     ### Harmonize WATERGAP and ISIMIP data (WATERGAP trends scaled to ISIMIP historical data)
     # Ref_year: 2010 because both ISIMIP historical (available until 2014) and WATERGAP (available from 2005)
     baseyear        <- "y2010"
+    if (!(baseyear %in% selectyears ||
+          as.numeric(sub("^y", "", baseyear)) %in% selectyears)) {
+      stop(paste0("The years (`selectyears`) in calcWaterUseNonAg does not ",
+                  "contain the baseyear ", baseyear, "."))
+    }
     yearsHarmonized <- paste0("y", seq(2010, 2020))
     yearsWATERGAP   <- getYears(watdemWATERGAP)
     yISIMIP         <- as.numeric(gsub("y", "", getYears(watdemISIMIP)))
@@ -295,9 +301,9 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
 
   if (datasource != "WATCH_ISIMIP_WATERGAP") {
     # Correct mismatches of withdrawal and consumption (withdrawals > consumption)
-    watdemNonAg[, , "withdrawal"]  <- pmax(collapseDim(watdemNonAg[, , "withdrawal"]), 
+    watdemNonAg[, , "withdrawal"]  <- pmax(collapseDim(watdemNonAg[, , "withdrawal"]),
                                            collapseDim(watdemNonAg[, , "consumption"]))
-    watdemNonAg[, , "consumption"] <- pmax(collapseDim(watdemNonAg[, , "consumption"]), 
+    watdemNonAg[, , "consumption"] <- pmax(collapseDim(watdemNonAg[, , "consumption"]),
                                            0.01 * collapseDim(watdemNonAg[, , "withdrawal"]))
   }
 
@@ -306,7 +312,7 @@ calcWaterUseNonAg <- function(selectyears = seq(1995, 2100, by = 5), cells = "lp
     ### Note: Seasonality "grper" will be deleted when we switch to new mrwater preprocessing
 
     # Get growing days per month
-    growDays <- calcOutput("GrowingPeriod", aggregate = FALSE, cells = "lpjcell",
+    growDays <- calcOutput("GrowingPeriod", aggregate = FALSE,
                            lpjml = lpjml, climatetype = climatetype, yield_ratio = 0.1)
 
     # Growing days per year

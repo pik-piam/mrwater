@@ -68,7 +68,8 @@ calcYieldgainWatUse <- function(lpjml, climatetype, selectyears, iniyear, landSc
   irrigSystemShr <- calcOutput("IrrigSystemShr", iniyear = iniyear, aggregate = FALSE)
 
   # Irrigation water requirements per crop (in m^3 per hectare per year) [smoothed and harmonized]
-  irrigWatRequ   <- calcOutput("IrrigWatRequirements", selectyears = selectyears,
+  irrigWatRequ   <- calcOutput("IrrigWatRequirements",
+                               selectyears = selectyears, iniyear = iniyear,
                                lpjml = lpjml, climatetype = climatetype,
                                multicropping = multicropping,
                                aggregate = FALSE)

@@ -6,8 +6,6 @@
 #' @param climatetype Switch between different climate scenarios
 #' @param stage       Degree of processing: raw, smoothed, harmonized, harmonized2020
 #' @param yield_ratio threshold for cell yield over global average. crops in cells below threshold will be ignored
-#' @param cells       Number of cells to be returned
-#'                    (select "magpiecell" for 59199 cells or "lpjcell" for 67420 cells)
 #'
 #' @return magpie object in cellular resolution
 #' @author Kristine Karstens, Felicitas Beier
@@ -20,25 +18,20 @@
 #' @importFrom madrat toolGetMapping toolAggregate
 #' @importFrom magclass collapseNames getItems new.magpie getYears dimSums magpie_expand
 #' @importFrom mstools toolHarmonize2Baseline toolSmooth toolGetMappingCoord2Country
-#' @importFrom mrlandcore toolLPJmLVersion
+#' @importFrom mrlandcore toolLPJmLHarmonize
 #'
 #' @export
 
-calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
-                                        crop = "ggcmi_phase3_nchecks_9ca735cb"),
-                              climatetype = "GSWP3-W5E5:historical",
+calcGrowingPeriod <- function(lpjml = "lpjml5.10.0-m4",
+                              climatetype = "MRI-ESM2-0:ssp370",
                               stage = "harmonized2020",
-                              yield_ratio = 0.1, # nolint
-                              cells = "lpjcell") {
+                              yield_ratio = 0.1) { # nolint
 
-  cfgNatveg <- toolLPJmLVersion(version = lpjml["natveg"], climatetype = climatetype)
-  cfgCrop   <- toolLPJmLVersion(version = lpjml["crop"],   climatetype = climatetype)
+  ### Note: This function is deprecated. It can be deleted once the mrwater
+  ###       integration is complete.
 
-  lpjmlReadin  <- c(natveg = unname(cfgNatveg$readin_version),
-                    crop   = unname(cfgCrop$readin_version))
-
-  lpjmlBaseline <- c(natveg = unname(cfgNatveg$baseline_version),
-                     crop  = unname(cfgCrop$baseline_version))
+  cfg <- mrlandcore::toolLPJmLHarmonize(lpjmlversion = lpjml,
+                                        climatetype = climatetype)
 
   if (stage %in% c("raw", "smoothed")) {
 
@@ -55,49 +48,51 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
     # Step 7 Set the sowd to 1 and growing period to 365 where dams are present and
     #        where they are NA (reflecting that all crops have been eliminated)
     # Step 8 Calculate the growing days per month for each cell and each year
-
     ####################################################################################
 
     ####################################################################################
     # Read sowing and harvest date input (new for LPJmL5)
     ####################################################################################
-
-    lpj2mag      <- toolGetMapping("MAgPIE_LPJmL.csv",
-                                   type = "sectoral",
-                                   where = "mappingfolder")
+    lpj2mag <- toolGetMapping("MAgPIE_LPJmL.csv",
+                              type = "sectoral",
+                              where = "mrlandcore")
 
     # Read yields first
-    yields <- collapseNames(calcOutput("LPJmL_new", version = lpjmlReadin["crop"],
-                                       climatetype = climatetype, subtype = "harvest",
-                                       stage = "raw", aggregate = FALSE)[, , "irrigated"])
+    yields <- collapseNames(calcOutput("LPJmLTransform", subtype = "cropsIR:pft_harvestc",
+                                       lpjmlversion = lpjml, climatetype = climatetype,
+                                       stage = "raw:cut",
+                                       monthly = FALSE,
+                                       aggregate = FALSE)[, , "irrigated"])
 
     # Load Sowing dates from LPJmL (use just rainfed dates since they do not differ for irrigated and rainfed)
-    sowd   <- collapseNames(calcOutput("LPJmL_new", version = lpjmlReadin["crop"],
-                                       climatetype = climatetype,  subtype = "sdate",
-                                       stage = "raw", aggregate = FALSE)[, , "rainfed"])
-    hard   <- collapseNames(calcOutput("LPJmL_new", version = lpjmlReadin["crop"],
-                                       climatetype = climatetype,  subtype = "hdate",
-                                       stage = "raw", aggregate = FALSE)[, , "rainfed"])
+    sowd <- collapseNames(calcOutput("LPJmLTransform", subtype = "cropsRF:sdate",
+                                     lpjmlversion = cfg$readinVersion, climatetype = climatetype,
+                                     stage = "raw:cut",
+                                     monthly = FALSE,
+                                     aggregate = FALSE)[, , "rainfed"])
+    hard <- collapseNames(calcOutput("LPJmLTransform", subtype = "cropsRF:hdate",
+                                     lpjmlversion = cfg$readinVersion, climatetype = climatetype,
+                                     stage = "raw:cut",
+                                     monthly = FALSE,
+                                     aggregate = FALSE)[, , "rainfed"])
 
-    goodCrops <- lpj2mag$MAgPIE[which(lpj2mag$LPJmL %in% getItems(sowd, dim = 3))]
-    badCrops  <- lpj2mag$MAgPIE[which(!lpj2mag$LPJmL %in% getItems(sowd, dim = 3))]
+    goodCrops <- lpj2mag$MAgPIE[which(lpj2mag$LPJmL5 %in% getItems(sowd, dim = 3))]
+    badCrops  <- lpj2mag$MAgPIE[which(!lpj2mag$LPJmL5 %in% getItems(sowd, dim = 3))]
 
     sowd   <- toolAggregate(sowd, rel = lpj2mag,
-                            from = "LPJmL", to = "MAgPIE",
+                            from = "LPJmL5", to = "MAgPIE",
                             dim = 3.1, partrel = TRUE)
     hard   <- toolAggregate(hard, rel = lpj2mag,
-                            from = "LPJmL", to = "MAgPIE",
+                            from = "LPJmL5", to = "MAgPIE",
                             dim = 3.1, partrel = TRUE)
     yields <- toolAggregate(yields, rel = lpj2mag,
-                            from = "LPJmL", to = "MAgPIE",
+                            from = "LPJmL5", to = "MAgPIE",
                             dim = 3.1, partrel = TRUE)
 
     if (length(badCrops) > 0) {
       vcat(2, "No information on the growing period found for those crops: ",
            paste(unique(badCrops), collapse = ", "))
     }
-
-    #####################################################################################
 
     ####################################################################################
     # Step 1 Take care of inconsistencies (hard==0 etc)
@@ -112,13 +107,10 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
     hard[which(hard == sowd & sowd == 1)] <- 365
 
     ####################################################################################
-
-    ####################################################################################
     # Step 2 remove crops that have an irrigated yield below 10% of global average
     #        (total cell area as aggregation weight)
     ####################################################################################
-
-    area   <- dimSums(calcOutput("LUH2v2", cellular = TRUE, cells = "lpjcell",
+    area   <- dimSums(calcOutput("LUH3", cellular = TRUE,
                                  aggregate = FALSE, years = "y1995"),
                       dim = 3)
     yields <- collapseNames(yields[, , goodCrops])
@@ -134,8 +126,6 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
     rmLowYield[yieldsRatio < 0.1] <- NA
 
     rm(yieldsRatio, yields, area, gloYields)
-
-    ####################################################################################
 
     ####################################################################################
     # Step 3 remove wintercrops from both calculations for the northern hemisphere: sowd>180, hard>365
@@ -155,8 +145,6 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
     rmWintercrops[cellsNrthnHem, , ] <- ifelse(sowd[cellsNrthnHem, , ] > 180 &
                                                  hard[cellsNrthnHem, , ] < sowd[cellsNrthnHem, , ],
                                                NA, 1)
-
-    ####################################################################################
 
     ####################################################################################
     # Step 4 Calculate mean growing period with the remaining crops
@@ -218,8 +206,6 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
     meanGrper <- round(meanGrper)
 
     ####################################################################################
-
-    ####################################################################################
     # Step 8 Calculate the growing days per month for each cell and each year
     ####################################################################################
 
@@ -271,7 +257,7 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
         daysGoodcells[daysGoodcells > monthLength[month]] <- monthLength[month] # Month is completely after sowing date
         daysGoodcells[testHarvestGoodcells < 0] <- 0 # Month lies after harvest date
         daysGoodcells[testHarvestGoodcells > 0 &
-                      testHarvestGoodcells < monthLength[month]] <- daysGoodcells[testHarvestGoodcells > 0 & testHarvestGoodcells < monthLength[month]] - (lastMonthday - meanHard[testHarvestGoodcells > 0 & testHarvestGoodcells < monthLength[month], t, ]) # Harvest date lies in the month. cut off the end of the month after harvest date
+                        testHarvestGoodcells < monthLength[month]] <- daysGoodcells[testHarvestGoodcells > 0 & testHarvestGoodcells < monthLength[month]] - (lastMonthday - meanHard[testHarvestGoodcells > 0 & testHarvestGoodcells < monthLength[month], t, ]) # Harvest date lies in the month. cut off the end of the month after harvest date
         daysGoodcells <- daysGoodcells <- daysGoodcells * goodcells
         daysBadcellsFirstyear <- as.array(lastMonthday - meanSowd[, t, ] + 1)
         daysBadcellsFirstyear[daysBadcellsFirstyear < 0] <- 0 # Month before sowing date
@@ -307,40 +293,45 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
 
   } else if (stage == "harmonized") {
 
-    # load smoothed data
-    baseline <- calcOutput("GrowingPeriod", lpjml = lpjmlBaseline, climatetype = cfgNatveg$baseline_hist,
-                           stage = "smoothed", yield_ratio = yield_ratio,
-                           cells = "lpjcell", aggregate = FALSE)
+    # load smoothed data for historical baseline
+    baseline <- calcOutput("GrowingPeriod", stage = "smoothed",
+                           lpjml = cfg$readinVersion, climatetype = cfg$baselineHist,
+                           yield_ratio = yield_ratio,
+                           aggregate = FALSE)
 
-    if (climatetype == cfgNatveg$baseline_hist) {
-
+    if (climatetype == cfg$baselineHist) {
+      # if climate type is historical baseline, no further harmonization steps required
       out <- baseline
 
     } else {
-
-      x   <- calcOutput("GrowingPeriod", lpjml = lpjml, climatetype = climatetype,
-                        stage = "smoothed", yield_ratio = yield_ratio,
-                        cells = "lpjcell", aggregate = FALSE)
-      # Harmonize to baseline
-      out <- toolHarmonize2Baseline(x = x, base = baseline, ref_year = cfgNatveg$ref_year_hist)
+      # load smoothed future scenario
+      x   <- calcOutput("GrowingPeriod", stage = "smoothed",
+                        lpjml = cfg$readinVersion, climatetype = cfg$climatetype,
+                        yield_ratio = yield_ratio,
+                        aggregate = FALSE)
+      # Harmonize future scenario to baseline
+      out <- toolHarmonize2Baseline(x = x, base = baseline, ref_year = cfg$refYearHist)
     }
 
   } else if (stage == "harmonized2020") {
 
-    # read in historical data for subtype
-    baseline2020 <- calcOutput("GrowingPeriod", lpjml = lpjmlBaseline, climatetype = cfgNatveg$baseline_gcm,
-                               stage = "harmonized", yield_ratio = yield_ratio,
-                               cells = "lpjcell", aggregate = FALSE)
+    # read in baseline GCM for further harmonization
+    baseline2020 <- calcOutput("GrowingPeriod", stage = "harmonized",
+                               lpjml = cfg$readinVersion, climatetype = cfg$baselineGcm,
+                               yield_ratio = yield_ratio,
+                               aggregate = FALSE)
 
 
-    if (climatetype == cfgNatveg$baseline_gcm) {
+    if (climatetype == cfg$baselineGcm) {
+      # if climatetype is the baseline GCM, no further harmonization required
       out <- baseline2020
     } else {
-
-      x   <- calcOutput("GrowingPeriod", lpjml = lpjmlReadin, climatetype = climatetype,
-                        stage = "smoothed", yield_ratio = yield_ratio,
-                        cells = "lpjcell", aggregate = FALSE)
-      out <- toolHarmonize2Baseline(x, baseline2020, ref_year = cfgNatveg$ref_year_gcm)
+      # load smoothed future scenario
+      x   <- calcOutput("GrowingPeriod", stage = "smoothed",
+                        lpjml = cfg$readinVersion, climatetype = cfg$climatetype,
+                        yield_ratio = yield_ratio,
+                        aggregate = FALSE)
+      out <- toolHarmonize2Baseline(x, baseline2020, ref_year = cfg$refYearGcm)
     }
 
   } else {
@@ -354,10 +345,6 @@ calcGrowingPeriod <- function(lpjml = c(natveg = "LPJmL4_for_MAgPIE_44ac93de",
   out[out > as.magpie(monthLength)] <- magpie_expand(as.magpie(monthLength),
                                                      out)[out > as.magpie(monthLength)]
   out[out < 0] <- 0
-
-  if (cells == "magpiecell") {
-    out <- toolCoord2Isocell(out, cells = cells)
-  }
 
   return(list(x            = out,
               weight       = NULL,
